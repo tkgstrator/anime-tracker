@@ -1,6 +1,6 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { logger } from '../lib/logger'
-import { searchAniListChunk } from '../lib/metadata/anilist'
+import { SEASON_TO_QUARTER, searchAniListChunk } from '../lib/metadata/anilist'
 import { createPrismaClient } from '../lib/db'
 import { fetchHuluAnimeByDecade } from '../lib/providers/hulu'
 import { identifyTmdbChunk } from '../lib/metadata/tmdb'
@@ -214,28 +214,18 @@ anime.openapi(
             const data: { title?: string; isIdentified?: boolean; status?: string; quarter?: number; year?: number } =
               {}
 
-            if (!anime.isIdentified && result.title) {
-              data.title = result.title
+            if (!anime.isIdentified) {
+              data.title = result.title.native
               data.isIdentified = true
             }
 
-            if (result.status) {
-              data.status = result.status
-            }
+            data.status = result.status
+            data.quarter = SEASON_TO_QUARTER[result.season]
+            data.year = result.seasonYear
 
-            if (result.quarter != null) {
-              data.quarter = result.quarter
-            }
+            await prisma.anime.update({ where: { id: anime.id }, data })
 
-            if (result.year != null) {
-              data.year = result.year
-            }
-
-            if (Object.keys(data).length > 0) {
-              await prisma.anime.update({ where: { id: anime.id }, data })
-            }
-
-            logger.info({ context: 'identify', action: 'identified', title: anime.title, resolvedTitle: data.title ?? anime.title, status: data.status ?? null })
+            logger.info({ context: 'identify', action: 'identified', title: anime.title, resolvedTitle: data.title ?? anime.title, status: data.status })
           }
 
           logger.info({ context: 'identify', action: 'chunk-done', offset: i, chunkSize: chunk.length, total: targets.length })

@@ -1,5 +1,10 @@
 import jaconv from 'jaconv'
-import type { TitleMetadata } from '../../schemas/provider.dto'
+import { z } from 'zod'
+import {
+  MetadataMediaSchema,
+  MetadataResponseSchema,
+  type TitleMetadata
+} from '../../schemas/provider.dto'
 import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 
@@ -101,7 +106,6 @@ query ($search: String!) {
       title {
         native
       }
-      synonyms
       countryOfOrigin
       status
       season
@@ -111,62 +115,13 @@ query ($search: String!) {
 }
 `
 
-// https://anilist.github.io/ApiV2-GraphQL-Docs/MediaStatus.doc.html
-type AniListStatus = 'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS'
+type MetadataMedia = z.infer<typeof MetadataMediaSchema>
 
-// https://anilist.github.io/ApiV2-GraphQL-Docs/MediaSeason.doc.html
-type AniListSeason = 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL'
-
-const SEASON_TO_QUARTER: Record<AniListSeason, number> = {
+export const SEASON_TO_QUARTER: Record<MetadataMedia['season'], number> = {
   WINTER: 0,
   SPRING: 1,
   SUMMER: 2,
   FALL: 3
-}
-
-interface AniListMedia {
-  id: number
-  title: {
-    native: string | null
-  }
-  synonyms: string[]
-  countryOfOrigin: string | null
-  status: AniListStatus | null
-  season: AniListSeason | null
-  seasonYear: number | null
-}
-
-const JAPANESE_RE = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/
-
-/**
- * 全角ASCII（英数・記号）を半角に変換する
- */
-function normalizeFullWidth(s: string): string {
-  return jaconv.toHanAscii(s)
-}
-
-function pickJapaneseTitle(media: AniListMedia): string | null {
-  const raw =
-    media.countryOfOrigin === 'JP'
-      ? (media.title.native ?? null)
-      : (media.synonyms.find((s) => JAPANESE_RE.test(s)) ?? null)
-  return raw ? normalizeFullWidth(raw) : null
-}
-
-interface AniListResponse {
-  data: {
-    Page: {
-      media: AniListMedia[]
-    }
-  }
-}
-
-export interface AniListResult {
-  id: number
-  title?: string
-  status?: AniListStatus
-  quarter?: number
-  year?: number
 }
 
 async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
@@ -177,7 +132,12 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
   return fetch(url, init)
 }
 
-export async function identifyAniList(rawTitle: string): Promise<AniListResult | undefined> {
+const BatchResponseSchema = z.object({
+  data: z.record(z.string(), z.object({ media: z.array(z.unknown()) })),
+  errors: z.array(z.unknown()).optional()
+})
+
+export async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
   const search = cleanTitle(rawTitle)
 
   const res = await fetchWithRetry(ANILIST_API, {
@@ -189,24 +149,10 @@ export async function identifyAniList(rawTitle: string): Promise<AniListResult |
     body: JSON.stringify({ query: SEARCH_QUERY, variables: { search } })
   })
 
-  if (!res.ok) return undefined
+  if (!res.ok) throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
 
-  const json = (await res.json()) as AniListResponse
-  const media = json.data?.Page?.media
-
-  return parseMedia(media)
-}
-
-function parseMedia(media: AniListMedia[] | undefined): AniListResult | undefined {
-  if (!media || media.length === 0) return undefined
-  const first = media[0]
-  return {
-    id: first.id,
-    title: pickJapaneseTitle(first) ?? undefined,
-    status: first.status ?? undefined,
-    quarter: first.season ? SEASON_TO_QUARTER[first.season] : undefined,
-    year: first.seasonYear ?? undefined
-  }
+  const parsed = MetadataResponseSchema.parse(await res.json())
+  return parsed.data.Page.media[0]
 }
 
 /**
@@ -215,12 +161,12 @@ function parseMedia(media: AniListMedia[] | undefined): AniListResult | undefine
  */
 const BATCH_SIZE = 50
 
-export async function searchAniListChunk(rawTitles: string[], offset: number): Promise<(AniListResult | undefined)[]> {
+export async function searchAniListChunk(rawTitles: string[], offset: number): Promise<(MetadataMedia | undefined)[]> {
   const cleaned = rawTitles.map((t) => cleanTitle(t))
 
   const parts = cleaned.map(
     (search, i) =>
-      `q${i}: Page(perPage: 1) { media(search: ${JSON.stringify(search)}, type: ANIME) { id title { native } synonyms countryOfOrigin status season seasonYear } }`
+      `q${i}: Page(perPage: 1) { media(search: ${JSON.stringify(search)}, type: ANIME) { id title { native } countryOfOrigin status season seasonYear } }`
   )
   const query = `query { ${parts.join('\n')} }`
 
@@ -239,19 +185,23 @@ export async function searchAniListChunk(rawTitles: string[], offset: number): P
     return rawTitles.map(() => undefined)
   }
 
-  const json = (await res.json()) as { data?: Record<string, { media: AniListMedia[] }>; errors?: unknown[] }
+  const json = BatchResponseSchema.parse(await res.json())
 
   if (json.errors) {
     logger.error({ context: 'anilist', action: 'graphql-errors', offset, errors: json.errors })
   }
 
-  return rawTitles.map((_, i) => parseMedia(json.data?.[`q${i}`]?.media))
+  return rawTitles.map((_, i) => {
+    const raw = json.data[`q${i}`]?.media?.[0]
+    const parsed = MetadataMediaSchema.safeParse(raw)
+    return parsed.success ? parsed.data : undefined
+  })
 }
 
-export async function searchAniListBatch(rawTitles: string[]): Promise<(AniListResult | undefined)[]> {
+export async function searchAniListBatch(rawTitles: string[]): Promise<(MetadataMedia | undefined)[]> {
   if (rawTitles.length === 0) return []
 
-  const results: (AniListResult | undefined)[] = []
+  const results: (MetadataMedia | undefined)[] = []
 
   for (let i = 0; i < rawTitles.length; i += BATCH_SIZE) {
     const chunk = rawTitles.slice(i, i + BATCH_SIZE)
@@ -267,13 +217,12 @@ export class AniListAdapter extends MetadataAdapter {
 
   async identify(rawTitle: string): Promise<TitleMetadata | undefined> {
     const result = await identifyAniList(rawTitle)
-    if (!result) return undefined
     return {
       aniListId: result.id,
-      title: result.title ?? rawTitle,
-      status: result.status ?? 'UNKNOWN',
-      year: result.year ?? 0,
-      quarter: result.quarter ?? 0
+      title: result.title.native,
+      status: result.status,
+      year: result.seasonYear,
+      quarter: SEASON_TO_QUARTER[result.season]
     }
   }
 }
