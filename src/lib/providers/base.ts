@@ -1,4 +1,4 @@
-import type { Title, TitleInfo, TitleMetadata } from '../../schemas/provider.dto'
+import { type Title, type TitleDetailedInfo, TitleDetailedInfoSchema, type TitleInfo } from '../../schemas/provider.dto'
 import type { MetadataAdapter } from '../metadata'
 
 export interface FetchTitleListOptions {
@@ -22,11 +22,9 @@ export abstract class Provider {
 
   abstract fetchEpisodeList(contentId: string): Promise<TitleInfo>
 
-  async fetchTitle(contentId: string): Promise<TitleInfo & { identified?: TitleMetadata }> {
+  async fetchTitle(contentId: string): Promise<TitleDetailedInfo> {
     const detail = await this.fetchEpisodeList(contentId)
-    const identified = this.adapter
-      ? await this.adapter.identify(detail.title).catch(() => undefined)
-      : undefined
-    return { ...detail, identified }
+    const identified = this.adapter ? await this.adapter.identify(detail.title).catch(() => undefined) : undefined
+    return TitleDetailedInfoSchema.parse({ ...detail, ...identified })
   }
 }
