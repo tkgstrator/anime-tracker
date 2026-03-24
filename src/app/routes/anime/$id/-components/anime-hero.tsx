@@ -2,7 +2,7 @@ import { Circle, CircleCheck, Clock, Film, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { Badge } from '@/app/components/ui/badge'
 import { getCleanImageUrl } from '@/lib/image'
-import { type AnimeWithSeasonsSchema, QuarterLabel } from '@/schemas/anime.dto'
+import { type AnimeInfoSchema, QuarterLabel } from '@/schemas/anime.dto'
 import { formatDuration } from '../-lib/format'
 
 export function AnimeHero({
@@ -13,7 +13,7 @@ export function AnimeHero({
   onToggleScheduled,
   onToggleRecorded
 }: {
-  anime: AnimeWithSeasonsSchema
+  anime: AnimeInfoSchema
   totalEpisodes: number
   totalDuration: number
   updating: boolean

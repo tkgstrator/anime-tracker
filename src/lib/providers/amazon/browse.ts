@@ -1,4 +1,4 @@
-import { type AmazonBrowseQuery, AmazonBrowseQuerySchema } from '../../../schemas/providers/amazon.dto'
+import { type BrowseQuery, BrowseQuerySchema } from '../../../schemas/providers/amazon.dto'
 import { encodeBytes, encodeString, encodeVarintField } from './protobuf'
 
 const AMAZON_BROWSE_BASE = 'https://www.amazon.co.jp/gp/video/browse/ref=atv_dp_pd_gen'
@@ -66,7 +66,7 @@ function buildBqFilter(excludeKids: boolean): string {
  * @param options - オファータイプ、ソート、フィルタ等のオプション
  * @returns URL エンコード済みのクエリパラメータ文字列
  */
-export function buildSearchParams(query: AmazonBrowseQuery, options?: BuildOptions): string {
+export function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
   const offer = options?.offer ?? 'svod'
   const params = OFFER_PARAMS[offer]
   const excludeKids = options?.excludeKids ?? true
@@ -112,7 +112,7 @@ export function buildSearchParams(query: AmazonBrowseQuery, options?: BuildOptio
  * @param options - ビルドオプション
  * @returns protobuf エンコードされたバイト配列
  */
-function buildNestedMessage(query: AmazonBrowseQuery, options?: BuildOptions): number[] {
+function buildNestedMessage(query: BrowseQuery, options?: BuildOptions): number[] {
   return [
     ...encodeString(3, buildSearchParams(query, options)),
     ...encodeString(4, query.keyword),
@@ -130,7 +130,7 @@ function buildNestedMessage(query: AmazonBrowseQuery, options?: BuildOptions): n
  * @param options - ビルドオプション
  * @returns URL-safe Base64 エンコードされた serviceToken 文字列
  */
-export function buildServiceToken(query: AmazonBrowseQuery, options?: BuildOptions): string {
+export function buildServiceToken(query: BrowseQuery, options?: BuildOptions): string {
   const proto = [
     ...encodeString(2, 'query'),
     ...encodeVarintField(3, 1),
@@ -160,8 +160,8 @@ export function buildServiceToken(query: AmazonBrowseQuery, options?: BuildOptio
  * const url = buildAmazonBrowseUrl({ keyword: 'SF', genre: 'av_genre_sci_fi' })
  * ```
  */
-export function buildAmazonBrowseUrl(params?: Partial<AmazonBrowseQuery>, options?: BuildOptions): string {
-  const query = AmazonBrowseQuerySchema.parse(params ?? {})
+export function buildAmazonBrowseUrl(params?: Partial<BrowseQuery>, options?: BuildOptions): string {
+  const query = BrowseQuerySchema.parse(params ?? {})
   const token = buildServiceToken(query, options)
   return `${AMAZON_BROWSE_BASE}?serviceToken=v0_${encodeURIComponent(token)}`
 }

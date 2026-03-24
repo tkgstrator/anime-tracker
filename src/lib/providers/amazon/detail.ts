@@ -1,6 +1,5 @@
 import { parse as parseHtml } from 'node-html-parser'
-import type { AmazonPageData } from '../../../schemas/providers/amazon.dto'
-import { AmazonDetailPageJsonSchema } from '../../../schemas/providers/amazon.dto'
+import { DetailPageJsonSchema, type PageData } from '../../../schemas/providers/amazon.dto'
 import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
 import { extractSeasonNumber } from '../../title-parser'
 
@@ -64,14 +63,14 @@ export async function fetchHtml(url: string): Promise<string> {
 /**
  * Prime Video 詳細ページの HTML からタイトル情報を抽出する。
  */
-export function extractPageData(html: string): AmazonPageData {
+export function extractPageData(html: string): PageData {
   const root = parseHtml(html)
   const script = root
     .querySelectorAll('script[type="application/json"]')
     .find((s) => s.textContent.includes('headerDetail'))
   if (!script) throw new Error('Parse failed: no JSON script found')
 
-  return AmazonDetailPageJsonSchema.parse(JSON.parse(script.textContent))
+  return DetailPageJsonSchema.parse(JSON.parse(script.textContent))
 }
 
 /**

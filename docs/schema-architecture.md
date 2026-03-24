@@ -7,10 +7,9 @@
 ```mermaid
 graph TB
   subgraph "Amazon 固有スキーマ<br/>providers/amazon.dto.ts"
-    ABH[AmazonBrowseHTMLSchema<br/><i>ブラウズページJSON</i>]
+    ABH[AmazonBrowseHTMLSchema<br/>+ AmazonPaginateResponseSchame<br/><i>ブラウズ + ページネーション</i>]
     ADP[AmazonDetailPageJsonSchema<br/><i>詳細ページJSON</i>]
     APD[AmazonPageDataSchema<br/><i>extractPageData出力</i>]
-    APR[AmazonPaginateResponseSchame<br/><i>ページネーションAPI</i>]
     ADP -->|".pipe()"| APD
   end
 
@@ -44,19 +43,18 @@ graph TB
 
   subgraph "DB / APIスキーマ<br/>anime.dto.ts"
     AS[AnimeSchema<br/><i>DBレコード</i>]
-    AWS[AnimeWithSeasonsSchema<br/><i>シーズン・エピソード含む</i>]
+    AWS[AnimeInfoSchema<br/><i>シーズン・エピソード含む</i>]
     PAS[PaginatedAnimeSchema<br/><i>ページネーション応答</i>]
 
     AS -->|".extend()"| AWS
     AS -->|".data[]"| PAS
   end
 
-  ABH -->|"transform"| T
-  APD -->|"fetchAmazonTitleDetail()"| TI
-  APR -->|"ページ追加"| T
+  ABH -->|"fetchTitleList()"| T
+  APD -->|"fetchEpisodeList()"| TI
 
   HPR -->|"fetchTitleList()"| T
-  HES -->|"fetchHuluTitleDetail()"| TI
+  HES -->|"fetchEpisodeList()"| TI
 
   TDI -->|"sync → DB upsert"| AS
 
@@ -133,7 +131,7 @@ Prisma経由でDBに格納された後、Hono APIのレスポンスとして返�
 | スキーマ | 用途 |
 |----------|------|
 | `AnimeSchema` | `anime` テーブルのレコード |
-| `AnimeWithSeasonsSchema` | AnimeSchema + seasons + episodes のネスト構造 |
+| `AnimeInfoSchema` | AnimeSchema + seasons + episodes のネスト構造 |
 | `AnimeListQuerySchema` | 一覧API のクエリパラメータ |
 | `PaginatedAnimeSchema` | ページネーション付き一覧レスポンス |
 

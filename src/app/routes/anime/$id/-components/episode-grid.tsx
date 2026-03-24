@@ -1,9 +1,9 @@
 import { ExternalLink } from 'lucide-react'
 import { getCleanImageUrl } from '@/lib/image'
-import type { AnimeWithSeasonsSchema } from '@/schemas/anime.dto'
+import type { AnimeInfoSchema } from '@/schemas/anime.dto'
 import { formatDate, formatDuration, getWatchUrl } from '../-lib/format'
 
-type Season = AnimeWithSeasonsSchema['seasons'][number]
+type Season = AnimeInfoSchema['seasons'][number]
 
 export function EpisodeGrid({ seasons, provider }: { seasons: Season[]; provider: string }) {
   if (seasons.length === 0) {
