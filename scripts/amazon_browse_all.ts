@@ -1,6 +1,6 @@
 import { parseArgs } from 'util'
 import { parseBrowseHtml, buildServiceToken } from '../src/lib/providers/amazon'
-import { AmazonBrowseQuerySchema } from '../src/schemas/providers/amazon.dto'
+import { BrowseQuerySchema } from '../src/schemas/providers/amazon.dto'
 import { FETCH_HEADERS, htmlUnescape, mapEntityType } from '../src/lib/providers/amazon/detail'
 import type { BuildOptions } from '../src/lib/providers/amazon/browse'
 import type { Title } from '../src/schemas/providers/common.dto'
@@ -155,7 +155,7 @@ async function fetchAllPages(
   seen: Set<string>,
   allTitles: Title[],
 ): Promise<void> {
-  const query = AmazonBrowseQuerySchema.parse({})
+  const query = BrowseQuerySchema.parse({})
   const token = buildServiceToken(query, buildOpts)
   const browseUrl = `https://www.amazon.co.jp/gp/video/browse/ref=atv_dp_pd_gen?serviceToken=v0_${encodeURIComponent(token)}`
 
