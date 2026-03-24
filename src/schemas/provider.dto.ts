@@ -17,13 +17,13 @@ export type Title = z.infer<typeof TitleSchema>
 
 export const EpisodeSchema = z.object({
   episodeNumber: z.number().int().positive(),
-  episodeId: z.string().nonempty(),
+  episodeId: z.uuid(),
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   releaseDate: z.string().nonempty(),
   duration: z.number().int().nonnegative(),
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.string().nonempty(),
+  imageUrl: z.url(),
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
   benefitId: z.string().nullable()
@@ -43,7 +43,7 @@ export const TitleInfoSchema = z.object({
   title: z.string().nonempty(),
   description: z.string(),
   entityType: EntityType,
-  imageUrl: z.string().nullable(),
+  imageUrl: z.url(),
   maturityRating: z.number().int().positive().nullable(),
   benefitId: z.string().nullable(),
   seasons: z.array(SeasonSchema)

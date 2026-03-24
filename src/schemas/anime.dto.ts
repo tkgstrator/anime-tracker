@@ -36,7 +36,7 @@ export const AnimeWithSeasonsSchema = AnimeSchema.extend({
         z.object({
           id: z.string().uuid(),
           episodeNumber: z.number().int().positive(),
-          episodeId: z.string().nonempty(),
+          episodeId: z.string(),
           title: z.string().nonempty(),
           description: z.string(),
           releaseDate: z.string().nonempty(),

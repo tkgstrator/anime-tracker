@@ -201,7 +201,7 @@ export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
       seasonId: `hulu-${slug}-s${i + 1}`,
       displayName: seasonName,
       seasonNumber: i + 1,
-      imageUrl: episodes[0]?.imageUrl ?? null,
+      imageUrl: episodes[0]?.imageUrl,
       episodes
     }
   })
@@ -214,7 +214,7 @@ export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
     description,
     entityType: 'tv',
     maturityRating: null,
-    imageUrl: seasons[0]?.imageUrl ?? null,
+    imageUrl: seasons[0]?.imageUrl,
     benefitId: 'hulu',
     seasons
   }
