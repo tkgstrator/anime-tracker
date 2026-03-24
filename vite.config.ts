@@ -31,10 +31,10 @@ export default defineConfig(({ mode }) => {
         generatedRouteTree: resolve(__dirname, './src/app/routeTree.gen.ts')
       }),
       react(),
+      tailwindcss(),
       cloudflare({
         configPath: './wrangler.toml'
       }),
-      tailwindcss()
     ],
     build: {
       target: 'esnext',
