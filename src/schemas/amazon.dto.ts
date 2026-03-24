@@ -1,22 +1,20 @@
 import { z } from 'zod'
 
-export const AmazonGenreSchema = z
-  .enum([
-    'av_genre_animation_adult_interest',
-    'av_genre_action_and_adventure',
-    'av_genre_drama',
-    'av_genre_comedy',
-    'av_genre_sci_fi',
-    'av_genre_fantasy',
-    'av_genre_romance',
-    'av_genre_horror'
-  ])
-  .describe('Prime Video ジャンルフィルタ')
+export const AmazonGenreSchema = z.enum([
+  'av_genre_animation_adult_interest',
+  'av_genre_action_and_adventure',
+  'av_genre_drama',
+  'av_genre_comedy',
+  'av_genre_sci_fi',
+  'av_genre_fantasy',
+  'av_genre_romance',
+  'av_genre_horror'
+])
 export type AmazonGenre = z.infer<typeof AmazonGenreSchema>
 
 export const AmazonBrowseQuerySchema = z.object({
-  keyword: z.string().default('').describe('検索キーワード'),
-  searchAlias: z.string().default('instant-video').describe('検索対象サービス')
+  keyword: z.string().nonempty(),
+  searchAlias: z.string().nonempty().default('instant-video')
 })
 export type AmazonBrowseQuery = z.infer<typeof AmazonBrowseQuerySchema>
 
@@ -163,7 +161,41 @@ export const AmazonTitleDetailSchema = z.object({
   titleID: z.string().nonempty(),
   title: z.string().nonempty(),
   entityType: z.string().nonempty(),
-  maturityRating: z.number().int().nullable().describe('レーティング年齢 (例: 13, 16, null=すべて)'),
+  maturityRating: z.number().int().nullable(),
   seasons: z.array(AmazonSeasonSchema).nonempty()
 })
 export type AmazonTitleDetail = z.infer<typeof AmazonTitleDetailSchema>
+
+const AmazonBrowseHTMLEntitySchema = z.object({
+  titleID: z.string().nonempty(),
+  displayTitle: z.string().nonempty(),
+  synopsis: z.string().default(''),
+  entityType: AmazonBrowseEntityTypeSchema,
+  images: z
+    .object({
+      cover: z.object({ url: z.url() }).optional()
+    })
+    .optional(),
+  entitlementCues: z
+    .object({
+      titleMetadataBadge: z.object({ message: z.string().optional() }).optional()
+    })
+    .optional()
+})
+export type AmazonBrowseHTMLEntity = z.infer<typeof AmazonBrowseHTMLEntitySchema>
+
+export const AmazonBrowseHTMLSchema = z
+  .object({
+    init: z.object({
+      preparation: z.object({
+        body: z.object({
+          containers: z.array(
+            z.object({
+              entities: z.array(AmazonBrowseHTMLEntitySchema)
+            })
+          )
+        })
+      })
+    })
+  })
+  .transform((v) => v.init.preparation.body.containers.flatMap((v) => v.entities))
