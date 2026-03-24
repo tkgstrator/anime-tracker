@@ -16,8 +16,8 @@ describe('Hulu fetch', () => {
     }
   }, 60_000)
 
-  test('fetchEpisodeList で詳細が取得できる', async () => {
-    const detail = TitleInfoSchema.parse(await provider.fetchEpisodeList('spy-family'))
+  test('fetchTitleInfo で詳細が取得できる', async () => {
+    const detail = TitleInfoSchema.parse(await provider.fetchTitleInfo('spy-family'))
 
     expect(detail.title).toBeTruthy()
     expect(detail.seasons.length).toBeGreaterThan(0)

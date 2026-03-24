@@ -1,6 +1,10 @@
 import jaconv from 'jaconv'
-import { z } from 'zod'
-import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/providers/metadata.dto'
+import type { z } from 'zod'
+import {
+  type MetadataMediaSchema,
+  MetadataResponseSchema,
+  type TitleMetadata
+} from '../../schemas/providers/metadata.dto'
 import { MetadataAdapter } from './base'
 
 const ANILIST_API = 'https://graphql.anilist.co'

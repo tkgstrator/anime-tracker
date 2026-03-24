@@ -63,7 +63,7 @@ async function fetchHtml(url: string): Promise<string> {
 /**
  * Prime Video 詳細ページの HTML からタイトル情報を抽出する。
  */
-function extractPageData(html: string): PageData {
+export function extractPageData(html: string): PageData {
   const root = parseHtml(html)
   const script = root
     .querySelectorAll('script[type="application/json"]')

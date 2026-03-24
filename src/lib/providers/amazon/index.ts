@@ -180,7 +180,7 @@ export class AmazonProvider extends Provider {
    * @param contentId - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
    * @returns タイトル詳細情報
    */
-  async fetchEpisodeList(contentId: string): Promise<TitleInfo> {
+  async fetchTitleInfo(contentId: string): Promise<TitleInfo> {
     return fetchAmazonTitleDetail(contentId)
   }
 }

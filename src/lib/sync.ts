@@ -27,7 +27,7 @@ export class SyncService {
   /** プロバイダの新着をチェックし、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
     const provider = getProvider(message.provider)
-    const detail = await provider.fetchTitle(message.contentId)
+    const detail = await provider.fetchTitleDetailedInfo(message.contentId)
 
     const animeId = await this.upsertAnime(message.provider, message.contentId, detail)
     await this.syncSeasons(animeId, message.provider, message.contentId, detail.seasons)

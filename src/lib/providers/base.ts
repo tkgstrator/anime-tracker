@@ -21,10 +21,10 @@ export abstract class Provider {
 
   abstract fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]>
 
-  abstract fetchEpisodeList(contentId: string): Promise<TitleInfo>
+  abstract fetchTitleInfo(contentId: string): Promise<TitleInfo>
 
-  async fetchTitle(contentId: string): Promise<TitleDetailedInfo> {
-    const detail = await this.fetchEpisodeList(contentId)
+  async fetchTitleDetailedInfo(contentId: string): Promise<TitleDetailedInfo> {
+    const detail = await this.fetchTitleInfo(contentId)
     const identified = this.adapter ? await this.adapter.identify(detail.title).catch(() => undefined) : undefined
     return TitleDetailedInfoSchema.parse({ ...detail, ...identified })
   }

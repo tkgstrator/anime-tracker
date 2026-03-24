@@ -18,11 +18,11 @@ describe('fetchTitleList', () => {
   }, 10_000)
 })
 
-describe('fetchEpisodeList', () => {
+describe('fetchTitleInfo', () => {
   const provider = new AmazonProvider()
   for (const id of fixtureIds) {
     test(id, async () => {
-      const detail = TitleInfoSchema.parse(await provider.fetchEpisodeList(id))
+      const detail = TitleInfoSchema.parse(await provider.fetchTitleInfo(id))
 
       expect(detail.title).toBeTruthy()
       if (detail.entityType === 'movie') {

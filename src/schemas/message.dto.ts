@@ -5,13 +5,11 @@ const ProviderTypeEnum = z.enum(['amazon', 'hulu'])
 const FetchMessageBodySchema = z.object({
   provider: ProviderTypeEnum
 })
-export type FetchMessageBodySchema = z.infer<typeof FetchMessageBodySchema>
 
 const UpdateMessageBodySchema = z.object({
   contentId: z.string().nonempty(),
   provider: ProviderTypeEnum
 })
-export type UpdateMessageBodySchema = z.infer<typeof UpdateMessageBodySchema>
 
 export const FetchMessageSchema = z.object({
   type: z.literal('fetch'),

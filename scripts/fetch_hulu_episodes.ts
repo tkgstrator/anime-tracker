@@ -33,7 +33,7 @@ for (let i = 0; i < slugs.length; i += CONCURRENCY) {
       }
 
       try {
-        const detail = await hulu.fetchEpisodeList(slug)
+        const detail = await hulu.fetchTitleInfo(slug)
         const title = titleMap.get(slug)
         if (title) detail.title = title
         await Bun.write(filePath, JSON.stringify(detail, null, 2) + '\n')
