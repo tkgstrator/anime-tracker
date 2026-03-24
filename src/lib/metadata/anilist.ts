@@ -1,10 +1,6 @@
 import jaconv from 'jaconv'
 import { z } from 'zod'
-import {
-  MetadataMediaSchema,
-  MetadataResponseSchema,
-  type TitleMetadata
-} from '../../schemas/provider.dto'
+import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/provider.dto'
 import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 
@@ -181,7 +177,15 @@ export async function searchAniListChunk(rawTitles: string[], offset: number): P
 
   if (!res.ok) {
     const body = await res.text().catch(() => '')
-    logger.error({ context: 'anilist', action: 'batch-failed', offset, count: rawTitles.length, status: res.status, statusText: res.statusText, body })
+    logger.error({
+      context: 'anilist',
+      action: 'batch-failed',
+      offset,
+      count: rawTitles.length,
+      status: res.status,
+      statusText: res.statusText,
+      body
+    })
     return rawTitles.map(() => undefined)
   }
 

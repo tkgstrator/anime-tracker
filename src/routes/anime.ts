@@ -1,9 +1,9 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { createPrismaClient } from '../lib/db'
 import { logger } from '../lib/logger'
 import { SEASON_TO_QUARTER, searchAniListChunk } from '../lib/metadata/anilist'
-import { createPrismaClient } from '../lib/db'
-import { fetchHuluAnimeByDecade } from '../lib/providers/hulu'
 import { identifyTmdbChunk } from '../lib/metadata/tmdb'
+import { fetchHuluAnimeByDecade } from '../lib/providers/hulu'
 import {
   AnimeListQuerySchema,
   AnimeSchema,
@@ -225,10 +225,22 @@ anime.openapi(
 
             await prisma.anime.update({ where: { id: anime.id }, data })
 
-            logger.info({ context: 'identify', action: 'identified', title: anime.title, resolvedTitle: data.title ?? anime.title, status: data.status })
+            logger.info({
+              context: 'identify',
+              action: 'identified',
+              title: anime.title,
+              resolvedTitle: data.title ?? anime.title,
+              status: data.status
+            })
           }
 
-          logger.info({ context: 'identify', action: 'chunk-done', offset: i, chunkSize: chunk.length, total: targets.length })
+          logger.info({
+            context: 'identify',
+            action: 'chunk-done',
+            offset: i,
+            chunkSize: chunk.length,
+            total: targets.length
+          })
         }
       })()
     )

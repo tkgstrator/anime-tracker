@@ -6,13 +6,8 @@ import type { MetadataAdapter } from './base'
  * 先に見つかった値を優先する（providers配列の順序）。
  * 全プロバイダで見つからない場合は undefined。
  */
-export async function identifyTitle(
-  title: string,
-  providers: MetadataAdapter[]
-): Promise<TitleMetadata | undefined> {
-  const results = await Promise.all(
-    providers.map((p) => p.identify(title).catch(() => undefined))
-  )
+export async function identifyTitle(title: string, providers: MetadataAdapter[]): Promise<TitleMetadata | undefined> {
+  const results = await Promise.all(providers.map((p) => p.identify(title).catch(() => undefined)))
 
   const merged: Partial<TitleMetadata> = {}
   for (const result of results) {
@@ -29,6 +24,6 @@ export async function identifyTitle(
   return merged as TitleMetadata
 }
 
-export { MetadataAdapter } from './base'
 export { AniListAdapter } from './anilist'
+export { MetadataAdapter } from './base'
 export { TmdbAdapter } from './tmdb'

@@ -27,17 +27,16 @@ export class SyncService {
     const provider = getProvider(message.provider)
     const detail = await provider.fetchTitle(message.contentId)
 
-    const identifiedData = detail.identified
-      ? {
-          tmdbId: detail.identified.tmdbId,
-          aniListId: detail.identified.aniListId,
-          status: detail.identified.status ?? 'UNKNOWN',
-          year: detail.identified.year ?? 0,
-          quarter: detail.identified.quarter ?? 0,
-          isIdentified: !!detail.identified.title
-        }
-      : {}
-    const title = detail.identified?.title ?? detail.title
+    const { metadata } = detail
+    const identifiedData = {
+      tmdbId: metadata.tmdbId,
+      aniListId: metadata.aniListId,
+      title: metadata.title,
+      status: metadata.status,
+      year: metadata.year,
+      quarter: metadata.quarter,
+      isIdentified: true
+    }
 
     await this.prisma.anime.upsert({
       where: {
@@ -49,14 +48,11 @@ export class SyncService {
       create: {
         provider: message.provider,
         contentId: message.contentId,
-        title,
         description: detail.description,
         entityType: detail.entityType,
         maturityRating: detail.maturityRating,
         imageUrl: detail.imageUrl,
         benefitId: detail.benefitId,
-        year: 0,
-        quarter: 0,
         ...identifiedData
       },
       update: {
