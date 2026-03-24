@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { BadgeCheck } from 'lucide-react'
+import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { Badge } from '@/app/components/ui/badge'
-import { providerColor, providerLabel, statusColor, statusLabel } from '@/app/lib/constants'
 import { getCleanImageUrl } from '@/lib/image'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
@@ -9,14 +9,18 @@ export function AnimeCard({
   anime,
   filterYear,
   filterProvider,
+  filterStatus,
   onFilterYear,
-  onFilterProvider
+  onFilterProvider,
+  onFilterStatus
 }: {
   anime: AnimeSchema
   filterYear: number | undefined
   filterProvider: string | undefined
+  filterStatus: string | undefined
   onFilterYear: (year: number | undefined) => void
   onFilterProvider: (provider: string | undefined) => void
+  onFilterStatus: (status: string | undefined) => void
 }) {
   return (
     <Link to='/anime/$id' params={{ id: anime.id }} className='group block'>
@@ -54,20 +58,23 @@ export function AnimeCard({
           </Badge>
         )}
         {anime.status && (
-          <Badge variant='secondary' className={`text-[10px] ${statusColor[anime.status] ?? ''}`}>
-            {statusLabel[anime.status] ?? anime.status}
-          </Badge>
+          <StatusBadge
+            status={anime.status}
+            className='cursor-pointer text-[10px]'
+            onClick={(e) => {
+              e.preventDefault()
+              onFilterStatus(filterStatus === anime.status ? undefined : (anime.status ?? undefined))
+            }}
+          />
         )}
-        <Badge
-          variant='secondary'
-          className={`cursor-pointer text-[10px] ${providerColor[anime.provider] ?? ''}`}
+        <ProviderBadge
+          provider={anime.provider}
+          className='cursor-pointer text-[10px]'
           onClick={(e) => {
             e.preventDefault()
             onFilterProvider(filterProvider === anime.provider ? undefined : anime.provider)
           }}
-        >
-          {providerLabel[anime.provider] ?? anime.provider}
-        </Badge>
+        />
       </div>
     </Link>
   )
