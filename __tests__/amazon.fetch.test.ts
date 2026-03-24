@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { AmazonProvider, fetchAmazonTitleDetail } from '../src/lib/providers/amazon'
+import { AmazonProvider } from '../src/lib/providers/amazon'
 import { TitleInfoSchema } from '../src/schemas/provider.dto'
 
 describe('Amazon fetch', () => {
@@ -16,9 +16,9 @@ describe('Amazon fetch', () => {
     }
   }, 30_000)
 
-  test('fetchAmazonTitleDetail で詳細が取得できる', async () => {
+  test('fetchEpisodeList で詳細が取得できる', async () => {
     const titleId = 'B0CJRDF9JB' // 葬送のフリーレン
-    const detail = TitleInfoSchema.parse(await fetchAmazonTitleDetail(titleId))
+    const detail = TitleInfoSchema.parse(await provider.fetchEpisodeList(titleId))
 
     expect(detail.title).toBeTruthy()
     expect(detail.seasons.length).toBeGreaterThan(0)

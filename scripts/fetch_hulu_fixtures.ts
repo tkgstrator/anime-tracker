@@ -5,7 +5,7 @@
  */
 import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { fetchHuluTitleDetail } from '../src/lib/providers/hulu/detail'
+import { HuluProvider } from '../src/lib/providers/hulu'
 
 const SLUGS = [
   'spy-family',
@@ -18,6 +18,8 @@ const SLUGS = [
 const FIXTURES_DIR = resolve(import.meta.dir, '../__tests__/fixtures/hulu/titles')
 
 async function main() {
+  const provider = new HuluProvider()
+
   for (const slug of SLUGS) {
     console.log(`Fetching ${slug}...`)
 
@@ -33,7 +35,7 @@ async function main() {
     console.log(`  HTML saved (${(html.length / 1024).toFixed(0)} KB)`)
 
     // パース結果を JSON として保存
-    const detail = await fetchHuluTitleDetail(slug)
+    const detail = await provider.fetchEpisodeList(slug)
     writeFileSync(resolve(FIXTURES_DIR, `${slug}.json`), JSON.stringify(detail, null, 2))
     console.log(`  JSON saved (${detail.seasons.reduce((n, s) => n + s.episodes.length, 0)} episodes)`)
   }
