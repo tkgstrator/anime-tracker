@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { TitleSchema } from './provider.dto'
 
 export const AmazonGenreSchema = z.enum([
   'av_genre_animation_adult_interest',
@@ -13,8 +14,8 @@ export const AmazonGenreSchema = z.enum([
 export type AmazonGenre = z.infer<typeof AmazonGenreSchema>
 
 export const AmazonBrowseQuerySchema = z.object({
-  keyword: z.string().nonempty(),
-  searchAlias: z.string().nonempty().default('instant-video')
+  keyword: z.string().default(''),
+  searchAlias: z.string().default('instant-video')
 })
 export type AmazonBrowseQuery = z.infer<typeof AmazonBrowseQuerySchema>
 
@@ -166,36 +167,46 @@ export const AmazonTitleDetailSchema = z.object({
 })
 export type AmazonTitleDetail = z.infer<typeof AmazonTitleDetailSchema>
 
-const AmazonBrowseHTMLEntitySchema = z.object({
-  titleID: z.string().nonempty(),
-  displayTitle: z.string().nonempty(),
-  synopsis: z.string().default(''),
-  entityType: AmazonBrowseEntityTypeSchema,
-  images: z
-    .object({
-      cover: z.object({ url: z.url() }).optional()
+const AmazonBrowseHTMLEntitySchema = z
+  .object({
+    titleID: z.string().nonempty(),
+    displayTitle: z.string().nonempty(),
+    synopsis: z.string().nonempty(),
+    entityType: AmazonBrowseEntityTypeSchema,
+    images: z.object({
+      cover: z.object({ url: z.url() })
+    }),
+    entitlementCues: z.object({
+      titleMetadataBadge: z.object({ message: z.string().nonempty().optional() })
     })
-    .optional(),
-  entitlementCues: z
-    .object({
-      titleMetadataBadge: z.object({ message: z.string().optional() }).optional()
+  })
+  .transform((v) =>
+    TitleSchema.parse({
+      contentId: v.titleID,
+      title: v.displayTitle,
+      description: v.synopsis,
+      entityType: v.entityType,
+      imageUrl: v.images.cover.url,
+      maturityRating: null,
+      benefitId: null
     })
-    .optional()
-})
+  )
 export type AmazonBrowseHTMLEntity = z.infer<typeof AmazonBrowseHTMLEntitySchema>
 
 export const AmazonBrowseHTMLSchema = z
   .object({
     init: z.object({
-      preparation: z.object({
-        body: z.object({
-          containers: z.array(
-            z.object({
-              entities: z.array(AmazonBrowseHTMLEntitySchema)
-            })
-          )
+      preparation: z
+        .object({
+          body: z.object({
+            containers: z.array(
+              z.object({
+                entities: z.array(AmazonBrowseHTMLEntitySchema)
+              })
+            )
+          })
         })
-      })
+        .optional()
     })
   })
-  .transform((v) => v.init.preparation.body.containers.flatMap((v) => v.entities))
+  .transform((v) => v.init.preparation?.body.containers.flatMap((v) => v.entities))
