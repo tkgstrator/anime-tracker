@@ -123,7 +123,13 @@ export async function identifyTmdbChunk(
       })
     )
     results.push(...chunkResults)
-    logger.info({ context: 'tmdb-identify', action: 'chunk-done', offset: i, chunkSize: chunk.length, total: targets.length })
+    logger.info({
+      context: 'tmdb-identify',
+      action: 'chunk-done',
+      offset: i,
+      chunkSize: chunk.length,
+      total: targets.length
+    })
   }
 
   return results
