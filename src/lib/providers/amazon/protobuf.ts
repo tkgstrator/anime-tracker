@@ -24,7 +24,7 @@ const textEncoder = new TextEncoder()
  * @param value - エンコード対象の非負整数
  * @returns varint エンコードされたバイト配列
  */
-export function encodeVarint(value: number): number[] {
+function encodeVarint(value: number): number[] {
   const bytes: number[] = []
   let v = value
   while (v > 0x7f) {
@@ -41,7 +41,7 @@ export function encodeVarint(value: number): number[] {
  * @param wireType - ワイヤータイプ (0=varint, 2=length-delimited)
  * @returns タグのバイト配列
  */
-export function encodeTag(fieldNumber: number, wireType: number): number[] {
+function encodeTag(fieldNumber: number, wireType: number): number[] {
   return encodeVarint((fieldNumber << 3) | wireType)
 }
 

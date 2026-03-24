@@ -73,7 +73,7 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
 /**
  * HTML の RSC ペイロードからエピソード一覧をパースする。
  */
-export function parseEpisodesFromHtml(html: string): HuluEpisode[] {
+function parseEpisodesFromHtml(html: string): HuluEpisode[] {
   const raw = extractMetasArray(html)
   return EpisodesSchema.parse(raw)
 }

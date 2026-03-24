@@ -31,7 +31,7 @@ const DYNAMIC_FEATURES = [
   'TvodMovieBundles'
 ]
 
-export function parseHtml(html: string): Title[] {
+function parseHtml(html: string): Title[] {
   const root = parse(html)
 
   const script = root.querySelectorAll('script[type="application/json"]').find((s) => s.textContent.includes('titleID'))
@@ -184,5 +184,3 @@ export class AmazonProvider extends Provider {
     return fetchAmazonTitleDetail(contentId)
   }
 }
-
-export { buildAmazonBrowseUrl, buildSearchParams, buildServiceToken } from './browse'
