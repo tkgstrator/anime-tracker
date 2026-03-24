@@ -1,11 +1,18 @@
 import { describe, expect, test } from 'bun:test'
+import { readdirSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { AmazonProvider } from '../src/lib/providers/amazon'
 import { TitleInfoSchema } from '../src/schemas/provider.dto'
 
-describe('Amazon fetch', () => {
+const titlesDir = resolve(__dirname, 'fixtures/amazon/titles')
+const fixtureIds = readdirSync(titlesDir)
+  .filter((f) => f.endsWith('.html'))
+  .map((f) => f.replace('.html', ''))
+
+describe('fetchTitleList', () => {
   const provider = new AmazonProvider()
 
-  test('fetchTitleList でアニメ一覧が取得できる', async () => {
+  test('01', async () => {
     const titles = await provider.fetchTitleList()
     expect(titles.length).toBeGreaterThan(0)
 
@@ -14,16 +21,24 @@ describe('Amazon fetch', () => {
       expect(t.title).toBeTruthy()
       expect(t.entityType).toBeTruthy()
     }
-  }, 30_000)
+  }, 10_000)
+})
 
-  test('fetchEpisodeList で詳細が取得できる', async () => {
-    const titleId = 'B0CJRDF9JB' // 葬送のフリーレン
-    const detail = TitleInfoSchema.parse(await provider.fetchEpisodeList(titleId))
+describe('fetchEpisodeList', () => {
+  const provider = new AmazonProvider()
+  for (const id of fixtureIds) {
+    test(id, async () => {
+      const detail = TitleInfoSchema.parse(await provider.fetchEpisodeList(id))
 
-    expect(detail.title).toBeTruthy()
-    expect(detail.seasons.length).toBeGreaterThan(0)
-    for (const season of detail.seasons) {
-      expect(season.episodes.length).toBeGreaterThan(0)
-    }
-  }, 60_000)
+      expect(detail.title).toBeTruthy()
+      if (detail.entityType === 'movie') {
+        expect(detail.seasons).toEqual([])
+      } else {
+        expect(detail.seasons.length).toBeGreaterThan(0)
+        for (const season of detail.seasons) {
+          expect(season.episodes.length).toBeGreaterThan(0)
+        }
+      }
+    }, 60_000)
+  }
 })

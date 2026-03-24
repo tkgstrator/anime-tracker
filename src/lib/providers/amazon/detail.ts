@@ -212,7 +212,7 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
   const page = extractPageData(html)
   const title = page.title
   const description = page.synopsis
-  const entityType = mapEntityType(page.entityType)
+  const entityType = page.entityType
   const { maturityRating } = page
 
   if (entityType === 'movie') {
