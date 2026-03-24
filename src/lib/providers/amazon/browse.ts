@@ -20,7 +20,7 @@ const OFFER_PARAMS = {
 
 type OfferType = keyof typeof OFFER_PARAMS
 
-export interface BuildOptions {
+interface BuildOptions {
   sort?: boolean
   /** オファータイプ (デフォルト: 'svod') */
   offer?: OfferType
@@ -66,7 +66,7 @@ function buildBqFilter(excludeKids: boolean): string {
  * @param options - オファータイプ、ソート、フィルタ等のオプション
  * @returns URL エンコード済みのクエリパラメータ文字列
  */
-export function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
+function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
   const offer = options?.offer ?? 'svod'
   const params = OFFER_PARAMS[offer]
   const excludeKids = options?.excludeKids ?? true
@@ -130,7 +130,7 @@ function buildNestedMessage(query: BrowseQuery, options?: BuildOptions): number[
  * @param options - ビルドオプション
  * @returns URL-safe Base64 エンコードされた serviceToken 文字列
  */
-export function buildServiceToken(query: BrowseQuery, options?: BuildOptions): string {
+function buildServiceToken(query: BrowseQuery, options?: BuildOptions): string {
   const proto = [
     ...encodeString(2, 'query'),
     ...encodeVarintField(3, 1),

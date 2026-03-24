@@ -59,4 +59,3 @@ export const TitleStatusTypeEnum = z.enum([
   'HIATUS',
   'UNKNOWN'
 ])
-export type TitleStatusType = z.infer<typeof TitleStatusTypeEnum>

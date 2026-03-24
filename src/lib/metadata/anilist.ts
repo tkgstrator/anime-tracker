@@ -1,7 +1,6 @@
 import jaconv from 'jaconv'
 import { z } from 'zod'
 import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/providers/metadata.dto'
-import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 
 const ANILIST_API = 'https://graphql.anilist.co'
@@ -113,7 +112,7 @@ query ($search: String!) {
 
 type MetadataMedia = z.infer<typeof MetadataMediaSchema>
 
-export const SEASON_TO_QUARTER: Record<MetadataMedia['season'], number> = {
+const SEASON_TO_QUARTER: Record<MetadataMedia['season'], number> = {
   WINTER: 0,
   SPRING: 1,
   SUMMER: 2,
@@ -128,12 +127,7 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
   return fetch(url, init)
 }
 
-const BatchResponseSchema = z.object({
-  data: z.record(z.string(), z.object({ media: z.array(z.unknown()) })),
-  errors: z.array(z.unknown()).optional()
-})
-
-export async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
+async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
   const search = cleanTitle(rawTitle)
 
   const res = await fetchWithRetry(ANILIST_API, {
@@ -149,71 +143,6 @@ export async function identifyAniList(rawTitle: string): Promise<MetadataMedia> 
 
   const parsed = MetadataResponseSchema.parse(await res.json())
   return parsed.data.Page.media[0]
-}
-
-/**
- * 複数タイトルを1リクエストでまとめて AniList 検索する
- * GraphQL のエイリアスを使って1つのクエリに複数検索を含める
- */
-const BATCH_SIZE = 50
-
-export async function searchAniListChunk(rawTitles: string[], offset: number): Promise<(MetadataMedia | undefined)[]> {
-  const cleaned = rawTitles.map((t) => cleanTitle(t))
-
-  const parts = cleaned.map(
-    (search, i) =>
-      `q${i}: Page(perPage: 1) { media(search: ${JSON.stringify(search)}, type: ANIME) { id title { native } countryOfOrigin status season seasonYear } }`
-  )
-  const query = `query { ${parts.join('\n')} }`
-
-  const res = await fetchWithRetry(ANILIST_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: JSON.stringify({ query })
-  })
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    logger.error({
-      context: 'anilist',
-      action: 'batch-failed',
-      offset,
-      count: rawTitles.length,
-      status: res.status,
-      statusText: res.statusText,
-      body
-    })
-    return rawTitles.map(() => undefined)
-  }
-
-  const json = BatchResponseSchema.parse(await res.json())
-
-  if (json.errors) {
-    logger.error({ context: 'anilist', action: 'graphql-errors', offset, errors: json.errors })
-  }
-
-  return rawTitles.map((_, i) => {
-    const raw = json.data[`q${i}`]?.media?.[0]
-    const parsed = MetadataMediaSchema.safeParse(raw)
-    return parsed.success ? parsed.data : undefined
-  })
-}
-
-export async function searchAniListBatch(rawTitles: string[]): Promise<(MetadataMedia | undefined)[]> {
-  if (rawTitles.length === 0) return []
-
-  const results: (MetadataMedia | undefined)[] = []
-
-  for (let i = 0; i < rawTitles.length; i += BATCH_SIZE) {
-    const chunk = rawTitles.slice(i, i + BATCH_SIZE)
-    const chunkResults = await searchAniListChunk(chunk, i)
-    results.push(...chunkResults)
-  }
-
-  return results
 }
 
 export class AniListAdapter extends MetadataAdapter {

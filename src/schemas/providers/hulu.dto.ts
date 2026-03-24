@@ -72,11 +72,6 @@ export const PaletteResponseSchema = z.object({
   total_count: z.number().int(),
   data: z.array(VodItemSchema).nonempty()
 })
-export type PaletteResponse = z.infer<typeof PaletteResponseSchema>
-
-export const Season = z.enum(['winter', 'spring', 'summer', 'autumn'])
-export type Season = z.infer<typeof Season>
-
 // --- Episode Detail schemas (RSC payload) ---
 
 const SchemaKeyTypeEnum = z.enum(['asset'])
