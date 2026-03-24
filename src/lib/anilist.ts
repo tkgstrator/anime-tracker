@@ -1,0 +1,261 @@
+const ANILIST_API = 'https://graphql.anilist.co'
+
+/**
+ * Prime Video / Hulu のタイトルから余計な装飾を除去して AniList 検索用に整える
+ */
+export function cleanTitle(raw: string): string {
+  const trimmed = raw.trim()
+  // 【...】 プロモ文を除去
+  // 全体が【タイトル】のみ（or 【タイトル】+期/シーズン等）の場合は中身を残す
+  const isTitleBracket = /^【[^】]+】(?:\s*第?\d*[期シーズンクール]*\s*)*$/.test(trimmed)
+  const bracketCleaned = isTitleBracket ? trimmed.replace(/^【([^】]+)】/, '$1') : trimmed.replace(/【[^】]*】/g, '')
+
+  return (
+    bracketCleaned
+      // 全角英数を半角に変換
+      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+      // 半角中黒を全角に統一
+      .replace(/\uff65/g, '・')
+      // (字幕版) (吹替版) 等を除去
+      .replace(/[（(][^)）]*(?:字幕|吹替)[^)）]*[)）]/g, '')
+      // 半角カッコの注釈を除去: (TV版) (レンタル版) (2009年放送版) (dアニメストア) (フジテレビオンデマンド) 等
+      .replace(/\s*\([^)]*(?:版|放送|dアニメストア|フジテレビ|オンデマンド)[^)]*\)/g, '')
+      // 末尾 (年) を除去: タイトル (2026) → タイトル
+      .replace(/\s*[（(]\d{4}[)）]\s*$/, '')
+      // 全角カッコの注釈を除去: （ジークアクス） 等
+      .replace(/\s*（[^）]*）/g, '')
+      // 《...》 ＜...＞ を除去（ただしタイトル全体が囲まれている場合は中身を残す）
+      .replace(/\s*《([^》]*)》/g, (_m, inner, _o, str) =>
+        str.trim().startsWith('《') && str.trim().endsWith('》') ? inner : ''
+      )
+      .replace(/\s*＜([^＞]*)＞/g, (_m, inner, _o, str) =>
+        str.trim().startsWith('＜') && str.trim().endsWith('＞') ? inner : ''
+      )
+      // ~...~ 注釈を除去（半角チルダ）
+      .replace(/~[^~]+~/g, '')
+      // プレフィックスを除去
+      .replace(/^(?:TVアニメ|テレビアニメ|アニメ|新劇場版|劇場版|劇場アニメーション|映画|Animatica|OVA|OAD)\s*/g, '')
+      // プラットフォームプレフィックスを除去: NETFIXオリジナルシリーズ 等
+      .replace(/^(?:NETFLIX|NETFIX)(?:オリジナル)?(?:シリーズ|アニメ)?\s*/gi, '')
+      // セレクション(+後続サブタイトル) / アニメシリーズ を除去
+      .replace(/\s*セレクション\s*(?:「[^」]*」)?/g, ' ')
+      .replace(/\s*アニメシリーズ/g, '')
+      // 『』で囲まれたタイトルを展開
+      .replace(/『([^』]+)』/g, '$1 ')
+      // 「」で囲まれたタイトルを展開
+      .replace(/「([^」]+)」/g, '$1 ')
+      // \u201C\u201D で囲まれたタイトルを展開
+      .replace(/\u201C([^\u201D]+)\u201D/g, '$1 ')
+      // [ルビ] 表記を除去: 頭文字[イニシャル]D → 頭文字D
+      .replace(/\[([^\]]+)\]/g, '')
+      // ・第N期 を除去（中黒つき）
+      .replace(/・第[一二三四五六七八九十壱弐参\d]+[期クール]+/g, '')
+      // 第N期 / 第壱期 / 第Nクール / NstシーズンN / Season N を除去
+      .replace(/\s*第[一二三四五六七八九十壱弐参\d]+[期クール]+/g, '')
+      .replace(/\s*\d+(?:st|nd|rd|th)\s*シーズン/gi, '')
+      .replace(/\s*(?:シーズン|Season)\s*\d+(?:特別[篇編])?/gi, '')
+      // 第Nシリーズ / Nシリーズ を除去
+      .replace(/\s*第?\d+シリーズ/g, '')
+      // 末尾 -サブタイトル- を除去（先頭でない場合のみ、半角・全角ダッシュ）
+      .replace(/(.+)\s+[-－][^-－]+[-－]\s*$/, '$1')
+      // 全体が -タイトル- / ーFOOー の場合は中身を残す
+      .replace(/^[-－]([^-－]+)[-－]$/, '$1')
+      // サブタイトル装飾を除去: ～...～
+      .replace(/～[^～]+～/g, '')
+      // 先頭の # を除去
+      .replace(/^#/, '')
+      // OVA / OAD / HDリマスター / SPECIAL EDITED VERSION 等のサフィックス
+      .replace(/\s+(?:OVA|OAD|OAD\s.*|HDリマスター|SPECIAL\s+EDITED\s+VERSION)\s*$/gi, '')
+      // 版サフィックスを除去: 新編集版, 完全版, デジタルリマスター版, TV版 等
+      .replace(/\s*(?:新編集|完全|デジタルリマスター|完全ワンダフル|TV|オンエア)版/g, '')
+      // ver. サフィックスを除去
+      .replace(/\s+\S*ver\.?\s*$/gi, '')
+      // 特別篇 / 特別編 のサフィックス
+      .replace(/\s*(?:特別篇|特別編)\s*$/g, '')
+      // 編 サフィックスを除去: 末尾の「〇〇編」を除去（スペース区切り or 直結）
+      .replace(/(.{3,})\s+\S+編\s*[①-⑳\d]*\s*$/, '$1')
+      .replace(/(.+[!！?？。\d])\S*編\s*$/, '$1')
+      // シーズンN / 第Nシーズン 末尾を除去（全角数字・ローマ数字含む）
+      .replace(/\s+第?\d*シーズン\s*\d*\s*$/g, '')
+      // 末尾の数字のみ（ナンバリング続編）を除去: タイトル 3 → タイトル
+      .replace(/\s+\d+\s*$/, '')
+      // 末尾のローマ数字・丸数字を除去
+      .replace(/\s+[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ①-⑳]+\s*$/, '')
+      // 連続する空白を1つに
+      .replace(/\s+/g, ' ')
+      .trim()
+  )
+}
+
+const SEARCH_QUERY = `
+query ($search: String!) {
+  Page(perPage: 5) {
+    media(search: $search, type: ANIME) {
+      id
+      title {
+        native
+      }
+      synonyms
+      countryOfOrigin
+      status
+      season
+      seasonYear
+    }
+  }
+}
+`
+
+// https://anilist.github.io/ApiV2-GraphQL-Docs/MediaStatus.doc.html
+type AniListStatus = 'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS'
+
+// https://anilist.github.io/ApiV2-GraphQL-Docs/MediaSeason.doc.html
+type AniListSeason = 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL'
+
+const SEASON_TO_QUARTER: Record<AniListSeason, number> = {
+  WINTER: 0,
+  SPRING: 1,
+  SUMMER: 2,
+  FALL: 3
+}
+
+interface AniListMedia {
+  id: number
+  title: {
+    native: string | null
+  }
+  synonyms: string[]
+  countryOfOrigin: string | null
+  status: AniListStatus | null
+  season: AniListSeason | null
+  seasonYear: number | null
+}
+
+const JAPANESE_RE = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/
+
+/**
+ * 全角英数を半角に変換する
+ */
+function normalizeFullWidth(s: string): string {
+  return s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+}
+
+function pickJapaneseTitle(media: AniListMedia): string | null {
+  const raw =
+    media.countryOfOrigin === 'JP'
+      ? (media.title.native ?? null)
+      : (media.synonyms.find((s) => JAPANESE_RE.test(s)) ?? null)
+  return raw ? normalizeFullWidth(raw) : null
+}
+
+interface AniListResponse {
+  data: {
+    Page: {
+      media: AniListMedia[]
+    }
+  }
+}
+
+export interface AniListResult {
+  id: number
+  nativeTitle: string | null
+  status: AniListStatus | null
+  quarter: number | null
+  year: number | null
+}
+
+async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
+  const res = await fetch(url, init)
+  if (res.status !== 429) return res
+  const retryAfter = Math.min(Number(res.headers.get('Retry-After') || '2'), 5)
+  await new Promise((r) => setTimeout(r, retryAfter * 1000))
+  return fetch(url, init)
+}
+
+export async function searchAniList(rawTitle: string): Promise<AniListResult | null> {
+  const search = cleanTitle(rawTitle)
+
+  const res = await fetchWithRetry(ANILIST_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({ query: SEARCH_QUERY, variables: { search } })
+  })
+
+  if (!res.ok) return null
+
+  const json = (await res.json()) as AniListResponse
+  const media = json.data?.Page?.media
+  if (!media || media.length === 0) return null
+
+  return parseMedia(media)
+}
+
+function parseMedia(media: AniListMedia[] | undefined): AniListResult | null {
+  if (!media || media.length === 0) return null
+  const first = media[0]
+  return {
+    id: first.id,
+    nativeTitle: pickJapaneseTitle(first),
+    status: first.status ?? null,
+    quarter: first.season ? SEASON_TO_QUARTER[first.season] : null,
+    year: first.seasonYear ?? null
+  }
+}
+
+/**
+ * 複数タイトルを1リクエストでまとめて AniList 検索する
+ * GraphQL のエイリアスを使って1つのクエリに複数検索を含める
+ */
+const BATCH_SIZE = 50
+
+export async function searchAniListChunk(rawTitles: string[], offset: number): Promise<(AniListResult | null)[]> {
+  const cleaned = rawTitles.map((t) => cleanTitle(t))
+
+  const parts = cleaned.map(
+    (search, i) =>
+      `q${i}: Page(perPage: 1) { media(search: ${JSON.stringify(search)}, type: ANIME) { id title { native } synonyms countryOfOrigin status season seasonYear } }`
+  )
+  const query = `query { ${parts.join('\n')} }`
+
+  const res = await fetchWithRetry(ANILIST_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({ query })
+  })
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    console.error(
+      `AniList batch failed (offset=${offset}, count=${rawTitles.length}): ${res.status} ${res.statusText}`,
+      body
+    )
+    return rawTitles.map(() => null)
+  }
+
+  const json = (await res.json()) as { data?: Record<string, { media: AniListMedia[] }>; errors?: unknown[] }
+
+  if (json.errors) {
+    console.error(`AniList batch GraphQL errors (offset=${offset}):`, JSON.stringify(json.errors))
+  }
+
+  return rawTitles.map((_, i) => parseMedia(json.data?.[`q${i}`]?.media))
+}
+
+export async function searchAniListBatch(rawTitles: string[]): Promise<(AniListResult | null)[]> {
+  if (rawTitles.length === 0) return []
+
+  const results: (AniListResult | null)[] = []
+
+  for (let i = 0; i < rawTitles.length; i += BATCH_SIZE) {
+    const chunk = rawTitles.slice(i, i + BATCH_SIZE)
+    const chunkResults = await searchAniListChunk(chunk, i)
+    results.push(...chunkResults)
+  }
+
+  return results
+}
