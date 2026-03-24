@@ -1,7 +1,7 @@
 import { parse as parseHtml } from 'node-html-parser'
-import type { AmazonPageData } from '../../../schemas/amazon.dto'
-import { AmazonDetailPageJsonSchema } from '../../../schemas/amazon.dto'
-import type { Episode, Season, TitleInfo } from '../../../schemas/provider.dto'
+import type { AmazonPageData } from '../../../schemas/providers/amazon.dto'
+import { AmazonDetailPageJsonSchema } from '../../../schemas/providers/amazon.dto'
+import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
 import { extractSeasonNumber } from '../../title-parser'
 
 const AMAZON_DETAIL_BASE = 'https://www.amazon.co.jp/gp/video/detail'

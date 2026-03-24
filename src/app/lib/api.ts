@@ -1,12 +1,6 @@
 import { Zodios } from '@zodios/core'
 import { z } from 'zod'
-import {
-  AnimeSchema,
-  AnimeWithSeasonsSchema,
-  CreateAnimeSchema,
-  IdentifyResultSchema,
-  PaginatedAnimeSchema
-} from '@/schemas/anime.dto'
+import { AnimeSchema, AnimeWithSeasonsSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
 
 const api = new Zodios('/api', [
@@ -34,47 +28,6 @@ const api = new Zodios('/api', [
     path: '/anime/:id',
     alias: 'getAnime',
     response: AnimeWithSeasonsSchema
-  },
-  {
-    method: 'post',
-    path: '/anime',
-    alias: 'createAnime',
-    parameters: [{ name: 'body', type: 'Body', schema: CreateAnimeSchema }],
-    response: AnimeSchema
-  },
-  {
-    method: 'delete',
-    path: '/anime/:id',
-    alias: 'deleteAnime',
-    response: z.void()
-  },
-  {
-    method: 'post',
-    path: '/anime/:id/sync',
-    alias: 'syncAnime',
-    response: z.object({ seasons: z.number().int(), episodes: z.number().int() })
-  },
-  {
-    method: 'post',
-    path: '/anime/identify/tmdb',
-    alias: 'identifyTmdb',
-    response: z.object({
-      total: z.number().int(),
-      found: z.number().int(),
-      results: z.array(
-        z.object({
-          title: z.string(),
-          found: z.boolean(),
-          tmdbId: z.number().int().nullable()
-        })
-      )
-    })
-  },
-  {
-    method: 'post',
-    path: '/anime/identify',
-    alias: 'identifyAnime',
-    response: IdentifyResultSchema
   },
   {
     method: 'post',

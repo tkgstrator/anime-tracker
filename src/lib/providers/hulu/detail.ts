@@ -1,5 +1,5 @@
-import { HuluEpisodesSchema, type HuluEpisode } from '../../../schemas/hulu.dto'
-import type { Episode, Season, TitleInfo } from '../../../schemas/provider.dto'
+import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
+import { type HuluEpisode, HuluEpisodesSchema } from '../../../schemas/providers/hulu.dto'
 import { extractMetasArray } from './rsc-parser'
 
 const HULU_BASE = 'https://www.hulu.jp'

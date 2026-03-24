@@ -1,4 +1,4 @@
-import type { Title, TitleInfo } from '../../../schemas/provider.dto'
+import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { DECADE_AG, fetchHuluAnimeByDecade, fetchRecentlyAddedIds } from './browse'
 

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { TitleMetadata } from '../../schemas/provider.dto'
+import type { TitleMetadata } from '../../schemas/providers/metadata.dto'
 import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 

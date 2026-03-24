@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { HuluProvider } from '../src/lib/providers/hulu'
-import { TitleInfoSchema } from '../src/schemas/provider.dto'
+import { TitleInfoSchema } from '../src/schemas/providers/common.dto'
 
 describe('Hulu fetch', () => {
   const provider = new HuluProvider()

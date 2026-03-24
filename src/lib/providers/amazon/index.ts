@@ -4,8 +4,8 @@ import {
   type AmazonPaginateParams,
   type AmazonPaginateResponse,
   AmazonPaginateResponseSchame
-} from '../../../schemas/amazon.dto'
-import type { Title, TitleInfo } from '../../../schemas/provider.dto'
+} from '../../../schemas/providers/amazon.dto'
+import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
