@@ -4,6 +4,7 @@ import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
 import { FETCH_HEADERS, fetchAmazonTitleDetail, htmlUnescape, mapEntityType } from './detail'
+import { type AmazonBrowseHTMLEntity, AmazonBrowseHTMLSchema } from '@/schemas/amazon.dto'
 
 const PAGINATE_BASE = 'https://www.amazon.co.jp/gp/video/api/paginateCollection'
 
@@ -57,24 +58,11 @@ function parseEntity(e: Record<string, unknown>): BrowseEntity {
 export function parseBrowseHtml(html: string): BrowseEntity[] {
   const root = parseHtml(html)
 
-  const jsonScript = root
-    .querySelectorAll('script[type="application/json"]')
-    .find((s) => s.textContent.includes('titleID'))
+  const script = root.querySelectorAll('script[type="application/json"]').find((s) => s.textContent.includes('titleID'))
 
-  if (!jsonScript) return []
-
-  const data = JSON.parse(jsonScript.textContent) as {
-    init?: {
-      preparations?: {
-        body?: {
-          containers?: { entities?: Record<string, unknown>[] }[]
-        }
-      }
-    }
-  }
-
-  const entities = data.init?.preparations?.body?.containers?.flatMap((c) => c.entities ?? []) ?? []
-  return entities.map(parseEntity)
+  if (!script) return []
+  const object = AmazonBrowseHTMLSchema.parse(JSON.parse(script.textContent))
+  return object.init.preparation.body.containers.flatMap((v) => v.entities).map(parseEntity)
 }
 
 /**
@@ -231,4 +219,3 @@ export class AmazonProvider extends Provider {
 }
 
 export { buildAmazonBrowseUrl, buildSearchParams, buildServiceToken } from './browse'
-export { fetchAmazonTitleDetail } from './detail'

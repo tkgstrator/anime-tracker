@@ -17,7 +17,7 @@ export type Title = z.infer<typeof TitleSchema>
 
 export const EpisodeSchema = z.object({
   episodeNumber: z.number().int().positive(),
-  episodeId: z.uuid(),
+  episodeId: z.string().nonempty(),
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   releaseDate: z.string().nonempty(),
