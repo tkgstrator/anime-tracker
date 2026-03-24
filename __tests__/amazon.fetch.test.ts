@@ -1,13 +1,7 @@
 import { describe, expect, test } from 'bun:test'
-import { readdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { AmazonProvider } from '../src/lib/providers/amazon'
 import { TitleInfoSchema } from '../src/schemas/provider.dto'
-
-const titlesDir = resolve(__dirname, 'fixtures/amazon/titles')
-const fixtureIds = readdirSync(titlesDir)
-  .filter((f) => f.endsWith('.html'))
-  .map((f) => f.replace('.html', ''))
+import { fixtureIds } from './fixtures/amazon/ids'
 
 describe('fetchTitleList', () => {
   const provider = new AmazonProvider()
