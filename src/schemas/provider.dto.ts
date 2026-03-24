@@ -51,11 +51,11 @@ export const TitleMetadataSchema = z
     aniListId: z.number().int().optional(),
     title: z.string().nonempty(),
     status: TitleStatusTypeEnum,
-    year: z.number().int(),
+    year: z.number().int().min(0).max(2038),
     quarter: z.number().int().min(1).max(4)
   })
   .refine((v) => v.tmdbId != null || v.aniListId != null, {
-    message: 'tmdbId または aniListId のいずれかが必要です'
+    message: 'Either tmdbId or aniListId is required'
   })
 export type TitleMetadata = z.infer<typeof TitleMetadataSchema>
 
