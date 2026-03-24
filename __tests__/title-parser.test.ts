@@ -33,7 +33,7 @@ describe('extractSeasonNumber', () => {
     ['フルーツバスケット 2nd season', 2],
     ['Re:ゼロから始める異世界生活 3rd season', 3],
     ['ありふれた職業で世界最強 season 3', 3],
-    ["TVアニメ『MFゴースト 3rd Season』", 3],
+    ['TVアニメ『MFゴースト 3rd Season』', 3],
     // N期 (数字+期)
     ['東京喰種:re 2期', 2],
     ['ラブライブ！虹ヶ咲学園スクールアイドル同好会TVアニメ2期', 2],
@@ -63,7 +63,7 @@ describe('extractSeasonNumber', () => {
     ['転生したら第七王子だったので、気ままに魔術を極めます', 1],
     ['攻殻機動隊 S.A.C. 2nd GIG', 1],
     ['BUZZER BEATER 2nd Quarter', 1],
-    ['イジらないで、長瀞さん 2nd Attack', 1],
+    ['イジらないで、長瀞さん 2nd Attack', 1]
   ]
 
   for (const [title, expected] of cases) {

@@ -38,6 +38,8 @@ export interface BuildOptions {
   node?: string
   /** ソート値を上書きする (デフォルト: 'pv-public-release-date-desc-rank') */
   sortValue?: string
+  /** 新着アニメTVフィルタを適用する */
+  newAnime?: boolean
 }
 
 /**
@@ -73,19 +75,32 @@ export function buildSearchParams(query: AmazonBrowseQuery, options?: BuildOptio
   const entries: [string, string][] = []
 
   if (options?.node) entries.push(['node', options.node])
-  entries.push(['qs-offer_type', params.offerType])
   entries.push(['qs-country-code', 'JP'])
+  if (options?.newAnime) {
+    // 新着アニメTV カテゴリのフィルタ
+    entries.push(['p_n_theme_browse-bin', '4435524051'])
+    entries.push(['p_n_subscription_id', '5602560051|10387742051'])
+  }
   if (options?.sort ?? true) entries.push(['sort', options?.sortValue ?? 'pv-public-release-date-desc-rank'])
+  entries.push(['field-ways_to_watch', params.waysToWatch])
   if (options?.subscriptionId) entries.push(['field-subscription_id', options.subscriptionId])
   if (options?.genreBin) entries.push(['field-genre-bin', 'av_genre_anime'])
-  entries.push(['field-ways_to_watch', params.waysToWatch])
-  if (!hasBenefit) entries.push(['p_n_entity_type', '4174099051'])
-  entries.push(['adult-product', '0'])
   entries.push(['search-alias', query.searchAlias])
   entries.push(['bq', options?.bq ?? buildBqFilter(excludeKids)])
-  entries.push(['pv_browse_internal_offer', params.internalOffer])
-  if (options?.benefit) entries.push(['pv_browse_internal_benefit', options.benefit])
-  entries.push(['pv_browse_internal_language', 'all'])
+  entries.push(['qs-offer_type', params.offerType])
+  if (options?.newAnime) {
+    entries.push(['is_movie_collection', '0,0,0,0'])
+  }
+  if (!hasBenefit) entries.push(['p_n_entity_type', '4174099051'])
+  if (options?.newAnime) {
+    entries.push(['p_n_feature_six_browse-bin', '5871472051'])
+  }
+  if (!options?.newAnime) {
+    entries.push(['adult-product', '0'])
+    entries.push(['pv_browse_internal_offer', params.internalOffer])
+    if (options?.benefit) entries.push(['pv_browse_internal_benefit', options.benefit])
+    entries.push(['pv_browse_internal_language', 'all'])
+  }
 
   // スペースを %20 でエンコード（+ ではなく）
   return entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
@@ -145,8 +160,8 @@ export function buildServiceToken(query: AmazonBrowseQuery, options?: BuildOptio
  * const url = buildAmazonBrowseUrl({ keyword: 'SF', genre: 'av_genre_sci_fi' })
  * ```
  */
-export function buildAmazonBrowseUrl(params?: Partial<AmazonBrowseQuery>): string {
+export function buildAmazonBrowseUrl(params?: Partial<AmazonBrowseQuery>, options?: BuildOptions): string {
   const query = AmazonBrowseQuerySchema.parse(params ?? {})
-  const token = buildServiceToken(query)
+  const token = buildServiceToken(query, options)
   return `${AMAZON_BROWSE_BASE}?serviceToken=v0_${encodeURIComponent(token)}`
 }

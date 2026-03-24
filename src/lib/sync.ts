@@ -1,5 +1,6 @@
 import type { PrismaClient } from '../generated/prisma/client.ts'
-import type { ProviderTitleDetail } from '../schemas/provider.dto'
+import type { ProviderTitle, ProviderTitleDetail } from '../schemas/provider.dto'
+import { searchAniList } from './anilist'
 import { AmazonProvider } from './providers/amazon'
 import type { Provider } from './providers/base'
 import { HuluProvider } from './providers/hulu'
@@ -173,6 +174,122 @@ export async function syncEpisodesFromTmdb(
 }
 
 /**
+ * プロバイダの新着タイトルをチェックし、DB に存在しないタイトルを識別・追加、
+ * 既存タイトルはエピソードを同期する。
+ *
+ * 1. fetchTitleList({ newEpisodesOnly: true }) で最近更新のあったタイトル一覧取得
+ * 2. DB に slug (contentId) が存在するかチェック → 存在すれば 4 へ
+ * 3. TMDB / AniList で検索 → どちらかヒットすれば追加対象
+ * 4. エピソード詳細を全件取得し DB に upsert
+ */
+export async function checkNewEpisodes(
+  prisma: PrismaClient,
+  providerName: string,
+  apiKey: string
+): Promise<{ added: number; updated: number; skipped: number }> {
+  const provider = getProvider(providerName)
+  const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
+  console.log(`[${providerName}] ${titles.length} titles with recent updates`)
+
+  // 一括で DB に存在する contentId を取得
+  const existingAnime = await prisma.anime.findMany({
+    where: {
+      provider: providerName,
+      contentId: { in: titles.map((t) => t.contentId) }
+    },
+    select: { contentId: true }
+  })
+  const existingIds = new Set(existingAnime.map((a) => a.contentId))
+
+  const results = await Promise.allSettled(
+    titles.map(async (title) => {
+      if (existingIds.has(title.contentId)) {
+        // 既存タイトル → エピソード同期のみ
+        const detail = await provider.fetchEpisodeList(title.contentId)
+        await syncTitle(prisma, providerName, title.contentId, detail)
+        console.log(`[${providerName}] updated: ${title.title}`)
+        return 'updated' as const
+      }
+
+      // 新規タイトル → TMDB / AniList で識別
+      const identified = await identifyTitle(title, apiKey)
+      if (!identified) {
+        console.log(`[${providerName}] skip (unidentified): ${title.title}`)
+        return 'skipped' as const
+      }
+
+      // エピソード取得 & DB 追加
+      const detail = await provider.fetchEpisodeList(title.contentId)
+      await syncTitle(prisma, providerName, title.contentId, detail)
+
+      // 識別結果を反映
+      await prisma.anime.update({
+        where: { provider_contentId: { provider: providerName, contentId: title.contentId } },
+        data: {
+          tmdbId: identified.tmdbId,
+          aniListId: identified.aniListId,
+          title: identified.nativeTitle ?? detail.title,
+          isIdentified: !!identified.nativeTitle,
+          status: identified.status ?? 'UNKNOWN',
+          year: identified.year,
+          quarter: identified.quarter
+        }
+      })
+
+      console.log(`[${providerName}] added: ${title.title}`)
+      return 'added' as const
+    })
+  )
+
+  const counts = { added: 0, updated: 0, skipped: 0 }
+  for (const r of results) {
+    if (r.status === 'rejected') {
+      console.error(`[${providerName}] error:`, r.reason)
+      counts.skipped++
+    } else {
+      counts[r.value]++
+    }
+  }
+  return counts
+}
+
+/**
+ * TMDB と AniList でタイトルを検索し、識別情報を返す。
+ * どちらにもヒットしなければ undefined を返す。
+ * 値が無いフィールドは undefined となり、Prisma update 時にスキップされる。
+ */
+async function identifyTitle(
+  title: ProviderTitle,
+  apiKey: string
+): Promise<
+  | {
+      tmdbId?: number
+      aniListId?: number
+      nativeTitle?: string
+      status?: string
+      year?: number
+      quarter?: number
+    }
+  | undefined
+> {
+  const [tmdbResult, aniListResult] = await Promise.all([
+    searchTmdbTv(title.title, apiKey).catch(() => null),
+    searchAniList(title.title).catch(() => null)
+  ])
+
+  if (!tmdbResult && !aniListResult) return undefined
+
+  return {
+    tmdbId: tmdbResult?.id,
+    aniListId: aniListResult?.id,
+    nativeTitle: aniListResult?.nativeTitle ?? tmdbResult?.name,
+    status: aniListResult?.status,
+    year: aniListResult?.year,
+    quarter: aniListResult?.quarter
+  }
+}
+
+/**
  * プロバイダからエピソード情報を取得し、episodeId等をDBに反映する
  */
 export async function syncProviderEpisodeIds(
@@ -218,20 +335,20 @@ export async function syncProviderEpisodeIds(
       .sort((a, b) => a.seasonNumber - b.seasonNumber)
       .flatMap((s) => [...s.episodes].sort((a, b) => a.episodeNumber - b.episodeNumber))
 
-    let offset = 0
-    for (const dbSeason of dbSeasons) {
-      const dbEpisodes = dbSeason.episodes
-      for (const dbEp of dbEpisodes) {
+    // 各シーズンの先頭オフセットを累積で計算
+    const offsets = dbSeasons.map((_, i) => dbSeasons.slice(0, i).reduce((sum, s) => sum + s.episodes.length, 0))
+
+    for (const [i, dbSeason] of dbSeasons.entries()) {
+      const offset = offsets[i]
+      for (const dbEp of dbSeason.episodes) {
         const providerEp = providerEpisodesFlat[offset + dbEp.episodeNumber - 1]
-        if (!providerEp || dbEp.episodeId) {
-          continue
-        }
+        if (!providerEp || dbEp.episodeId) continue
+
         await prisma.episode.update({
           where: { id: dbEp.id },
           data: { episodeId: providerEp.episodeId }
         })
       }
-      offset += dbEpisodes.length
     }
   }
 }
