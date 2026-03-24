@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-import { buildSlug, extractEpisodesFromRsc } from '../src/lib/providers/hulu'
+import { buildSlug, parseEpisodesFromHtml } from '../src/lib/providers/hulu'
 import { TitleInfoSchema } from '../src/schemas/provider.dto'
 
 const titlesDir = resolve(__dirname, 'fixtures/hulu/titles')
@@ -16,12 +16,12 @@ describe('RSCパース', () => {
     const html = readFileSync(resolve(titlesDir, `${slug}.html`), 'utf-8')
 
     test(`${slug}: エピソードが抽出できる`, () => {
-      const episodes = extractEpisodesFromRsc(html)
+      const episodes = parseEpisodesFromHtml(html)
       expect(episodes.length).toBeGreaterThan(0)
     })
 
     test(`${slug}: 各エピソードに必須フィールドがある`, () => {
-      const episodes = extractEpisodesFromRsc(html)
+      const episodes = parseEpisodesFromHtml(html)
       for (const ep of episodes) {
         expect(ep.id).toBeGreaterThan(0)
         expect(ep.title).toBeTruthy()
