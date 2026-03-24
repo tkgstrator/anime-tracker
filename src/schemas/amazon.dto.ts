@@ -199,11 +199,13 @@ export const AmazonBrowseHTMLSchema = z
       preparation: z
         .object({
           body: z.object({
-            containers: z.array(
-              z.object({
-                entities: z.array(AmazonBrowseHTMLEntitySchema)
-              })
-            )
+            containers: z
+              .array(
+                z.object({
+                  entities: z.array(AmazonBrowseHTMLEntitySchema).nonempty()
+                })
+              )
+              .nonempty()
           })
         })
         .optional()
