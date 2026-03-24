@@ -3,17 +3,18 @@ import { z } from 'zod'
 export const EntityType = z.enum(['tv', 'movie'])
 export type EntityType = z.infer<typeof EntityType>
 
-export const ProviderTitle = z.object({
+export const TitleSchema = z.object({
   contentId: z.string().nonempty(),
   title: z.string().nonempty(),
   description: z.string(),
   entityType: EntityType,
   imageUrl: z.string().nullable(),
-  maturityRating: z.number().int().positive().nullable()
+  maturityRating: z.number().int().positive().nullable(),
+  benefitId: z.string().nullable()
 })
-export type ProviderTitle = z.infer<typeof ProviderTitle>
+export type Title = z.infer<typeof TitleSchema>
 
-export const ProviderEpisode = z.object({
+export const EpisodeSchema = z.object({
   episodeNumber: z.number().int().positive(),
   episodeId: z.string().nonempty(),
   title: z.string().nonempty(),
@@ -26,24 +27,40 @@ export const ProviderEpisode = z.object({
   hasDub: z.boolean(),
   benefitId: z.string().nullable()
 })
-export type ProviderEpisode = z.infer<typeof ProviderEpisode>
+export type Episode = z.infer<typeof EpisodeSchema>
 
-export const ProviderSeason = z.object({
+export const SeasonSchema = z.object({
   seasonId: z.string().nonempty(),
   displayName: z.string().nonempty(),
   seasonNumber: z.number().int().positive(),
   imageUrl: z.string().nullable(),
-  episodes: z.array(ProviderEpisode)
+  episodes: z.array(EpisodeSchema)
 })
-export type ProviderSeason = z.infer<typeof ProviderSeason>
+export type Season = z.infer<typeof SeasonSchema>
 
-export const ProviderTitleDetail = z.object({
-  title: z.string().nonempty(),
-  description: z.string().nonempty(),
-  entityType: EntityType,
-  maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.string().nullable(),
-  benefitId: z.string().nullable(),
-  seasons: z.array(ProviderSeason)
+export const TitleInfoSchema = TitleSchema.extend({
+  seasons: z.array(SeasonSchema)
 })
-export type ProviderTitleDetail = z.infer<typeof ProviderTitleDetail>
+export type TitleInfo = z.infer<typeof TitleInfoSchema>
+
+const TitleStatusTypeEnum = z.enum([''])
+
+export const TitleMetadataSchema = z
+  .object({
+    tmdbId: z.number().int().optional(),
+    aniListId: z.number().int().optional(),
+    title: z.string().nonempty(),
+    status: TitleStatusTypeEnum,
+    year: z.number().int(),
+    quarter: z.number().int().min(1).max(4)
+  })
+  .refine((v) => v.tmdbId != null || v.aniListId != null, {
+    message: 'tmdbId または aniListId のいずれかが必要です'
+  })
+export type TitleMetadata = z.infer<typeof TitleMetadataSchema>
+
+export const TitleDetailedInfoSchema = TitleInfoSchema.extend({
+  metadata: TitleMetadataSchema
+})
+
+export type TitleDetailedInfo = z.infer<typeof TitleDetailedInfoSchema>

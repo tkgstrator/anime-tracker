@@ -1,7 +1,7 @@
 import { parse as parseHtml } from 'node-html-parser'
 import type { AmazonPageData } from '../../../schemas/amazon.dto'
 import { AmazonDetailPageJsonSchema, AmazonPageDataSchema } from '../../../schemas/amazon.dto'
-import type { ProviderEpisode, ProviderSeason, ProviderTitleDetail } from '../../../schemas/provider.dto'
+import type { Episode, Season, TitleDetail } from '../../../schemas/provider.dto'
 import { extractSeasonNumber } from '../../title-parser'
 
 const AMAZON_DETAIL_BASE = 'https://www.amazon.co.jp/gp/video/detail'
@@ -90,7 +90,7 @@ export function htmlUnescape(str: string): string {
 }
 
 /**
- * API レスポンスのエピソード詳細を ProviderEpisode 型にマッピングする。
+ * API レスポンスのエピソード詳細を Episode 型にマッピングする。
  * @param titleID - エピソードの titleID
  * @param d - API から取得した生のエピソード詳細
  * @param maturityRating - レーティング年齢
@@ -102,7 +102,7 @@ function mapDetailToEpisode(
   d: RawEpisodeDetail,
   maturityRating: number | null,
   benefitId: string | null
-): ProviderEpisode | null {
+): Episode | null {
   if (d.episodeNumber == null) return null
   return {
     episodeNumber: d.episodeNumber,
@@ -147,11 +147,7 @@ function extractBenefitId(action: unknown): string | null {
  * @returns エピソード配列
  * @throws HTTP エラー時
  */
-async function fetchEpisodesByToken(
-  titleID: string,
-  token: string,
-  fallbackRating: number | null
-): Promise<ProviderEpisode[]> {
+async function fetchEpisodesByToken(titleID: string, token: string, fallbackRating: number | null): Promise<Episode[]> {
   const widgets = JSON.stringify([{ widgetType: 'EpisodeList', widgetToken: token }])
   const params = new URLSearchParams({ titleID, widgets })
   const res = await fetch(`${AMAZON_WIDGETS_API}?${params}`, {
@@ -163,7 +159,7 @@ async function fetchEpisodesByToken(
   }
   const rawEpisodes = data.widgets?.episodeList?.episodes
   if (!rawEpisodes) return []
-  const episodes: ProviderEpisode[] = []
+  const episodes: Episode[] = []
   for (const ep of rawEpisodes) {
     const rating = parseMaturityRating(ep.metadata?.maturityRating?.displayText ?? '') ?? fallbackRating
     const benefitId = extractBenefitId(ep.action)
@@ -186,7 +182,7 @@ async function fetchAllEpisodes(
   seasonId: string,
   pageTokens: string[],
   fallbackRating: number | null
-): Promise<ProviderEpisode[]> {
+): Promise<Episode[]> {
   const pages = await Promise.all(pageTokens.map((token) => fetchEpisodesByToken(seasonId, token, fallbackRating)))
   const episodes = pages.flat().sort((a, b) => a.episodeNumber - b.episodeNumber)
 
@@ -217,7 +213,7 @@ export function mapEntityType(raw: string): 'tv' | 'movie' {
  * @param titleID - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
  * @returns タイトル詳細情報
  */
-export async function fetchAmazonTitleDetail(titleID: string): Promise<ProviderTitleDetail> {
+export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleDetail> {
   const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${titleID}`)
   const page = extractPageData(html)
   const title = page.title
@@ -245,7 +241,7 @@ export async function fetchAmazonTitleDetail(titleID: string): Promise<ProviderT
     }
   }
 
-  const seasons: ProviderSeason[] = []
+  const seasons: Season[] = []
   for (const rs of page.seasons) {
     const tokens =
       rs.seasonId === titleID

@@ -1,4 +1,4 @@
-import type { ProviderTitle, ProviderTitleDetail } from '../../../schemas/provider.dto'
+import type { Title, TitleDetail } from '../../../schemas/provider.dto'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { DECADE_AG, fetchHuluAnimeByDecade, fetchRecentlyAddedIds } from './browse'
 
@@ -20,14 +20,14 @@ export class HuluProvider extends Provider {
    * 重複を除去して返す。
    * @returns アニメタイトル一覧
    */
-  async fetchTitleList(options?: FetchTitleListOptions): Promise<ProviderTitle[]> {
+  async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
     const decades = options?.newEpisodesOnly ? [2020] : Object.keys(DECADE_AG).map(Number)
     const [results, recentIds] = await Promise.all([
       Promise.all(decades.map((decade) => fetchHuluAnimeByDecade(decade))),
       options?.newEpisodesOnly ? fetchRecentlyAddedIds() : Promise.resolve(null)
     ])
     const seen = new Set<string>()
-    const titles: ProviderTitle[] = []
+    const titles: Title[] = []
 
     for (const item of results.flat()) {
       if (seen.has(item.slug)) continue
@@ -50,7 +50,7 @@ export class HuluProvider extends Provider {
    * @param contentId - Hulu のスラッグ (例: "dandadan")
    * @returns タイトル詳細情報
    */
-  async fetchEpisodeList(contentId: string): Promise<ProviderTitleDetail> {
+  async fetchEpisodeList(contentId: string): Promise<TitleDetail> {
     return fetchHuluTitleDetail(contentId)
   }
 }

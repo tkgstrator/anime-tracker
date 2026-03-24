@@ -1,4 +1,4 @@
-import type { ProviderEpisode, ProviderSeason, ProviderTitleDetail } from '../schemas/provider.dto'
+import type { Episode, Season, TitleDetail } from '../schemas/provider.dto'
 
 /**
  * TMDBのシーズン・エピソード構造をベースに、
@@ -71,7 +71,7 @@ export interface TmdbTitleData {
 
 interface ProviderInput {
   provider: string
-  detail: ProviderTitleDetail
+  detail: TitleDetail
 }
 
 /**
@@ -80,30 +80,26 @@ interface ProviderInput {
  * 1. シーズン数が一致 → seasonNumberで直接マッチ
  * 2. シーズン数が不一致 → 全エピソードをフラットにし、通し番号でマッチ
  */
-function matchProviderEpisodes(
-  tmdbSeasons: TmdbSeasonData[],
-  providerSeasons: ProviderSeason[]
-): Map<string, ProviderEpisode> {
-  const result = new Map<string, ProviderEpisode>()
+function matchEpisodes(tmdbSeasons: TmdbSeasonData[], Seasons: Season[]): Map<string, Episode> {
+  const result = new Map<string, Episode>()
 
   const tmdbSeasonNumbers = new Set(tmdbSeasons.map((s) => s.seasonNumber))
-  const providerSeasonNumbers = new Set(providerSeasons.map((s) => s.seasonNumber))
+  const SeasonNumbers = new Set(Seasons.map((s) => s.seasonNumber))
   const seasonsMatch =
-    tmdbSeasonNumbers.size === providerSeasonNumbers.size &&
-    [...tmdbSeasonNumbers].every((n) => providerSeasonNumbers.has(n))
+    tmdbSeasonNumbers.size === SeasonNumbers.size && [...tmdbSeasonNumbers].every((n) => SeasonNumbers.has(n))
 
   if (seasonsMatch) {
-    for (const providerSeason of providerSeasons) {
-      for (const ep of providerSeason.episodes) {
-        const key = `${providerSeason.seasonNumber}:${ep.episodeNumber}`
+    for (const Season of Seasons) {
+      for (const ep of Season.episodes) {
+        const key = `${Season.seasonNumber}:${ep.episodeNumber}`
         result.set(key, ep)
       }
     }
   } else {
     // フラットにして通し番号でマッチ
-    const providerFlat = providerSeasons
-      .sort((a, b) => a.seasonNumber - b.seasonNumber)
-      .flatMap((s) => [...s.episodes].sort((a, b) => a.episodeNumber - b.episodeNumber))
+    const providerFlat = Seasons.sort((a, b) => a.seasonNumber - b.seasonNumber).flatMap((s) =>
+      [...s.episodes].sort((a, b) => a.episodeNumber - b.episodeNumber)
+    )
 
     let flatIndex = 0
     for (const tmdbSeason of [...tmdbSeasons].sort((a, b) => a.seasonNumber - b.seasonNumber)) {
@@ -130,7 +126,7 @@ function matchProviderEpisodes(
 export function mergeTitle(tmdb: TmdbTitleData, providers: ProviderInput[]): MergedTitle {
   const providerMaps = providers.map(({ provider, detail }) => ({
     provider,
-    episodes: matchProviderEpisodes(tmdb.seasons, detail.seasons)
+    episodes: matchEpisodes(tmdb.seasons, detail.seasons)
   }))
 
   const seasons: MergedSeason[] = tmdb.seasons.map((tmdbSeason) => {

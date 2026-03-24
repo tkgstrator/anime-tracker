@@ -3,14 +3,16 @@ import { apiReference } from '@scalar/hono-api-reference'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
 import recordingsRoutes from './routes/recordings'
+import syncRoutes from './routes/sync'
 import { scheduled } from './scheduled'
 
-type Bindings = { DB: D1Database; TMDB_API_KEY: string }
+type Bindings = { DB: D1Database; TMDB_API_KEY: string; SYNC_QUEUE: Queue }
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>()
 
 app.route('/api/anime', animeRoutes)
 app.route('/api/recordings', recordingsRoutes)
+app.route('/api/sync', syncRoutes)
 
 app.doc('/openapi.json', {
   openapi: '3.1.0',
