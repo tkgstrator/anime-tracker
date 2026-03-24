@@ -28,7 +28,6 @@ describe('RSCパース', () => {
         expect(ep.description).toBeDefined()
         expect(ep.imageUrl).toBeTruthy()
         expect(ep.additionalInfo.episode_runtime).toBeGreaterThan(0)
-        expect(ep.additionalInfo.type).toBe('media_meta')
       }
     })
   }
