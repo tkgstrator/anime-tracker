@@ -4,7 +4,7 @@ import {
   type AmazonPaginateParams,
   type AmazonPaginateResponse,
   AmazonPaginateResponseSchame
-} from '@/schemas/amazon.dto'
+} from '../../../schemas/amazon.dto'
 import type { Title, TitleInfo } from '../../../schemas/provider.dto'
 import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
@@ -60,8 +60,7 @@ function extractPaginationParams(html: string): AmazonPaginateParams | null {
  * paginateCollection API を呼び出してタイトル一覧の続きを取得する。
  */
 async function paginateCollection(
-  paginationTargetId: string,
-  serviceToken: string,
+  params: AmazonPaginateParams,
   startIndex: number,
   cookie: string
 ): Promise<AmazonPaginateResponse> {
@@ -70,8 +69,8 @@ async function paginateCollection(
   url.searchParams.set('pageType', 'browse')
   url.searchParams.set('pageId', 'default')
   url.searchParams.set('collectionType', 'Container')
-  url.searchParams.set('paginationTargetId', paginationTargetId)
-  url.searchParams.set('serviceToken', serviceToken)
+  url.searchParams.set('paginationTargetId', params.paginationTargetId)
+  url.searchParams.set('serviceToken', params.serviceToken)
   url.searchParams.set('startIndex', String(startIndex))
   url.searchParams.set('actionScheme', 'default')
   url.searchParams.set('payloadScheme', 'default')
@@ -121,10 +120,11 @@ export class AmazonProvider extends Provider {
     const params = extractPaginationParams(html)
 
     if (params?.paginationTargetId) {
-      await this.fetchRemainingPages(params, cookie, entries.length, entries)
+      const seen = new Set(entries.map((e) => e.contentId))
+      await this.fetchRemainingPages(params, cookie, entries.length, seen, entries)
     }
 
-    return allEntries.map((e) => e.title)
+    return entries
   }
 
   private async fetchTitleHTML(options?: FetchTitleListOptions): Promise<Response> {
@@ -138,28 +138,28 @@ export class AmazonProvider extends Provider {
    * ページネーションで残りのタイトルを再帰的に取得する。
    */
   private async fetchRemainingPages(
-    param: AmazonPaginateParams,
+    params: AmazonPaginateParams,
     cookie: string,
     startIndex: number,
+    seen: Set<string>,
     acc: Title[]
   ): Promise<void> {
     try {
-      const res = await paginateCollection(param.paginationTargetId, param.serviceToken, startIndex, cookie)
+      const res = await paginateCollection(params, startIndex, cookie)
       const entities = res.entities ?? []
       if (entities.length === 0) return
 
       for (const e of entities) {
-        const titleId = e.titleID as string
-        if (!titleId || entities.has(titleId)) continue
+        const titleId = (e as { titleID?: string }).titleID
+        if (!titleId || seen.has(titleId)) continue
         seen.add(titleId)
-        acc.push(parseEntity(e))
       }
 
       if (!res.hasMoreItems) return
 
       const nextToken = res.pagination?.queryParameters?.serviceToken
       await this.fetchRemainingPages(
-        { paginationTargetId: pagination.paginationTargetId, serviceToken: nextToken ?? pagination.serviceToken },
+        { paginationTargetId: params.paginationTargetId, serviceToken: nextToken ?? params.serviceToken },
         cookie,
         startIndex + entities.length,
         seen,

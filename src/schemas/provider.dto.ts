@@ -43,7 +43,6 @@ export const TitleInfoSchema = z.object({
   title: z.string().nonempty(),
   description: z.string(),
   entityType: EntityType,
-  imageUrl: z.url(),
   maturityRating: z.number().int().positive().nullable(),
   benefitId: z.string().nullable(),
   seasons: z.array(SeasonSchema)
@@ -96,6 +95,7 @@ export const TitleMetadataSchema = z
 export type TitleMetadata = z.infer<typeof TitleMetadataSchema>
 
 export const TitleDetailedInfoSchema = TitleInfoSchema.extend({
+  imageUrl: z.url(),
   metadata: TitleMetadataSchema
 })
 
