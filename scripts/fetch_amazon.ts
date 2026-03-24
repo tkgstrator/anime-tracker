@@ -2,7 +2,7 @@ import { AmazonProvider } from '../src/lib/providers/amazon'
 
 const amazon = new AmazonProvider()
 const titleId = process.argv[2] || 'B0FPDW14C3'
-const detail = await amazon.fetchEpisodeList(titleId)
+const detail = await amazon.fetchTitleInfo(titleId)
 
 console.log(`Title: ${detail.title}`)
 console.log(`Seasons: ${detail.seasons.length}`)

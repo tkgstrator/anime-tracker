@@ -48,11 +48,11 @@ export class HuluProvider extends Provider {
 
   /**
    * コンテンツ ID (slug) からタイトル詳細 (シーズン・エピソード含む) を取得する。
+   * RSC ペイロードと Falcor API を並列で呼び出しマージする。
    * @param contentId - Hulu のスラッグ (例: "dandadan")
    * @returns タイトル詳細情報
    */
-  async fetchEpisodeList(contentId: string): Promise<TitleInfo> {
+  async fetchTitleInfo(contentId: string): Promise<TitleInfo> {
     return fetchHuluTitleDetail(contentId)
   }
 }
-

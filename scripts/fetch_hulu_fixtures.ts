@@ -35,7 +35,7 @@ async function main() {
     console.log(`  HTML saved (${(html.length / 1024).toFixed(0)} KB)`)
 
     // パース結果を JSON として保存
-    const detail = await provider.fetchEpisodeList(slug)
+    const detail = await provider.fetchTitleInfo(slug)
     writeFileSync(resolve(FIXTURES_DIR, `${slug}.json`), JSON.stringify(detail, null, 2))
     console.log(`  JSON saved (${detail.seasons.reduce((n, s) => n + s.episodes.length, 0)} episodes)`)
   }

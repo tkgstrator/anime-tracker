@@ -12,6 +12,21 @@ export const DECADE_AG: Record<number, string> = {
   2020: 'twenty_twenties'
 }
 
+const SEASON_SLUG_PREFIX: Record<string, string> = {
+  winter: 'january-march-quarter-anime',
+  spring: 'april-june-quarter-anime',
+  summer: 'july-september-quarter-anime',
+  autumn: 'october-december-quarter-anime'
+}
+
+/**
+ * シーズンと年からHulu のパレット API 用スラッグを生成する。
+ */
+export function buildSlug(season: string, year: number): string {
+  const suffix = String(year).slice(-2)
+  return `${SEASON_SLUG_PREFIX[season]}${suffix}`
+}
+
 /**
  * Hulu Palette API からページネーション付きでアニメ一覧を再帰的に取得する。
  * @param slug - パレットスラッグ

@@ -15,7 +15,7 @@ for (const t of recentTitles) {
 const target = recentTitles[0]
 if (target) {
   console.log(`\n=== エピソード詳細: ${target.title} (${target.contentId}) ===`)
-  const detail = await provider.fetchEpisodeList(target.contentId)
+  const detail = await provider.fetchTitleInfo(target.contentId)
   console.log(`タイトル: ${detail.title}`)
   console.log(`説明: ${detail.description.slice(0, 100)}...`)
   console.log(`シーズン数: ${detail.seasons.length}`)

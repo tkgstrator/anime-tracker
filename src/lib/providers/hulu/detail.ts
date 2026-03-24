@@ -1,5 +1,10 @@
 import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
-import { EpisodesSchema, type Episode as HuluEpisode } from '../../../schemas/providers/hulu.dto'
+import {
+  EpisodesSchema,
+  type FalcorMeta,
+  FalcorMetaResponseSchema,
+  type Episode as HuluEpisode
+} from '../../../schemas/providers/hulu.dto'
 import { extractMetasArray } from './rsc-parser'
 
 const HULU_BASE = 'https://www.hulu.jp'
@@ -24,29 +29,34 @@ function mapToEpisode(ep: HuluEpisode, index: number): Episode {
   }
 }
 
-interface SeriesMeta {
-  description: string
-  imageUrl: string
-}
+const SERIES_META_FIELDS = ['name', 'slug', 'description', 'thumbnailUrl', 'service'] as const
 
 /**
- * Falcor JSON Graph API からシリーズの description と imageUrl を取得する。
+ * Falcor JSON Graph API の titleSlug パスからシリーズのメタ情報を取得する。
+ * slug → 内部ID の解決を Falcor 側で行うため、数値 ID は不要。
  */
-async function fetchSeriesMeta(seriesId: number): Promise<SeriesMeta> {
-  const paths = JSON.stringify([['meta', `series:${seriesId}`, ['description', 'imageUrl']]])
+export async function fetchSeriesMeta(slug: string): Promise<FalcorMeta> {
+  const paths = JSON.stringify([['titleSlug', slug, [...SERIES_META_FIELDS]]])
   const url = `${HULU_FALCOR_API}?paths=${encodeURIComponent(paths)}&method=get`
   const res = await fetch(url)
-  if (!res.ok) return { description: '', imageUrl: '' }
-  const data = (await res.json()) as {
-    jsonGraph: {
-      meta: Record<string, { description?: { value?: string }; imageUrl?: { value?: string } }>
-    }
+  if (!res.ok) {
+    throw new Error(`Not Found Exception: ${slug}`)
   }
-  const meta = data.jsonGraph.meta[`series:${seriesId}`]
-  return {
-    description: meta?.description?.value ?? '',
-    imageUrl: meta?.imageUrl?.value ?? ''
-  }
+  return FalcorMetaResponseSchema.parse(await res.json()).jsonGraph.meta
+  // const data = (await res.json()) as {
+  //   jsonGraph: {
+  //     meta: Record<string, Record<string, { value?: unknown }>>
+  //   }
+  // }
+  // // titleSlug は ref で meta/{id} を返すので、meta 内の最初のエントリを取得
+  // const meta = Object.values(data.jsonGraph.meta ?? {})[0]
+  // return {
+  //   name: String(meta?.name?.value ?? ''),
+  //   slug: String(meta?.slug?.value ?? ''),
+  //   description: String(meta?.description?.value ?? ''),
+  //   thumbnailUrl: String(meta?.thumbnailUrl?.value ?? ''),
+  //   service: String(meta?.service?.value ?? '')
+  // }
 }
 
 /**
@@ -66,44 +76,52 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
     displayName: seasonName,
     seasonNumber: i + 1,
     imageUrl: eps[0]?.imageUrl,
-    episodes: eps.map((ep, idx) => mapToEpisode(ep, idx))
+    episodes: eps.map((episode, i) => mapToEpisode(episode, i))
   }))
 }
 
 /**
  * HTML の RSC ペイロードからエピソード一覧をパースする。
  */
-function parseEpisodesFromHtml(html: string): HuluEpisode[] {
+export function parseEpisodesFromHtml(html: string): HuluEpisode[] {
   const raw = extractMetasArray(html)
   return EpisodesSchema.parse(raw)
 }
 
 /**
- * Hulu のタイトル詳細ページからエピソード・シーズン情報を取得する。
+ * RSC ペイロードからエピソード・シーズン情報を取得する。
+ * エピソードが存在しない場合は null を返す。
  */
-export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
+async function fetchEpisodesFromRsc(slug: string): Promise<{ episodes: HuluEpisode[]; seasons: Season[] } | null> {
   const url = `${HULU_BASE}/${slug}/assets?ht=episode`
   const res = await fetch(url)
-  if (!res.ok) {
-    throw new Error(`Hulu episode page error: ${res.status} ${res.statusText} (${url})`)
-  }
+  if (!res.ok) return null
   const html = await res.text()
-  const episodes = parseEpisodesFromHtml(html)
-  const firstEp = episodes[0]
-  if (!firstEp) {
-    throw new Error(`No episodes found for slug: ${slug}`)
+  try {
+    const episodes = parseEpisodesFromHtml(html)
+    if (episodes.length === 0) return null
+    return { episodes, seasons: groupIntoSeasons(slug, episodes) }
+  } catch {
+    return null
   }
+}
 
-  const seriesTitle = firstEp.title.replace(/\s+シーズン\d+.*/, '').replace(/\s+第\d+話.*/, '')
-  const seasons = groupIntoSeasons(slug, episodes)
-  const { description } = await fetchSeriesMeta(firstEp.additionalInfo.series_id)
+/**
+ * Hulu のタイトル詳細を Falcor API + RSC から取得する。
+ *
+ * Falcor API からタイトルメタ情報を、RSC からエピソード・シーズン情報を
+ * 並列で取得しマージして返す。タイトルメタは Falcor を正とする。
+ */
+export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
+  const [rsc, meta] = await Promise.all([fetchEpisodesFromRsc(slug), fetchSeriesMeta(slug)])
 
   return {
-    title: seriesTitle,
-    description,
+    title: meta.name,
+    description: meta.description,
     entityType: 'tv',
     maturityRating: null,
-    benefitId: 'hulu',
-    seasons
+    imageUrl: meta.thumbnailUrl,
+    benefitId: meta.service,
+    seasons: rsc?.seasons ?? []
   }
 }
