@@ -63,7 +63,7 @@ anime.openapi(
       prisma.anime.count({ where })
     ])
     const totalPages = Math.ceil(total / limit)
-    c.header('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
+    c.header('Cache-Control', 'no-store')
     return c.json({ data, total, page, limit, totalPages })
   }
 )

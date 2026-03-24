@@ -1,8 +1,12 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import { createRootRoute, Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { AnimatePresence } from 'motion/react'
 import { Toaster } from 'sonner'
+import { LoadingSpinner } from '@/app/components/loading-spinner'
 
 const RootComponent = () => {
+  const routeKey = useRouterState({ select: (s) => s.location.pathname })
+
   return (
     <div className='min-h-screen bg-background'>
       <header className='sticky top-0 z-50 bg-background/80 backdrop-blur-sm'>
@@ -27,7 +31,9 @@ const RootComponent = () => {
         </div>
       </header>
       <main className='mx-auto max-w-6xl px-6 py-8'>
-        <Outlet />
+        <AnimatePresence mode='wait'>
+          <Outlet key={routeKey} />
+        </AnimatePresence>
       </main>
       <Toaster richColors position='top-right' />
       <TanStackRouterDevtools position='bottom-right' />
@@ -36,5 +42,6 @@ const RootComponent = () => {
 }
 
 export const Route = createRootRoute({
-  component: RootComponent
+  component: RootComponent,
+  pendingComponent: LoadingSpinner
 })
