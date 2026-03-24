@@ -1,7 +1,7 @@
 import type { PrismaClient } from './generated/prisma/client.ts'
 import { searchAniListChunk } from './lib/anilist'
 import { createPrismaClient } from './lib/db'
-import { syncEpisodesFromTmdb } from './lib/sync'
+import { checkNewEpisodes, syncEpisodesFromTmdb } from './lib/sync'
 
 interface Env {
   DB: D1Database
@@ -64,6 +64,20 @@ export async function scheduled(_event: ScheduledEvent, env: Env, ctx: Execution
   ctx.waitUntil(
     (async () => {
       try {
+        // 1. プロバイダから新エピソードをチェックしてDBに追加/更新
+        const providerNames = ['hulu', 'amazon']
+        for (const name of providerNames) {
+          try {
+            const result = await checkNewEpisodes(prisma, name, env.TMDB_API_KEY)
+            console.log(
+              `[scheduled] ${name}: added=${result.added} updated=${result.updated} skipped=${result.skipped}`
+            )
+          } catch (e) {
+            console.error(`[scheduled] ${name} checkNewEpisodes failed:`, e)
+          }
+        }
+
+        // 2. TMDB からエピソード情報を同期
         const animeList = await prisma.anime.findMany({
           select: { id: true, title: true, tmdbId: true }
         })
@@ -78,6 +92,7 @@ export async function scheduled(_event: ScheduledEvent, env: Env, ctx: Execution
           }
         }
 
+        // 3. 未識別タイトルを AniList で識別
         await identifyTitles(prisma)
       } finally {
         await prisma.$disconnect()

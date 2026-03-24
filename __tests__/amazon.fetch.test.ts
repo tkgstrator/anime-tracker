@@ -1,7 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-
-import { AmazonProvider } from '../src/lib/providers/amazon'
-import { fetchAmazonTitleDetail } from '../src/lib/providers/amazon'
+import { AmazonProvider, fetchAmazonTitleDetail } from '../src/lib/providers/amazon'
 import { ProviderTitleDetail } from '../src/schemas/provider.dto'
 
 describe('Amazon fetch', () => {

@@ -57,15 +57,15 @@ async function tmdbFetch<T>(path: string, apiKey: string, params: Record<string,
   return res.json() as Promise<T>
 }
 
-export async function searchTmdbTv(title: string, apiKey: string): Promise<TmdbSearchResult | null> {
+export async function searchTmdbTv(title: string, apiKey: string): Promise<TmdbSearchResult | undefined> {
   const data = await tmdbFetch<{ results: TmdbSearchResult[] }>('/search/tv', apiKey, { query: title })
-  return data.results[0] ?? null
+  return data.results[0]
 }
 
 export interface TmdbIdentifyResult {
   id: string
   found: boolean
-  tmdbId: number | null
+  tmdbId?: number
 }
 
 /**
@@ -87,11 +87,11 @@ export async function identifyTmdbChunk(
           const result = await searchTmdbTv(target.title, apiKey)
           return {
             id: target.id,
-            found: result !== null,
-            tmdbId: result?.id ?? null
+            found: !!result,
+            tmdbId: result?.id
           }
         } catch {
-          return { id: target.id, found: false, tmdbId: null }
+          return { id: target.id, found: false }
         }
       })
     )

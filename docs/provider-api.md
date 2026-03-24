@@ -400,26 +400,129 @@ RSCペイロードは `self.__next_f.push([1,"..."])` パターンから JSON �
 
 ---
 
-## DB保存フロー
+## 同期パイプライン (`src/lib/sync.ts`)
 
-`src/scheduled.ts` の `syncTitle()` が全プロバイダ共通で実行:
+### 概要
+
+`src/scheduled.ts` の cron ジョブ（6時間ごと）から呼び出される同期パイプライン。
+以下の3段階で構成される:
+
+1. **新着チェック** (`checkNewEpisodes`) — プロバイダから新着タイトルを取得し、DB追加/更新
+2. **TMDB同期** (`syncEpisodesFromTmdb`) — TMDBからエピソード情報を補完
+3. **AniList識別** (`identifyTitles` in scheduled.ts) — 未識別タイトルのメタデータ取得
+
+### 関数一覧
+
+| 関数 | 役割 | 呼び出し元 |
+|---|---|---|
+| `checkNewEpisodes` | プロバイダの新着チェック→識別→DB追加/更新 | scheduled.ts |
+| `syncTitle` | ProviderTitleDetail を DB に upsert | checkNewEpisodes, API routes |
+| `syncEpisodesFromTmdb` | TMDB からエピソード情報を取得・補完 | scheduled.ts |
+| `syncProviderEpisodeIds` | プロバイダの episodeId を DB に反映 | API routes |
+| `fetchDetail` | プロバイダからタイトル詳細を取得 | syncProviderEpisodeIds |
+| `getProvider` | プロバイダ名からインスタンスを取得 | 各関数 |
+
+---
+
+### `checkNewEpisodes` — 新着エピソードチェック
+
+プロバイダの「最近追加されたタイトル」一覧から、新規タイトルの追加と既存タイトルのエピソード更新を行う。
+
+#### フロー
 
 ```
-ProviderTitleDetail
-  ├─ Anime (upsert by [provider, contentId])
-  │   ├─ title, entityType, maturityRating, imageUrl
-  │   └─ year, quarter は未設定
+fetchTitleList({ newEpisodesOnly: true })
   │
-  ├─ Season[] (upsert by [animeId, seasonId])
-  │   └─ displayName, sequenceNumber, imageUrl
+  ├─ 各タイトルについて:
+  │   │
+  │   ├─ DB に contentId が存在する？
+  │   │   │
+  │   │   ├─ YES → fetchEpisodeList → syncTitle (エピソード upsert のみ)
+  │   │   │        → updated++
+  │   │   │
+  │   │   └─ NO → TMDB + AniList を並列検索
+  │   │           │
+  │   │           ├─ どちらかヒット → fetchEpisodeList → syncTitle
+  │   │           │   → 識別結果 (tmdbId, aniListId, status, year, quarter) を反映
+  │   │           │   → added++
+  │   │           │
+  │   │           └─ 両方ミス → skipped++
+  │   │
+  │   └─ エラー発生 → skipped++ (他タイトルの処理は継続)
   │
-  └─ Episode[] (upsert by [seasonId, episodeNumber])
-      └─ episodeId, title, description, releaseDate,
-         duration, maturityRating, imageUrl,
-         hasSubtitles, hasDub
+  └─ return { added, updated, skipped }
 ```
 
-`recorded` フラグはユーザー操作でのみ更新（sync では変更しない）。
+#### 新規タイトル追加時の識別
+
+TMDB と AniList を **並列** (`Promise.all`) で検索する。
+
+| 検索先 | 取得する情報 | 用途 |
+|---|---|---|
+| TMDB | `tmdbId` | 以降の `syncEpisodesFromTmdb` で使用 |
+| AniList | `aniListId`, `nativeTitle`, `status`, `year`, `quarter` | タイトル正規化・放送状態・クール判定 |
+
+どちらか一方でもヒットすれば追加対象とする。両方ミスの場合のみスキップ。
+
+#### upsert の挙動
+
+`syncTitle` 内部の upsert で、以下のフィールドが更新対象:
+
+| テーブル | upsert キー | create 時のみ | create / update 両方 |
+|---|---|---|---|
+| Anime | `[provider, contentId]` | title, provider, contentId, year, quarter | description, entityType, maturityRating, benefitId |
+| Season | `[animeId, seasonId]` | animeId, seasonId | displayName, seasonNumber, imageUrl |
+| Episode | `[seasonId, episodeNumber]` | seasonId, episodeNumber | episodeId, title, description, releaseDate, duration, maturityRating, imageUrl, hasSubtitles, hasDub, benefitId |
+
+**`recorded` フラグはユーザー操作でのみ更新（sync では変更しない）。**
+
+---
+
+### `syncEpisodesFromTmdb` — TMDB エピソード同期
+
+DB に登録済みのアニメについて、TMDB からエピソード情報（タイトル・あらすじ・放送日・尺）を補完する。
+
+#### フロー
+
+```
+tmdbId が未設定？ → タイトル名で TMDB 検索 → tmdbId を DB に保存
+  │
+  └─ fetchTmdbEpisodes(tmdbId)
+       │
+       └─ 各シーズン・各エピソードについて:
+            upsert (create: 基本情報, update: 非空フィールドのみ上書き)
+```
+
+#### update の条件付き上書き
+
+TMDB からの update は **非空フィールドのみ** 上書きする:
+
+```
+if (ep.title)       → update title
+if (ep.description) → update description
+if (ep.releaseDate) → update releaseDate
+if (ep.duration)    → update duration
+```
+
+プロバイダ側の情報（episodeId, hasSubtitles 等）を消さないための設計。
+
+---
+
+### `syncProviderEpisodeIds` — episodeId 反映
+
+TMDB 経由で作成されたエピソード（episodeId が空）に、プロバイダ固有の episodeId を後から埋める。
+
+#### シーズン数マッチングのアルゴリズム
+
+| 条件 | 方式 |
+|---|---|
+| プロバイダ側と DB 側のシーズン数が一致 | `seasonNumber` で直接マッチ |
+| シーズン数が不一致 | プロバイダの全エピソードをフラットに展開し、DB 側シーズンの話数に合わせて累積オフセットで振り分け |
+
+不一致の例: プロバイダが1シーズン24話、DB（TMDB由来）が2シーズン各12話の場合、
+プロバイダの1〜12話をDBシーズン1に、13〜24話をDBシーズン2にマッピングする。
+
+**既に episodeId が設定済みのエピソードはスキップする。**
 
 ---
 
