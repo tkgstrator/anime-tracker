@@ -1,5 +1,5 @@
 import { HuluEpisodeDetail, type HuluEpisodeDetail as HuluEpisodeDetailType } from '../../../schemas/hulu.dto'
-import type { Episode, Season, TitleDetail } from '../../../schemas/provider.dto'
+import type { Episode, Season, TitleInfo } from '../../../schemas/provider.dto'
 import { findMatchingBracket } from '../../html-parser'
 
 const HULU_BASE = 'https://www.hulu.jp'
@@ -173,7 +173,7 @@ async function fetchSeriesDescription(seriesId: number): Promise<string> {
  * @returns タイトル詳細情報
  * @throws HTTP エラー時
  */
-export async function fetchHuluTitleDetail(slug: string): Promise<TitleDetail> {
+export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
   const url = `${HULU_BASE}/${slug}/assets?ht=episode`
   const res = await fetch(url)
   if (!res.ok) {

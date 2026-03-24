@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { type Message, SyncMessageSchema } from '../schemas/message.dto'
+import { type Message, MessageSchema } from '../schemas/message.dto'
 
 type Bindings = {
   SYNC_QUEUE: Queue<Message>
@@ -17,7 +17,7 @@ sync.openapi(
       body: {
         content: {
           'application/json': {
-            schema: SyncMessageSchema
+            schema: MessageSchema
           }
         }
       }

@@ -1,5 +1,5 @@
 import { parse as parseHtml } from 'node-html-parser'
-import type { Title, TitleDetail } from '../../../schemas/provider.dto'
+import type { Title, TitleInfo } from '../../../schemas/provider.dto'
 import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
@@ -45,7 +45,8 @@ function parseEntity(e: Record<string, unknown>): BrowseEntity {
       description: htmlUnescape((e.synopsis as string) ?? ''),
       entityType: mapEntityType(e.entityType as string),
       imageUrl: ((e.images as { cover?: { url?: string } })?.cover?.url as string) ?? null,
-      maturityRating: null
+      maturityRating: null,
+      benefitId: null
     },
     hasNewEpisode:
       (e.entitlementCues as { titleMetadataBadge?: { message?: string } } | undefined)?.titleMetadataBadge?.message ===
@@ -224,7 +225,7 @@ export class AmazonProvider extends Provider {
    * @param contentId - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
    * @returns タイトル詳細情報
    */
-  async fetchEpisodeList(contentId: string): Promise<TitleDetail> {
+  async fetchEpisodeList(contentId: string): Promise<TitleInfo> {
     return fetchAmazonTitleDetail(contentId)
   }
 }

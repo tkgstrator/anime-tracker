@@ -1,4 +1,4 @@
-import type { IdentifyResult } from '../../schemas/provider.dto'
+import type { TitleMetadata } from '../../schemas/provider.dto'
 import type { MetadataAdapter } from './base'
 
 /**
@@ -9,24 +9,24 @@ import type { MetadataAdapter } from './base'
 export async function identifyTitle(
   title: string,
   providers: MetadataAdapter[]
-): Promise<IdentifyResult | undefined> {
+): Promise<TitleMetadata | undefined> {
   const results = await Promise.all(
     providers.map((p) => p.identify(title).catch(() => undefined))
   )
 
-  const merged: IdentifyResult = {}
+  const merged: Partial<TitleMetadata> = {}
   for (const result of results) {
     if (!result) continue
     merged.tmdbId ??= result.tmdbId
     merged.aniListId ??= result.aniListId
-    merged.nativeTitle ??= result.nativeTitle
+    merged.title ??= result.title
     merged.status ??= result.status
     merged.year ??= result.year
     merged.quarter ??= result.quarter
   }
 
   if (Object.keys(merged).length === 0) return undefined
-  return merged
+  return merged as TitleMetadata
 }
 
 export { MetadataAdapter } from './base'

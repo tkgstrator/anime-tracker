@@ -1,4 +1,4 @@
-import type { Title, TitleDetail } from '../../../schemas/provider.dto'
+import type { Title, TitleInfo } from '../../../schemas/provider.dto'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { DECADE_AG, fetchHuluAnimeByDecade, fetchRecentlyAddedIds } from './browse'
 
@@ -39,7 +39,8 @@ export class HuluProvider extends Provider {
         description: item.description,
         entityType: item.schema_key === 'series' ? 'tv' : 'movie',
         imageUrl: item.imageUrl,
-        maturityRating: null
+        maturityRating: null,
+        benefitId: 'hulu'
       })
     }
     return titles
@@ -50,7 +51,7 @@ export class HuluProvider extends Provider {
    * @param contentId - Hulu のスラッグ (例: "dandadan")
    * @returns タイトル詳細情報
    */
-  async fetchEpisodeList(contentId: string): Promise<TitleDetail> {
+  async fetchEpisodeList(contentId: string): Promise<TitleInfo> {
     return fetchHuluTitleDetail(contentId)
   }
 }

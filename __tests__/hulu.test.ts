@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { buildSlug, extractEpisodesFromRsc } from '../src/lib/providers/hulu'
-import { TitleDetail } from '../src/schemas/provider.dto'
+import { TitleInfoSchema } from '../src/schemas/provider.dto'
 
 const titlesDir = resolve(__dirname, 'fixtures/hulu/titles')
 
@@ -36,7 +36,7 @@ describe('RSCパース', () => {
 
 describe('エピソードデータ', () => {
   for (const slug of slugs) {
-    const fixture = TitleDetail.parse(JSON.parse(readFileSync(resolve(titlesDir, `${slug}.json`), 'utf-8')))
+    const fixture = TitleInfoSchema.parse(JSON.parse(readFileSync(resolve(titlesDir, `${slug}.json`), 'utf-8')))
 
     for (const season of fixture.seasons) {
       test(`${slug} ${season.displayName}: エピソード ${season.episodes.length} 件が正しい`, () => {
