@@ -1,9 +1,9 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { searchAniListChunk } from '../lib/anilist'
+import { logger } from '../lib/logger'
+import { searchAniListChunk } from '../lib/metadata/anilist'
 import { createPrismaClient } from '../lib/db'
 import { fetchHuluAnimeByDecade } from '../lib/providers/hulu'
-import { syncEpisodesFromTmdb, syncProviderEpisodeIds } from '../lib/sync'
-import { identifyTmdbChunk } from '../lib/tmdb'
+import { identifyTmdbChunk } from '../lib/metadata/tmdb'
 import {
   AnimeListQuerySchema,
   AnimeSchema,
@@ -192,7 +192,7 @@ anime.openapi(
       select: { id: true, title: true, isIdentified: true }
     })
 
-    console.log(`[identify] ${targets.length} 件をバックグラウンドで識別開始`)
+    logger.info({ context: 'identify', action: 'start', count: targets.length })
 
     const CHUNK_SIZE = 50
     c.executionCtx.waitUntil(
@@ -207,7 +207,7 @@ anime.openapi(
           for (const [j, anime] of chunk.entries()) {
             const result = results[j]
             if (!result) {
-              console.log(`[identify] ${anime.title} → not found`)
+              logger.info({ context: 'identify', action: 'not-found', title: anime.title })
               continue
             }
 
@@ -235,10 +235,10 @@ anime.openapi(
               await prisma.anime.update({ where: { id: anime.id }, data })
             }
 
-            console.log(`[identify] ${anime.title} → ${data.title ?? anime.title} (${data.status ?? '-'})`)
+            logger.info({ context: 'identify', action: 'identified', title: anime.title, resolvedTitle: data.title ?? anime.title, status: data.status ?? null })
           }
 
-          console.log(`[identify] chunk ${i}–${i + chunk.length} / ${targets.length} done`)
+          logger.info({ context: 'identify', action: 'chunk-done', offset: i, chunkSize: chunk.length, total: targets.length })
         }
       })()
     )
@@ -320,46 +320,6 @@ anime.openapi(
     }
 
     return c.json({ total: items.length, created, updated })
-  }
-)
-
-anime.openapi(
-  createRoute({
-    method: 'post',
-    path: '/:id/sync',
-    tags: ['Anime'],
-    summary: 'TMDBからエピソード情報を取得しDBに同期',
-    request: { params: z.object({ id: z.string() }) },
-    responses: {
-      200: {
-        description: '同期完了',
-        content: {
-          'application/json': {
-            schema: z.object({
-              seasons: z.number().int(),
-              episodes: z.number().int()
-            })
-          }
-        }
-      },
-      404: {
-        description: 'Not Found',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
-      }
-    }
-  }),
-  async (c) => {
-    const prisma = createPrismaClient(c.env.DB)
-    const id = c.req.param('id')
-    const row = await prisma.anime.findUnique({
-      where: { id },
-      select: { id: true, title: true, tmdbId: true, provider: true, contentId: true }
-    })
-    if (!row) return c.json({ error: 'Not found' }, 404)
-
-    const result = await syncEpisodesFromTmdb(prisma, row.id, row.title, row.tmdbId, c.env.TMDB_API_KEY)
-    await syncProviderEpisodeIds(prisma, row.id, row.provider, row.contentId)
-    return c.json({ seasons: result.seasons, episodes: result.episodes }, 200)
   }
 )
 

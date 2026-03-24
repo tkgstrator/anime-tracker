@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { extractPageData } from '../src/lib/providers/amazon/detail'
-import { ProviderTitleDetail } from '../src/schemas/provider.dto'
+import { TitleDetail } from '../src/schemas/provider.dto'
 
 const titlesDir = resolve(__dirname, 'fixtures/amazon/titles')
 
@@ -48,7 +48,7 @@ describe('HTMLパース', () => {
 
 describe('エピソードデータ', () => {
   for (const id of titleIds) {
-    const fixture = ProviderTitleDetail.parse(JSON.parse(readFileSync(resolve(titlesDir, `${id}.json`), 'utf-8')))
+    const fixture = TitleDetail.parse(JSON.parse(readFileSync(resolve(titlesDir, `${id}.json`), 'utf-8')))
 
     for (const season of fixture.seasons) {
       test(`${id} ${season.displayName}: エピソード`, () => {

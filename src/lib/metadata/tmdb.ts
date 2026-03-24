@@ -1,4 +1,7 @@
 import dayjs from 'dayjs'
+import type { IdentifyResult } from '../../schemas/provider.dto'
+import { logger } from '../logger'
+import { MetadataAdapter } from './base'
 
 const TMDB_BASE = 'https://api.themoviedb.org/3'
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
@@ -7,6 +10,7 @@ interface TmdbSearchResult {
   id: number
   name: string
   original_name: string
+  first_air_date?: string
 }
 
 interface TmdbTvDetail {
@@ -62,6 +66,29 @@ export async function searchTmdbTv(title: string, apiKey: string): Promise<TmdbS
   return data.results[0]
 }
 
+export interface TmdbIdentifyDetail {
+  id: number
+  name: string
+  status: string
+  first_air_date: string | null
+}
+
+/**
+ * タイトルをTMDBで検索し、見つかった場合は詳細APIでstatus等を取得して返す。
+ * search → detail の2段階。
+ */
+export async function identifyTmdbTv(title: string, apiKey: string): Promise<TmdbIdentifyDetail | undefined> {
+  const searchResult = await searchTmdbTv(title, apiKey)
+  if (!searchResult) return undefined
+  const detail = await tmdbFetch<TmdbTvDetail>(`/tv/${searchResult.id}`, apiKey)
+  return {
+    id: detail.id,
+    name: detail.name,
+    status: detail.status,
+    first_air_date: detail.first_air_date
+  }
+}
+
 export interface TmdbIdentifyResult {
   id: string
   found: boolean
@@ -96,7 +123,7 @@ export async function identifyTmdbChunk(
       })
     )
     results.push(...chunkResults)
-    console.log(`[tmdb-identify] chunk ${i}–${i + chunk.length} / ${targets.length} done`)
+    logger.info({ context: 'tmdb-identify', action: 'chunk-done', offset: i, chunkSize: chunk.length, total: targets.length })
   }
 
   return results
@@ -159,4 +186,29 @@ export async function fetchTmdbEpisodes(
     })
 
   return { title: tv.name || '', description: tv.overview || '', status: tv.status, seasons }
+}
+
+function parseYear(dateStr?: string | null): number | undefined {
+  if (!dateStr) return undefined
+  const d = dayjs(dateStr)
+  return d.isValid() ? d.year() : undefined
+}
+
+export class TmdbAdapter extends MetadataAdapter {
+  readonly name = 'tmdb'
+
+  constructor(private readonly apiKey: string) {
+    super()
+  }
+
+  async identify(title: string): Promise<IdentifyResult | undefined> {
+    const result = await identifyTmdbTv(title, this.apiKey)
+    if (!result) return undefined
+    return {
+      tmdbId: result.id,
+      nativeTitle: result.name,
+      status: result.status,
+      year: parseYear(result.first_air_date)
+    }
+  }
 }

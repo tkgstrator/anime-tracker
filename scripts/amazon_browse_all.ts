@@ -3,7 +3,7 @@ import { parseBrowseHtml, buildServiceToken } from '../src/lib/providers/amazon'
 import { AmazonBrowseQuerySchema } from '../src/schemas/amazon.dto'
 import { FETCH_HEADERS, htmlUnescape, mapEntityType } from '../src/lib/providers/amazon/detail'
 import type { BuildOptions } from '../src/lib/providers/amazon/browse'
-import type { ProviderTitle } from '../src/schemas/provider.dto'
+import type { Title } from '../src/schemas/provider.dto'
 
 const PAGINATE_BASE = 'https://www.amazon.co.jp/gp/video/api/paginateCollection'
 /** featured-rank は他のソートと完全重複するため除外 */
@@ -75,8 +75,8 @@ interface PaginateResponse {
   }
 }
 
-/** ページネーション API の entity を parseBrowseHtml と同じ ProviderTitle 形式に変換する */
-function toProviderTitle(e: Record<string, unknown>): ProviderTitle {
+/** ページネーション API の entity を parseBrowseHtml と同じ Title 形式に変換する */
+function toTitle(e: Record<string, unknown>): Title {
   return {
     contentId: e.titleID as string,
     title: htmlUnescape(e.displayTitle as string),
@@ -153,7 +153,7 @@ async function fetchAllPages(
   buildOpts: BuildOptions,
   label: string,
   seen: Set<string>,
-  allTitles: ProviderTitle[],
+  allTitles: Title[],
 ): Promise<void> {
   const query = AmazonBrowseQuerySchema.parse({})
   const token = buildServiceToken(query, buildOpts)
@@ -192,7 +192,7 @@ async function fetchAllPages(
         const titleId = e.titleID as string
         if (titleId && !seen.has(titleId)) {
           seen.add(titleId)
-          allTitles.push(toProviderTitle(e))
+          allTitles.push(toTitle(e))
           newCount++
         }
       }
@@ -216,7 +216,7 @@ async function fetchAllPages(
 // --- Main ---
 
 const seen = new Set<string>()
-const allTitles: ProviderTitle[] = []
+const allTitles: Title[] = []
 
 if (values.token) {
   // --token 指定時は単一パスで実行

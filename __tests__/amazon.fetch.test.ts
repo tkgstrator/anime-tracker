@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { AmazonProvider, fetchAmazonTitleDetail } from '../src/lib/providers/amazon'
-import { ProviderTitleDetail } from '../src/schemas/provider.dto'
+import { TitleDetail } from '../src/schemas/provider.dto'
 
 describe('Amazon fetch', () => {
   const provider = new AmazonProvider()
@@ -18,7 +18,7 @@ describe('Amazon fetch', () => {
 
   test('fetchAmazonTitleDetail で詳細が取得できる', async () => {
     const titleId = 'B0CJRDF9JB' // 葬送のフリーレン
-    const detail = ProviderTitleDetail.parse(await fetchAmazonTitleDetail(titleId))
+    const detail = TitleDetail.parse(await fetchAmazonTitleDetail(titleId))
 
     expect(detail.title).toBeTruthy()
     expect(detail.seasons.length).toBeGreaterThan(0)

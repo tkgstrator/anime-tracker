@@ -1,4 +1,7 @@
 import jaconv from 'jaconv'
+import type { IdentifyResult } from '../../schemas/provider.dto'
+import { logger } from '../logger'
+import { MetadataAdapter } from './base'
 
 const ANILIST_API = 'https://graphql.anilist.co'
 
@@ -174,7 +177,7 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
   return fetch(url, init)
 }
 
-export async function searchAniList(rawTitle: string): Promise<AniListResult | undefined> {
+export async function identifyAniList(rawTitle: string): Promise<AniListResult | undefined> {
   const search = cleanTitle(rawTitle)
 
   const res = await fetchWithRetry(ANILIST_API, {
@@ -232,17 +235,14 @@ export async function searchAniListChunk(rawTitles: string[], offset: number): P
 
   if (!res.ok) {
     const body = await res.text().catch(() => '')
-    console.error(
-      `AniList batch failed (offset=${offset}, count=${rawTitles.length}): ${res.status} ${res.statusText}`,
-      body
-    )
+    logger.error({ context: 'anilist', action: 'batch-failed', offset, count: rawTitles.length, status: res.status, statusText: res.statusText, body })
     return rawTitles.map(() => undefined)
   }
 
   const json = (await res.json()) as { data?: Record<string, { media: AniListMedia[] }>; errors?: unknown[] }
 
   if (json.errors) {
-    console.error(`AniList batch GraphQL errors (offset=${offset}):`, JSON.stringify(json.errors))
+    logger.error({ context: 'anilist', action: 'graphql-errors', offset, errors: json.errors })
   }
 
   return rawTitles.map((_, i) => parseMedia(json.data?.[`q${i}`]?.media))
@@ -260,4 +260,20 @@ export async function searchAniListBatch(rawTitles: string[]): Promise<(AniListR
   }
 
   return results
+}
+
+export class AniListAdapter extends MetadataAdapter {
+  readonly name = 'anilist'
+
+  async identify(title: string): Promise<IdentifyResult | undefined> {
+    const result = await identifyAniList(title)
+    if (!result) return undefined
+    return {
+      aniListId: result.id,
+      nativeTitle: result.nativeTitle,
+      status: result.status,
+      year: result.year,
+      quarter: result.quarter
+    }
+  }
 }
