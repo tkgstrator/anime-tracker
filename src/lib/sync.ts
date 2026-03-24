@@ -1,5 +1,6 @@
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
-import type { Episode, Season, TitleDetailedInfo } from '@/schemas/provider.dto.ts'
+import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
+import type { TitleDetailedInfo } from '@/schemas/providers/metadata.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { logger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
@@ -40,15 +41,10 @@ export class SyncService {
   }
 
   /** アニメ情報をメタデータ付きでupsertし、IDを返す */
-  private async upsertAnime(
-    provider: string,
-    contentId: string,
-    detail: TitleDetailedInfo
-  ): Promise<string> {
+  private async upsertAnime(provider: string, contentId: string, detail: TitleDetailedInfo): Promise<string> {
     const { metadata } = detail
     const identifiedData = {
-      tmdbId: metadata.tmdbId,
-      aniListId: metadata.aniListId,
+      aniListId: metadata.aniListId ?? 0,
       title: metadata.title,
       status: metadata.status,
       year: metadata.year,
@@ -79,12 +75,7 @@ export class SyncService {
   }
 
   /** 既存シーズン・エピソードと差分比較し、不足分を追加する */
-  private async syncSeasons(
-    animeId: string,
-    provider: string,
-    contentId: string,
-    seasons: Season[]
-  ): Promise<void> {
+  private async syncSeasons(animeId: string, provider: string, contentId: string, seasons: Season[]): Promise<void> {
     const anime = await this.prisma.anime.findUniqueOrThrow({
       where: { provider_contentId: { provider, contentId } },
       include: {
@@ -123,7 +114,7 @@ export class SyncService {
         seasonId: season.seasonId,
         displayName: season.displayName,
         seasonNumber: season.seasonNumber,
-        imageUrl: season.imageUrl,
+        imageUrl: season.imageUrl ?? '',
         episodes: {
           create: season.episodes.map((episode) => ({
             episodeNumber: episode.episodeNumber,

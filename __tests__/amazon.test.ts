@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { extractPageData } from '../src/lib/providers/amazon/detail'
-import { TitleInfoSchema } from '../src/schemas/provider.dto'
+import { TitleInfoSchema } from '../src/schemas/providers/common.dto'
 import { fixtureIds, titlesDir } from './fixtures/amazon/ids'
 
 describe('extractPageData', () => {

@@ -13,5 +13,5 @@ export const fixtureIds = [
   'B0FQM97T8Q',
   'B0GCFSSF8T',
   'B0GCNVDTV9',
-  'B0GDC3WLHM',
+  'B0GDC3WLHM'
 ]

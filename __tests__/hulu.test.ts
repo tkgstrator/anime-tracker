@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { buildSlug, parseEpisodesFromHtml } from '../src/lib/providers/hulu'
-import { TitleInfoSchema } from '../src/schemas/provider.dto'
+import { TitleInfoSchema } from '../src/schemas/providers/common.dto'
 
 const titlesDir = resolve(__dirname, 'fixtures/hulu/titles')
 

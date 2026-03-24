@@ -1,4 +1,4 @@
-import type { Episode, Season, TitleInfo } from '../schemas/provider.dto'
+import type { Episode, Season, TitleInfo } from '../schemas/providers/common.dto'
 
 /**
  * TMDBのシーズン・エピソード構造をベースに、

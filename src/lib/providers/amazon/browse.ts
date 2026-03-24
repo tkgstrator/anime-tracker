@@ -1,4 +1,4 @@
-import { type AmazonBrowseQuery, AmazonBrowseQuerySchema } from '../../../schemas/amazon.dto'
+import { type AmazonBrowseQuery, AmazonBrowseQuerySchema } from '../../../schemas/providers/amazon.dto'
 import { encodeBytes, encodeString, encodeVarintField } from './protobuf'
 
 const AMAZON_BROWSE_BASE = 'https://www.amazon.co.jp/gp/video/browse/ref=atv_dp_pd_gen'

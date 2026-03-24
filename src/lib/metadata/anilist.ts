@@ -1,6 +1,6 @@
 import jaconv from 'jaconv'
 import { z } from 'zod'
-import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/provider.dto'
+import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/providers/metadata.dto'
 import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 

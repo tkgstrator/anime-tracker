@@ -1,4 +1,4 @@
-import { HuluPaletteResponse, type HuluVodItem, type Season } from '../../../schemas/hulu.dto'
+import { HuluPaletteResponse, type HuluVodItem, type Season } from '../../../schemas/providers/hulu.dto'
 
 const HULU_BASE = 'https://www.hulu.jp'
 const HULU_API_BASE = `${HULU_BASE}/api/v2/palettes`

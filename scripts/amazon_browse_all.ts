@@ -1,9 +1,9 @@
 import { parseArgs } from 'util'
 import { parseBrowseHtml, buildServiceToken } from '../src/lib/providers/amazon'
-import { AmazonBrowseQuerySchema } from '../src/schemas/amazon.dto'
+import { AmazonBrowseQuerySchema } from '../src/schemas/providers/amazon.dto'
 import { FETCH_HEADERS, htmlUnescape, mapEntityType } from '../src/lib/providers/amazon/detail'
 import type { BuildOptions } from '../src/lib/providers/amazon/browse'
-import type { Title } from '../src/schemas/provider.dto'
+import type { Title } from '../src/schemas/providers/common.dto'
 
 const PAGINATE_BASE = 'https://www.amazon.co.jp/gp/video/api/paginateCollection'
 /** featured-rank は他のソートと完全重複するため除外 */

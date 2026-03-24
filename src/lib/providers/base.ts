@@ -1,4 +1,5 @@
-import { type Title, type TitleDetailedInfo, TitleDetailedInfoSchema, type TitleInfo } from '../../schemas/provider.dto'
+import type { Title, TitleInfo } from '../../schemas/providers/common.dto'
+import { type TitleDetailedInfo, TitleDetailedInfoSchema } from '../../schemas/providers/metadata.dto'
 import type { MetadataAdapter } from '../metadata'
 
 export interface FetchTitleListOptions {

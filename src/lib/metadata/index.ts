@@ -1,4 +1,4 @@
-import type { TitleMetadata } from '../../schemas/provider.dto'
+import type { TitleMetadata } from '../../schemas/providers/metadata.dto'
 import type { MetadataAdapter } from './base'
 
 /**

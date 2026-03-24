@@ -26,3 +26,64 @@ export const AnimeSchema = z.object({
   updatedAt: z.coerce.string().nonempty()
 })
 export type AnimeSchema = z.infer<typeof AnimeSchema>
+
+export const AnimeWithSeasonsSchema = AnimeSchema.extend({
+  seasons: z.array(
+    z.object({
+      id: z.uuid(),
+      seasonId: z.string().nonempty(),
+      displayName: z.string().nonempty(),
+      seasonNumber: z.number().int().nonnegative(),
+      imageUrl: z.string().nullable(),
+      episodes: z.array(
+        z.object({
+          id: z.uuid(),
+          episodeNumber: z.number().int().positive(),
+          episodeId: z.string().nonempty(),
+          title: z.string().nonempty(),
+          description: z.string().nonempty(),
+          releaseDate: z.string().nonempty(),
+          duration: z.number().int().nonnegative(),
+          maturityRating: z.number().int().nonnegative().nullable(),
+          imageUrl: z.string().nonempty(),
+          hasSubtitles: z.boolean(),
+          hasDub: z.boolean(),
+          benefitId: z.string().nonempty().nullable(),
+          recorded: z.boolean()
+        })
+      )
+    })
+  )
+})
+export type AnimeWithSeasonsSchema = z.infer<typeof AnimeWithSeasonsSchema>
+
+export const QuarterLabel: Record<number, string> = {
+  0: '冬',
+  1: '春',
+  2: '夏',
+  3: '秋'
+}
+
+export const AnimeListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(24),
+  provider: z.string().optional(),
+  year: z.coerce.number().int().optional(),
+  quarter: z.coerce.number().int().min(0).max(3).optional(),
+  status: z.string().optional(),
+  scheduled: z.coerce.boolean().optional(),
+  recorded: z.coerce.boolean().optional(),
+  sort: z.enum(['title', 'year']).default('title'),
+  order: z.enum(['asc', 'desc']).default('asc'),
+  q: z.string().optional()
+})
+export type AnimeListQuerySchema = z.infer<typeof AnimeListQuerySchema>
+
+export const PaginatedAnimeSchema = z.object({
+  data: z.array(AnimeSchema),
+  total: z.number().int(),
+  page: z.number().int(),
+  limit: z.number().int(),
+  totalPages: z.number().int()
+})
+export type PaginatedAnimeSchema = z.infer<typeof PaginatedAnimeSchema>
