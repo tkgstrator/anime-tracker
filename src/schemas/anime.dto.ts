@@ -1,8 +1,5 @@
 import { z } from 'zod'
 
-export const Provider = z.enum(['amazon', 'hulu', 'netflix'])
-export type Provider = z.infer<typeof Provider>
-
 export const AnimeSchema = z.object({
   id: z.uuid(),
   title: z.string().nonempty(),

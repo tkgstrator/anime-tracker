@@ -7,15 +7,15 @@
 ```mermaid
 graph TB
   subgraph "Amazon 固有スキーマ<br/>providers/amazon.dto.ts"
-    ABH[AmazonBrowseHTMLSchema<br/>+ AmazonPaginateResponseSchame<br/><i>ブラウズ + ページネーション</i>]
-    ADP[AmazonDetailPageJsonSchema<br/><i>詳細ページJSON</i>]
-    APD[AmazonPageDataSchema<br/><i>extractPageData出力</i>]
+    ABH[BrowseHTMLSchema<br/>+ PaginateResponseSchema<br/><i>ブラウズ + ページネーション</i>]
+    ADP[DetailPageJsonSchema<br/><i>詳細ページJSON</i>]
+    APD[PageDataSchema<br/><i>extractPageData出力</i>]
     ADP -->|".pipe()"| APD
   end
 
   subgraph "Hulu 固有スキーマ<br/>providers/hulu.dto.ts"
-    HPR[HuluPaletteResponse<br/><i>ブラウズAPI</i>]
-    HES[HuluEpisodesSchema<br/><i>RSCエピソード</i>]
+    HPR[PaletteResponseSchema<br/><i>ブラウズAPI</i>]
+    HES[EpisodesSchema<br/><i>RSCエピソード</i>]
   end
 
   subgraph "共通スキーマ<br/>providers/common.dto.ts"
@@ -43,10 +43,10 @@ graph TB
 
   subgraph "DB / APIスキーマ<br/>anime.dto.ts"
     AS[AnimeSchema<br/><i>DBレコード</i>]
-    AWS[AnimeInfoSchema<br/><i>シーズン・エピソード含む</i>]
+    AI[AnimeInfoSchema<br/><i>シーズン・エピソード含む</i>]
     PAS[PaginatedAnimeSchema<br/><i>ページネーション応答</i>]
 
-    AS -->|".extend()"| AWS
+    AS -->|".extend()"| AI
     AS -->|".data[]"| PAS
   end
 
@@ -64,7 +64,7 @@ graph TB
   style E fill:#4a9,color:#fff
   style TDI fill:#c84,color:#fff
   style AS fill:#58c,color:#fff
-  style AWS fill:#58c,color:#fff
+  style AI fill:#58c,color:#fff
   style PAS fill:#58c,color:#fff
 ```
 
@@ -90,15 +90,17 @@ src/schemas/
 
 | Amazon | 用途 |
 |--------|------|
-| `AmazonBrowseHTMLSchema` | ブラウズページ埋め込みJSONのパース → `Title[]` に transform |
-| `AmazonDetailPageJsonSchema` | 詳細ページ埋め込みJSONのパース → `AmazonPageData` に pipe |
-| `AmazonPageDataSchema` | `extractPageData()` の出力型 |
-| `AmazonPaginateResponseSchame` | ページネーションAPIのレスポンス |
+| `BrowseHTMLSchema` | ブラウズページ埋め込みJSONのパース → `Title[]` に transform |
+| `DetailPageJsonSchema` | 詳細ページ埋め込みJSONのパース → `PageData` に pipe |
+| `PageDataSchema` | `extractPageData()` の出力型 |
+| `PaginateResponseSchema` | ページネーションAPIのレスポンス |
+| `BrowseQuerySchema` | ブラウズ URL 生成時の検索クエリ |
 
 | Hulu | 用途 |
 |------|------|
-| `HuluPaletteResponse` | Palette API (ブラウズ) のレスポンス |
-| `HuluEpisodesSchema` | RSCペイロードから抽出したエピソード配列 |
+| `PaletteResponseSchema` | Palette API (ブラウズ) のレスポンス |
+| `EpisodesSchema` | RSCペイロードから抽出したエピソード配列 |
+| `VodItemSchema` | ブラウズAPIの個別アイテム |
 
 ### 2. 共通スキーマ (`providers/common.dto.ts`)
 
