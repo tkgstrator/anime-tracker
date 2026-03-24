@@ -54,7 +54,7 @@ interface RawEpisodeDetail {
  * @returns HTML 文字列
  * @throws HTTP エラー時
  */
-export async function fetchHtml(url: string): Promise<string> {
+async function fetchHtml(url: string): Promise<string> {
   const res = await fetch(url, { headers: FETCH_HEADERS })
   if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
   return res.text()
@@ -63,7 +63,7 @@ export async function fetchHtml(url: string): Promise<string> {
 /**
  * Prime Video 詳細ページの HTML からタイトル情報を抽出する。
  */
-export function extractPageData(html: string): PageData {
+function extractPageData(html: string): PageData {
   const root = parseHtml(html)
   const script = root
     .querySelectorAll('script[type="application/json"]')
@@ -78,7 +78,7 @@ export function extractPageData(html: string): PageData {
  * @param str - HTML エンティティを含む文字列
  * @returns デコード済みのプレーンテキスト
  */
-export function htmlUnescape(str: string): string {
+function htmlUnescape(str: string): string {
   return parseHtml(str).textContent
 }
 
@@ -194,10 +194,6 @@ async function fetchAllEpisodes(
  * @param raw - Amazon API のエンティティタイプ (例: "Movie", "TV Show")
  * @returns 'movie' または 'tv'
  */
-export function mapEntityType(raw: string): 'tv' | 'movie' {
-  return raw === 'Movie' ? 'movie' : 'tv'
-}
-
 /**
  * Prime Video のタイトル詳細ページからタイトル情報・シーズン・エピソードを取得する。
  *

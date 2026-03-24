@@ -1,4 +1,4 @@
-import { PaletteResponseSchema, type Season, type VodItem } from '../../../schemas/providers/hulu.dto'
+import { PaletteResponseSchema, type VodItem } from '../../../schemas/providers/hulu.dto'
 
 const HULU_BASE = 'https://www.hulu.jp'
 const HULU_API_BASE = `${HULU_BASE}/api/v2/palettes`
@@ -10,24 +10,6 @@ export const DECADE_AG: Record<number, string> = {
   2000: 'twenty_hundreds',
   2010: 'twenty_tens',
   2020: 'twenty_twenties'
-}
-
-const SEASON_SLUG_PREFIX: Record<Season, string> = {
-  winter: 'january-march-quarter-anime',
-  spring: 'april-june-quarter-anime',
-  summer: 'july-september-quarter-anime',
-  autumn: 'october-december-quarter-anime'
-}
-
-/**
- * シーズンと年からHulu のパレット API 用スラッグを生成する。
- * @param season - シーズン (winter, spring, summer, autumn)
- * @param year - 年 (例: 2026)
- * @returns スラッグ文字列 (例: "january-march-quarter-anime26")
- */
-export function buildSlug(season: Season, year: number): string {
-  const suffix = String(year).slice(-2)
-  return `${SEASON_SLUG_PREFIX[season]}${suffix}`
 }
 
 /**
@@ -48,16 +30,6 @@ async function fetchHuluAnimePage(slug: string, from: number, items: VodItem[]):
   const accumulated = [...items, ...parsed.data]
   if (accumulated.length >= parsed.total_count) return accumulated
   return fetchHuluAnimePage(slug, from + PAGE_SIZE, accumulated)
-}
-
-/**
- * 指定シーズン・年のアニメ一覧を取得する。
- * @param season - シーズン
- * @param year - 年
- * @returns アニメアイテム一覧
- */
-export async function fetchHuluAnime(season: Season, year: number): Promise<VodItem[]> {
-  return fetchHuluAnimePage(buildSlug(season, year), 0, [])
 }
 
 /**

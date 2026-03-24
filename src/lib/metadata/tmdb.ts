@@ -1,11 +1,8 @@
 import dayjs from 'dayjs'
 import type { TitleMetadata } from '../../schemas/providers/metadata.dto'
-import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 
 const TMDB_BASE = 'https://api.themoviedb.org/3'
-const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
-
 interface TmdbSearchResult {
   id: number
   name: string
@@ -30,25 +27,6 @@ interface TmdbTvDetail {
   }[]
 }
 
-interface TmdbEpisode {
-  episode_number: number
-  name: string
-  overview: string
-  air_date: string | null
-  runtime: number | null
-  still_path: string | null
-}
-
-interface TmdbSeasonDetail {
-  episodes: TmdbEpisode[]
-}
-
-export interface TmdbSyncResult {
-  tmdbId: number
-  seasons: number
-  episodes: number
-}
-
 async function tmdbFetch<T>(path: string, apiKey: string, params: Record<string, string> = {}): Promise<T> {
   const url = new URL(`${TMDB_BASE}${path}`)
   url.searchParams.set('api_key', apiKey)
@@ -61,12 +39,12 @@ async function tmdbFetch<T>(path: string, apiKey: string, params: Record<string,
   return res.json() as Promise<T>
 }
 
-export async function searchTmdbTv(title: string, apiKey: string): Promise<TmdbSearchResult | undefined> {
+async function searchTmdbTv(title: string, apiKey: string): Promise<TmdbSearchResult | undefined> {
   const data = await tmdbFetch<{ results: TmdbSearchResult[] }>('/search/tv', apiKey, { query: title })
   return data.results[0]
 }
 
-export interface TmdbIdentifyDetail {
+interface TmdbIdentifyDetail {
   id: number
   name: string
   status: string
@@ -77,7 +55,7 @@ export interface TmdbIdentifyDetail {
  * タイトルをTMDBで検索し、見つかった場合は詳細APIでstatus等を取得して返す。
  * search → detail の2段階。
  */
-export async function identifyTmdbTv(title: string, apiKey: string): Promise<TmdbIdentifyDetail | undefined> {
+async function identifyTmdbTv(title: string, apiKey: string): Promise<TmdbIdentifyDetail | undefined> {
   const searchResult = await searchTmdbTv(title, apiKey)
   if (!searchResult) return undefined
   const detail = await tmdbFetch<TmdbTvDetail>(`/tv/${searchResult.id}`, apiKey)
@@ -87,111 +65,6 @@ export async function identifyTmdbTv(title: string, apiKey: string): Promise<Tmd
     status: detail.status,
     first_air_date: detail.first_air_date
   }
-}
-
-export interface TmdbIdentifyResult {
-  id: string
-  found: boolean
-  tmdbId?: number
-}
-
-/**
- * 複数タイトルを並列でTMDB検索し、tmdbIdを返す
- * chunkSize件ずつPromise.allで並列実行
- */
-export async function identifyTmdbChunk(
-  targets: { id: string; title: string }[],
-  apiKey: string,
-  chunkSize = 50
-): Promise<TmdbIdentifyResult[]> {
-  const results: TmdbIdentifyResult[] = []
-
-  for (let i = 0; i < targets.length; i += chunkSize) {
-    const chunk = targets.slice(i, i + chunkSize)
-    const chunkResults = await Promise.all(
-      chunk.map(async (target) => {
-        try {
-          const result = await searchTmdbTv(target.title, apiKey)
-          return {
-            id: target.id,
-            found: !!result,
-            tmdbId: result?.id
-          }
-        } catch {
-          return { id: target.id, found: false }
-        }
-      })
-    )
-    results.push(...chunkResults)
-    logger.info({
-      context: 'tmdb-identify',
-      action: 'chunk-done',
-      offset: i,
-      chunkSize: chunk.length,
-      total: targets.length
-    })
-  }
-
-  return results
-}
-
-export async function fetchTmdbEpisodes(
-  tmdbId: number,
-  apiKey: string
-): Promise<{
-  title: string
-  description: string
-  status: string
-  seasons: {
-    seasonId: string
-    displayName: string
-    seasonNumber: number
-    imageUrl: string | null
-    year: number | null
-    quarter: number | null
-    episodes: {
-      episodeNumber: number
-      title: string
-      description: string
-      releaseDate: string
-      duration: number
-      imageUrl: string
-    }[]
-  }[]
-}> {
-  const tv = await tmdbFetch<TmdbTvDetail>(`/tv/${tmdbId}`, apiKey)
-
-  const seasonNumbers = tv.seasons.filter((s) => s.season_number > 0 && s.episode_count > 0).map((s) => s.season_number)
-
-  const seasonDetails = await Promise.all(
-    seasonNumbers.map((n) => tmdbFetch<TmdbSeasonDetail>(`/tv/${tmdbId}/season/${n}`, apiKey))
-  )
-
-  const seasons = tv.seasons
-    .filter((s) => s.season_number > 0 && s.episode_count > 0)
-    .map((s, i) => {
-      const airDate = s.air_date ? dayjs(s.air_date) : null
-      const year = airDate ? airDate.year() : null
-      const quarter = airDate ? Math.floor(airDate.month() / 3) : null
-      return {
-        seasonId: String(s.season_number),
-        displayName: s.name,
-        seasonNumber: s.season_number,
-        imageUrl: s.poster_path ? `${TMDB_IMAGE_BASE}${s.poster_path}` : null,
-        year,
-        quarter,
-        episodes: seasonDetails[i].episodes.map((ep) => ({
-          episodeNumber: ep.episode_number,
-          title: ep.name,
-          description: ep.overview ?? '',
-          releaseDate: ep.air_date ?? '',
-          duration: ep.runtime ?? 0,
-          imageUrl: ep.still_path ? `${TMDB_IMAGE_BASE}${ep.still_path}` : ''
-        }))
-      }
-    })
-
-  return { title: tv.name || '', description: tv.overview || '', status: tv.status, seasons }
 }
 
 function parseYear(dateStr?: string | null): number | undefined {
