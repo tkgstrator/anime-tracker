@@ -13,7 +13,13 @@ import {
   PaginatedAnimeSchema
 } from '../schemas/anime.dto'
 
-type Bindings = { DB: D1Database; TMDB_API_KEY: string; BACKEND_URL: string; CF_ACCESS_CLIENT_ID: string; CF_ACCESS_CLIENT_SECRET: string }
+type Bindings = {
+  DB: D1Database
+  TMDB_API_KEY: string
+  BACKEND_URL: string
+  CF_ACCESS_CLIENT_ID: string
+  CF_ACCESS_CLIENT_SECRET: string
+}
 
 const anime = new OpenAPIHono<{ Bindings: Bindings }>()
 
@@ -424,7 +430,7 @@ anime.openapi(
                 z.object({
                   title: z.string(),
                   found: z.boolean(),
-                  tmdbId: z.number().int().nullable()
+                  tmdbId: z.number().int().optional()
                 })
               )
             })

@@ -160,10 +160,10 @@ interface AniListResponse {
 
 export interface AniListResult {
   id: number
-  nativeTitle: string | null
-  status: AniListStatus | null
-  quarter: number | null
-  year: number | null
+  nativeTitle?: string
+  status?: AniListStatus
+  quarter?: number
+  year?: number
 }
 
 async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
@@ -174,7 +174,7 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
   return fetch(url, init)
 }
 
-export async function searchAniList(rawTitle: string): Promise<AniListResult | null> {
+export async function searchAniList(rawTitle: string): Promise<AniListResult | undefined> {
   const search = cleanTitle(rawTitle)
 
   const res = await fetchWithRetry(ANILIST_API, {
@@ -186,24 +186,23 @@ export async function searchAniList(rawTitle: string): Promise<AniListResult | n
     body: JSON.stringify({ query: SEARCH_QUERY, variables: { search } })
   })
 
-  if (!res.ok) return null
+  if (!res.ok) return undefined
 
   const json = (await res.json()) as AniListResponse
   const media = json.data?.Page?.media
-  if (!media || media.length === 0) return null
 
   return parseMedia(media)
 }
 
-function parseMedia(media: AniListMedia[] | undefined): AniListResult | null {
-  if (!media || media.length === 0) return null
+function parseMedia(media: AniListMedia[] | undefined): AniListResult | undefined {
+  if (!media || media.length === 0) return undefined
   const first = media[0]
   return {
     id: first.id,
-    nativeTitle: pickJapaneseTitle(first),
-    status: first.status ?? null,
-    quarter: first.season ? SEASON_TO_QUARTER[first.season] : null,
-    year: first.seasonYear ?? null
+    nativeTitle: pickJapaneseTitle(first) ?? undefined,
+    status: first.status ?? undefined,
+    quarter: first.season ? SEASON_TO_QUARTER[first.season] : undefined,
+    year: first.seasonYear ?? undefined
   }
 }
 
@@ -213,7 +212,7 @@ function parseMedia(media: AniListMedia[] | undefined): AniListResult | null {
  */
 const BATCH_SIZE = 50
 
-export async function searchAniListChunk(rawTitles: string[], offset: number): Promise<(AniListResult | null)[]> {
+export async function searchAniListChunk(rawTitles: string[], offset: number): Promise<(AniListResult | undefined)[]> {
   const cleaned = rawTitles.map((t) => cleanTitle(t))
 
   const parts = cleaned.map(
@@ -237,7 +236,7 @@ export async function searchAniListChunk(rawTitles: string[], offset: number): P
       `AniList batch failed (offset=${offset}, count=${rawTitles.length}): ${res.status} ${res.statusText}`,
       body
     )
-    return rawTitles.map(() => null)
+    return rawTitles.map(() => undefined)
   }
 
   const json = (await res.json()) as { data?: Record<string, { media: AniListMedia[] }>; errors?: unknown[] }
@@ -249,10 +248,10 @@ export async function searchAniListChunk(rawTitles: string[], offset: number): P
   return rawTitles.map((_, i) => parseMedia(json.data?.[`q${i}`]?.media))
 }
 
-export async function searchAniListBatch(rawTitles: string[]): Promise<(AniListResult | null)[]> {
+export async function searchAniListBatch(rawTitles: string[]): Promise<(AniListResult | undefined)[]> {
   if (rawTitles.length === 0) return []
 
-  const results: (AniListResult | null)[] = []
+  const results: (AniListResult | undefined)[] = []
 
   for (let i = 0; i < rawTitles.length; i += BATCH_SIZE) {
     const chunk = rawTitles.slice(i, i + BATCH_SIZE)
