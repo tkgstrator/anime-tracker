@@ -1,3 +1,5 @@
+import jaconv from 'jaconv'
+
 const ANILIST_API = 'https://graphql.anilist.co'
 
 /**
@@ -12,8 +14,8 @@ export function cleanTitle(raw: string): string {
 
   return (
     bracketCleaned
-      // 全角英数を半角に変換
-      .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+      // 全角ASCII（英数・記号）を半角に変換
+      .replace(/^.*$/, (s) => jaconv.toHanAscii(s))
       // 半角中黒を全角に統一
       .replace(/\uff65/g, '・')
       // (字幕版) (吹替版) 等を除去
@@ -22,15 +24,16 @@ export function cleanTitle(raw: string): string {
       .replace(/\s*\([^)]*(?:版|放送|dアニメストア|フジテレビ|オンデマンド)[^)]*\)/g, '')
       // 末尾 (年) を除去: タイトル (2026) → タイトル
       .replace(/\s*[（(]\d{4}[)）]\s*$/, '')
-      // 全角カッコの注釈を除去: （ジークアクス） 等
-      .replace(/\s*（[^）]*）/g, '')
+      // カッコの注釈を除去: （ジークアクス）/ (ジークアクス) 等
+      .replace(/\s*[（(][^)）]*[)）]/g, '')
       // 《...》 ＜...＞ を除去（ただしタイトル全体が囲まれている場合は中身を残す）
       .replace(/\s*《([^》]*)》/g, (_m, inner, _o, str) =>
         str.trim().startsWith('《') && str.trim().endsWith('》') ? inner : ''
       )
-      .replace(/\s*＜([^＞]*)＞/g, (_m, inner, _o, str) =>
-        str.trim().startsWith('＜') && str.trim().endsWith('＞') ? inner : ''
-      )
+      .replace(/\s*[＜<]([^＞>]*)[＞>]/g, (_m, inner, _o, str) => {
+        const t = str.trim()
+        return (t.startsWith('＜') || t.startsWith('<')) && (t.endsWith('＞') || t.endsWith('>')) ? inner : ''
+      })
       // ~...~ 注釈を除去（半角チルダ）
       .replace(/~[^~]+~/g, '')
       // プレフィックスを除去
@@ -133,10 +136,10 @@ interface AniListMedia {
 const JAPANESE_RE = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/
 
 /**
- * 全角英数を半角に変換する
+ * 全角ASCII（英数・記号）を半角に変換する
  */
 function normalizeFullWidth(s: string): string {
-  return s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+  return jaconv.toHanAscii(s)
 }
 
 function pickJapaneseTitle(media: AniListMedia): string | null {
