@@ -1,0 +1,74 @@
+name = "anime-tracker"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat_v2"]
+
+[vars]
+CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
+BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "anime-tracker-staging"
+database_id = "e1e78f23-da35-4d74-8de0-667a8d7ddefc"
+migrations_dir = "prisma/migrations"
+
+[env.staging]
+name = "anime-tracker-dev"
+
+[env.staging.vars]
+CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
+BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "anime-tracker-staging"
+database_id = "e1e78f23-da35-4d74-8de0-667a8d7ddefc"
+migrations_dir = "prisma/migrations"
+
+[env.staging.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.staging.assets]
+directory = "dist"
+not_found_handling = "single-page-application"
+binding = "ASSETS"
+
+[assets]
+directory = "dist"
+not_found_handling = "single-page-application"
+binding = "ASSETS"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production]
+name = "anime-tracker"
+
+[env.production.vars]
+CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
+BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "anime-tracker"
+database_id = "local"
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production.assets]
+directory = "dist"
+not_found_handling = "single-page-application"
+binding = "ASSETS"
+
+[triggers]
+crons = ["0 */6 * * *"]
+
+[dev]
+port = 8787
+ip = "0.0.0.0"
+local_protocol = "http"
