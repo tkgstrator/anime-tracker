@@ -1,0 +1,76 @@
+generator client {
+  provider      = "prisma-client"
+  output        = "../src/generated/prisma"
+  runtime       = "cloudflare"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Anime {
+  id             String    @id @default(uuid())
+  title          String
+  description    String    @default("")
+  provider       String    // 'amazon' | 'hulu' | 'netflix'
+  contentId      String    @map("content_id")
+  entityType     String    @default("tv") @map("entity_type") // 'tv' | 'movie'
+  maturityRating Int?      @map("maturity_rating")
+  imageUrl       String?   @map("image_url")
+  benefitId      String?   @map("benefit_id") // 'prime' | 'danime' | 'animetimesjp' etc.
+  year           Int
+  quarter        Int       // 0=冬 1=春 2=夏 3=秋
+  isIdentified   Boolean   @default(false) @map("is_identified")
+  status         String    @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
+  tmdbId         Int?      @map("tmdb_id")
+  aniListId      Int?      @map("anilist_id")
+  scheduled      Boolean   @default(false)  // 録画予約済み
+  recorded       Boolean   @default(false)  // 録画済み
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  seasons        Season[]
+
+  @@unique([provider, contentId])
+  @@index([title])
+  @@index([provider])
+  @@index([year, quarter])
+  @@index([status])
+  @@map("anime")
+}
+
+model Season {
+  id             String    @id @default(uuid())
+  animeId        String    @map("anime_id")
+  seasonId       String    @map("season_id")
+  displayName    String    @map("display_name")
+  seasonNumber   Int       @map("season_number")
+  imageUrl       String?   @map("image_url")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  anime          Anime     @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  episodes       Episode[]
+
+  @@unique([animeId, seasonId])
+  @@map("seasons")
+}
+
+model Episode {
+  id             String    @id @default(uuid())
+  seasonId       String    @map("season_id")
+  episodeNumber  Int       @map("episode_number")
+  episodeId      String    @map("episode_id")
+  title          String
+  description    String
+  releaseDate    String    @map("release_date")
+  duration       Int       @default(0)
+  maturityRating Int?      @map("maturity_rating")
+  imageUrl       String    @map("image_url")
+  hasSubtitles   Boolean   @default(false) @map("has_subtitles")
+  hasDub         Boolean   @default(false) @map("has_dub")
+  benefitId      String?   @map("benefit_id")
+  recorded       Boolean   @default(false)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  season         Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, episodeNumber])
+  @@map("episodes")
+}
