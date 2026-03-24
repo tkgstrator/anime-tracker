@@ -1,9 +1,9 @@
 import { parse } from 'node-html-parser'
 import {
-  AmazonBrowseHTMLSchema,
-  type AmazonPaginateParams,
-  type AmazonPaginateResponse,
-  AmazonPaginateResponseSchame
+  BrowseHTMLSchema,
+  type PaginateParams,
+  type PaginateResponse,
+  PaginateResponseSchema
 } from '../../../schemas/providers/amazon.dto'
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { logger } from '../../logger'
@@ -37,13 +37,13 @@ export function parseHtml(html: string): Title[] {
   const script = root.querySelectorAll('script[type="application/json"]').find((s) => s.textContent.includes('titleID'))
 
   if (!script) return []
-  return AmazonBrowseHTMLSchema.parse(JSON.parse(script.textContent))
+  return BrowseHTMLSchema.parse(JSON.parse(script.textContent))
 }
 
 /**
  * ブラウズページ HTML からページネーション用パラメータを抽出する。
  */
-function extractPaginationParams(html: string): AmazonPaginateParams | null {
+function extractPaginationParams(html: string): PaginateParams | null {
   const target: RegExpMatchArray | null = (() => {
     const match = html.match(/"paginationTargetId"\s*:\s*"([^"]+)"/)
     return match
@@ -60,10 +60,10 @@ function extractPaginationParams(html: string): AmazonPaginateParams | null {
  * paginateCollection API を呼び出してタイトル一覧の続きを取得する。
  */
 async function paginateCollection(
-  params: AmazonPaginateParams,
+  params: PaginateParams,
   startIndex: number,
   cookie: string
-): Promise<AmazonPaginateResponse> {
+): Promise<PaginateResponse> {
   const url = new URL(PAGINATE_BASE)
   url.searchParams.set('jic', '8|EgRzdm9k')
   url.searchParams.set('pageType', 'browse')
@@ -90,7 +90,7 @@ async function paginateCollection(
     }
   })
   if (!res.ok) throw new Error(`paginateCollection error: ${res.status} ${res.statusText}`)
-  return AmazonPaginateResponseSchame.parse(await res.json())
+  return PaginateResponseSchema.parse(await res.json())
 }
 
 /**
@@ -138,7 +138,7 @@ export class AmazonProvider extends Provider {
    * ページネーションで残りのタイトルを再帰的に取得する。
    */
   private async fetchRemainingPages(
-    params: AmazonPaginateParams,
+    params: PaginateParams,
     cookie: string,
     startIndex: number,
     seen: Set<string>,

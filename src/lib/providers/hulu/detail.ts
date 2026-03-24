@@ -1,5 +1,5 @@
 import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
-import { type HuluEpisode, HuluEpisodesSchema } from '../../../schemas/providers/hulu.dto'
+import { EpisodesSchema, type Episode as HuluEpisode } from '../../../schemas/providers/hulu.dto'
 import { extractMetasArray } from './rsc-parser'
 
 const HULU_BASE = 'https://www.hulu.jp'
@@ -75,7 +75,7 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
  */
 export function parseEpisodesFromHtml(html: string): HuluEpisode[] {
   const raw = extractMetasArray(html)
-  return HuluEpisodesSchema.parse(raw)
+  return EpisodesSchema.parse(raw)
 }
 
 /**

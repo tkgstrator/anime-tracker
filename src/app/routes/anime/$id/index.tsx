@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { SlideUpTransition } from '@/app/components/page-transition'
 import api from '@/app/lib/api'
-import type { AnimeWithSeasonsSchema } from '@/schemas/anime.dto'
+import type { AnimeInfoSchema } from '@/schemas/anime.dto'
 import { AnimeHero } from './-components/anime-hero'
 import { EpisodeGrid } from './-components/episode-grid'
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute('/anime/$id/')({
 function AnimeDetailPage() {
   const loaderData = Route.useLoaderData()
   const { id } = Route.useParams()
-  const [anime, setAnime] = useState<AnimeWithSeasonsSchema>(loaderData)
+  const [anime, setAnime] = useState<AnimeInfoSchema>(loaderData)
   const [updating, setUpdating] = useState(false)
 
   const toggleScheduled = async () => {

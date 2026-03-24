@@ -1,6 +1,6 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { createPrismaClient } from '../lib/db'
-import { AnimeListQuerySchema, AnimeSchema, AnimeWithSeasonsSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
+import { AnimeInfoSchema, AnimeListQuerySchema, AnimeSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
 
 type Bindings = {
   DB: D1Database
@@ -67,7 +67,7 @@ anime.openapi(
     responses: {
       200: {
         description: 'アニメ詳細',
-        content: { 'application/json': { schema: AnimeWithSeasonsSchema } }
+        content: { 'application/json': { schema: AnimeInfoSchema } }
       },
       404: {
         description: 'Not Found',

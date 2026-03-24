@@ -1,4 +1,4 @@
-import { HuluPaletteResponse, type HuluVodItem, type Season } from '../../../schemas/providers/hulu.dto'
+import { PaletteResponseSchema, type Season, type VodItem } from '../../../schemas/providers/hulu.dto'
 
 const HULU_BASE = 'https://www.hulu.jp'
 const HULU_API_BASE = `${HULU_BASE}/api/v2/palettes`
@@ -37,14 +37,14 @@ export function buildSlug(season: Season, year: number): string {
  * @param items - これまでに取得済みのアイテム
  * @returns 全アイテム
  */
-async function fetchHuluAnimePage(slug: string, from: number, items: HuluVodItem[]): Promise<HuluVodItem[]> {
+async function fetchHuluAnimePage(slug: string, from: number, items: VodItem[]): Promise<VodItem[]> {
   const to = from + PAGE_SIZE - 1
   const url = `${HULU_API_BASE}/${slug}/vod/objects?from=${from}&to=${to}`
   const res = await fetch(url)
   if (!res.ok) {
     throw new Error(`Hulu API error: ${res.status} ${res.statusText} (${url})`)
   }
-  const parsed = HuluPaletteResponse.parse(await res.json())
+  const parsed = PaletteResponseSchema.parse(await res.json())
   const accumulated = [...items, ...parsed.data]
   if (accumulated.length >= parsed.total_count) return accumulated
   return fetchHuluAnimePage(slug, from + PAGE_SIZE, accumulated)
@@ -56,7 +56,7 @@ async function fetchHuluAnimePage(slug: string, from: number, items: HuluVodItem
  * @param year - 年
  * @returns アニメアイテム一覧
  */
-export async function fetchHuluAnime(season: Season, year: number): Promise<HuluVodItem[]> {
+export async function fetchHuluAnime(season: Season, year: number): Promise<VodItem[]> {
   return fetchHuluAnimePage(buildSlug(season, year), 0, [])
 }
 
@@ -67,7 +67,7 @@ export async function fetchHuluAnime(season: Season, year: number): Promise<Hulu
  * @param items - これまでに取得済みのアイテム
  * @returns 全アイテム
  */
-async function fetchHuluFilteredPage(ag: string, from: number, items: HuluVodItem[]): Promise<HuluVodItem[]> {
+async function fetchHuluFilteredPage(ag: string, from: number, items: VodItem[]): Promise<VodItem[]> {
   const to = from + PAGE_SIZE - 1
   const params = new URLSearchParams([
     ['id', `ag:${ag}`],
@@ -83,7 +83,7 @@ async function fetchHuluFilteredPage(ag: string, from: number, items: HuluVodIte
   if (!res.ok) {
     throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
   }
-  const parsed = HuluPaletteResponse.parse(await res.json())
+  const parsed = PaletteResponseSchema.parse(await res.json())
   const accumulated = [...items, ...parsed.data]
   if (accumulated.length >= parsed.total_count) return accumulated
   return fetchHuluFilteredPage(ag, from + PAGE_SIZE, accumulated)
@@ -95,7 +95,7 @@ async function fetchHuluFilteredPage(ag: string, from: number, items: HuluVodIte
  * @returns アニメアイテム一覧
  * @throws 不明な年代の場合
  */
-export async function fetchHuluAnimeByDecade(decade: number): Promise<HuluVodItem[]> {
+export async function fetchHuluAnimeByDecade(decade: number): Promise<VodItem[]> {
   const ag = DECADE_AG[decade]
   if (!ag) throw new Error(`Unknown decade: ${decade}. Valid values: ${Object.keys(DECADE_AG).join(', ')}`)
   return fetchHuluFilteredPage(ag, 0, [])

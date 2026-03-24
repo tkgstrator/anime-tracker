@@ -1,6 +1,6 @@
 import { Zodios } from '@zodios/core'
 import { z } from 'zod'
-import { AnimeSchema, AnimeWithSeasonsSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
+import { AnimeInfoSchema, AnimeSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
 
 const api = new Zodios('/api', [
@@ -27,7 +27,7 @@ const api = new Zodios('/api', [
     method: 'get',
     path: '/anime/:id',
     alias: 'getAnime',
-    response: AnimeWithSeasonsSchema
+    response: AnimeInfoSchema
   },
   {
     method: 'post',

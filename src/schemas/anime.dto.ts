@@ -27,7 +27,7 @@ export const AnimeSchema = z.object({
 })
 export type AnimeSchema = z.infer<typeof AnimeSchema>
 
-export const AnimeWithSeasonsSchema = AnimeSchema.extend({
+export const AnimeInfoSchema = AnimeSchema.extend({
   seasons: z.array(
     z.object({
       id: z.uuid(),
@@ -55,7 +55,7 @@ export const AnimeWithSeasonsSchema = AnimeSchema.extend({
     })
   )
 })
-export type AnimeWithSeasonsSchema = z.infer<typeof AnimeWithSeasonsSchema>
+export type AnimeInfoSchema = z.infer<typeof AnimeInfoSchema>
 
 export const QuarterLabel: Record<number, string> = {
   0: '冬',
