@@ -1,7 +1,7 @@
 import { parse as parseHtml } from 'node-html-parser'
 import type { AmazonPageData } from '../../../schemas/amazon.dto'
 import { AmazonDetailPageJsonSchema, AmazonPageDataSchema } from '../../../schemas/amazon.dto'
-import type { Episode, Season, TitleDetail } from '../../../schemas/provider.dto'
+import type { Episode, Season, TitleInfo } from '../../../schemas/provider.dto'
 import { extractSeasonNumber } from '../../title-parser'
 
 const AMAZON_DETAIL_BASE = 'https://www.amazon.co.jp/gp/video/detail'
@@ -213,7 +213,7 @@ export function mapEntityType(raw: string): 'tv' | 'movie' {
  * @param titleID - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
  * @returns タイトル詳細情報
  */
-export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleDetail> {
+export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleInfo> {
   const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${titleID}`)
   const page = extractPageData(html)
   const title = page.title

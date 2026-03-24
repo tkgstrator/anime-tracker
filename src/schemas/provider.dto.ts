@@ -12,6 +12,7 @@ export const TitleSchema = z.object({
   maturityRating: z.number().int().positive().nullable(),
   benefitId: z.string().nullable()
 })
+
 export type Title = z.infer<typeof TitleSchema>
 
 export const EpisodeSchema = z.object({
@@ -38,12 +39,19 @@ export const SeasonSchema = z.object({
 })
 export type Season = z.infer<typeof SeasonSchema>
 
-export const TitleInfoSchema = TitleSchema.extend({
+export const TitleInfoSchema = z.object({
+  title: z.string().nonempty(),
+  description: z.string(),
+  entityType: EntityType,
+  imageUrl: z.string().nullable(),
+  maturityRating: z.number().int().positive().nullable(),
+  benefitId: z.string().nullable(),
   seasons: z.array(SeasonSchema)
 })
 export type TitleInfo = z.infer<typeof TitleInfoSchema>
 
-const TitleStatusTypeEnum = z.enum([''])
+export const TitleStatusTypeEnum = z.enum(['FINISHED', 'RELEASING', 'NOT_YET_RELEASED', 'CANCELLED', 'HIATUS', 'UNKNOWN'])
+export type TitleStatusType = z.infer<typeof TitleStatusTypeEnum>
 
 export const TitleMetadataSchema = z
   .object({

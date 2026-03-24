@@ -34,10 +34,10 @@ export class SyncService {
           status: detail.identified.status ?? 'UNKNOWN',
           year: detail.identified.year ?? 0,
           quarter: detail.identified.quarter ?? 0,
-          isIdentified: !!detail.identified.nativeTitle
+          isIdentified: !!detail.identified.title
         }
       : {}
-    const title = detail.identified?.nativeTitle ?? detail.title
+    const title = detail.identified?.title ?? detail.title
 
     await this.prisma.anime.upsert({
       where: {

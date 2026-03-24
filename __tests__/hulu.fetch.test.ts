@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { fetchHuluTitleDetail, HuluProvider } from '../src/lib/providers/hulu'
-import { TitleDetail } from '../src/schemas/provider.dto'
+import { TitleInfoSchema } from '../src/schemas/provider.dto'
 
 describe('Hulu fetch', () => {
   const provider = new HuluProvider()
@@ -17,7 +17,7 @@ describe('Hulu fetch', () => {
   }, 60_000)
 
   test('fetchHuluTitleDetail で詳細が取得できる', async () => {
-    const detail = TitleDetail.parse(await fetchHuluTitleDetail('spy-family'))
+    const detail = TitleInfoSchema.parse(await fetchHuluTitleDetail('spy-family'))
 
     expect(detail.title).toBeTruthy()
     expect(detail.seasons.length).toBeGreaterThan(0)
