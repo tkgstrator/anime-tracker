@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { AmazonProvider } from '../src/lib/providers/amazon'
-import { TitleInfoSchema } from '../src/schemas/provider.dto'
+import { TitleInfoSchema } from '../src/schemas/providers/common.dto'
 import { fixtureIds } from './fixtures/amazon/ids'
 
 describe('fetchTitleList', () => {

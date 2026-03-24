@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { EntityType, TitleSchema } from './provider.dto'
+import { EntityType, TitleSchema } from './common.dto'
 
 /** ブラウズ URL 生成時の検索クエリ。`buildAmazonBrowseUrl` で使用。 */
 export const AmazonBrowseQuerySchema = z.object({
@@ -218,5 +218,3 @@ export const AmazonDetailPageJsonSchema = z
     }
   })
   .pipe(AmazonPageDataSchema)
-
-// --- extractPageData output schema ---
