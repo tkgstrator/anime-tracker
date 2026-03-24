@@ -7,24 +7,37 @@ const SchemaKeyTypeEnum = z.enum(['asset'])
 const HuluServiceTypeEnum = z.enum(['hulu'])
 
 const HuluAdditionalInfoSchema = z.object({
-  card_info: z.object({
-    episode_number_title: z
-      .string()
-      .nonempty()
-      .regex(/(\d+)/)
-      .transform((v) => {
-        const match = v.match(/(\d+)/)
-        if (match === null) {
-          throw new Error('invalid episode_number_title')
-        }
-        return [...match][0]
-      })
-      .pipe(z.coerce.number())
-  }),
+  card_info: z
+    .object({
+      episode_number_title: z
+        .string()
+        .nonempty()
+        .regex(/(\d+)/)
+        .transform((v) => {
+          const match = v.match(/(\d+)/)
+          if (match === null) {
+            throw new Error('invalid episode_number_title')
+          }
+          return [...match][0]
+        })
+        .pipe(z.coerce.number()),
+      has_closed_caption: z.boolean(),
+      has_en_caption: z.boolean(),
+      has_ja_caption: z.boolean(),
+      season_number_title: z.string().optional()
+    })
+    .transform((v) => {
+      return {
+        ...v,
+        has_subtitles: v.has_closed_caption || v.has_en_caption || v.has_ja_caption,
+        has_dub: false
+      }
+    }),
   episode_runtime: z.number().positive(),
-  schema_key: z.number().int().positive(),
+  schema_key: z.string(),
   series_id: z.number().int().positive(),
-  service: HuluServiceTypeEnum
+  service: HuluServiceTypeEnum,
+  short_name: z.string().nullable()
 })
 
 const HuluEpisodeSchema = z.object({
@@ -43,6 +56,6 @@ const HuluEpisodeSchema = z.object({
   additionalInfo: HuluAdditionalInfoSchema
 })
 
-export const HuluPageSchema = z.object({
-  episodes: z.array(HuluEpisodeSchema)
-})
+export type HuluEpisode = z.infer<typeof HuluEpisodeSchema>
+
+export const HuluEpisodesSchema = z.array(HuluEpisodeSchema).nonempty()
