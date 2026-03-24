@@ -12,6 +12,7 @@ const hash = execSync('git rev-parse --short HEAD').toString().trim()
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
+  process.env.NODE_ENV = mode === 'development' ? 'development' : 'production'
   return {
     server: {
       port: 15173,
@@ -21,6 +22,7 @@ export default defineConfig(({ mode }) => {
       {
         name: 'build-info',
         buildStart() {
+          console.log(`Environment: ${process.env.NODE_ENV}`)
           console.log(`Building app version: ${version} (git hash: ${hash}) in ${mode} mode`)
         }
       },
