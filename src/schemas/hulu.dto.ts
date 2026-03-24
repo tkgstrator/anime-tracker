@@ -1,6 +1,83 @@
 import z from 'zod'
 
-const _EntityTypeEnum = z.enum(['tv'])
+// --- Browse schemas (Palette API / Filtered API) ---
+
+const stripQueryParams = (url: string) => new URL(url).origin + new URL(url).pathname
+
+const HuluEpisodeInfo = z.object({
+  meta_id: z.number(),
+  name: z.string(),
+  short_name: z.string(),
+  ref_id: z.string(),
+  type: z.string(),
+  schema_id: z.number(),
+  thumbnail: z.string()
+})
+
+const HuluCardInfo = z
+  .object({
+    artwork_copyright: z.string().optional(),
+    episode_count: z.number().optional(),
+    has_closed_caption: z.boolean().optional(),
+    has_en_caption: z.boolean().optional(),
+    is_mature: z.boolean().optional(),
+    premiere_year: z.number().optional(),
+    season_count: z.number().optional()
+  })
+  .loose()
+
+const HuluBrowseAdditionalInfo = z.object({
+  card_info: HuluCardInfo,
+  edge_episode: HuluEpisodeInfo.nullable().optional(),
+  lead_episode: HuluEpisodeInfo.nullable().optional(),
+  id_in_schema: z.number(),
+  id: z.number(),
+  schema_id: z.number(),
+  schema_key: z.string(),
+  service: z.string(),
+  series_id: z.number().optional(),
+  slug: z.string().nullable(),
+  type: z.string(),
+  rating_v2: z.string(),
+  rating: z.string(),
+  viewing_period_undisplay_flag: z.boolean()
+})
+
+export const HuluVodItem = z.object({
+  id: z.number(),
+  id_in_schema: z.number(),
+  title: z.string(),
+  description: z.string(),
+  slug: z.string(),
+  imageUrl: z.string().transform(stripQueryParams),
+  rental: z.boolean(),
+  startAt: z.string(),
+  endAt: z.string(),
+  isLogin: z.boolean(),
+  schema_key: z.string(),
+  model_id: z.string(),
+  categoryMetas: z.array(z.string()),
+  price: z.string(),
+  features: z.array(z.string()).default([]),
+  additionalInfo: HuluBrowseAdditionalInfo,
+  bottomMetas: z.array(z.string()),
+  progress: z.number(),
+  playTime: z.string(),
+  isPublishEnded: z.boolean(),
+  isTvodLive: z.boolean()
+})
+export type HuluVodItem = z.infer<typeof HuluVodItem>
+
+export const HuluPaletteResponse = z.object({
+  total_count: z.number().int(),
+  data: z.array(HuluVodItem).nonempty()
+})
+export type HuluPaletteResponse = z.infer<typeof HuluPaletteResponse>
+
+export const Season = z.enum(['winter', 'spring', 'summer', 'autumn'])
+export type Season = z.infer<typeof Season>
+
+// --- Episode Detail schemas (RSC payload) ---
 
 const SchemaKeyTypeEnum = z.enum(['asset'])
 

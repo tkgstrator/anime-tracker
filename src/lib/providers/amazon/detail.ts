@@ -1,6 +1,6 @@
 import { parse as parseHtml } from 'node-html-parser'
 import type { AmazonPageData } from '../../../schemas/amazon.dto'
-import { AmazonDetailPageJsonSchema, AmazonPageDataSchema } from '../../../schemas/amazon.dto'
+import { AmazonDetailPageJsonSchema } from '../../../schemas/amazon.dto'
 import type { Episode, Season, TitleInfo } from '../../../schemas/provider.dto'
 import { extractSeasonNumber } from '../../title-parser'
 
@@ -71,13 +71,7 @@ export function extractPageData(html: string): AmazonPageData {
     .find((s) => s.textContent.includes('headerDetail'))
   if (!script) throw new Error('Parse failed: no JSON script found')
 
-  const extracted = AmazonDetailPageJsonSchema.parse(JSON.parse(script.textContent))
-
-  return AmazonPageDataSchema.parse({
-    ...extracted,
-    synopsis: htmlUnescape(extracted.synopsis).replace(/^Season \d+・/, ''),
-    maturityRating: parseMaturityRating(extracted.ratingDisplayText)
-  })
+  return AmazonDetailPageJsonSchema.parse(JSON.parse(script.textContent))
 }
 
 /**
@@ -210,11 +204,11 @@ export function mapEntityType(raw: string): 'tv' | 'movie' {
  *
  * 映画の場合はシーズン無しで返し、TV シリーズの場合は
  * 全シーズンのエピソード情報を含む詳細を返す。
- * @param titleID - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
+ * @param contentId - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
  * @returns タイトル詳細情報
  */
-export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleInfo> {
-  const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${titleID}`)
+export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleInfo> {
+  const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${contentId}`)
   const page = extractPageData(html)
   const title = page.title
   const description = page.synopsis
@@ -222,12 +216,11 @@ export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleInfo
   const { maturityRating } = page
 
   if (entityType === 'movie') {
-    return { title, description, entityType, maturityRating, imageUrl: null, benefitId: null, seasons: [] }
+    return { title, description, entityType, maturityRating, benefitId: null, seasons: [] }
   }
 
   if (page.seasons.length === 0) {
-    const episodes = await fetchAllEpisodes(titleID, page.episodePageTokens, maturityRating)
-    const imageUrl = episodes[0]?.imageUrl ?? null
+    const episodes = await fetchAllEpisodes(contentId, page.episodePageTokens, maturityRating)
     const benefitId = episodes[0]?.benefitId ?? null
     const seasonNumber = extractSeasonNumber(title)
     return {
@@ -235,16 +228,23 @@ export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleInfo
       description,
       entityType,
       maturityRating,
-      imageUrl,
       benefitId,
-      seasons: [{ seasonId: titleID, displayName: `シーズン${seasonNumber}`, seasonNumber, imageUrl, episodes }]
+      seasons: [
+        {
+          seasonId: contentId,
+          displayName: `シーズン${seasonNumber}`,
+          seasonNumber,
+          imageUrl: episodes[0]?.imageUrl ?? null,
+          episodes
+        }
+      ]
     }
   }
 
   const seasons: Season[] = []
   for (const rs of page.seasons) {
     const tokens =
-      rs.seasonId === titleID
+      rs.seasonId === contentId
         ? page.episodePageTokens
         : extractPageData(await fetchHtml(`${AMAZON_DETAIL_BASE}/${rs.seasonId}`)).episodePageTokens
     const episodes = await fetchAllEpisodes(rs.seasonId, tokens, maturityRating)
@@ -257,7 +257,6 @@ export async function fetchAmazonTitleDetail(titleID: string): Promise<TitleInfo
     })
   }
 
-  const imageUrl = seasons[0]?.imageUrl ?? null
   const benefitId = seasons[0]?.episodes[0]?.benefitId ?? null
-  return { title, description, entityType, maturityRating, imageUrl, benefitId, seasons }
+  return { title, description, entityType, maturityRating, benefitId, seasons }
 }
