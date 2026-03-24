@@ -1,4 +1,4 @@
-import { HuluEpisodeDetail, type HuluEpisodeDetail as HuluEpisodeDetailType } from '../../../schemas/hulu.dto'
+import { HuluEpisodesSchema, type HuluEpisode } from '../../../schemas/hulu.dto'
 import type { Episode, Season, TitleInfo } from '../../../schemas/provider.dto'
 import { extractMetasArray } from './rsc-parser'
 
@@ -8,7 +8,7 @@ const HULU_FALCOR_API = `${HULU_BASE}/anon/ja/webp/path`
 /**
  * Hulu のエピソード詳細を Episode 型にマッピングする。
  */
-function mapToEpisode(ep: HuluEpisodeDetailType, index: number): Episode {
+function mapToEpisode(ep: HuluEpisode, index: number): Episode {
   return {
     episodeNumber: ep.additionalInfo.card_info.episode_number_title ?? index + 1,
     episodeId: String(ep.id_in_schema),
@@ -52,8 +52,8 @@ async function fetchSeriesMeta(seriesId: number): Promise<SeriesMeta> {
 /**
  * エピソード群をシーズンごとにグループ化する。
  */
-function groupIntoSeasons(slug: string, episodes: HuluEpisodeDetailType[]): Season[] {
-  const seasonMap = new Map<string, HuluEpisodeDetailType[]>()
+function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
+  const seasonMap = new Map<string, HuluEpisode[]>()
   for (const ep of episodes) {
     const seasonName = ep.additionalInfo.card_info.season_number_title ?? 'シーズン1'
     const list = seasonMap.get(seasonName) ?? []
@@ -73,9 +73,9 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisodeDetailType[]): Seas
 /**
  * HTML の RSC ペイロードからエピソード一覧をパースする。
  */
-export function parseEpisodesFromHtml(html: string): HuluEpisodeDetailType[] {
+export function parseEpisodesFromHtml(html: string): HuluEpisode[] {
   const raw = extractMetasArray(html)
-  return raw.map((item) => HuluEpisodeDetail.parse(item))
+  return HuluEpisodesSchema.parse(raw)
 }
 
 /**
