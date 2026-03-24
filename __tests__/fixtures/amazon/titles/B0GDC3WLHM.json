@@ -1,0 +1,135 @@
+{
+  "title": "葬送のフリーレン 第2期",
+  "description": "勇者ヒンメル一行によって魔王が倒された世界。ヒンメルらと共に平和をもたらした千年以上生きるエルフの魔法使い・フリーレンは、寿命を迎えたヒンメルの死を受けての涙とその想いから、\\",
+  "entityType": "tv",
+  "maturityRating": null,
+  "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/a706ca7f802cc038533a88ed04a711e8d946fc93c949d7fc7e5f66c629219a19.jpg",
+  "benefitId": "prime",
+  "seasons": [
+    {
+      "seasonId": "B0GDC3WLHM",
+      "displayName": "シーズン2",
+      "seasonNumber": 2,
+      "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/2fabf8145543d7bf124b03ac077e24cc3c5344a04f585ae77d871a677c3c4535.jpg",
+      "episodes": [
+        {
+          "episodeNumber": 1,
+          "episodeId": "B0F3MC4DXC",
+          "title": "じゃあ行こうか",
+          "description": "魔法都市オイサーストを後にし、北側諸国の道を行くフリーレン、フェルン、シュタルク。その道中、緩んだ地盤から穴の中へ落ちてしまう。そこは魔法を無効化する力を持った鉱石\"封魔鉱\"が一面に広がっていた。フリーレンとフェルンが魔法を使うことができず、地上に続く道を探すが、そこに魔物が現れて…。©山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会",
+          "releaseDate": "2026-01-16T00:00:00+09:00",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/2fabf8145543d7bf124b03ac077e24cc3c5344a04f585ae77d871a677c3c4535.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 2,
+          "episodeId": "B0GGC4NL2D",
+          "title": "南の勇者",
+          "description": "北側諸国の村で勇者の像を磨く依頼を受けたフリーレンたち。その像はヒンメルのものではなく、かつて人類最強と謳われた\"南の勇者\"の像だった。フリーレンは\"南の勇者\"と出会った時を思い出す…。その後訪れたダッハ伯爵領の城下町で、フリーレンたちは領主から「魔族から宝剣を取り戻してほしい」と頼まれて…。",
+          "releaseDate": "2026-01-23T00:00:00+09:00",
+          "duration": 1439,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/80331d441ddf7518a0ee29f4d36030156eab107f56174f95fe9fe7e76fdc2b10.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 3,
+          "episodeId": "B0FJM2JMX1",
+          "title": "好きな場所",
+          "description": "温泉地のエトヴァスでフリーレンたちは温泉に思いを馳せるが、山村はすでに廃れていた。山奥に「エトヴァス山の秘湯」があるという話を聞いた3人はそこに向かうことに。険しく、魔物も棲む山道を進んでいった先に待つものは果たして…。そして次の都市に到着すると、フェルンはシュタルクから意外な誘いを受ける。©山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会",
+          "releaseDate": "2026-01-30T00:00:00+09:00",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/10b06e6f74e69c3dfdbca3e2c5c6abb1c035dae30fb755dbbef188b5d336dfff.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 4,
+          "episodeId": "B0GKYV8NCN",
+          "title": "誰かの故郷",
+          "description": "フェルンをからかうつもりで誘ったシュタルクだったが、結果2人はデートをすることに。街のさまざまな場所を訪れる2人はやがて展望広場へ。そこでフェルンが口にしたのは…。後日、街を後にした3人は過酷な北部高原へと足を踏み入れる。ある村落に立ち寄ると、その近くに強力な魔物が出現すると聞き…。©山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会",
+          "releaseDate": "2026-02-06T00:00:00+09:00",
+          "duration": 1439,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/b389a7e408392f3a71473df63e2444cee7a05ba767e0950d59eabd023a42ae98.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 5,
+          "episodeId": "B0GF5TFHTG",
+          "title": "北部高原の物流",
+          "description": "ある酒場町でフリーレンはドワーフのファスと再会する。彼は無類の酒好きで、200年以上も皇帝酒ボースハフトを探しており、自身が掘った坑道の先にその酒が眠っているという。果たして見つかるのか…。そして次に訪れるノルム商会領では、なんとフリーレンに80年前から多額の借金があることが判明し…。",
+          "releaseDate": "2026-02-13T00:00:00+09:00",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/ec97ae5392e7cbc4c12b8bfd3a71c28de7a29c8a593374b11a16bcdd4bef48cb.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 6,
+          "episodeId": "B0GNTH6PL5",
+          "title": "第34話　討伐要請",
+          "description": "北部高原のある村に、ゼーリエからの魔族討伐の要請を受けた一級魔法使い、ゲナウとメトーデの姿があった。その村はゲナウの故郷だという…。そしてそこに、同じく討伐要請を受けたフェルン、そしてフリーレンとシュタルクもやって来た。村はすでに全滅しており、犠牲者の特徴的な傷跡から、ある魔族の姿が見え隠れする。",
+          "releaseDate": "2026-02-27T00:00:00+09:00",
+          "duration": 1439,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/227ea8d1a72d76de1a7602d6495671446f974fb56143ab87fcd0524de4cfb209.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 7,
+          "episodeId": "B0GQXD52M9",
+          "title": "第35話　神技のレヴォルテ",
+          "description": "ゲナウの村を全滅させた魔族、それは四本の腕で剣を自在に振るう強敵\"神技のレヴォルテ\"とその手下たちだった。フリーレン、フェルン、メトーデの3人は魔族探索のため森へ、シュタルクとゲナウは村民の遺体をノルム騎士団が引き取るまで村に残ることに。そしてそれぞれに、残忍な魔族たちが近づく。",
+          "releaseDate": "2026-03-07T00:00:00+09:00",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/f7bcf6497ee0260e2b267237a7e252566fbc0349aae7c4c0dcb4028f6cb4365e.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 8,
+          "episodeId": "B0GJMKWV8G",
+          "title": "第36話　立派な最期",
+          "description": "村に現れた\"神技のレヴォルテ\"に対するは、戦士シュタルクと、\"黒金の翼を操る魔法＜ディガドナハト＞\"を駆使するゲナウ。レヴォルテの強烈な攻撃に、2人は打ち勝つことができるのか…!? 一方、フリーレン、フェルン、メトーデも、強力な魔法を操る魔族ゾリーダとヘモンと対峙していた―――！",
+          "releaseDate": "2026-03-13T00:00:00+09:00",
+          "duration": 1439,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/5561f840c002eadae4f726100a173369157479825a574505ea75fae96d06099b.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        },
+        {
+          "episodeNumber": 9,
+          "episodeId": "B0GT1HX74H",
+          "title": "ヒンメルの自伝",
+          "description": "竜の群れの脅威に苛まれるも故郷を捨てようとしない男の村。そして広大な湖・コリドーア湖の港町。旅の途中、さまざまな場所を訪れるフリーレンたち。コリドーア湖で渡し舟に乗ろうにも舟代が足らず、船頭から交換条件を持ち掛けられる。それは島の修道院に眠っている\"ヒンメルの自伝\"を見つけることだった。©山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会",
+          "releaseDate": "2026-03-20T00:00:00+09:00",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/48283ec57693b62344f053fa7bdc725ef7237b38b5d7f5371b4467af4f15f506.jpg",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "prime"
+        }
+      ]
+    }
+  ]
+}
