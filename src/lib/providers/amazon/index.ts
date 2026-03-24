@@ -1,10 +1,10 @@
 import { parse as parseHtml } from 'node-html-parser'
+import { AmazonBrowseHTMLSchema } from '@/schemas/amazon.dto'
 import type { Title, TitleInfo } from '../../../schemas/provider.dto'
 import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
-import { FETCH_HEADERS, fetchAmazonTitleDetail, htmlUnescape, mapEntityType } from './detail'
-import { type AmazonBrowseHTMLEntity, AmazonBrowseHTMLSchema } from '@/schemas/amazon.dto'
+import { FETCH_HEADERS, fetchAmazonTitleDetail } from './detail'
 
 const PAGINATE_BASE = 'https://www.amazon.co.jp/gp/video/api/paginateCollection'
 
@@ -26,43 +26,13 @@ const DYNAMIC_FEATURES = [
   'TvodMovieBundles'
 ]
 
-/**
- * ブラウズページの HTML から <script type="application/json"> を抽出し、
- * タイトル一覧をパースする。
- *
- * @param html - ブラウズページの HTML 文字列
- * @returns パースされたタイトル一覧
- */
-interface BrowseEntity {
-  title: Title
-  hasNewEpisode: boolean
-}
-
-function parseEntity(e: Record<string, unknown>): BrowseEntity {
-  return {
-    title: {
-      contentId: e.titleID as string,
-      title: htmlUnescape(e.displayTitle as string),
-      description: htmlUnescape((e.synopsis as string) ?? ''),
-      entityType: mapEntityType(e.entityType as string),
-      imageUrl: ((e.images as { cover?: { url?: string } })?.cover?.url as string) ?? null,
-      maturityRating: null,
-      benefitId: null
-    },
-    hasNewEpisode:
-      (e.entitlementCues as { titleMetadataBadge?: { message?: string } } | undefined)?.titleMetadataBadge?.message ===
-      '新エピソード'
-  }
-}
-
-export function parseBrowseHtml(html: string): BrowseEntity[] {
+export function parseBrowseHtml(html: string): Title[] {
   const root = parseHtml(html)
 
   const script = root.querySelectorAll('script[type="application/json"]').find((s) => s.textContent.includes('titleID'))
 
   if (!script) return []
-  const object = AmazonBrowseHTMLSchema.parse(JSON.parse(script.textContent))
-  return object.init.preparation.body.containers.flatMap((v) => v.entities).map(parseEntity)
+  return AmazonBrowseHTMLSchema.parse(JSON.parse(script.textContent))
 }
 
 /**
