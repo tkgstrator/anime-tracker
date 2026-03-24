@@ -57,4 +57,6 @@ export class HuluProvider extends Provider {
 }
 
 export { buildSlug, fetchHuluAnime, fetchHuluAnimeByDecade, fetchRecentlyAddedIds } from './browse'
-export { extractEpisodesFromRsc, fetchHuluTitleDetail } from './detail'
+export { fetchHuluTitleDetail, parseEpisodesFromHtml } from './detail'
+export { parseEpisodeNumber } from './episode-number'
+export { extractMetasArray } from './rsc-parser'
