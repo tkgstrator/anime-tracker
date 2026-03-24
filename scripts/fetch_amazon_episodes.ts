@@ -25,7 +25,7 @@ for (let i = 0; i < titleIds.length; i += CONCURRENCY) {
   await Promise.all(
     batch.map(async (titleId) => {
       try {
-        const detail = await amazon.fetchEpisodeList(titleId)
+        const detail = await amazon.fetchTitleInfo(titleId)
         await Bun.write(`${EPISODES_DIR}/${titleId}.json`, JSON.stringify(detail, null, 2) + '\n')
         success++
         const episodeCount = detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0)

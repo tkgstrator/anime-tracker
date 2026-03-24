@@ -34,7 +34,7 @@ export const SeasonSchema = z.object({
   seasonId: z.string().nonempty(),
   displayName: z.string().nonempty(),
   seasonNumber: z.number().int().positive(),
-  imageUrl: z.string().nullable(),
+  imageUrl: z.url().nullable(),
   episodes: z.array(EpisodeSchema)
 })
 export type Season = z.infer<typeof SeasonSchema>
@@ -44,6 +44,7 @@ export const TitleInfoSchema = z.object({
   description: z.string(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
+  imageUrl: z.url(),
   benefitId: z.string().nullable(),
   seasons: z.array(SeasonSchema)
 })

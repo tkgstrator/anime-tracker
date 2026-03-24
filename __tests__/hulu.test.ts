@@ -2,7 +2,8 @@ import { describe, expect, test } from 'bun:test'
 import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-import { buildSlug, parseEpisodesFromHtml } from '../src/lib/providers/hulu'
+import { buildSlug } from '../src/lib/providers/hulu/browse'
+import { parseEpisodesFromHtml } from '../src/lib/providers/hulu/detail'
 import { TitleInfoSchema } from '../src/schemas/providers/common.dto'
 
 const titlesDir = resolve(__dirname, 'fixtures/hulu/titles')
