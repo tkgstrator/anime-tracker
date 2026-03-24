@@ -1,5 +1,5 @@
 import jaconv from 'jaconv'
-import type { IdentifyResult } from '../../schemas/provider.dto'
+import type { TitleMetadata } from '../../schemas/provider.dto'
 import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 
@@ -163,7 +163,7 @@ interface AniListResponse {
 
 export interface AniListResult {
   id: number
-  nativeTitle?: string
+  title?: string
   status?: AniListStatus
   quarter?: number
   year?: number
@@ -202,7 +202,7 @@ function parseMedia(media: AniListMedia[] | undefined): AniListResult | undefine
   const first = media[0]
   return {
     id: first.id,
-    nativeTitle: pickJapaneseTitle(first) ?? undefined,
+    title: pickJapaneseTitle(first) ?? undefined,
     status: first.status ?? undefined,
     quarter: first.season ? SEASON_TO_QUARTER[first.season] : undefined,
     year: first.seasonYear ?? undefined
@@ -265,15 +265,15 @@ export async function searchAniListBatch(rawTitles: string[]): Promise<(AniListR
 export class AniListAdapter extends MetadataAdapter {
   readonly name = 'anilist'
 
-  async identify(title: string): Promise<IdentifyResult | undefined> {
-    const result = await identifyAniList(title)
+  async identify(rawTitle: string): Promise<TitleMetadata | undefined> {
+    const result = await identifyAniList(rawTitle)
     if (!result) return undefined
     return {
       aniListId: result.id,
-      nativeTitle: result.nativeTitle,
-      status: result.status,
-      year: result.year,
-      quarter: result.quarter
+      title: result.title ?? rawTitle,
+      status: result.status ?? 'UNKNOWN',
+      year: result.year ?? 0,
+      quarter: result.quarter ?? 0
     }
   }
 }

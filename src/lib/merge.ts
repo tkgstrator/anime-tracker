@@ -1,4 +1,4 @@
-import type { Episode, Season, TitleDetail } from '../schemas/provider.dto'
+import type { Episode, Season, TitleInfo } from '../schemas/provider.dto'
 
 /**
  * TMDBのシーズン・エピソード構造をベースに、
@@ -71,7 +71,7 @@ export interface TmdbTitleData {
 
 interface ProviderInput {
   provider: string
-  detail: TitleDetail
+  detail: TitleInfo
 }
 
 /**

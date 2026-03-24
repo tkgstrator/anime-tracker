@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { IdentifyResult } from '../../schemas/provider.dto'
+import type { TitleMetadata } from '../../schemas/provider.dto'
 import { logger } from '../logger'
 import { MetadataAdapter } from './base'
 
@@ -194,6 +194,18 @@ function parseYear(dateStr?: string | null): number | undefined {
   return d.isValid() ? d.year() : undefined
 }
 
+const TMDB_STATUS_MAP: Record<string, TitleMetadata['status']> = {
+  'Returning Series': 'RELEASING',
+  Ended: 'FINISHED',
+  Canceled: 'CANCELLED',
+  'In Production': 'NOT_YET_RELEASED',
+  Planned: 'NOT_YET_RELEASED'
+}
+
+function mapTmdbStatus(raw: string): TitleMetadata['status'] {
+  return TMDB_STATUS_MAP[raw] ?? 'UNKNOWN'
+}
+
 export class TmdbAdapter extends MetadataAdapter {
   readonly name = 'tmdb'
 
@@ -201,14 +213,15 @@ export class TmdbAdapter extends MetadataAdapter {
     super()
   }
 
-  async identify(title: string): Promise<IdentifyResult | undefined> {
-    const result = await identifyTmdbTv(title, this.apiKey)
+  async identify(rawTitle: string): Promise<TitleMetadata | undefined> {
+    const result = await identifyTmdbTv(rawTitle, this.apiKey)
     if (!result) return undefined
     return {
       tmdbId: result.id,
-      nativeTitle: result.name,
-      status: result.status,
-      year: parseYear(result.first_air_date)
+      title: result.name,
+      status: mapTmdbStatus(result.status),
+      year: parseYear(result.first_air_date) ?? 0,
+      quarter: 0
     }
   }
 }

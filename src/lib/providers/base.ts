@@ -1,4 +1,4 @@
-import type { Title, TitleDetail, TitleDetail } from '../../schemas/provider.dto'
+import type { Title, TitleInfo, TitleMetadata } from '../../schemas/provider.dto'
 import type { MetadataAdapter } from '../metadata'
 
 export interface FetchTitleListOptions {
@@ -18,37 +18,15 @@ export abstract class Provider {
 
   constructor(protected readonly adapter?: MetadataAdapter) {}
 
-  /**
-   * プロバイダからアニメタイトル一覧を取得する。
-   * @param options - 取得オプション
-   * @returns タイトル一覧
-   */
   abstract fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]>
 
-  /**
-   * コンテンツ ID からタイトル詳細 (シーズン・エピソード含む) を取得する。
-   * @param contentId - プロバイダ固有のコンテンツ ID
-   * @returns タイトル詳細情報
-   */
-  abstract fetchEpisodeList(contentId: string): Promise<TitleDetail>
+  abstract fetchEpisodeList(contentId: string): Promise<TitleInfo>
 
-  /**
-   * タイトル詳細を取得する。アダプタがあればメタデータの識別結果も付与する。
-   * @param contentId - プロバイダ固有のコンテンツ ID
-   * @returns タイトル詳細
-   */
-  async fetchTitle(contentId: string): Promise<TitleDetail> {
+  async fetchTitle(contentId: string): Promise<TitleInfo & { identified?: TitleMetadata }> {
     const detail = await this.fetchEpisodeList(contentId)
     const identified = this.adapter
       ? await this.adapter.identify(detail.title).catch(() => undefined)
       : undefined
-    return {
-      ...detail,
-      title: identified?.nativeTitle ?? detail.title,
-      status: identified?.status,
-      year: identified?.year,
-      quarter: identified?.quarter,
-      identified
-    }
+    return { ...detail, identified }
   }
 }

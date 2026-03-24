@@ -8,7 +8,7 @@ interface Env {
 export async function scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
   const providers = ['hulu', 'amazon'] as const
   for (const provider of providers) {
-    await env.SYNC_QUEUE.send({ type: 'update', message: { provider } })
+    await env.SYNC_QUEUE.send({ type: 'fetch', message: { provider } })
     logger.info({ context: 'scheduled', action: 'enqueue', provider })
   }
 }

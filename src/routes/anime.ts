@@ -214,8 +214,8 @@ anime.openapi(
             const data: { title?: string; isIdentified?: boolean; status?: string; quarter?: number; year?: number } =
               {}
 
-            if (!anime.isIdentified && result.nativeTitle) {
-              data.title = result.nativeTitle
+            if (!anime.isIdentified && result.title) {
+              data.title = result.title
               data.isIdentified = true
             }
 
