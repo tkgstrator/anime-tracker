@@ -5,25 +5,25 @@
 
 ---
 
-## 共通スキーマ: ProviderTitleDetail
+## 共通スキーマ: TitleDetail
 
 全プロバイダが最終的に返す統一スキーマ（`src/schemas/provider.dto.ts`）。
 
 | フィールド | 型 | 説明 |
 |---|---|---|
-| **ProviderTitleDetail** | | |
+| **TitleDetail** | | |
 | title | string | 作品タイトル |
 | entityType | string | "TV Show" / "Movie" |
 | maturityRating | number \| null | レーティング年齢 |
 | imageUrl | string \| null | 作品画像 URL（最初のシーズンの最初のエピソードから導出） |
-| seasons | ProviderSeason[] | シーズン一覧 |
-| **ProviderSeason** | | |
+| seasons | Season[] | シーズン一覧 |
+| **Season** | | |
 | seasonId | string | プロバイダ固有のシーズンID |
 | displayName | string | 表示名（例: "シーズン1"） |
 | sequenceNumber | number | シーズン順序 |
 | imageUrl | string \| null | シーズン画像 URL（最初のエピソードから導出） |
-| episodes | ProviderEpisode[] | エピソード一覧 |
-| **ProviderEpisode** | | |
+| episodes | Episode[] | エピソード一覧 |
+| **Episode** | | |
 | episodeNumber | number | 話数 |
 | episodeId | string | プロバイダ固有のエピソードID |
 | title | string | エピソードタイトル |
@@ -277,7 +277,7 @@ dynamicFeatures: `integration`, `CLIENT_DECORATION_ENABLE_DAAPI`, `ENABLE_DRAPER
 - スクリプト: `scripts/amazon_browse_all.ts`
 - 使い方: `bun scripts/amazon_browse_all.ts --token 'v0_...' [--cookie '...'] [--out <file>] [--page-size <n>] [--delay <ms>]`
 
-### タイトル詳細 → ProviderTitleDetail マッピング
+### タイトル詳細 → TitleDetail マッピング
 
 #### タイトル詳細ページ（HTML）
 
@@ -289,7 +289,7 @@ dynamicFeatures: `integration`, `CLIENT_DECORATION_ENABLE_DAAPI`, `ENABLE_DRAPER
 | `"seasonId"`, `"displayName"`, `"sequenceNumber"` | 正規表現で抽出 | **seasons** | |
 | `"episodePages":[...]` | JSONパース | ページネーション用 | DB保存なし |
 
-#### getDetailWidgets API（JSON）→ ProviderEpisode
+#### getDetailWidgets API（JSON）→ Episode
 
 | 元フィールド | 変換 | マッピング先 | 備考 |
 |---|---|---|---|
@@ -346,7 +346,7 @@ slug の命名規則: `{season-prefix}{年の下2桁}`
 
 パラメータ: `from` (開始インデックス), `to` (終了インデックス、inclusive)。1回50件でページング。
 
-### タイトル詳細 → ProviderTitleDetail マッピング
+### タイトル詳細 → TitleDetail マッピング
 
 #### Palette API（一覧）から取得するデータ
 
@@ -358,7 +358,7 @@ slug の命名規則: `{season-prefix}{年の下2桁}`
 | additionalInfo.card_info.season_count | 参考値のみ | DB保存なし |
 | additionalInfo.card_info.premiere_year | 参考値のみ | DB保存なし |
 
-#### エピソード詳細ページ（RSCペイロード）→ ProviderEpisode
+#### エピソード詳細ページ（RSCペイロード）→ Episode
 
 RSCペイロードは `self.__next_f.push([1,"..."])` パターンから JSON を再構築して抽出。
 
@@ -416,10 +416,10 @@ RSCペイロードは `self.__next_f.push([1,"..."])` パターンから JSON �
 | 関数 | 役割 | 呼び出し元 |
 |---|---|---|
 | `checkNewEpisodes` | プロバイダの新着チェック→識別→DB追加/更新 | scheduled.ts |
-| `syncTitle` | ProviderTitleDetail を DB に upsert | checkNewEpisodes, API routes |
+| `syncTitle` | TitleDetail を DB に upsert | checkNewEpisodes, API routes |
 | `syncEpisodesFromTmdb` | TMDB からエピソード情報を取得・補完 | scheduled.ts |
-| `syncProviderEpisodeIds` | プロバイダの episodeId を DB に反映 | API routes |
-| `fetchDetail` | プロバイダからタイトル詳細を取得 | syncProviderEpisodeIds |
+| `syncEpisodeIds` | プロバイダの episodeId を DB に反映 | API routes |
+| `fetchDetail` | プロバイダからタイトル詳細を取得 | syncEpisodeIds |
 | `getProvider` | プロバイダ名からインスタンスを取得 | 各関数 |
 
 ---
@@ -508,7 +508,7 @@ if (ep.duration)    → update duration
 
 ---
 
-### `syncProviderEpisodeIds` — episodeId 反映
+### `syncEpisodeIds` — episodeId 反映
 
 TMDB 経由で作成されたエピソード（episodeId が空）に、プロバイダ固有の episodeId を後から埋める。
 

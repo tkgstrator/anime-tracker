@@ -1,5 +1,5 @@
 import { HuluEpisodeDetail, type HuluEpisodeDetail as HuluEpisodeDetailType } from '../../../schemas/hulu.dto'
-import type { ProviderEpisode, ProviderSeason, ProviderTitleDetail } from '../../../schemas/provider.dto'
+import type { Episode, Season, TitleDetail } from '../../../schemas/provider.dto'
 import { findMatchingBracket } from '../../html-parser'
 
 const HULU_BASE = 'https://www.hulu.jp'
@@ -126,12 +126,12 @@ export function extractEpisodesFromRsc(html: string): HuluEpisodeDetailType[] {
 }
 
 /**
- * Hulu のエピソード詳細を ProviderEpisode 型にマッピングする。
+ * Hulu のエピソード詳細を Episode 型にマッピングする。
  * @param ep - Hulu のエピソード詳細
  * @param index - 配列内のインデックス (episode_number_title がない場合のフォールバック)
  * @returns マッピングされたエピソード。episodeNumber が 0 の場合は null
  */
-function mapToProviderEpisode(ep: HuluEpisodeDetailType, index: number): ProviderEpisode | null {
+function mapToEpisode(ep: HuluEpisodeDetailType, index: number): Episode | null {
   const episodeNumber = ep.additionalInfo.card_info.episode_number_title
     ? parseEpisodeNumber(ep.additionalInfo.card_info.episode_number_title)
     : index + 1
@@ -173,7 +173,7 @@ async function fetchSeriesDescription(seriesId: number): Promise<string> {
  * @returns タイトル詳細情報
  * @throws HTTP エラー時
  */
-export async function fetchHuluTitleDetail(slug: string): Promise<ProviderTitleDetail> {
+export async function fetchHuluTitleDetail(slug: string): Promise<TitleDetail> {
   const url = `${HULU_BASE}/${slug}/assets?ht=episode`
   const res = await fetch(url)
   if (!res.ok) {
@@ -195,8 +195,8 @@ export async function fetchHuluTitleDetail(slug: string): Promise<ProviderTitleD
     seasonMap.set(seasonName, list)
   }
 
-  const seasons: ProviderSeason[] = Array.from(seasonMap.entries(), ([seasonName, eps], i) => {
-    const episodes = eps.map((ep, idx) => mapToProviderEpisode(ep, idx)).filter((e): e is ProviderEpisode => e !== null)
+  const seasons: Season[] = Array.from(seasonMap.entries(), ([seasonName, eps], i) => {
+    const episodes = eps.map((ep, idx) => mapToEpisode(ep, idx)).filter((e): e is Episode => e !== null)
     return {
       seasonId: `hulu-${slug}-s${i + 1}`,
       displayName: seasonName,

@@ -1,5 +1,6 @@
 import { parse as parseHtml } from 'node-html-parser'
-import type { ProviderTitle, ProviderTitleDetail } from '../../../schemas/provider.dto'
+import type { Title, TitleDetail } from '../../../schemas/provider.dto'
+import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
 import { FETCH_HEADERS, fetchAmazonTitleDetail, htmlUnescape, mapEntityType } from './detail'
@@ -32,7 +33,7 @@ const DYNAMIC_FEATURES = [
  * @returns パースされたタイトル一覧
  */
 interface BrowseEntity {
-  title: ProviderTitle
+  title: Title
   hasNewEpisode: boolean
 }
 
@@ -149,7 +150,7 @@ export class AmazonProvider extends Provider {
    * ページネーションで全件取得する。
    * @returns アニメタイトル一覧
    */
-  async fetchTitleList(options?: FetchTitleListOptions): Promise<ProviderTitle[]> {
+  async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
     const url = options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
     const browseRes = await fetch(url, { headers: FETCH_HEADERS })
     if (!browseRes.ok) throw new Error(`Browse page error: ${browseRes.status} ${browseRes.statusText}`)
@@ -209,7 +210,12 @@ export class AmazonProvider extends Provider {
         acc
       )
     } catch (e) {
-      console.error(`[amazon] pagination error at startIndex=${startIndex}:`, e)
+      logger.error({
+        context: 'amazon',
+        action: 'pagination-error',
+        startIndex,
+        error: e instanceof Error ? e.message : String(e)
+      })
     }
   }
 
@@ -218,7 +224,7 @@ export class AmazonProvider extends Provider {
    * @param contentId - Prime Video のタイトル ID (例: "B0CJRFZ6JD")
    * @returns タイトル詳細情報
    */
-  async fetchEpisodeList(contentId: string): Promise<ProviderTitleDetail> {
+  async fetchEpisodeList(contentId: string): Promise<TitleDetail> {
     return fetchAmazonTitleDetail(contentId)
   }
 }
