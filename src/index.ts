@@ -1,5 +1,6 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { apiReference } from '@scalar/hono-api-reference'
+import { queue } from './queue'
 import animeRoutes from './routes/anime'
 import recordingsRoutes from './routes/recordings'
 import { scheduled } from './scheduled'
@@ -29,5 +30,6 @@ app.get(
 
 export default {
   fetch: app.fetch,
-  scheduled
+  scheduled,
+  queue
 }

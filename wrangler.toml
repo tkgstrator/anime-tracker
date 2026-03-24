@@ -27,6 +27,15 @@ head_sampling_rate = 1
 [triggers]
 crons = ["0 */1 * * *"]
 
+[[queues.producers]]
+binding = "SYNC_QUEUE"
+queue = "anime-tracker-sync-staging"
+
+[[queues.consumers]]
+queue = "anime-tracker-sync-staging"
+max_batch_size = 5
+max_retries = 3
+
 [dev]
 port = 8787
 ip = "0.0.0.0"
@@ -43,6 +52,15 @@ database_name = "anime-tracker-staging"
 database_id = "e1e78f23-da35-4d74-8de0-667a8d7ddefc"
 migrations_dir = "prisma/migrations"
 
+[[env.staging.queues.producers]]
+binding = "SYNC_QUEUE"
+queue = "anime-tracker-sync-staging"
+
+[[env.staging.queues.consumers]]
+queue = "anime-tracker-sync-staging"
+max_batch_size = 5
+max_retries = 3
+
 # ---- Production ----
 
 [env.production]
@@ -53,3 +71,12 @@ binding = "DB"
 database_name = "anime-tracker-production"
 database_id = "local"
 migrations_dir = "prisma/migrations"
+
+[[env.production.queues.producers]]
+binding = "SYNC_QUEUE"
+queue = "anime-tracker-sync-production"
+
+[[env.production.queues.consumers]]
+queue = "anime-tracker-sync-production"
+max_batch_size = 5
+max_retries = 3
