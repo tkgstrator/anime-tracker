@@ -1,5 +1,10 @@
-import { parse as parseHtml } from 'node-html-parser'
-import { AmazonBrowseHTMLSchema } from '@/schemas/amazon.dto'
+import { parse } from 'node-html-parser'
+import {
+  AmazonBrowseHTMLSchema,
+  type AmazonPaginateParams,
+  type AmazonPaginateResponse,
+  AmazonPaginateResponseSchame
+} from '@/schemas/amazon.dto'
 import type { Title, TitleInfo } from '../../../schemas/provider.dto'
 import { logger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
@@ -26,8 +31,8 @@ const DYNAMIC_FEATURES = [
   'TvodMovieBundles'
 ]
 
-export function parseBrowseHtml(html: string): Title[] {
-  const root = parseHtml(html)
+export function parseHtml(html: string): Title[] {
+  const root = parse(html)
 
   const script = root.querySelectorAll('script[type="application/json"]').find((s) => s.textContent.includes('titleID'))
 
@@ -38,21 +43,17 @@ export function parseBrowseHtml(html: string): Title[] {
 /**
  * ブラウズページ HTML からページネーション用パラメータを抽出する。
  */
-function extractPaginationParams(html: string): { paginationTargetId: string; serviceToken: string } | null {
-  const targetMatch = html.match(/"paginationTargetId"\s*:\s*"([^"]+)"/)
-  const tokenMatch = html.match(/"paginationServiceToken"\s*:\s*"(v0_[^"]+)"/)
-  if (!targetMatch || !tokenMatch) return null
-  return { paginationTargetId: targetMatch[1], serviceToken: tokenMatch[1] }
-}
-
-interface PaginateResponse {
-  entities?: Record<string, unknown>[]
-  hasMoreItems?: boolean
-  pagination?: {
-    queryParameters?: {
-      serviceToken?: string
-    }
-  }
+function extractPaginationParams(html: string): AmazonPaginateParams | null {
+  const target: RegExpMatchArray | null = (() => {
+    const match = html.match(/"paginationTargetId"\s*:\s*"([^"]+)"/)
+    return match
+  })()
+  const token: RegExpMatchArray | null = (() => {
+    const match = html.match(/"paginationServiceToken"\s*:\s*"(v0_[^"]+)"/)
+    return match
+  })()
+  if (!target || !token) return null
+  return { paginationTargetId: target[1], serviceToken: token[1] }
 }
 
 /**
@@ -63,7 +64,7 @@ async function paginateCollection(
   serviceToken: string,
   startIndex: number,
   cookie: string
-): Promise<PaginateResponse> {
+): Promise<AmazonPaginateResponse> {
   const url = new URL(PAGINATE_BASE)
   url.searchParams.set('jic', '8|EgRzdm9k')
   url.searchParams.set('pageType', 'browse')
@@ -90,7 +91,7 @@ async function paginateCollection(
     }
   })
   if (!res.ok) throw new Error(`paginateCollection error: ${res.status} ${res.statusText}`)
-  return res.json() as Promise<PaginateResponse>
+  return AmazonPaginateResponseSchame.parse(await res.json())
 }
 
 /**
@@ -110,50 +111,46 @@ export class AmazonProvider extends Provider {
    * @returns アニメタイトル一覧
    */
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const url = options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
-    const browseRes = await fetch(url, { headers: FETCH_HEADERS })
-    if (!browseRes.ok) throw new Error(`Browse page error: ${browseRes.status} ${browseRes.statusText}`)
-
-    const cookie = browseRes.headers
+    const response = await this.fetchTitleHTML(options)
+    const cookie = response.headers
       .getSetCookie()
       .map((c) => c.split(';')[0])
       .join('; ')
-    const html = await browseRes.text()
-    const initialEntries = parseBrowseHtml(html)
-    const allEntries = [...initialEntries]
+    const html: string = await response.text()
+    const entries = [...parseHtml(html)]
+    const params = extractPaginationParams(html)
 
-    if (!options?.newEpisodesOnly) {
-      return allEntries.map((e) => e.title)
-    }
-
-    const seen = new Set(initialEntries.map((e) => e.title.contentId))
-    const pagination = extractPaginationParams(html)
-
-    if (pagination) {
-      await this.fetchRemainingPages(pagination, cookie, initialEntries.length, seen, allEntries)
+    if (params?.paginationTargetId) {
+      await this.fetchRemainingPages(params, cookie, entries.length, entries)
     }
 
     return allEntries.map((e) => e.title)
+  }
+
+  private async fetchTitleHTML(options?: FetchTitleListOptions): Promise<Response> {
+    const url = options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
+    const response = await fetch(url, { headers: FETCH_HEADERS })
+    if (!response.ok) throw new Error('Fetch Title HTML Error')
+    return response
   }
 
   /**
    * ページネーションで残りのタイトルを再帰的に取得する。
    */
   private async fetchRemainingPages(
-    pagination: { paginationTargetId: string; serviceToken: string },
+    param: AmazonPaginateParams,
     cookie: string,
     startIndex: number,
-    seen: Set<string>,
-    acc: BrowseEntity[]
+    acc: Title[]
   ): Promise<void> {
     try {
-      const res = await paginateCollection(pagination.paginationTargetId, pagination.serviceToken, startIndex, cookie)
+      const res = await paginateCollection(param.paginationTargetId, param.serviceToken, startIndex, cookie)
       const entities = res.entities ?? []
       if (entities.length === 0) return
 
       for (const e of entities) {
         const titleId = e.titleID as string
-        if (!titleId || seen.has(titleId)) continue
+        if (!titleId || entities.has(titleId)) continue
         seen.add(titleId)
         acc.push(parseEntity(e))
       }

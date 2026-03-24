@@ -88,3 +88,20 @@ export const AmazonBrowseHTMLSchema = z
     })
   })
   .transform((v) => v.init.preparation?.body.containers.flatMap((v) => v.entities))
+
+export type AmazonPaginateParams = {
+  paginationTargetId: string
+  serviceToken: string
+}
+
+export const AmazonPaginateResponseSchame = z.object({
+  entities: z.array(z.record(z.string(), z.unknown())),
+  hasMoreItems: z.boolean(),
+  pagination: z.object({
+    queryParameters: z.object({
+      serviceToken: z.string().nonempty().optional()
+    })
+  })
+})
+
+export type AmazonPaginateResponse = z.infer<typeof AmazonPaginateResponseSchame>
