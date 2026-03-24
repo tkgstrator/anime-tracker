@@ -50,8 +50,36 @@ export const TitleInfoSchema = z.object({
 })
 export type TitleInfo = z.infer<typeof TitleInfoSchema>
 
-export const TitleStatusTypeEnum = z.enum(['FINISHED', 'RELEASING', 'NOT_YET_RELEASED', 'CANCELLED', 'HIATUS', 'UNKNOWN'])
+export const TitleSeasonTypeEnum = z.enum(['WINTER', 'SPRING', 'SUMMER', 'FALL'])
+
+export const TitleStatusTypeEnum = z.enum([
+  'FINISHED',
+  'RELEASING',
+  'NOT_YET_RELEASED',
+  'CANCELLED',
+  'HIATUS',
+  'UNKNOWN'
+])
 export type TitleStatusType = z.infer<typeof TitleStatusTypeEnum>
+
+export const MetadataMediaSchema = z.object({
+  id: z.number().int(),
+  title: z.object({
+    native: z.string().nonempty()
+  }),
+  countryOfOrigin: z.enum(['JP']),
+  status: TitleStatusTypeEnum,
+  season: TitleSeasonTypeEnum,
+  seasonYear: z.number().int().min(0).max(2038)
+})
+
+export const MetadataResponseSchema = z.object({
+  data: z.object({
+    Page: z.object({
+      media: z.array(MetadataMediaSchema).nonempty()
+    })
+  })
+})
 
 export const TitleMetadataSchema = z
   .object({
@@ -60,7 +88,7 @@ export const TitleMetadataSchema = z
     title: z.string().nonempty(),
     status: TitleStatusTypeEnum,
     year: z.number().int().min(0).max(2038),
-    quarter: z.number().int().min(1).max(4)
+    quarter: z.number().int().min(0).max(3)
   })
   .refine((v) => v.tmdbId != null || v.aniListId != null, {
     message: 'Either tmdbId or aniListId is required'
