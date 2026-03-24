@@ -20,6 +20,16 @@
       },
       "problemMatcher": [],
       "group": "test"
+    },
+    {
+      "label": "Set Secrets (staging)",
+      "type": "shell",
+      "command": ".vscode/scripts/set-secrets.sh .dev.vars",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }
