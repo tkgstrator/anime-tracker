@@ -47,5 +47,6 @@
     "source.organizeImports.biome": "explicit"
   },
   "editor.formatOnSave": true,
-  "scm.defaultViewMode": "tree"
+  "scm.defaultViewMode": "tree",
+  "claudeCode.initialPermissionMode": "bypassPermissions"
 }

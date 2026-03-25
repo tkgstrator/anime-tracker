@@ -30,6 +30,26 @@
       },
       "problemMatcher": [],
       "group": "none"
+    },
+    {
+      "label": "D1: Local → Remote",
+      "type": "shell",
+      "command": ".vscode/scripts/d1-local-to-remote.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "D1: Remote → Local",
+      "type": "shell",
+      "command": ".vscode/scripts/d1-remote-to-local.sh",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }

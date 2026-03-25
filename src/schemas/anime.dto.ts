@@ -39,7 +39,7 @@ export const AnimeInfoSchema = AnimeSchema.extend({
           episodeId: z.string().nonempty(),
           title: z.string().nonempty(),
           description: z.string().nonempty(),
-          releaseDate: z.string().nonempty(),
+          releaseDate: z.coerce.string().nonempty(),
           duration: z.number().int().nonnegative(),
           maturityRating: z.number().int().nonnegative().nullable(),
           imageUrl: z.string().nonempty(),
