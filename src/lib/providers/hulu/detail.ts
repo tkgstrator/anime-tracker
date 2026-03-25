@@ -14,7 +14,7 @@ const HULU_FALCOR_API = `${HULU_BASE}/anon/ja/webp/path`
  * Hulu の startAt（"2026/03/25 00:30:00" 形式）を ISO 8601 (JST) に変換する。
  * パース不可の場合は入力をそのまま返す。
  */
-function normalizeHuluDate(dateStr: string): string {
+export function normalizeHuluDate(dateStr: string): string {
   const m = dateStr.match(/^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/)
   if (!m) return dateStr
   const [, year, month, day, hour, min, sec] = m

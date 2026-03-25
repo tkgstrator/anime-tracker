@@ -23,6 +23,7 @@ model Anime {
   isIdentified   Boolean  @default(false) @map("is_identified")
   status         String   @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
   aniListId      Int      @map("anilist_id")
+  nextEpisodeDate DateTime? @map("next_episode_date") // 次回エピソード配信日 (UTC)
   scheduled      Boolean  @default(false) // 録画予約済み
   recorded       Boolean  @default(false) // 録画済み
   createdAt      DateTime @default(now()) @map("created_at")
