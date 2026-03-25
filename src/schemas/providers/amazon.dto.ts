@@ -14,7 +14,7 @@ const EntityTypeEnum = z
   .transform((v) => (v === 'Movie' ? EntityType.enum.movie : EntityType.enum.tv))
 
 /** ブラウズページ `<script type="application/json">` 内の個別エンティティ。transform で {@link TitleSchema} に変換される。 */
-const BrowseEntitySchema = z
+export const BrowseEntitySchema = z
   .object({
     titleID: z.string().nonempty(),
     displayTitle: z.string().nonempty(),
@@ -35,7 +35,8 @@ const BrowseEntitySchema = z
       entityType: v.entityType,
       imageUrl: v.images.cover.url,
       maturityRating: null,
-      benefitId: null
+      benefitId: null,
+      hasNewContent: !!v.entitlementCues.titleMetadataBadge.message
     })
   )
 

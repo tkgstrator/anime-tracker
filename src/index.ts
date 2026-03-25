@@ -26,6 +26,10 @@ app.post('/api/debug/sync', async (c) => {
   try {
     if (body.data.type === 'fetch') {
       const contentIds = await service.fetch(body.data)
+      const { provider } = body.data.message
+      for (const contentId of contentIds) {
+        await service.update({ type: 'update', message: { provider, contentId } })
+      }
       return c.json({ type: 'fetch', contentIds, logs: logger.stopCapture() })
     }
     await service.update(body.data)
