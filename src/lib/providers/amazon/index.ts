@@ -1,4 +1,3 @@
-import { parse } from 'node-html-parser'
 import {
   BrowseHTMLSchema,
   type PaginateParams,
@@ -32,12 +31,22 @@ const DYNAMIC_FEATURES = [
 ]
 
 function parseHtml(html: string): Title[] {
-  const root = parse(html)
+  const scriptTypes = ['text/template', 'application/json']
+  for (const type of scriptTypes) {
+    const scripts = [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].sort(
+      (a, b) => b[1].length - a[1].length
+    )
 
-  const script = root.querySelectorAll('script[type="application/json"]').find((s) => s.textContent.includes('titleID'))
-
-  if (!script) return []
-  return BrowseHTMLSchema.parse(JSON.parse(script.textContent))
+    for (const [, content] of scripts) {
+      if (!content.includes('titleID')) continue
+      try {
+        return BrowseHTMLSchema.parse(JSON.parse(content))
+      } catch {
+        // noop
+      }
+    }
+  }
+  return []
 }
 
 /**
