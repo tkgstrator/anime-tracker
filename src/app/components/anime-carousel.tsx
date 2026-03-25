@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
-import { BadgeCheck } from 'lucide-react'
 import { ProviderBadge } from '@/app/components/anime-badges'
 import { Badge } from '@/app/components/ui/badge'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/app/components/ui/carousel'
@@ -14,9 +13,10 @@ type AnimeCarouselProps = {
   anime: AnimeSchema[]
   viewAllLink?: string
   badgeType?: BadgeType
+  showProvider?: boolean
 }
 
-export function AnimeCarousel({ title, anime, viewAllLink, badgeType }: AnimeCarouselProps) {
+export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvider = true }: AnimeCarouselProps) {
   if (anime.length === 0) return null
 
   return (
@@ -33,7 +33,7 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType }: AnimeCar
         <CarouselContent className='-ml-3'>
           {anime.map((item) => (
             <CarouselItem key={item.id} className='basis-[160px] pl-3 sm:basis-[200px]'>
-              <CarouselCard anime={item} badgeType={badgeType} />
+              <CarouselCard anime={item} badgeType={badgeType} showProvider={showProvider} />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -44,8 +44,12 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType }: AnimeCar
   )
 }
 
+function roundTo10Min(d: dayjs.Dayjs): dayjs.Dayjs {
+  return d.minute(Math.floor(d.minute() / 10) * 10).second(0)
+}
+
 function formatDateBadge(date: string, type: BadgeType): string {
-  const d = dayjs(date)
+  const d = roundTo10Min(dayjs(date))
   if (type === 'updatedAt') {
     return d.format('M/D H:mm')
   }
@@ -55,7 +59,15 @@ function formatDateBadge(date: string, type: BadgeType): string {
   return d.format('M/D H:mm')
 }
 
-function CarouselCard({ anime, badgeType }: { anime: AnimeSchema; badgeType?: BadgeType }) {
+function CarouselCard({
+  anime,
+  badgeType,
+  showProvider
+}: {
+  anime: AnimeSchema
+  badgeType?: BadgeType
+  showProvider: boolean
+}) {
   const badgeDate =
     badgeType === 'updatedAt' ? anime.updatedAt : badgeType === 'nextEpisodeDate' ? anime.nextEpisodeDate : null
 
@@ -73,20 +85,14 @@ function CarouselCard({ anime, badgeType }: { anime: AnimeSchema; badgeType?: Ba
             {anime.title}
           </div>
         )}
-        {anime.isIdentified && (
-          <BadgeCheck
-            className='absolute top-1 right-1 h-5 w-5 fill-blue-500 stroke-white drop-shadow'
-            aria-label='AniList 識別済み'
-          />
-        )}
-        {badgeType && badgeDate && (
+{badgeType && badgeDate && (
           <Badge variant='secondary' className='absolute bottom-1 left-1 bg-black/70 text-[10px] text-white'>
             {formatDateBadge(badgeDate, badgeType)}
           </Badge>
         )}
       </div>
       <p className='mt-1.5 truncate text-sm font-medium'>{anime.title}</p>
-      <ProviderBadge provider={anime.provider} className='text-[10px]' />
+      {showProvider && <ProviderBadge provider={anime.provider} className='text-[10px]' />}
     </Link>
   )
 }

@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
+import { z } from 'zod'
+import { ProviderTypeEnum } from '@/schemas/message.dto'
 import { useAtom } from 'jotai'
 import { ArrowDownAZ, ArrowUpAZ, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -35,9 +37,12 @@ function readStorage<T>(key: string, fallback: T): T {
 }
 
 export const Route = createFileRoute('/browse/')({
-  loader: () => {
+  validateSearch: z.object({
+    provider: ProviderTypeEnum.optional()
+  }),
+  loader: ({ search }) => {
     const page = readStorage('filter-page', 1)
-    const provider = readStorage<string | undefined>('filter-provider', undefined)
+    const provider = search.provider ?? readStorage<string | undefined>('filter-provider', undefined)
     const year = readStorage<number | undefined>('filter-year', undefined)
     const quarter = readStorage<number | undefined>('filter-quarter', undefined)
     const status = readStorage<string | undefined>('filter-status', undefined)
@@ -54,8 +59,10 @@ export const Route = createFileRoute('/browse/')({
 
 function AnimeListPage() {
   const loaderData = Route.useLoaderData() as PaginatedAnimeSchema
+  const { provider: searchProvider } = Route.useSearch()
   const [animeList, setAnimeList] = useState<AnimeSchema[]>(loaderData.data)
-  const [filterProvider, setFilterProvider] = useAtom(filterProviderAtom)
+  const [atomProvider, setFilterProvider] = useAtom(filterProviderAtom)
+  const filterProvider = searchProvider ?? atomProvider
   const [filterYear, setFilterYear] = useAtom(filterYearAtom)
   const [filterQuarter, setFilterQuarter] = useAtom(filterQuarterAtom)
   const [filterStatus, setFilterStatus] = useAtom(filterStatusAtom)

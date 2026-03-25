@@ -42,10 +42,23 @@ export const Route = createFileRoute('/')({
       list.push(anime)
       byProvider[anime.provider] = list
     }
+    for (const list of Object.values(byProvider)) {
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[list[i], list[j]] = [list[j], list[i]]
+      }
+    }
+
+    const recentlyUpdated = [...recentlyUpdatedRes.data].sort(
+      (a, b) => dayjs(b.updatedAt).valueOf() - dayjs(a.updatedAt).valueOf()
+    )
+    const upcoming = [...upcomingRes.data].sort(
+      (a, b) => dayjs(a.nextEpisodeDate).valueOf() - dayjs(b.nextEpisodeDate).valueOf()
+    )
 
     return {
-      recentlyUpdated: recentlyUpdatedRes.data,
-      upcoming: upcomingRes.data,
+      recentlyUpdated,
+      upcoming,
       currentSeason: currentSeasonRes.data,
       scheduled: scheduledRes.data,
       byProvider
@@ -84,7 +97,8 @@ function HomePage() {
             key={provider}
             title={providerLabels[provider] ?? provider}
             anime={anime}
-            viewAllLink='/browse'
+            viewAllLink={`/browse?provider=${provider}`}
+            showProvider={false}
           />
         ))}
       </div>
