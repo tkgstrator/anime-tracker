@@ -10,7 +10,7 @@ const RootComponent = () => {
   const routeKey = useRouterState({ select: (s) => s.location.pathname })
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className='min-h-screen select-none bg-background'>
       <header className='sticky top-0 z-50 bg-background/80 backdrop-blur-sm'>
         <div className='mx-auto flex h-14 max-w-6xl items-center gap-8 px-6'>
           <Link to='/' className='text-lg font-bold tracking-tight'>
