@@ -3,14 +3,14 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { extractPageData } from '../src/lib/providers/amazon/detail'
 import { TitleInfoSchema } from '../src/schemas/providers/common.dto'
-import { fixtureIds, titlesDir } from './fixtures/amazon/ids'
+import { fixtures } from './fixtures/amazon/ids'
 
 describe('extractPageData', () => {
-  for (const id of fixtureIds) {
-    const html = readFileSync(resolve(titlesDir, `${id}.html`), 'utf-8')
+  for (const { dir, id, dirPath } of fixtures) {
+    const html = readFileSync(resolve(dirPath, `${id}.html`), 'utf-8')
     const page = extractPageData(html)
 
-    test(`${id}: ${page.title}`, () => {
+    test(`[${dir}] ${id}: ${page.title}`, () => {
       expect(page.title).toBeTruthy()
       expect(page.synopsis).toBeTruthy()
       expect(page.entityType).toMatch(/^(tv|movie)$/)
@@ -30,12 +30,12 @@ describe('extractPageData', () => {
 })
 
 describe('エピソードデータ', () => {
-  for (const id of fixtureIds) {
-    const jsonPath = resolve(titlesDir, `${id}.json`)
+  for (const { dir, id, dirPath } of fixtures) {
+    const jsonPath = resolve(dirPath, `${id}.json`)
     if (!existsSync(jsonPath)) continue
     const fixture = TitleInfoSchema.parse(JSON.parse(readFileSync(jsonPath, 'utf-8')))
 
-    test(`${id}: ${fixture.title} — ${fixture.seasons.length} シーズン`, () => {
+    test(`[${dir}] ${id}: ${fixture.title} — ${fixture.seasons.length} シーズン`, () => {
       expect(fixture.title).toBeTruthy()
       expect(fixture.entityType).toMatch(/^(tv|movie)$/)
       expect(fixture.seasons.length).toBeGreaterThan(0)
@@ -59,7 +59,7 @@ describe('エピソードデータ', () => {
       }
     })
 
-    test(`${id}: エピソード番号が連続している`, () => {
+    test(`[${dir}] ${id}: エピソード番号が連続している`, () => {
       for (const season of fixture.seasons) {
         const numbers = season.episodes.map((ep) => ep.episodeNumber)
         const sorted = [...numbers].sort((a, b) => a - b)
