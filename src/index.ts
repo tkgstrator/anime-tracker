@@ -1,9 +1,13 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { apiReference } from '@scalar/hono-api-reference'
+import { createPrismaClient } from './lib/db'
+import { logger } from './lib/logger'
+import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
 import recordingsRoutes from './routes/recordings'
 import { scheduled } from './scheduled'
+import { MessageSchema } from './schemas/message.dto'
 
 type Bindings = { DB: D1Database; TMDB_API_KEY: string; SYNC_QUEUE: Queue }
 
@@ -11,6 +15,47 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>()
 
 app.route('/api/anime', animeRoutes)
 app.route('/api/recordings', recordingsRoutes)
+
+// デバッグ用: キューを経由せず SyncService を直接実行する
+app.post('/api/debug/sync', async (c) => {
+  const body = MessageSchema.safeParse(await c.req.json())
+  if (!body.success) return c.json({ error: body.error.flatten() }, 400)
+  const prisma = createPrismaClient(c.env.DB)
+  const service = new SyncService(prisma)
+  logger.startCapture()
+  try {
+    if (body.data.type === 'fetch') {
+      const contentIds = await service.fetch(body.data)
+      return c.json({ type: 'fetch', contentIds, logs: logger.stopCapture() })
+    }
+    await service.update(body.data)
+    return c.json({ type: 'update', success: true, logs: logger.stopCapture() })
+  } catch (e) {
+    return c.json({ error: e instanceof Error ? e.message : String(e), logs: logger.stopCapture() }, 500)
+  } finally {
+    await prisma.$disconnect()
+  }
+})
+
+// デバッグ用: Falcor API / AniList のレスポンスを直接確認する
+app.get('/api/debug/falcor/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const paths = JSON.stringify([['titleSlug', slug, ['name', 'slug', 'description', 'thumbnailUrl', 'service']]])
+  const url = `https://www.hulu.jp/anon/ja/webp/path?paths=${encodeURIComponent(paths)}&method=get`
+  const res = await fetch(url)
+  return c.json({ status: res.status, body: await res.json() })
+})
+
+app.get('/api/debug/anilist/:title', async (c) => {
+  const title = c.req.param('title')
+  const query = `query { Page(perPage: 5) { media(search: ${JSON.stringify(title)}, type: ANIME) { id title { native } countryOfOrigin status season seasonYear } } }`
+  const res = await fetch('https://graphql.anilist.co', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+  })
+  return c.json({ status: res.status, body: await res.json() })
+})
 
 app.doc('/openapi.json', {
   openapi: '3.1.0',

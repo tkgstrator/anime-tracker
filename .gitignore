@@ -242,6 +242,8 @@ $RECYCLE.BIN/
 __tests__/fixtures/all_identified.json
 __tests__/fixtures/*/episodes_identified.json
 __tests__/fixtures/*/episodes_refetched/
+__tests__/fixtures/*/titles/
+__tests__/fixtures/*/latest/
 
 # Temporary files
 tmp/

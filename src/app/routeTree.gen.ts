@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecordingsIndexRouteImport } from './routes/recordings/index'
+import { Route as BrowseIndexRouteImport } from './routes/browse/index'
 import { Route as AnimeIdIndexRouteImport } from './routes/anime/$id/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const RecordingsIndexRoute = RecordingsIndexRouteImport.update({
   path: '/recordings/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrowseIndexRoute = BrowseIndexRouteImport.update({
+  id: '/browse/',
+  path: '/browse/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnimeIdIndexRoute = AnimeIdIndexRouteImport.update({
   id: '/anime/$id/',
   path: '/anime/$id/',
@@ -31,30 +37,34 @@ const AnimeIdIndexRoute = AnimeIdIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/browse/': typeof BrowseIndexRoute
   '/recordings/': typeof RecordingsIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/browse': typeof BrowseIndexRoute
   '/recordings': typeof RecordingsIndexRoute
   '/anime/$id': typeof AnimeIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/browse/': typeof BrowseIndexRoute
   '/recordings/': typeof RecordingsIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/recordings/' | '/anime/$id/'
+  fullPaths: '/' | '/browse/' | '/recordings/' | '/anime/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/recordings' | '/anime/$id'
-  id: '__root__' | '/' | '/recordings/' | '/anime/$id/'
+  to: '/' | '/browse' | '/recordings' | '/anime/$id'
+  id: '__root__' | '/' | '/browse/' | '/recordings/' | '/anime/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BrowseIndexRoute: typeof BrowseIndexRoute
   RecordingsIndexRoute: typeof RecordingsIndexRoute
   AnimeIdIndexRoute: typeof AnimeIdIndexRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecordingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/browse/': {
+      id: '/browse/'
+      path: '/browse'
+      fullPath: '/browse/'
+      preLoaderRoute: typeof BrowseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/anime/$id/': {
       id: '/anime/$id/'
       path: '/anime/$id'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BrowseIndexRoute: BrowseIndexRoute,
   RecordingsIndexRoute: RecordingsIndexRoute,
   AnimeIdIndexRoute: AnimeIdIndexRoute,
 }

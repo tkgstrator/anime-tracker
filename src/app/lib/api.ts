@@ -15,6 +15,8 @@ const api = new Zodios('/api', [
       { name: 'year', type: 'Query', schema: z.number().int().optional() },
       { name: 'quarter', type: 'Query', schema: z.number().int().min(0).max(3).optional() },
       { name: 'status', type: 'Query', schema: z.string().optional() },
+      { name: 'recentlyUpdated', type: 'Query', schema: z.boolean().optional() },
+      { name: 'upcoming', type: 'Query', schema: z.boolean().optional() },
       { name: 'scheduled', type: 'Query', schema: z.boolean().optional() },
       { name: 'recorded', type: 'Query', schema: z.boolean().optional() },
       { name: 'sort', type: 'Query', schema: z.enum(['title', 'year']).optional() },

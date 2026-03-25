@@ -98,3 +98,46 @@ export async function fetchHuluAnimeByDecade(decade: number): Promise<VodItem[]>
 export async function fetchRecentlyAdded(): Promise<VodItem[]> {
   return fetchHuluAnimePage(RECENTLY_ADDED_SLUG, 0, [])
 }
+
+const SEASONS = ['winter', 'spring', 'summer', 'autumn'] as const
+
+/**
+ * 現在の日付から今期（＋最終月なら来期も）のパレットスラッグを返す。
+ *
+ * 各四半期の最終月（3月, 6月, 9月, 12月）は来期のパレットも含める。
+ * 12月の来期は翌年の冬になる。
+ */
+export function currentSeasonSlugs(now = new Date()): string[] {
+  const month = now.getMonth() // 0-based
+  const year = now.getFullYear()
+  const quarterIndex = Math.floor(month / 3) // 0=winter, 1=spring, 2=summer, 3=autumn
+  const slugs = [buildSlug(SEASONS[quarterIndex], year)]
+
+  const isLastMonthOfQuarter = month % 3 === 2
+  if (isLastMonthOfQuarter) {
+    const nextQuarterIndex = (quarterIndex + 1) % 4
+    const nextYear = quarterIndex === 3 ? year + 1 : year
+    slugs.push(buildSlug(SEASONS[nextQuarterIndex], nextYear))
+  }
+
+  return slugs
+}
+
+/**
+ * 今期（＋最終月なら来期も）のアニメ一覧をパレット API から取得する。
+ * slug 間で重複するタイトルは除外する。
+ */
+export async function fetchCurrentSeasonAnime(): Promise<VodItem[]> {
+  const slugs = currentSeasonSlugs()
+  const results = await Promise.all(
+    slugs.map((slug) => fetchHuluAnimePage(slug, 0, []).catch(() => [] as VodItem[]))
+  )
+  const seen = new Set<string>()
+  const items: VodItem[] = []
+  for (const item of results.flat()) {
+    if (seen.has(item.slug)) continue
+    seen.add(item.slug)
+    items.push(item)
+  }
+  return items
+}
