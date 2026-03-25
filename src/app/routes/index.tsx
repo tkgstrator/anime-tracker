@@ -64,6 +64,7 @@ export const Route = createFileRoute('/')({
       byProvider
     }
   },
+  staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: LoadingSpinner,
   component: HomePage
 })
