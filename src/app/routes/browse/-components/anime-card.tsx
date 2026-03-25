@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router'
-import { BadgeCheck } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { Badge } from '@/app/components/ui/badge'
 import { getCleanImageUrl } from '@/lib/image'
@@ -35,12 +34,6 @@ export function AnimeCard({
           <div className='flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground'>
             {anime.title}
           </div>
-        )}
-        {anime.isIdentified && (
-          <BadgeCheck
-            className='absolute top-1.5 right-1.5 h-6 w-6 fill-blue-500 stroke-white drop-shadow'
-            aria-label='AniList 識別済み'
-          />
         )}
       </div>
       <p className='mt-1.5 truncate text-sm font-medium'>{anime.title}</p>
