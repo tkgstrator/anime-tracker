@@ -11,6 +11,17 @@ const HULU_BASE = 'https://www.hulu.jp'
 const HULU_FALCOR_API = `${HULU_BASE}/anon/ja/webp/path`
 
 /**
+ * Hulu の startAt（"2026/03/25 00:30:00" 形式）を ISO 8601 (JST) に変換する。
+ * パース不可の場合は入力をそのまま返す。
+ */
+function normalizeHuluDate(dateStr: string): string {
+  const m = dateStr.match(/^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/)
+  if (!m) return dateStr
+  const [, year, month, day, hour, min, sec] = m
+  return `${year}-${month}-${day}T${hour}:${min}:${sec}+09:00`
+}
+
+/**
  * Hulu のエピソード詳細を Episode 型にマッピングする。
  */
 function mapToEpisode(ep: HuluEpisode, index: number): Episode {
@@ -19,7 +30,7 @@ function mapToEpisode(ep: HuluEpisode, index: number): Episode {
     episodeId: String(ep.id_in_schema),
     title: ep.additionalInfo.short_name ?? ep.title,
     description: ep.description,
-    releaseDate: ep.startAt,
+    releaseDate: normalizeHuluDate(ep.startAt),
     duration: Math.round(ep.additionalInfo.episode_runtime),
     maturityRating: null,
     imageUrl: ep.imageUrl,

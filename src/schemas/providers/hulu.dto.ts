@@ -1,3 +1,4 @@
+import { kanji2number } from '@geolonia/japanese-numeral'
 import z from 'zod'
 
 // --- Browse schemas (Palette API / Filtered API) ---
@@ -84,16 +85,13 @@ const AdditionalInfoSchema = z.object({
       episode_number_title: z
         .string()
         .nonempty()
-        .regex(/(\d+)/)
         .transform((v) => {
-          const match = v.match(/(\d+)/)
-          if (match === null) {
-            console.error(v)
-            throw new Error(`invalid episode_number_title: ${v}`)
-          }
-          return [...match][0]
+          const digitMatch = v.match(/(\d+)/)
+          if (digitMatch) return Number(digitMatch[1])
+          const kanjiMatch = v.match(/[一二三四五六七八九十百千万億兆]+/)
+          if (kanjiMatch) return kanji2number(kanjiMatch[0])
+          return null
         })
-        .pipe(z.coerce.number())
         .nullish()
         .transform((v) => v ?? null),
       has_closed_caption: z.boolean(),

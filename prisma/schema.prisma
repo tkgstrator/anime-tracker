@@ -59,7 +59,7 @@ model Episode {
   episodeId      String   @map("episode_id")
   title          String
   description    String
-  releaseDate    String   @map("release_date")
+  releaseDate    DateTime @map("release_date")
   duration       Int      @default(0)
   maturityRating Int?     @map("maturity_rating")
   imageUrl       String   @map("image_url")
