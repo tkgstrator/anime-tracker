@@ -3,7 +3,7 @@ import type { VodItem } from '../../../schemas/providers/hulu.dto'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { DECADE_AG, fetchCurrentSeasonAnime, fetchHuluAnimeByDecade, fetchRecentlyAdded } from './browse'
 
-import { fetchHuluTitleDetail, normalizeHuluDate } from './detail'
+import { fetchHuluTitleDetail, parseHuluDate } from './detail'
 
 function vodItemToTitle(item: VodItem): Title {
   const badgeEndAt = item.additionalInfo.card_info.badge_text_end_at
@@ -15,7 +15,7 @@ function vodItemToTitle(item: VodItem): Title {
     imageUrl: item.imageUrl,
     maturityRating: null,
     benefitId: 'hulu',
-    nextEpisodeDate: badgeEndAt ? normalizeHuluDate(badgeEndAt) : null
+    nextEpisodeDate: badgeEndAt ? parseHuluDate(badgeEndAt) : null
   }
 }
 

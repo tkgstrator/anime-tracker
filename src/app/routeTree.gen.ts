@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecordingsIndexRouteImport } from './routes/recordings/index'
 import { Route as BrowseIndexRouteImport } from './routes/browse/index'
 import { Route as AnimeIdIndexRouteImport } from './routes/anime/$id/index'
+import { Route as ErrorsStatusCodeIndexRouteImport } from './routes/_errors/$statusCode/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,17 +35,24 @@ const AnimeIdIndexRoute = AnimeIdIndexRouteImport.update({
   path: '/anime/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErrorsStatusCodeIndexRoute = ErrorsStatusCodeIndexRouteImport.update({
+  id: '/_errors/$statusCode/',
+  path: '/$statusCode/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse/': typeof BrowseIndexRoute
   '/recordings/': typeof RecordingsIndexRoute
+  '/$statusCode/': typeof ErrorsStatusCodeIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseIndexRoute
   '/recordings': typeof RecordingsIndexRoute
+  '/$statusCode': typeof ErrorsStatusCodeIndexRoute
   '/anime/$id': typeof AnimeIdIndexRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/browse/': typeof BrowseIndexRoute
   '/recordings/': typeof RecordingsIndexRoute
+  '/_errors/$statusCode/': typeof ErrorsStatusCodeIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse/' | '/recordings/' | '/anime/$id/'
+  fullPaths: '/' | '/browse/' | '/recordings/' | '/$statusCode/' | '/anime/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/recordings' | '/anime/$id'
-  id: '__root__' | '/' | '/browse/' | '/recordings/' | '/anime/$id/'
+  to: '/' | '/browse' | '/recordings' | '/$statusCode' | '/anime/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/browse/'
+    | '/recordings/'
+    | '/_errors/$statusCode/'
+    | '/anime/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseIndexRoute: typeof BrowseIndexRoute
   RecordingsIndexRoute: typeof RecordingsIndexRoute
+  ErrorsStatusCodeIndexRoute: typeof ErrorsStatusCodeIndexRoute
   AnimeIdIndexRoute: typeof AnimeIdIndexRoute
 }
 
@@ -99,6 +115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnimeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_errors/$statusCode/': {
+      id: '/_errors/$statusCode/'
+      path: '/$statusCode'
+      fullPath: '/$statusCode/'
+      preLoaderRoute: typeof ErrorsStatusCodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseIndexRoute: BrowseIndexRoute,
   RecordingsIndexRoute: RecordingsIndexRoute,
+  ErrorsStatusCodeIndexRoute: ErrorsStatusCodeIndexRoute,
   AnimeIdIndexRoute: AnimeIdIndexRoute,
 }
 export const routeTree = rootRouteImport
