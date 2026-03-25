@@ -78,8 +78,130 @@ graph TD
 1. **Scheduled** — 毎時 Cron で `hulu` / `amazon` の fetch メッセージを Queue に enqueue
 2. **Queue Consumer** — バッチでメッセージを消費し SyncService に委譲
 3. **Provider** — Amazon / Hulu のカタログ・詳細ページをスクレイピング
-4. **Metadata** — TMDB API / AniList GraphQL でメタデータを補完
+4. **Metadata** — AniList GraphQL でメタデータを補完
 5. **Upsert** — Prisma 経由で D1 に Anime / Season / Episode を upsert
+
+### Prime Video のデータ取得
+
+#### タイトル一覧
+
+ブラウズページ (`/gp/video/browse`) を利用する。検索パラメータ (ジャンルフィルタ・ソート順・オファータイプ等) を protobuf でエンコードし、URL-safe Base64 に変換して `serviceToken` としてURLに埋め込む。
+
+1. ブラウズ URL にリクエストし、レスポンス HTML 内の `<script type="application/json">` からタイトル一覧を抽出
+2. HTML からページネーション用パラメータ (`paginationTargetId`, `serviceToken`) を正規表現で抽出
+3. `paginateCollection` API を再帰的に呼び出し、`hasMoreItems: false` になるまで全ページを取得
+
+新着取得時 (`newEpisodesOnly`) は「新着アニメTV」カテゴリフィルタ (`p_n_theme_browse-bin=4435524051`) を適用する。
+
+```mermaid
+%%{init: {'theme': 'dark'}}%%
+graph LR
+    Params["検索パラメータ<br/>(ジャンル/ソート/オファー)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
+    Token --> Browse["/gp/video/browse"]
+    Browse -->|"HTML parse<br/>script[type=application/json]"| Titles["タイトル一覧"]
+    Browse -->|"regex extract<br/>paginationTargetId"| Paginate["paginateCollection API"]
+    Paginate -->|"hasMoreItems?"| Paginate
+    Paginate --> Titles
+
+    style Params fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
+    style Token fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
+    style Browse fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Paginate fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+```
+
+#### タイトル詳細
+
+詳細ページ (`/gp/video/detail/{contentId}`) の HTML を取得し、`<script type="application/json">` から以下を抽出する:
+
+- タイトル名、あらすじ、エンティティタイプ (movie/tv)、レーティング、画像URL
+- シーズン一覧 (seasonId, displayName, seasonNumber)
+- エピソードリストのウィジェットトークン (`episodePageTokens`)
+
+エピソード情報は `getDetailWidgets` API をトークンごとに呼び出して取得する。複数シーズンの場合は各シーズンの詳細ページを追加取得してトークンを得る。
+
+```mermaid
+%%{init: {'theme': 'dark'}}%%
+graph LR
+    Detail["/gp/video/detail/{id}<br/>HTML取得"] -->|"HTML parse"| Meta["タイトル情報<br/>(title, synopsis, seasons)"]
+    Detail -->|"HTML parse"| Tokens["episodePageTokens"]
+    Tokens -->|"トークンごと"| Widgets["getDetailWidgets API"]
+    Widgets --> Episodes["エピソード一覧"]
+    Meta --> Result["TitleInfo"]
+    Episodes --> Result
+
+    style Detail fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Meta fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Tokens fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
+    style Widgets fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Episodes fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
+    style Result fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+```
+
+### Hulu のデータ取得
+
+#### タイトル一覧
+
+2つのAPIを使い分ける:
+
+- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — スラッグ指定で一覧取得。新着取得時は `recentlyadded-anime` スラッグを使用し、エピソード単位のエントリは `series_id` で重複排除する
+- **Filtered API** (`/api/v2/filtered`) — 年代 (`ag:twenty_twenties` 等) + ジャンル (`edg:tv_animation`) でフィルタ。全件取得時は 2000s / 2010s / 2020s を並列取得
+
+いずれも `from`/`to` パラメータで50件ずつページネーションし、`total_count` に達するまで再帰的に取得する。
+
+```mermaid
+%%{init: {'theme': 'dark'}}%%
+graph LR
+    subgraph 新着取得
+        Palette["Palette API<br/>recentlyadded-anime"] -->|"50件ずつ"| Dedup["series_id で重複排除"]
+    end
+    subgraph 全件取得
+        Filtered2000["Filtered API<br/>2000s"] --> Merge["マージ + 重複排除"]
+        Filtered2010["Filtered API<br/>2010s"] --> Merge
+        Filtered2020["Filtered API<br/>2020s"] --> Merge
+    end
+    Dedup --> Titles["タイトル一覧"]
+    Merge --> Titles
+
+    style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Dedup fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
+    style Filtered2000 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Filtered2010 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Filtered2020 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Merge fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
+    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+```
+
+#### タイトル詳細
+
+2つのデータソースを並列で取得しマージする:
+
+- **Falcor JSON Graph API** (`/anon/ja/webp/path`) — slug をキーにタイトルのメタ情報 (name, description, thumbnailUrl, service) を取得。`titleSlug` パスで slug から内部IDへの解決を Falcor 側で行う
+- **RSC (React Server Component) ペイロード** — エピソードページ (`/{slug}/assets?ht=episode`) の HTML から `self.__next_f.push()` チャンクを結合し、`"metas"` 配列を抽出してエピソード情報をパースする。エピソードは `season_number_title` でシーズンにグループ化する
+
+```mermaid
+%%{init: {'theme': 'dark'}}%%
+graph LR
+    Slug["slug"] --> Falcor["Falcor API<br/>/anon/ja/webp/path"]
+    Slug --> RSC["/{slug}/assets?ht=episode"]
+
+    Falcor -->|"titleSlug → meta/{id}"| Meta["メタ情報<br/>(name, description,<br/>thumbnailUrl, service)"]
+    RSC -->|"HTML取得"| Chunks["self.__next_f.push()<br/>チャンク結合"]
+    Chunks -->|"metas 配列抽出"| EpParse["エピソード パース"]
+    EpParse -->|"season_number_title<br/>でグループ化"| Seasons["シーズン + エピソード"]
+
+    Meta --> Result["TitleInfo"]
+    Seasons --> Result
+
+    style Slug fill:#3e3e3e,stroke:#888,color:#ddd
+    style Falcor fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style RSC fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Meta fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Chunks fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
+    style EpParse fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
+    style Seasons fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style Result fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+```
 
 ## セットアップ
 
