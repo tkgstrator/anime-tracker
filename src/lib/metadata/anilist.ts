@@ -109,6 +109,7 @@ query ($search: String!) {
       status
       season
       seasonYear
+      startDate { year month day }
     }
   }
 }
@@ -121,6 +122,7 @@ const MEDIA_FIELDS = `
   status
   season
   seasonYear
+  startDate { year month day }
 `
 
 /**
@@ -136,7 +138,7 @@ function buildBatchQuery(searches: string[]): string {
 
 type MetadataMedia = z.infer<typeof MetadataMediaSchema>
 
-const SEASON_TO_QUARTER: Record<MetadataMedia['season'], number> = {
+const SEASON_TO_QUARTER: Record<string, number> = {
   WINTER: 0,
   SPRING: 1,
   SUMMER: 2,
@@ -169,13 +171,18 @@ async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
   return parsed.data.Page.media[0]
 }
 
-function toMetadata(media: MetadataMedia): TitleMetadata {
+const MONTH_TO_QUARTER = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3] as const
+
+function toMetadata(media: MetadataMedia): TitleMetadata | undefined {
+  const year = media.seasonYear ?? media.startDate.year
+  const quarter = media.season ? SEASON_TO_QUARTER[media.season] : media.startDate.month ? MONTH_TO_QUARTER[media.startDate.month - 1] : null
+  if (year == null || quarter == null) return undefined
   return {
     aniListId: media.id,
     title: media.title.native,
     status: media.status,
-    year: media.seasonYear,
-    quarter: SEASON_TO_QUARTER[media.season]
+    year,
+    quarter
   }
 }
 
@@ -207,15 +214,15 @@ export class AniListAdapter extends MetadataAdapter {
   readonly name = 'anilist'
 
   async identify(rawTitle: string): Promise<TitleMetadata | undefined> {
-    const result = await identifyAniList(rawTitle)
-    return toMetadata(result)
+    const media = await identifyAniList(rawTitle)
+    return toMetadata(media)
   }
 
   /**
    * 最大50件のタイトルをバッチ識別する。1リクエストで処理するため rate limit に優しい。
    */
   async identifyBatch(rawTitles: string[]): Promise<(TitleMetadata | undefined)[]> {
-    const results = await identifyBatch(rawTitles)
-    return results.map((r) => (r ? toMetadata(r) : undefined))
+    const mediaList = await identifyBatch(rawTitles)
+    return mediaList.map((m) => (m ? toMetadata(m) : undefined))
   }
 }

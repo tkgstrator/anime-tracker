@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { TitleInfoSchema, TitleSeasonTypeEnum, TitleStatusTypeEnum } from './common.dto'
+import { TitleSeasonTypeEnum, TitleStatusTypeEnum } from './common.dto'
 
 export const MetadataMediaSchema = z.object({
   id: z.number().int(),
@@ -8,8 +8,13 @@ export const MetadataMediaSchema = z.object({
   }),
   countryOfOrigin: z.enum(['JP']),
   status: TitleStatusTypeEnum,
-  season: TitleSeasonTypeEnum,
-  seasonYear: z.number().int().min(0).max(2038)
+  season: TitleSeasonTypeEnum.nullable(),
+  seasonYear: z.number().int().min(0).max(2038).nullable(),
+  startDate: z.object({
+    year: z.number().int().nullable(),
+    month: z.number().int().nullable(),
+    day: z.number().int().nullable()
+  })
 })
 
 export const MetadataResponseSchema = z.object({
@@ -34,9 +39,3 @@ export const TitleMetadataSchema = z
   })
 export type TitleMetadata = z.infer<typeof TitleMetadataSchema>
 
-export const TitleDetailedInfoSchema = TitleInfoSchema.extend({
-  imageUrl: z.url(),
-  metadata: TitleMetadataSchema
-})
-
-export type TitleDetailedInfo = z.infer<typeof TitleDetailedInfoSchema>
