@@ -240,6 +240,8 @@ $RECYCLE.BIN/
 
 # Large fixture files
 __tests__/fixtures/all_identified.json
+__tests__/fixtures/*/episodes_identified.json
+__tests__/fixtures/*/episodes_refetched/
 
 # Temporary files
 tmp/

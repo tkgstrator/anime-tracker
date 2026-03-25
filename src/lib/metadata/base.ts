@@ -14,4 +14,12 @@ export abstract class MetadataAdapter {
    * 見つからない場合は undefined。
    */
   abstract identify(title: string): Promise<TitleMetadata | undefined>
+
+  /**
+   * 複数タイトルをバッチ識別する。デフォルトは逐次呼び出し。
+   * サブクラスで効率的なバッチ実装にオーバーライド可能。
+   */
+  async identifyBatch(titles: string[]): Promise<(TitleMetadata | undefined)[]> {
+    return Promise.all(titles.map((t) => this.identify(t).catch(() => undefined)))
+  }
 }

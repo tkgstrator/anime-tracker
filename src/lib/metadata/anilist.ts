@@ -1,7 +1,7 @@
 import jaconv from 'jaconv'
 import type { z } from 'zod'
 import {
-  type MetadataMediaSchema,
+  MetadataMediaSchema,
   MetadataResponseSchema,
   type TitleMetadata
 } from '../../schemas/providers/metadata.dto'
@@ -114,6 +114,26 @@ query ($search: String!) {
 }
 `
 
+const MEDIA_FIELDS = `
+  id
+  title { native }
+  countryOfOrigin
+  status
+  season
+  seasonYear
+`
+
+/**
+ * 最大50件のタイトルを GraphQL エイリアスで1リクエストにまとめてバッチ検索する。
+ * AniList の rate limit (90 req/min) 対策として、1リクエストで複数検索を実行。
+ */
+function buildBatchQuery(searches: string[]): string {
+  const fragments = searches.map(
+    (search, i) => `q${i}: Page(perPage: 5) { media(search: ${JSON.stringify(search)}, type: ANIME) { ${MEDIA_FIELDS} } }`
+  )
+  return `query { ${fragments.join('\n')} }`
+}
+
 type MetadataMedia = z.infer<typeof MetadataMediaSchema>
 
 const SEASON_TO_QUARTER: Record<MetadataMedia['season'], number> = {
@@ -149,17 +169,53 @@ async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
   return parsed.data.Page.media[0]
 }
 
+function toMetadata(media: MetadataMedia): TitleMetadata {
+  return {
+    aniListId: media.id,
+    title: media.title.native,
+    status: media.status,
+    year: media.seasonYear,
+    quarter: SEASON_TO_QUARTER[media.season]
+  }
+}
+
+async function identifyBatch(rawTitles: string[]): Promise<(MetadataMedia | undefined)[]> {
+  const searches = rawTitles.map((t) => cleanTitle(t))
+  const query = buildBatchQuery(searches)
+
+  const res = await fetchWithRetry(ANILIST_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ query })
+  })
+
+  if (!res.ok) throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
+
+  const data = (await res.json()) as { data: Record<string, { media: unknown[] }> }
+  return searches.map((_, i) => {
+    const page = data.data[`q${i}`]
+    if (!page?.media?.length) return undefined
+    try {
+      return MetadataMediaSchema.parse(page.media[0])
+    } catch {
+      return undefined
+    }
+  })
+}
+
 export class AniListAdapter extends MetadataAdapter {
   readonly name = 'anilist'
 
   async identify(rawTitle: string): Promise<TitleMetadata | undefined> {
     const result = await identifyAniList(rawTitle)
-    return {
-      aniListId: result.id,
-      title: result.title.native,
-      status: result.status,
-      year: result.seasonYear,
-      quarter: SEASON_TO_QUARTER[result.season]
-    }
+    return toMetadata(result)
+  }
+
+  /**
+   * 最大50件のタイトルをバッチ識別する。1リクエストで処理するため rate limit に優しい。
+   */
+  async identifyBatch(rawTitles: string[]): Promise<(TitleMetadata | undefined)[]> {
+    const results = await identifyBatch(rawTitles)
+    return results.map((r) => (r ? toMetadata(r) : undefined))
   }
 }

@@ -1,5 +1,4 @@
 {
-  "title": "SPY x FAMILY Season 1 MISSION:1 オペレーション〈梟 (ストリクス)〉",
   "description": "名門校潜入のために「家族」を作れと命じられた凄腕スパイの〈黄昏〉。だが、彼が出会った“娘”は心を読む超能力者!“妻”は暗殺者で!? 互いに正体を隠した仮初め家族に、世界の平和は託された――。",
   "entityType": "tv",
   "maturityRating": null,
@@ -680,5 +679,10 @@
         }
       ]
     }
-  ]
+  ],
+  "status": "FINISHED",
+  "year": 2022,
+  "quarter": 1,
+  "anilistId": 140960,
+  "title": "SPY×FAMILY"
 }
