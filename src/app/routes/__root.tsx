@@ -19,7 +19,13 @@ const RootComponent = () => {
               to='/'
               className='text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:font-medium'
             >
-              アニメ
+              ホーム
+            </Link>
+            <Link
+              to='/browse'
+              className='text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:font-medium'
+            >
+              一覧
             </Link>
             <Link
               to='/recordings'

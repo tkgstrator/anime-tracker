@@ -7,6 +7,7 @@ import type { Message } from './schemas/message.dto'
 interface Env {
   DB: D1Database
   TMDB_API_KEY: string
+  SYNC_QUEUE: Queue<Message>
 }
 
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
@@ -18,7 +19,12 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
       try {
         switch (message.body.type) {
           case 'fetch': {
-            await service.fetch(message.body)
+            const contentIds = await service.fetch(message.body)
+            const { provider } = message.body.message
+            for (const contentId of contentIds) {
+              await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
+            }
+            logger.info({ context: 'queue', action: 'enqueue-updates', provider, count: contentIds.length })
             break
           }
           case 'update': {

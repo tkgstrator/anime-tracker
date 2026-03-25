@@ -1,6 +1,5 @@
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
-import type { TitleDetailedInfo } from '@/schemas/providers/metadata.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { logger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
@@ -11,8 +10,8 @@ import { HuluProvider } from './providers/hulu'
 const adapter = new AniListAdapter()
 
 const providers: Record<string, Provider> = {
-  amazon: new AmazonProvider(adapter),
-  hulu: new HuluProvider(adapter)
+  amazon: new AmazonProvider(),
+  hulu: new HuluProvider()
 }
 
 function getProvider(name: string): Provider {
@@ -21,16 +20,43 @@ function getProvider(name: string): Provider {
   return provider
 }
 
+/** エピソード一覧から未来の最も近い releaseDate を算出する。過去のみなら null */
+function computeNextEpisodeDate(seasons: Season[]): Date | null {
+  const now = new Date()
+  const futureDates = seasons
+    .flatMap((s) => s.episodes)
+    .map((ep) => new Date(ep.releaseDate))
+    .filter((d) => d > now)
+  if (futureDates.length === 0) return null
+  return futureDates.reduce((min, d) => (d < min ? d : min))
+}
+
+/** ISO 8601 文字列を Date に変換し、過去なら null を返す */
+function parseFutureDate(dateStr: string | null | undefined): Date | null {
+  if (!dateStr) return null
+  const d = new Date(dateStr)
+  return d > new Date() ? d : null
+}
+
 export class SyncService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  /** プロバイダの新着をチェックし、不足しているシーズン・エピソードを同期する */
+  /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
     const provider = getProvider(message.provider)
-    const detail = await provider.fetchTitleDetailedInfo(message.contentId)
+    const detail = await provider.fetchTitleInfo(message.contentId)
 
-    const animeId = await this.upsertAnime(message.provider, message.contentId, detail)
-    await this.syncSeasons(animeId, message.provider, message.contentId, detail.seasons)
+    const nextEpisodeDate = computeNextEpisodeDate(detail.seasons)
+    const anime = await this.prisma.anime.update({
+      where: { provider_contentId: { provider: message.provider, contentId: message.contentId } },
+      data: {
+        description: detail.description,
+        imageUrl: detail.imageUrl,
+        nextEpisodeDate
+      }
+    })
+
+    await this.syncSeasons(anime.id, message.provider, message.contentId, detail.seasons)
 
     logger.info({
       context: 'sync',
@@ -38,40 +64,6 @@ export class SyncService {
       provider: message.provider,
       contentId: message.contentId
     })
-  }
-
-  /** アニメ情報をメタデータ付きでupsertし、IDを返す */
-  private async upsertAnime(provider: string, contentId: string, detail: TitleDetailedInfo): Promise<string> {
-    const { metadata } = detail
-    const identifiedData = {
-      aniListId: metadata.aniListId ?? 0,
-      title: metadata.title,
-      status: metadata.status,
-      year: metadata.year,
-      quarter: metadata.quarter,
-      isIdentified: true
-    }
-
-    const anime = await this.prisma.anime.upsert({
-      where: { provider_contentId: { provider, contentId } },
-      create: {
-        provider,
-        contentId,
-        description: detail.description,
-        entityType: detail.entityType,
-        maturityRating: detail.maturityRating,
-        imageUrl: detail.imageUrl,
-        benefitId: detail.benefitId,
-        ...identifiedData
-      },
-      update: {
-        description: detail.description,
-        imageUrl: detail.imageUrl,
-        ...identifiedData
-      }
-    })
-
-    return anime.id
   }
 
   /** 既存シーズン・エピソードと差分比較し、不足分を追加する */
@@ -176,7 +168,7 @@ export class SyncService {
       new: newTitles.length
     })
 
-    // 50件ずつバッチで AniList 識別（1バッチ = 1 API リクエスト）
+    // 50件ずつバッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
     const BATCH_SIZE = 50
     const identifiedContentIds: string[] = []
 
@@ -185,8 +177,39 @@ export class SyncService {
       const results = await adapter.identifyBatch(batch.map((t) => t.title))
 
       for (let j = 0; j < batch.length; j++) {
-        if (results[j]) {
-          identifiedContentIds.push(batch[j].contentId)
+        const meta = results[j]
+        if (meta) {
+          const t = batch[j]
+          const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
+          await this.prisma.anime.create({
+            data: {
+              provider: provider.name,
+              contentId: t.contentId,
+              title: meta.title,
+              description: t.description,
+              entityType: t.entityType,
+              maturityRating: t.maturityRating,
+              imageUrl: t.imageUrl ?? '',
+              benefitId: t.benefitId,
+              aniListId: meta.aniListId ?? 0,
+              status: meta.status,
+              year: meta.year,
+              quarter: meta.quarter,
+              isIdentified: true,
+              nextEpisodeDate
+            }
+          })
+          logger.info({
+            context: 'fetch',
+            action: 'create-anime',
+            provider: provider.name,
+            contentId: t.contentId,
+            title: meta.title,
+            year: meta.year,
+            quarter: meta.quarter,
+            nextEpisodeDate: nextEpisodeDate?.toISOString() ?? null
+          })
+          identifiedContentIds.push(t.contentId)
         } else {
           logger.warn({
             context: 'sync',
@@ -200,9 +223,23 @@ export class SyncService {
       }
     }
 
-    return [
-      ...titles.filter((t) => existingIds.has(t.contentId)).map((t) => t.contentId),
-      ...identifiedContentIds
-    ]
+    // browse API から取得できた nextEpisodeDate を既存タイトルに反映
+    const titlesWithNextDate = titles.filter((t) => existingIds.has(t.contentId) && t.nextEpisodeDate)
+    for (const t of titlesWithNextDate) {
+      const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
+      await this.prisma.anime.update({
+        where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
+        data: { nextEpisodeDate }
+      })
+      logger.info({
+        context: 'fetch',
+        action: 'update-next-episode-date',
+        provider: provider.name,
+        contentId: t.contentId,
+        nextEpisodeDate: nextEpisodeDate?.toISOString() ?? null
+      })
+    }
+
+    return [...titles.filter((t) => existingIds.has(t.contentId)).map((t) => t.contentId), ...identifiedContentIds]
   }
 }
