@@ -62,7 +62,7 @@ for (let i = 0; i < targets.length; i += CONCURRENCY) {
 
       try {
         const seriesId = slugToId.get(slug)!
-        const meta = await fetchSeriesMeta(seriesId)
+        const meta = await fetchSeriesMeta(slug)
         await Bun.write(filePath, JSON.stringify({ slug, seriesId, ...meta }, null, 2) + '\n')
         success++
         const total = success + skipped + failed

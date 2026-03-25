@@ -211,7 +211,15 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
   const { maturityRating } = page
 
   if (entityType === 'movie') {
-    return { title, description, entityType, maturityRating, benefitId: null, seasons: [] }
+    return {
+      title,
+      description,
+      entityType,
+      maturityRating,
+      imageUrl: page.imageUrl,
+      benefitId: null,
+      seasons: []
+    }
   }
 
   if (page.seasons.length === 0) {
@@ -223,6 +231,7 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
       description,
       entityType,
       maturityRating,
+      imageUrl: page.imageUrl,
       benefitId,
       seasons: [
         {
@@ -253,5 +262,13 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
   }
 
   const benefitId = seasons[0]?.episodes[0]?.benefitId ?? null
-  return { title, description, entityType, maturityRating, benefitId, seasons }
+  return {
+    title,
+    description,
+    entityType,
+    maturityRating,
+    imageUrl: page.imageUrl,
+    benefitId,
+    seasons
+  }
 }
