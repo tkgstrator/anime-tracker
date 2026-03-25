@@ -26,8 +26,9 @@
     },
     "shadcn": {
       "type": "stdio",
-      "command": "npx",
+      "command": "bunx",
       "args": [
+        "--bun",
         "shadcn@latest",
         "mcp"
       ]
