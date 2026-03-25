@@ -39,28 +39,31 @@ const BrowseEntitySchema = z
     })
   )
 
-/** ブラウズページ `<script type="application/json">` の全体構造。`parseBrowseHtml` で使用。transform で Title[] を返す。 */
-export const BrowseHTMLSchema = z
-  .object({
-    init: z.object({
-      preparations: z
-        .object({
-          body: z.object({
-            containers: z
-              .array(
-                z.object({
-                  entities: z.array(BrowseEntitySchema).nonempty()
-                })
-              )
-              .nonempty()
-          })
-        })
-        .optional()
+/** コンテナ配列からエンティティを抽出する共通 transform */
+const ContainersSchema = z
+  .array(z.object({ entities: z.array(BrowseEntitySchema).nonempty() }))
+  .nonempty()
+  .transform((containers) => containers.flatMap((c) => c.entities))
+
+/** ブラウズページ `<script type="text/template">` の全体構造。transform で Title[] を返す。 */
+export const BrowseHTMLSchema = z.union([
+  // 新形式: props.body[].props.browse.containers
+  z
+    .object({
+      props: z.object({
+        body: z.array(z.object({ props: z.object({ browse: z.object({ containers: ContainersSchema }) }) })).nonempty()
+      })
     })
-  })
-  .transform((v) =>
-    v.init.preparations === undefined ? [] : v.init.preparations?.body.containers.flatMap((v) => v.entities)
-  )
+    .transform((v) => v.props.body[0].props.browse.containers),
+  // 旧形式: init.preparations.body.containers
+  z
+    .object({
+      init: z.object({
+        preparations: z.object({ body: z.object({ containers: ContainersSchema }) }).optional()
+      })
+    })
+    .transform((v) => (v.init.preparations === undefined ? [] : v.init.preparations.body.containers))
+])
 
 export type PaginateParams = {
   paginationTargetId: string
@@ -155,37 +158,53 @@ export const PageDataSchema = z.object({
 })
 export type PageData = z.infer<typeof PageDataSchema>
 
-/** 詳細ページ `<script type="application/json">` の全体構造。`extractPageData` で使用。transform でフラットな構造に変換。 */
+/** atf/btf を含む body 部分のスキーマ */
+const DetailBodySchema = z.object({
+  atf: z.object({ state: DetailAtfStateSchema }),
+  btf: z.object({ state: DetailBtfStateSchema })
+})
+
+/** atf/btf からフラットな PageData に変換する */
+function transformDetailBody(body: z.infer<typeof DetailBodySchema>) {
+  const { atf, btf } = body
+
+  const headerDetail = Object.values(atf.state.detail.headerDetail)[0]
+  if (!headerDetail) throw new Error('Parse failed: headerDetail not found')
+
+  const rawSeasons = Object.values(atf.state.seasons ?? {})[0] ?? []
+  const episodePages = btf.state.episodeList.actions.episodePages
+
+  return {
+    title: headerDetail.title,
+    synopsis: headerDetail.synopsis,
+    entityType: headerDetail.entityType,
+    maturityRating: headerDetail.maturityRating,
+    imageUrl: headerDetail.imageUrl,
+    seasons: rawSeasons
+      .map((s) => ({ seasonId: s.seasonId, displayName: s.displayName, seasonNumber: s.sequenceNumber }))
+      .sort((a, b) => a.seasonNumber - b.seasonNumber),
+    episodePageTokens: episodePages.map((p) => p.token).filter((t): t is string => t !== undefined)
+  }
+}
+
+/** 詳細ページ `<script type="text/template">` の全体構造。`extractPageData` で使用。transform でフラットな構造に変換。 */
 export const DetailPageJsonSchema = z
-  .object({
-    init: z.object({
-      preparations: z.object({
-        body: z.object({
-          atf: z.object({ state: DetailAtfStateSchema }),
-          btf: z.object({ state: DetailBtfStateSchema })
+  .union([
+    // 新形式: props.body[].props.{atf,btf}
+    z
+      .object({
+        props: z.object({
+          body: z.array(z.object({ props: DetailBodySchema })).nonempty()
         })
       })
-    })
-  })
-  .transform(({ init }) => {
-    const { atf, btf } = init.preparations.body
-
-    const headerDetail = Object.values(atf.state.detail.headerDetail)[0]
-    if (!headerDetail) throw new Error('Parse failed: headerDetail not found')
-
-    const rawSeasons = Object.values(atf.state.seasons ?? {})[0] ?? []
-    const episodePages = btf.state.episodeList.actions.episodePages
-
-    return {
-      title: headerDetail.title,
-      synopsis: headerDetail.synopsis,
-      entityType: headerDetail.entityType,
-      maturityRating: headerDetail.maturityRating,
-      imageUrl: headerDetail.imageUrl,
-      seasons: rawSeasons
-        .map((s) => ({ seasonId: s.seasonId, displayName: s.displayName, seasonNumber: s.sequenceNumber }))
-        .sort((a, b) => a.seasonNumber - b.seasonNumber),
-      episodePageTokens: episodePages.map((p) => p.token).filter((t): t is string => t !== undefined)
-    }
-  })
+      .transform((v) => transformDetailBody(v.props.body[0].props)),
+    // 旧形式: init.preparations.body.{atf,btf}
+    z
+      .object({
+        init: z.object({
+          preparations: z.object({ body: DetailBodySchema })
+        })
+      })
+      .transform((v) => transformDetailBody(v.init.preparations.body))
+  ])
   .pipe(PageDataSchema)

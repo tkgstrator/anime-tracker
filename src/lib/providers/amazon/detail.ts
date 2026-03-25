@@ -64,13 +64,22 @@ async function fetchHtml(url: string): Promise<string> {
  * Prime Video 詳細ページの HTML からタイトル情報を抽出する。
  */
 export function extractPageData(html: string): PageData {
-  const root = parseHtml(html)
-  const script = root
-    .querySelectorAll('script[type="application/json"]')
-    .find((s) => s.textContent.includes('headerDetail'))
-  if (!script) throw new Error('Parse failed: no JSON script found')
+  const scriptTypes = ['text/template', 'application/json']
+  for (const type of scriptTypes) {
+    const scripts = [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].sort(
+      (a, b) => b[1].length - a[1].length
+    )
 
-  return DetailPageJsonSchema.parse(JSON.parse(script.textContent))
+    for (const [, content] of scripts) {
+      if (!content.includes('headerDetail')) continue
+      try {
+        return DetailPageJsonSchema.parse(JSON.parse(content))
+      } catch {
+        // noop
+      }
+    }
+  }
+  throw new Error('Parse failed: no JSON script found')
 }
 
 /**
