@@ -28,7 +28,7 @@ export const Route = createFileRoute('/')({
     const currentQuarter = getCurrentQuarter()
 
     const [recentlyUpdatedRes, upcomingRes, currentSeasonRes, scheduledRes] = await Promise.all([
-      api.getAnimeList({ queries: { recentlyUpdated: true, limit: 20, sort: 'year', order: 'desc' } }),
+      api.getAnimeList({ queries: { recentlyUpdated: true, limit: 50, sort: 'updatedAt', order: 'desc' } }),
       api.getAnimeList({ queries: { upcoming: true, limit: 20, sort: 'title', order: 'asc' } }),
       api.getAnimeList({
         queries: { year: currentYear, quarter: currentQuarter, limit: 20, sort: 'title', order: 'asc' }

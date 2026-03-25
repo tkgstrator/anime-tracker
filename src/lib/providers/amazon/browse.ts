@@ -81,7 +81,8 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
     entries.push(['p_n_theme_browse-bin', '4435524051'])
     entries.push(['p_n_subscription_id', '5602560051|10387742051'])
   }
-  if (options?.sort ?? true) entries.push(['sort', options?.sortValue ?? 'pv-public-release-date-desc-rank'])
+  if (options?.sort ?? true)
+    entries.push(['sort', options?.sortValue ?? (options?.newAnime ? '-prime_video_start_date' : 'pv-public-release-date-desc-rank')])
   entries.push(['field-ways_to_watch', params.waysToWatch])
   if (options?.subscriptionId) entries.push(['field-subscription_id', options.subscriptionId])
   if (options?.genreBin) entries.push(['field-genre-bin', 'av_genre_anime'])
