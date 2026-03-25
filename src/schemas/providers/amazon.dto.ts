@@ -10,7 +10,7 @@ export type BrowseQuery = z.infer<typeof BrowseQuerySchema>
 
 /** ブラウズページの entity.entityType に含まれるコンテンツ種別。 */
 const EntityTypeEnum = z
-  .enum(['TV Show', 'Movie', 'Educational', 'Short Film'])
+  .enum(['TV Show', 'Movie', 'Educational', 'Short Film', 'Unknown'])
   .transform((v) => (v === 'Movie' ? EntityType.enum.movie : EntityType.enum.tv))
 
 /** ブラウズページ `<script type="application/json">` 内の個別エンティティ。transform で {@link TitleSchema} に変換される。 */
@@ -88,13 +88,21 @@ const DetailHeaderSchema = z
   .object({
     title: z.string().nonempty(),
     synopsis: z.string().nonempty(),
-    entityType: z.string().nonempty(),
+    entityType: EntityTypeEnum,
+    images: z
+      .object({
+        covershot: z.string().optional(),
+        titleshot: z.string().optional(),
+        packshot: z.string().optional()
+      })
+      .transform((v) => v.covershot || v.titleshot || v.packshot || ''),
     ratingBadge: z.object({
       displayText: z.string().nonempty()
     })
   })
   .transform((v) => ({
     ...v,
+    imageUrl: v.images,
     maturityRating: (() => {
       const match = v.ratingBadge.displayText.match(/(\d+)/)
       return match ? Number.parseInt(match[1], 10) : null
@@ -133,8 +141,9 @@ const DetailBtfStateSchema = z.object({
 export const PageDataSchema = z.object({
   title: z.string().nonempty(),
   synopsis: z.string().nonempty(),
-  entityType: EntityTypeEnum,
+  entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
+  imageUrl: z.url(),
   seasons: z.array(
     z.object({
       seasonId: z.string().nonempty(),
@@ -172,6 +181,7 @@ export const DetailPageJsonSchema = z
       synopsis: headerDetail.synopsis,
       entityType: headerDetail.entityType,
       maturityRating: headerDetail.maturityRating,
+      imageUrl: headerDetail.imageUrl,
       seasons: rawSeasons
         .map((s) => ({ seasonId: s.seasonId, displayName: s.displayName, seasonNumber: s.sequenceNumber }))
         .sort((a, b) => a.seasonNumber - b.seasonNumber),

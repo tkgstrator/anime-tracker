@@ -21,8 +21,6 @@ interface Season {
   displayName: string
   seasonNumber: number
   imageUrl: string | null
-  year: number | null
-  quarter: number | null
   episodes: Episode[]
 }
 
@@ -34,7 +32,6 @@ interface Title {
   maturityRating: number | null
   imageUrl: string | null
   benefitId: string | null
-  tmdbId?: number | null
   anilistId?: number | null
   status?: string
   year?: number | null
@@ -89,22 +86,27 @@ function generateSql(allData: { provider: string; titles: Title[] }[]): string[]
     lines.push('')
 
     for (const title of dedupedTitles) {
+      if (!title.title) continue // skip entries with null title
+
       const animeId = uuidv5(`${provider}:${title.contentId}`, NAMESPACE)
 
       const year = title.year ?? 0
       const quarter = title.quarter ?? 0
       const status = title.status ?? 'UNKNOWN'
+      const entityType = title.entityType ?? 'tv'
+      const imageUrl = typeof title.imageUrl === 'string' ? title.imageUrl : ''
+      const anilistId = title.anilistId ?? 0
 
       lines.push(
-        `INSERT INTO anime (id, title, description, provider, content_id, entity_type, maturity_rating, image_url, benefit_id, year, quarter, is_identified, status, tmdb_id, anilist_id, created_at, updated_at) VALUES (${sqlVal(animeId)}, ${sqlVal(title.title)}, ${sqlVal(title.description)}, ${sqlVal(provider)}, ${sqlVal(title.contentId)}, ${sqlVal(title.entityType)}, ${sqlVal(title.maturityRating)}, ${sqlVal(title.imageUrl)}, ${sqlVal(title.benefitId)}, ${sqlVal(year)}, ${sqlVal(quarter)}, 1, ${sqlVal(status)}, ${sqlVal(title.tmdbId)}, ${sqlVal(title.anilistId)}, ${sqlVal(now)}, ${sqlVal(now)});`,
+        `INSERT INTO anime (id, title, description, provider, content_id, entity_type, maturity_rating, image_url, benefit_id, year, quarter, is_identified, status, anilist_id, created_at, updated_at) VALUES (${sqlVal(animeId)}, ${sqlVal(title.title)}, ${sqlVal(title.description)}, ${sqlVal(provider)}, ${sqlVal(title.contentId)}, ${sqlVal(entityType)}, ${sqlVal(title.maturityRating)}, ${sqlVal(imageUrl)}, ${sqlVal(title.benefitId)}, ${sqlVal(year)}, ${sqlVal(quarter)}, 1, ${sqlVal(status)}, ${sqlVal(anilistId)}, ${sqlVal(now)}, ${sqlVal(now)});`,
       )
       animeCount++
 
-      for (const season of title.seasons) {
+      for (const season of title.seasons ?? []) {
         const seasonUuid = uuidv5(`${provider}:${title.contentId}:${season.seasonId}`, NAMESPACE)
 
         lines.push(
-          `INSERT INTO seasons (id, anime_id, season_id, display_name, season_number, image_url, created_at) VALUES (${sqlVal(seasonUuid)}, ${sqlVal(animeId)}, ${sqlVal(season.seasonId)}, ${sqlVal(season.displayName)}, ${sqlVal(season.seasonNumber)}, ${sqlVal(season.imageUrl)}, ${sqlVal(now)});`,
+          `INSERT INTO seasons (id, anime_id, season_id, display_name, season_number, image_url, created_at) VALUES (${sqlVal(seasonUuid)}, ${sqlVal(animeId)}, ${sqlVal(season.seasonId)}, ${sqlVal(season.displayName)}, ${sqlVal(season.seasonNumber)}, ${sqlVal(season.imageUrl ?? '')}, ${sqlVal(now)});`,
         )
         seasonCount++
 
@@ -115,7 +117,7 @@ function generateSql(allData: { provider: string; titles: Title[] }[]): string[]
           const epUuid = uuidv5(`${provider}:${title.contentId}:${season.seasonId}:${ep.episodeNumber}`, NAMESPACE)
 
           lines.push(
-            `INSERT INTO episodes (id, season_id, episode_number, episode_id, title, description, release_date, duration, maturity_rating, image_url, has_subtitles, has_dub, benefit_id, recorded, created_at) VALUES (${sqlVal(epUuid)}, ${sqlVal(seasonUuid)}, ${sqlVal(ep.episodeNumber)}, ${sqlVal(ep.episodeId)}, ${sqlVal(ep.title)}, ${sqlVal(ep.description)}, ${sqlVal(ep.releaseDate)}, ${sqlVal(ep.duration)}, ${sqlVal(ep.maturityRating)}, ${sqlVal(ep.imageUrl)}, ${sqlVal(ep.hasSubtitles)}, ${sqlVal(ep.hasDub)}, ${sqlVal(ep.benefitId)}, 0, ${sqlVal(now)});`,
+            `INSERT INTO episodes (id, season_id, episode_number, episode_id, title, description, release_date, duration, maturity_rating, image_url, has_subtitles, has_dub, benefit_id, recorded, created_at) VALUES (${sqlVal(epUuid)}, ${sqlVal(seasonUuid)}, ${sqlVal(ep.episodeNumber)}, ${sqlVal(ep.episodeId)}, ${sqlVal(ep.title ?? '')}, ${sqlVal(ep.description ?? '')}, ${sqlVal(ep.releaseDate ?? '')}, ${sqlVal(ep.duration ?? 0)}, ${sqlVal(ep.maturityRating)}, ${sqlVal(ep.imageUrl ?? '')}, ${sqlVal(ep.hasSubtitles ?? false)}, ${sqlVal(ep.hasDub ?? false)}, ${sqlVal(ep.benefitId)}, 0, ${sqlVal(now)});`,
           )
           episodeCount++
         }

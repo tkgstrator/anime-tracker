@@ -141,18 +141,20 @@ const ValueSchema = z
   })
   .transform((v) => v.value)
 
-export const FalcorMetaSchema = z.object({
-  name: ValueSchema,
-  slug: ValueSchema,
-  description: ValueSchema,
-  thumbnailUrl: ValueSchema,
-  service: ValueSchema
-})
+export const FalcorMetaSchema = z
+  .object({
+    name: ValueSchema,
+    slug: ValueSchema,
+    description: ValueSchema,
+    thumbnailUrl: ValueSchema,
+    service: ValueSchema
+  })
+  .transform(({ thumbnailUrl, ...rest }) => ({ ...rest, imageUrl: thumbnailUrl }))
 
 export const FalcorMetaResponseSchema = z
   .object({
     jsonGraph: z.object({
-      meta: z.record(FalcorMetaSchema)
+      meta: z.record(z.string(), FalcorMetaSchema)
     })
   })
   .transform((v) => ({
