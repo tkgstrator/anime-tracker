@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { PaletteResponseSchema, type VodItem } from '../../../schemas/providers/hulu.dto'
 
 const HULU_BASE = 'https://www.hulu.jp'
@@ -107,9 +108,9 @@ const SEASONS = ['winter', 'spring', 'summer', 'autumn'] as const
  * 各四半期の最終月（3月, 6月, 9月, 12月）は来期のパレットも含める。
  * 12月の来期は翌年の冬になる。
  */
-export function currentSeasonSlugs(now = new Date()): string[] {
-  const month = now.getMonth() // 0-based
-  const year = now.getFullYear()
+export function currentSeasonSlugs(now = dayjs()): string[] {
+  const month = now.month() // 0-based
+  const year = now.year()
   const quarterIndex = Math.floor(month / 3) // 0=winter, 1=spring, 2=summer, 3=autumn
   const slugs = [buildSlug(SEASONS[quarterIndex], year)]
 
@@ -129,9 +130,7 @@ export function currentSeasonSlugs(now = new Date()): string[] {
  */
 export async function fetchCurrentSeasonAnime(): Promise<VodItem[]> {
   const slugs = currentSeasonSlugs()
-  const results = await Promise.all(
-    slugs.map((slug) => fetchHuluAnimePage(slug, 0, []).catch(() => [] as VodItem[]))
-  )
+  const results = await Promise.all(slugs.map((slug) => fetchHuluAnimePage(slug, 0, []).catch(() => [] as VodItem[])))
   const seen = new Set<string>()
   const items: VodItem[] = []
   for (const item of results.flat()) {

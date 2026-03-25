@@ -2,7 +2,9 @@ import { createRootRoute, Link, Outlet, useRouterState } from '@tanstack/react-r
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { AnimatePresence } from 'motion/react'
 import { Toaster } from 'sonner'
+import { ErrorPage } from '@/app/components/error-page'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
+import { NotFoundPage } from '@/app/components/not-found-page'
 
 const RootComponent = () => {
   const routeKey = useRouterState({ select: (s) => s.location.pathname })
@@ -49,5 +51,7 @@ const RootComponent = () => {
 
 export const Route = createRootRoute({
   component: RootComponent,
-  pendingComponent: LoadingSpinner
+  pendingComponent: LoadingSpinner,
+  errorComponent: ({ error }) => <ErrorPage error={error} />,
+  notFoundComponent: NotFoundPage,
 })

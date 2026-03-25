@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import dayjs from 'dayjs'
 import { createPrismaClient } from '../lib/db'
 import { AnimeInfoSchema, AnimeListQuerySchema, AnimeSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
 
@@ -30,9 +31,22 @@ anime.openapi(
   }),
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
-    const { page, limit, provider, year, quarter, status, scheduled, recorded, recentlyUpdated, upcoming, sort, order, q } =
-      c.req.valid('query')
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    const {
+      page,
+      limit,
+      provider,
+      year,
+      quarter,
+      status,
+      scheduled,
+      recorded,
+      recentlyUpdated,
+      upcoming,
+      sort,
+      order,
+      q
+    } = c.req.valid('query')
+    const sevenDaysAgo = dayjs().subtract(7, 'day').toDate()
     const where = {
       isIdentified: true,
       ...(provider ? { provider } : {}),
