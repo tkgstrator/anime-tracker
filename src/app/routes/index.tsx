@@ -70,8 +70,13 @@ function HomePage() {
   return (
     <PageTransition>
       <div className='space-y-10'>
-        <AnimeCarousel title='最近更新されたアニメ' anime={recentlyUpdated} viewAllLink='/browse' />
-        <AnimeCarousel title='もうすぐ配信！' anime={upcoming} viewAllLink='/browse' />
+        <AnimeCarousel
+          title='最近更新されたアニメ'
+          anime={recentlyUpdated}
+          viewAllLink='/browse'
+          badgeType='updatedAt'
+        />
+        <AnimeCarousel title='もうすぐ配信！' anime={upcoming} viewAllLink='/browse' badgeType='nextEpisodeDate' />
         <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
         <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
         {Object.entries(byProvider).map(([provider, anime]) => (
