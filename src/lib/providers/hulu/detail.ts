@@ -1,3 +1,6 @@
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
 import {
   EpisodesSchema,
@@ -7,18 +10,18 @@ import {
 } from '../../../schemas/providers/hulu.dto'
 import { extractMetasArray } from './rsc-parser'
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 const HULU_BASE = 'https://www.hulu.jp'
 const HULU_FALCOR_API = `${HULU_BASE}/anon/ja/webp/path`
 
 /**
- * Hulu の startAt（"2026/03/25 00:30:00" 形式）を ISO 8601 (JST) に変換する。
- * パース不可の場合は入力をそのまま返す。
+ * Hulu の日付文字列を JST としてパースし、ISO 8601 (UTC) に変換する。
+ * "2026/03/25 00:30:00" → "2026-03-24T15:30:00.000Z"
  */
-export function normalizeHuluDate(dateStr: string): string {
-  const m = dateStr.match(/^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/)
-  if (!m) return dateStr
-  const [, year, month, day, hour, min, sec] = m
-  return `${year}-${month}-${day}T${hour}:${min}:${sec}+09:00`
+export function parseHuluDate(dateStr: string): string {
+  return dayjs.tz(dateStr, 'Asia/Tokyo').toISOString()
 }
 
 /**
@@ -30,7 +33,7 @@ function mapToEpisode(ep: HuluEpisode, index: number): Episode {
     episodeId: String(ep.id_in_schema),
     title: ep.additionalInfo.short_name ?? ep.title,
     description: ep.description,
-    releaseDate: normalizeHuluDate(ep.startAt),
+    releaseDate: parseHuluDate(ep.startAt),
     duration: Math.round(ep.additionalInfo.episode_runtime),
     maturityRating: null,
     imageUrl: ep.imageUrl,

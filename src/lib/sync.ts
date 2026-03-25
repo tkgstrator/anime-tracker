@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
@@ -20,22 +21,11 @@ function getProvider(name: string): Provider {
   return provider
 }
 
-/** エピソード一覧から未来の最も近い releaseDate を算出する。過去のみなら null */
-function computeNextEpisodeDate(seasons: Season[]): Date | null {
-  const now = new Date()
-  const futureDates = seasons
-    .flatMap((s) => s.episodes)
-    .map((ep) => new Date(ep.releaseDate))
-    .filter((d) => d > now)
-  if (futureDates.length === 0) return null
-  return futureDates.reduce((min, d) => (d < min ? d : min))
-}
-
 /** ISO 8601 文字列を Date に変換し、過去なら null を返す */
 function parseFutureDate(dateStr: string | null | undefined): Date | null {
   if (!dateStr) return null
-  const d = new Date(dateStr)
-  return d > new Date() ? d : null
+  const d = dayjs(dateStr)
+  return d.isAfter(dayjs()) ? d.toDate() : null
 }
 
 export class SyncService {
@@ -46,13 +36,11 @@ export class SyncService {
     const provider = getProvider(message.provider)
     const detail = await provider.fetchTitleInfo(message.contentId)
 
-    const nextEpisodeDate = computeNextEpisodeDate(detail.seasons)
     const anime = await this.prisma.anime.update({
       where: { provider_contentId: { provider: message.provider, contentId: message.contentId } },
       data: {
         description: detail.description,
-        imageUrl: detail.imageUrl,
-        nextEpisodeDate
+        imageUrl: detail.imageUrl
       }
     })
 
@@ -113,7 +101,7 @@ export class SyncService {
             episodeId: episode.episodeId,
             title: episode.title,
             description: episode.description,
-            releaseDate: new Date(episode.releaseDate),
+            releaseDate: dayjs(episode.releaseDate).toDate(),
             duration: episode.duration,
             maturityRating: episode.maturityRating,
             imageUrl: episode.imageUrl,
@@ -168,6 +156,25 @@ export class SyncService {
       new: newTitles.length
     })
 
+    // browse API に含まれなかったタイトルの nextEpisodeDate をリセット
+    const allContentIds = titles.map((t) => t.contentId)
+    const { count: resetCount } = await this.prisma.anime.updateMany({
+      where: {
+        provider: provider.name,
+        contentId: { notIn: allContentIds },
+        nextEpisodeDate: { not: null }
+      },
+      data: { nextEpisodeDate: null }
+    })
+    if (resetCount > 0) {
+      logger.info({
+        context: 'fetch',
+        action: 'reset-next-episode-date',
+        provider: provider.name,
+        count: resetCount
+      })
+    }
+
     // 50件ずつバッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
     const BATCH_SIZE = 50
     const identifiedContentIds: string[] = []
@@ -207,7 +214,7 @@ export class SyncService {
             title: meta.title,
             year: meta.year,
             quarter: meta.quarter,
-            nextEpisodeDate: nextEpisodeDate?.toISOString() ?? null
+            nextEpisodeDate: nextEpisodeDate ? dayjs(nextEpisodeDate).toISOString() : null
           })
           identifiedContentIds.push(t.contentId)
         } else {
@@ -236,7 +243,7 @@ export class SyncService {
         action: 'update-next-episode-date',
         provider: provider.name,
         contentId: t.contentId,
-        nextEpisodeDate: nextEpisodeDate?.toISOString() ?? null
+        nextEpisodeDate: nextEpisodeDate ? dayjs(nextEpisodeDate).toISOString() : null
       })
     }
 

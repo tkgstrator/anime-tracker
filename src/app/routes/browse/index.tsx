@@ -1,10 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
-import { z } from 'zod'
-import { ProviderTypeEnum } from '@/schemas/message.dto'
 import { useAtom } from 'jotai'
 import { ArrowDownAZ, ArrowUpAZ, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { z } from 'zod'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
 import { SmartPagination } from '@/app/components/smart-pagination'
@@ -20,6 +19,7 @@ import {
   sortAtom
 } from '@/app/lib/atoms'
 import type { AnimeSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
+import { ProviderTypeEnum } from '@/schemas/message.dto'
 import { AnimeCard } from './-components/anime-card'
 import { FilterPopover } from './-components/filter-popover'
 import { SearchBar } from './-components/search-bar'
@@ -40,9 +40,10 @@ export const Route = createFileRoute('/browse/')({
   validateSearch: z.object({
     provider: ProviderTypeEnum.optional()
   }),
-  loader: ({ search }) => {
+  loaderDeps: ({ search }) => ({ provider: search.provider }),
+  loader: ({ deps }) => {
     const page = readStorage('filter-page', 1)
-    const provider = search.provider ?? readStorage<string | undefined>('filter-provider', undefined)
+    const provider = deps.provider ?? readStorage<string | undefined>('filter-provider', undefined)
     const year = readStorage<number | undefined>('filter-year', undefined)
     const quarter = readStorage<number | undefined>('filter-quarter', undefined)
     const status = readStorage<string | undefined>('filter-status', undefined)
