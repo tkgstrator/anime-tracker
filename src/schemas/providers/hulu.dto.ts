@@ -23,7 +23,8 @@ const CardInfo = z
     has_en_caption: z.boolean().optional(),
     is_mature: z.boolean().optional(),
     premiere_year: z.number().optional(),
-    season_count: z.number().optional()
+    season_count: z.number().optional(),
+    badge_text_end_at: z.string().optional()
   })
   .loose()
 
