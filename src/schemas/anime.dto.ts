@@ -73,7 +73,7 @@ export const AnimeListQuerySchema = z.object({
   recorded: z.coerce.boolean().optional(),
   recentlyUpdated: z.coerce.boolean().optional(),
   upcoming: z.coerce.boolean().optional(),
-  sort: z.enum(['title', 'year']).default('title'),
+  sort: z.enum(['title', 'year', 'updatedAt']).default('title'),
   order: z.enum(['asc', 'desc']).default('asc'),
   q: z.string().optional()
 })

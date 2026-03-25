@@ -19,7 +19,7 @@ const api = new Zodios('/api', [
       { name: 'upcoming', type: 'Query', schema: z.boolean().optional() },
       { name: 'scheduled', type: 'Query', schema: z.boolean().optional() },
       { name: 'recorded', type: 'Query', schema: z.boolean().optional() },
-      { name: 'sort', type: 'Query', schema: z.enum(['title', 'year']).optional() },
+      { name: 'sort', type: 'Query', schema: z.enum(['title', 'year', 'updatedAt']).optional() },
       { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() },
       { name: 'q', type: 'Query', schema: z.string().optional() }
     ],

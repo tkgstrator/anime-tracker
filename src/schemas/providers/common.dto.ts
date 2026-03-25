@@ -11,7 +11,8 @@ export const TitleSchema = z.object({
   imageUrl: z.string().nullable(),
   maturityRating: z.number().int().positive().nullable(),
   benefitId: z.string().nullable(),
-  nextEpisodeDate: z.string().nullable().optional()
+  nextEpisodeDate: z.string().nullable().optional(),
+  hasNewContent: z.boolean().optional()
 })
 
 export type Title = z.infer<typeof TitleSchema>

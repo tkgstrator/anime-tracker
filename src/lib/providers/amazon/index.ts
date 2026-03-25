@@ -1,4 +1,5 @@
 import {
+  BrowseEntitySchema,
   BrowseHTMLSchema,
   type PaginateParams,
   type PaginateResponse,
@@ -159,9 +160,12 @@ export class AmazonProvider extends Provider {
       if (entities.length === 0) return
 
       for (const e of entities) {
-        const titleId = (e as { titleID?: string }).titleID
-        if (!titleId || seen.has(titleId)) continue
-        seen.add(titleId)
+        const parsed = BrowseEntitySchema.safeParse(e)
+        if (!parsed.success) continue
+        const title = parsed.data
+        if (seen.has(title.contentId)) continue
+        seen.add(title.contentId)
+        acc.push(title)
       }
 
       if (!res.hasMoreItems) return

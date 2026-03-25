@@ -10,6 +10,25 @@ import { HuluProvider } from './providers/hulu'
 
 const adapter = new AniListAdapter()
 
+/** D1 の SQL 変数上限 (999) を超えないよう IN 句をチャンク分割して findMany する */
+const D1_VARIABLE_LIMIT = 500
+
+async function findExistingContentIds(
+  prisma: PrismaClient,
+  contentIds: string[]
+): Promise<Set<string>> {
+  const results: string[] = []
+  for (let i = 0; i < contentIds.length; i += D1_VARIABLE_LIMIT) {
+    const chunk = contentIds.slice(i, i + D1_VARIABLE_LIMIT)
+    const rows = await prisma.anime.findMany({
+      where: { contentId: { in: chunk } },
+      select: { contentId: true }
+    })
+    results.push(...rows.map((r) => r.contentId))
+  }
+  return new Set(results)
+}
+
 const providers: Record<string, Provider> = {
   amazon: new AmazonProvider(),
   hulu: new HuluProvider()
@@ -138,14 +157,7 @@ export class SyncService {
   async fetch({ message }: FetchMessage): Promise<string[]> {
     const provider = getProvider(message.provider)
     const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
-    const existingIds = new Set(
-      (
-        await this.prisma.anime.findMany({
-          where: { contentId: { in: titles.map((t) => t.contentId) } },
-          select: { contentId: true }
-        })
-      ).map((a) => a.contentId)
-    )
+    const existingIds = await findExistingContentIds(this.prisma, titles.map((t) => t.contentId))
     const newTitles = titles.filter((t) => !existingIds.has(t.contentId))
     logger.info({
       context: 'fetch',
@@ -157,15 +169,21 @@ export class SyncService {
     })
 
     // browse API に含まれなかったタイトルの nextEpisodeDate をリセット
-    const allContentIds = titles.map((t) => t.contentId)
-    const { count: resetCount } = await this.prisma.anime.updateMany({
-      where: {
-        provider: provider.name,
-        contentId: { notIn: allContentIds },
-        nextEpisodeDate: { not: null }
-      },
-      data: { nextEpisodeDate: null }
+    const allContentIds = new Set(titles.map((t) => t.contentId))
+    const titlesHavingNextDate = await this.prisma.anime.findMany({
+      where: { provider: provider.name, nextEpisodeDate: { not: null } },
+      select: { contentId: true }
     })
+    const idsToReset = titlesHavingNextDate.filter((t) => !allContentIds.has(t.contentId)).map((t) => t.contentId)
+    let resetCount = 0
+    for (let i = 0; i < idsToReset.length; i += D1_VARIABLE_LIMIT) {
+      const chunk = idsToReset.slice(i, i + D1_VARIABLE_LIMIT)
+      const { count } = await this.prisma.anime.updateMany({
+        where: { contentId: { in: chunk } },
+        data: { nextEpisodeDate: null }
+      })
+      resetCount += count
+    }
     if (resetCount > 0) {
       logger.info({
         context: 'fetch',
@@ -176,7 +194,7 @@ export class SyncService {
     }
 
     // 50件ずつバッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
-    const BATCH_SIZE = 50
+    const BATCH_SIZE = 20
     const identifiedContentIds: string[] = []
 
     for (let i = 0; i < newTitles.length; i += BATCH_SIZE) {
@@ -247,6 +265,16 @@ export class SyncService {
       })
     }
 
-    return [...titles.filter((t) => existingIds.has(t.contentId)).map((t) => t.contentId), ...identifiedContentIds]
+    // バッジ（新エピソード・新着等）があるタイトルだけを update 対象にする
+    const updateTargets = titles.filter((t) => existingIds.has(t.contentId) && t.hasNewContent)
+    logger.info({
+      context: 'fetch',
+      action: 'filter-by-badge',
+      provider: provider.name,
+      total: existingIds.size,
+      withBadge: updateTargets.length
+    })
+
+    return [...updateTargets.map((t) => t.contentId), ...identifiedContentIds]
   }
 }
