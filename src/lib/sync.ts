@@ -170,31 +170,39 @@ export class SyncService {
     logger.info({
       context: 'fetch',
       action: 'check-titles',
-      provider: provider.name
+      provider: provider.name,
+      total: titles.length,
+      existing: existingIds.size,
+      new: newTitles.length
     })
-    const results = await Promise.allSettled(
-      newTitles.map(async (title) => {
-        const identified = await adapter.identify(title.title)
-        if (!identified) {
+
+    // 50件ずつバッチで AniList 識別（1バッチ = 1 API リクエスト）
+    const BATCH_SIZE = 50
+    const identifiedContentIds: string[] = []
+
+    for (let i = 0; i < newTitles.length; i += BATCH_SIZE) {
+      const batch = newTitles.slice(i, i + BATCH_SIZE)
+      const results = await adapter.identifyBatch(batch.map((t) => t.title))
+
+      for (let j = 0; j < batch.length; j++) {
+        if (results[j]) {
+          identifiedContentIds.push(batch[j].contentId)
+        } else {
           logger.warn({
             context: 'sync',
             action: 'unidentified',
             provider: provider.name,
-            title: title.title,
-            search: cleanTitle(title.title),
-            contentId: title.contentId
+            title: batch[j].title,
+            search: cleanTitle(batch[j].title),
+            contentId: batch[j].contentId
           })
-          return null
         }
-        return title.contentId
-      })
-    )
+      }
+    }
 
     return [
       ...titles.filter((t) => existingIds.has(t.contentId)).map((t) => t.contentId),
-      ...results
-        .filter((r): r is PromiseFulfilledResult<string | null> => r.status === 'fulfilled')
-        .flatMap((r) => (r.value ? [r.value] : []))
+      ...identifiedContentIds
     ]
   }
 }

@@ -89,19 +89,12 @@ export async function fetchHuluAnimeByDecade(decade: number): Promise<VodItem[]>
 }
 
 /**
- * 最近追加されたアニメの id_in_schema 一覧を取得する。
+ * 最近追加されたアニメの VodItem 一覧を取得する。
  *
- * エピソード単位のエントリは `additionalInfo.series_id` を、
- * シリーズ単位のエントリは `additionalInfo.id_in_schema` を収集する。
- * `fetchTitleList` 側の `id_in_schema` と突き合わせて新エピソード判定に使う。
- * @returns 最近追加されたシリーズの id_in_schema の Set
+ * `recentlyadded-anime` パレット API から直接取得し、
+ * エピソード単位のエントリは series_id で重複排除する。
+ * @returns 最近追加されたアニメの VodItem 一覧（シリーズ単位で重複排除済み）
  */
-export async function fetchRecentlyAddedIds(): Promise<Set<number>> {
-  const items = await fetchHuluAnimePage(RECENTLY_ADDED_SLUG, 0, [])
-  const ids = new Set<number>()
-  for (const item of items) {
-    const seriesId = item.additionalInfo.series_id
-    if (seriesId) ids.add(seriesId)
-  }
-  return ids
+export async function fetchRecentlyAdded(): Promise<VodItem[]> {
+  return fetchHuluAnimePage(RECENTLY_ADDED_SLUG, 0, [])
 }
