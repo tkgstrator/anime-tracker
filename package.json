@@ -20,6 +20,8 @@
     "@fontsource-variable/geist": "^5.2.8",
     "@geolonia/japanese-numeral": "^1.0.2",
     "@hono/zod-openapi": "^1.2.3",
+    "@logtape/hono": "^2.0.5",
+    "@logtape/logtape": "^2.0.5",
     "@prisma/adapter-d1": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@scalar/hono-api-reference": "^0.10.5",

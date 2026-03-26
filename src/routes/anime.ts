@@ -1,7 +1,10 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import dayjs from 'dayjs'
 import { createPrismaClient } from '../lib/db'
+import { getAppLogger } from '../lib/logger'
 import { AnimeInfoSchema, AnimeListQuerySchema, AnimeSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
+
+const logger = getAppLogger('routes')
 
 type Bindings = {
   DB: D1Database
@@ -157,7 +160,8 @@ anime.openapi(
         }
       })
       return c.json(result, 200)
-    } catch {
+    } catch (e) {
+      logger.warn({ action: 'patch-not-found', id, error: e instanceof Error ? e.message : String(e) })
       return c.json({ error: 'Not found' }, 404)
     }
   }
@@ -206,9 +210,18 @@ anime.openapi(
 
     if (!res.ok) {
       const text = await res.text()
+      logger.error({
+        action: 'record-backend-error',
+        id,
+        provider: row.provider,
+        contentId: row.contentId,
+        status: res.status,
+        body: text
+      })
       return c.json({ error: `Backend error: ${res.status} ${text}` }, 502 as const)
     }
 
+    logger.info({ action: 'record-sent', id, provider: row.provider, contentId: row.contentId })
     return c.json({ success: true }, 200)
   }
 )
