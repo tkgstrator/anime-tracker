@@ -43,6 +43,12 @@ const RootComponent = () => {
           <Outlet key={routeKey} />
         </AnimatePresence>
       </main>
+      <footer className='py-4 text-center text-xs text-muted-foreground'>
+        <Link to='/changelog' className='transition-colors hover:text-foreground'>
+          v{__APP_VERSION__} ({__GIT_HASH__})
+        </Link>
+        <p className='mt-0.5'>&copy; {new Date().getFullYear()} Anime Tracker</p>
+      </footer>
       <Toaster richColors position='top-right' />
       <TanStackRouterDevtools position='bottom-right' />
     </div>
@@ -53,5 +59,5 @@ export const Route = createRootRoute({
   component: RootComponent,
   pendingComponent: LoadingSpinner,
   errorComponent: ({ error }) => <ErrorPage error={error} />,
-  notFoundComponent: NotFoundPage,
+  notFoundComponent: NotFoundPage
 })
