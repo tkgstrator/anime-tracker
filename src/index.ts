@@ -7,6 +7,7 @@ import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
 import recordingsRoutes from './routes/recordings'
+import webhooksRoutes from './routes/webhooks'
 import { scheduled } from './scheduled'
 import { MessageSchema } from './schemas/message.dto'
 
@@ -20,6 +21,7 @@ app.use(honoLogger({ category: ['app', 'hono'] }))
 
 app.route('/api/anime', animeRoutes)
 app.route('/api/recordings', recordingsRoutes)
+app.route('/api/webhooks', webhooksRoutes)
 
 // キューを経由せず SyncService を直接実行する
 app.post('/api/queues', async (c) => {
