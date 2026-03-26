@@ -6,7 +6,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { getCleanImageUrl } from '@/lib/image'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
-type BadgeType = 'updatedAt' | 'nextEpisodeDate'
+type BadgeType = 'updatedAt' | 'nextEpisodeDate' | 'expiringAt'
 
 type AnimeCarouselProps = {
   title: string
@@ -53,6 +53,13 @@ function formatDateBadge(date: string, type: BadgeType): string {
   if (type === 'updatedAt') {
     return d.format('M/D H:mm')
   }
+  if (type === 'expiringAt') {
+    const now = dayjs()
+    const diffHours = d.diff(now, 'hour')
+    if (diffHours < 24) return `残り${Math.max(diffHours, 1)}時間`
+    const diffDays = Math.ceil(diffHours / 24)
+    return `残り${diffDays}日`
+  }
   const now = dayjs()
   if (d.isSame(now, 'day')) return `今日 ${d.format('H:mm')}`
   if (d.isSame(now.add(1, 'day'), 'day')) return `明日 ${d.format('H:mm')}`
@@ -69,7 +76,13 @@ function CarouselCard({
   showProvider: boolean
 }) {
   const badgeDate =
-    badgeType === 'updatedAt' ? anime.updatedAt : badgeType === 'nextEpisodeDate' ? anime.nextEpisodeDate : null
+    badgeType === 'updatedAt'
+      ? anime.updatedAt
+      : badgeType === 'nextEpisodeDate'
+        ? anime.nextEpisodeDate
+        : badgeType === 'expiringAt'
+          ? anime.expiringAt
+          : null
 
   return (
     <Link to='/anime/$id' params={{ id: anime.id }} className='group block'>
@@ -85,7 +98,7 @@ function CarouselCard({
             {anime.title}
           </div>
         )}
-{badgeType && badgeDate && (
+        {badgeType && badgeDate && (
           <Badge variant='secondary' className='absolute bottom-1 left-1 bg-black/70 text-[10px] text-white'>
             {formatDateBadge(badgeDate, badgeType)}
           </Badge>

@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
   process.env.NODE_ENV = mode === 'development' ? 'development' : 'production'
   return {
     server: {
-      port: 15173,
+      port: 25173,
       proxy: {}
     },
     plugins: [
@@ -68,7 +68,8 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       __APP_VERSION__: JSON.stringify(version),
-      __GIT_HASH__: JSON.stringify(hash)
+      __GIT_HASH__: JSON.stringify(hash),
+      __GIT_DATE__: JSON.stringify(execSync('git log -1 --format=%aI').toString().trim())
     }
   }
 })

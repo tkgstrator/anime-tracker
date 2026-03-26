@@ -9,26 +9,28 @@ datasource db {
 }
 
 model Anime {
-  id             String   @id @default(uuid())
-  title          String
-  description    String   @default("")
-  provider       String // 'amazon' | 'hulu' | 'netflix'
-  contentId      String   @map("content_id")
-  entityType     String   @default("tv") @map("entity_type") // 'tv' | 'movie'
-  maturityRating Int?     @map("maturity_rating")
-  imageUrl       String   @map("image_url")
-  benefitId      String?  @map("benefit_id") // 'prime' | 'danime' | 'animetimesjp' etc.
-  year           Int
-  quarter        Int // 0=冬 1=春 2=夏 3=秋
-  isIdentified   Boolean  @default(false) @map("is_identified")
-  status         String   @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
-  aniListId      Int      @map("anilist_id")
+  id              String    @id @default(uuid())
+  title           String
+  description     String    @default("")
+  provider        String // 'amazon' | 'hulu' | 'netflix'
+  contentId       String    @map("content_id")
+  entityType      String    @default("tv") @map("entity_type") // 'tv' | 'movie'
+  maturityRating  Int?      @map("maturity_rating")
+  imageUrl        String    @map("image_url")
+  benefitId       String?   @map("benefit_id") // 'prime' | 'danime' | 'animetimesjp' etc.
+  year            Int
+  quarter         Int // 0=冬 1=春 2=夏 3=秋
+  isIdentified    Boolean   @default(false) @map("is_identified")
+  status          String    @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
+  aniListId       Int       @map("anilist_id")
   nextEpisodeDate DateTime? @map("next_episode_date") // 次回エピソード配信日 (UTC)
-  scheduled      Boolean  @default(false) // 録画予約済み
-  recorded       Boolean  @default(false) // 録画済み
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  seasons        Season[]
+  expiringAt      DateTime? @map("expiring_at") // 配信終了推定日時 (UTC)
+  expiringSeason  Int?      @map("expiring_season") // 対象シーズン番号 (null=作品全体)
+  scheduled       Boolean   @default(false) // 録画予約済み
+  recorded        Boolean   @default(false) // 録画済み
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  seasons         Season[]
 
   @@unique([provider, contentId])
   @@index([title])
