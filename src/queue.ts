@@ -20,11 +20,13 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         switch (message.body.type) {
           case 'fetch': {
             const contentIds = await service.fetch(message.body)
-            const { provider } = message.body.message
-            for (const contentId of contentIds) {
-              await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
+            const { provider, category } = message.body.message
+            if (category !== 'expiring') {
+              for (const contentId of contentIds) {
+                await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
+              }
             }
-            logger.info({ context: 'queue', action: 'enqueue-updates', provider, count: contentIds.length })
+            logger.info({ context: 'queue', action: 'enqueue-updates', provider, category, count: contentIds.length })
             break
           }
           case 'update': {

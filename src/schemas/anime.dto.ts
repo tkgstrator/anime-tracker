@@ -18,7 +18,7 @@ export const AnimeSchema = z.object({
   isIdentified: z.boolean(),
   status: z.string(),
   nextEpisodeDate: z.coerce.string().nullable(),
-  expiringAt: z.coerce.string().nullable(),
+  expiredAt: z.coerce.string().nullable(),
   expiringSeason: z.number().int().positive().nullable(),
   scheduled: z.boolean(),
   recorded: z.boolean(),

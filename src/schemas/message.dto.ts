@@ -1,9 +1,11 @@
 import { z } from 'zod'
 
 export const ProviderTypeEnum = z.enum(['amazon', 'hulu'])
+export const FetchCategoryEnum = z.enum(['new_episode', 'expiring'])
 
 const FetchMessageBodySchema = z.object({
-  provider: ProviderTypeEnum
+  provider: ProviderTypeEnum,
+  category: FetchCategoryEnum
 })
 
 const UpdateMessageBodySchema = z.object({
