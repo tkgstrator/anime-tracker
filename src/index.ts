@@ -16,8 +16,8 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>()
 app.route('/api/anime', animeRoutes)
 app.route('/api/recordings', recordingsRoutes)
 
-// デバッグ用: キューを経由せず SyncService を直接実行する
-app.post('/api/debug/sync', async (c) => {
+// キューを経由せず SyncService を直接実行する
+app.post('/api/queues', async (c) => {
   const body = MessageSchema.safeParse(await c.req.json())
   if (!body.success) return c.json({ error: body.error.flatten() }, 400)
   const prisma = createPrismaClient(c.env.DB)
@@ -26,11 +26,13 @@ app.post('/api/debug/sync', async (c) => {
   try {
     if (body.data.type === 'fetch') {
       const contentIds = await service.fetch(body.data)
-      const { provider } = body.data.message
-      for (const contentId of contentIds) {
-        await service.update({ type: 'update', message: { provider, contentId } })
+      const { provider, category } = body.data.message
+      if (category !== 'expiring') {
+        for (const contentId of contentIds) {
+          await service.update({ type: 'update', message: { provider, contentId } })
+        }
       }
-      return c.json({ type: 'fetch', contentIds, logs: logger.stopCapture() })
+      return c.json({ type: 'fetch', category, contentIds, logs: logger.stopCapture() })
     }
     await service.update(body.data)
     return c.json({ type: 'update', success: true, logs: logger.stopCapture() })

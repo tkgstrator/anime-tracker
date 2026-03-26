@@ -59,7 +59,7 @@ anime.openapi(
       ...(q ? { title: { contains: q } } : {}),
       ...(recentlyUpdated ? { seasons: { some: { episodes: { some: { releaseDate: { gte: sevenDaysAgo } } } } } } : {}),
       ...(upcoming ? { nextEpisodeDate: { not: null } } : {}),
-      ...(expiring ? { expiringAt: { not: null } } : {})
+      ...(expiring ? { expiredAt: { not: null } } : {})
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
     const [data, total] = await Promise.all([

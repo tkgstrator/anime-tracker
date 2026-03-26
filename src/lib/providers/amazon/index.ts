@@ -104,27 +104,6 @@ async function paginateCollection(
 }
 
 /**
- * 新着タイトルと配信終了間近タイトルをマージする。
- * 重複は新着側をベースに expiring 情報を付与する。
- */
-function mergeTitles(newTitles: Title[], expiringTitles: Title[]): Title[] {
-  const map = new Map<string, Title>()
-  for (const t of newTitles) {
-    map.set(t.contentId, t)
-  }
-  for (const t of expiringTitles) {
-    const existing = map.get(t.contentId)
-    if (existing) {
-      // 新着側に expiring 情報を付与
-      if (t.expiring) existing.expiring = t.expiring
-    } else {
-      map.set(t.contentId, t)
-    }
-  }
-  return [...map.values()]
-}
-
-/**
  * Amazon Prime Video プロバイダ。
  *
  * Prime Video のブラウズ API からアニメタイトル一覧を取得し、
@@ -136,19 +115,19 @@ export class AmazonProvider extends Provider {
   /**
    * Prime Video のアニメタイトル一覧を取得する。
    *
-   * newEpisodesOnly 時は「新着アニメTV」カテゴリと「配信終了間近」カテゴリの
-   * 両方を取得し、マージして返す。
+   * - `expiringOnly` 時: 「配信終了間近」カテゴリのみ取得
+   * - `newEpisodesOnly` 時: 「新着アニメTV」カテゴリのみ取得
+   * - どちらも未指定: 全タイトル取得
    * @returns アニメタイトル一覧
    */
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const newTitles = await this.fetchBrowse(
+    if (options?.expiringOnly) {
+      return this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }))
+    }
+
+    return this.fetchBrowse(
       options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
     )
-
-    // 配信終了間近タイトルを取得してマージ
-    const expiringTitles = await this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }))
-
-    return mergeTitles(newTitles, expiringTitles)
   }
 
   /**

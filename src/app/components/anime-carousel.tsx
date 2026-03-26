@@ -6,7 +6,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { getCleanImageUrl } from '@/lib/image'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
-type BadgeType = 'updatedAt' | 'nextEpisodeDate' | 'expiringAt'
+type BadgeType = 'updatedAt' | 'nextEpisodeDate' | 'expiredAt'
 
 type AnimeCarouselProps = {
   title: string
@@ -53,7 +53,7 @@ function formatDateBadge(date: string, type: BadgeType): string {
   if (type === 'updatedAt') {
     return d.format('M/D H:mm')
   }
-  if (type === 'expiringAt') {
+  if (type === 'expiredAt') {
     const now = dayjs()
     const diffHours = d.diff(now, 'hour')
     if (diffHours < 24) return `残り${Math.max(diffHours, 1)}時間`
@@ -80,8 +80,8 @@ function CarouselCard({
       ? anime.updatedAt
       : badgeType === 'nextEpisodeDate'
         ? anime.nextEpisodeDate
-        : badgeType === 'expiringAt'
-          ? anime.expiringAt
+        : badgeType === 'expiredAt'
+          ? anime.expiredAt
           : null
 
   return (
