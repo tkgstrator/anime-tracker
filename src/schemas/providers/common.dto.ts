@@ -12,7 +12,13 @@ export const TitleSchema = z.object({
   maturityRating: z.number().int().positive().nullable(),
   benefitId: z.string().nullable(),
   nextEpisodeDate: z.string().nullable().optional(),
-  hasNewContent: z.boolean().optional()
+  hasNewContent: z.boolean().optional(),
+  expiring: z
+    .object({
+      remainingHours: z.number().int().positive(),
+      season: z.number().int().positive().nullable()
+    })
+    .optional()
 })
 
 export type Title = z.infer<typeof TitleSchema>

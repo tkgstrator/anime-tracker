@@ -104,6 +104,27 @@ async function paginateCollection(
 }
 
 /**
+ * 新着タイトルと配信終了間近タイトルをマージする。
+ * 重複は新着側をベースに expiring 情報を付与する。
+ */
+function mergeTitles(newTitles: Title[], expiringTitles: Title[]): Title[] {
+  const map = new Map<string, Title>()
+  for (const t of newTitles) {
+    map.set(t.contentId, t)
+  }
+  for (const t of expiringTitles) {
+    const existing = map.get(t.contentId)
+    if (existing) {
+      // 新着側に expiring 情報を付与
+      if (t.expiring) existing.expiring = t.expiring
+    } else {
+      map.set(t.contentId, t)
+    }
+  }
+  return [...map.values()]
+}
+
+/**
  * Amazon Prime Video プロバイダ。
  *
  * Prime Video のブラウズ API からアニメタイトル一覧を取得し、
@@ -115,12 +136,27 @@ export class AmazonProvider extends Provider {
   /**
    * Prime Video のアニメタイトル一覧を取得する。
    *
-   * newEpisodesOnly 時は「新着アニメTV」カテゴリのフィルタを使い、
-   * ページネーションで全件取得する。
+   * newEpisodesOnly 時は「新着アニメTV」カテゴリと「配信終了間近」カテゴリの
+   * 両方を取得し、マージして返す。
    * @returns アニメタイトル一覧
    */
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const response = await this.fetchTitleHTML(options)
+    const newTitles = await this.fetchBrowse(
+      options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
+    )
+
+    // 配信終了間近タイトルを取得してマージ
+    const expiringTitles = await this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }))
+
+    return mergeTitles(newTitles, expiringTitles)
+  }
+
+  /**
+   * 指定 URL のブラウズページからタイトル一覧を取得する（ページネーション含む）。
+   */
+  private async fetchBrowse(url: string): Promise<Title[]> {
+    const response = await fetch(url, { headers: FETCH_HEADERS })
+    if (!response.ok) throw new Error(`Fetch browse error: ${response.status}`)
     const cookie = response.headers
       .getSetCookie()
       .map((c) => c.split(';')[0])
@@ -135,13 +171,6 @@ export class AmazonProvider extends Provider {
     }
 
     return entries
-  }
-
-  private async fetchTitleHTML(options?: FetchTitleListOptions): Promise<Response> {
-    const url = options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
-    const response = await fetch(url, { headers: FETCH_HEADERS })
-    if (!response.ok) throw new Error('Fetch Title HTML Error')
-    return response
   }
 
   /**

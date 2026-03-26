@@ -40,6 +40,8 @@ interface BuildOptions {
   sortValue?: string
   /** 新着アニメTVフィルタを適用する */
   newAnime?: boolean
+  /** 配信終了間近フィルタを適用する */
+  expiring?: boolean
 }
 
 /**
@@ -74,6 +76,21 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
 
   const entries: [string, string][] = []
 
+  if (options?.expiring) {
+    // 配信終了間近フィルタ: アニメノード + svod + theme_browse-bin で絞り込み
+    entries.push(['node', '4217520051'])
+    entries.push(['is_movie_collection', '0,0'])
+    entries.push(['p_n_ways_to_watch', params.waysToWatch])
+    entries.push(['search-alias', query.searchAlias])
+    entries.push([
+      'bq',
+      "(and (not entity_type:'Promotion|Trailer|Bonus Content') (not entity_type:'Promotion|Trailer|Bonus Content'))"
+    ])
+    entries.push(['bbn', '4217520051'])
+    entries.push(['p_n_theme_browse-bin', '4435524051'])
+    return entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
+  }
+
   if (options?.node) entries.push(['node', options.node])
   entries.push(['qs-country-code', 'JP'])
   if (options?.newAnime) {
@@ -82,7 +99,10 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
     entries.push(['p_n_subscription_id', '5602560051|10387742051'])
   }
   if (options?.sort ?? true)
-    entries.push(['sort', options?.sortValue ?? (options?.newAnime ? '-prime_video_start_date' : 'pv-public-release-date-desc-rank')])
+    entries.push([
+      'sort',
+      options?.sortValue ?? (options?.newAnime ? '-prime_video_start_date' : 'pv-public-release-date-desc-rank')
+    ])
   entries.push(['field-ways_to_watch', params.waysToWatch])
   if (options?.subscriptionId) entries.push(['field-subscription_id', options.subscriptionId])
   if (options?.genreBin) entries.push(['field-genre-bin', 'av_genre_anime'])
@@ -133,9 +153,9 @@ function buildNestedMessage(query: BrowseQuery, options?: BuildOptions): number[
  */
 function buildServiceToken(query: BrowseQuery, options?: BuildOptions): string {
   const proto = [
-    ...encodeString(2, 'query'),
+    ...encodeString(2, options?.expiring ? 'filter' : 'query'),
     ...encodeVarintField(3, 1),
-    ...encodeString(5, 'default'),
+    ...(options?.expiring ? [] : encodeString(5, 'default')),
     ...encodeString(6, 'center'),
     ...encodeString(7, 'search'),
     ...encodeString(15, ''),

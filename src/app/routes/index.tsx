@@ -17,6 +17,7 @@ function getCurrentQuarter(): number {
 type HomeData = {
   recentlyUpdated: AnimeSchema[]
   upcoming: AnimeSchema[]
+  expiring: AnimeSchema[]
   currentSeason: AnimeSchema[]
   scheduled: AnimeSchema[]
   byProvider: Record<string, AnimeSchema[]>
@@ -27,9 +28,10 @@ export const Route = createFileRoute('/')({
     const currentYear = dayjs().year()
     const currentQuarter = getCurrentQuarter()
 
-    const [recentlyUpdatedRes, upcomingRes, currentSeasonRes, scheduledRes] = await Promise.all([
+    const [recentlyUpdatedRes, upcomingRes, expiringRes, currentSeasonRes, scheduledRes] = await Promise.all([
       api.getAnimeList({ queries: { recentlyUpdated: true, limit: 50, sort: 'updatedAt', order: 'desc' } }),
       api.getAnimeList({ queries: { upcoming: true, limit: 20, sort: 'title', order: 'asc' } }),
+      api.getAnimeList({ queries: { expiring: true, limit: 20, sort: 'title', order: 'asc' } }),
       api.getAnimeList({
         queries: { year: currentYear, quarter: currentQuarter, limit: 20, sort: 'title', order: 'asc' }
       }),
@@ -55,10 +57,12 @@ export const Route = createFileRoute('/')({
     const upcoming = [...upcomingRes.data].sort(
       (a, b) => dayjs(a.nextEpisodeDate).valueOf() - dayjs(b.nextEpisodeDate).valueOf()
     )
+    const expiring = [...expiringRes.data].sort((a, b) => dayjs(a.expiringAt).valueOf() - dayjs(b.expiringAt).valueOf())
 
     return {
       recentlyUpdated,
       upcoming,
+      expiring,
       currentSeason: currentSeasonRes.data,
       scheduled: scheduledRes.data,
       byProvider
@@ -70,7 +74,7 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const { recentlyUpdated, upcoming, currentSeason, scheduled, byProvider } = Route.useLoaderData()
+  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled, byProvider } = Route.useLoaderData()
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
   const quarterLabel = ['冬', '春', '夏', '秋'][currentQuarter]
@@ -91,6 +95,7 @@ function HomePage() {
           badgeType='updatedAt'
         />
         <AnimeCarousel title='もうすぐ配信！' anime={upcoming} viewAllLink='/browse' badgeType='nextEpisodeDate' />
+        <AnimeCarousel title='もうすぐ配信終了' anime={expiring} viewAllLink='/browse' badgeType='expiringAt' />
         <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
         <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
         {Object.entries(byProvider).map(([provider, anime]) => (

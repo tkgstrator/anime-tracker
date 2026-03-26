@@ -18,6 +18,8 @@ export const AnimeSchema = z.object({
   isIdentified: z.boolean(),
   status: z.string(),
   nextEpisodeDate: z.coerce.string().nullable(),
+  expiringAt: z.coerce.string().nullable(),
+  expiringSeason: z.number().int().positive().nullable(),
   scheduled: z.boolean(),
   recorded: z.boolean(),
   createdAt: z.coerce.string().nonempty(),
@@ -73,6 +75,7 @@ export const AnimeListQuerySchema = z.object({
   recorded: z.coerce.boolean().optional(),
   recentlyUpdated: z.coerce.boolean().optional(),
   upcoming: z.coerce.boolean().optional(),
+  expiring: z.coerce.boolean().optional(),
   sort: z.enum(['title', 'year', 'updatedAt']).default('title'),
   order: z.enum(['asc', 'desc']).default('asc'),
   q: z.string().optional()

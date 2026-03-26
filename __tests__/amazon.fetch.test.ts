@@ -15,7 +15,7 @@ describe('fetchTitleList', () => {
       expect(t.title).toBeTruthy()
       expect(t.entityType).toBeTruthy()
     }
-  }, 10_000)
+  }, 30_000)
 })
 
 describe('fetchTitleInfo', () => {
