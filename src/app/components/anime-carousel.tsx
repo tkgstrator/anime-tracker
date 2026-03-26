@@ -25,7 +25,7 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvid
         <h2 className='text-lg font-semibold tracking-tight'>{title}</h2>
         {viewAllLink && (
           <Link to={viewAllLink} className='text-sm text-muted-foreground transition-colors hover:text-foreground'>
-            すべて →
+            すべて
           </Link>
         )}
       </div>
@@ -54,11 +54,7 @@ function formatDateBadge(date: string, type: BadgeType): string {
     return d.format('M/D H:mm')
   }
   if (type === 'expiredAt') {
-    const now = dayjs()
-    const diffHours = d.diff(now, 'hour')
-    if (diffHours < 24) return `残り${Math.max(diffHours, 1)}時間`
-    const diffDays = Math.ceil(diffHours / 24)
-    return `残り${diffDays}日`
+    return `${d.format('M/D')}まで`
   }
   const now = dayjs()
   if (d.isSame(now, 'day')) return `今日 ${d.format('H:mm')}`
