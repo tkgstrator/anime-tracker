@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
@@ -36,7 +36,9 @@ export default defineConfig(({ mode }) => {
           })
         },
         writeBundle() {
-          writeFileSync(resolve(__dirname, 'dist/client/commits.json'), JSON.stringify(gitLog))
+          const outDir = resolve(__dirname, 'dist/client')
+          mkdirSync(outDir, { recursive: true })
+          writeFileSync(resolve(outDir, 'commits.json'), JSON.stringify(gitLog))
         }
       },
       tanstackRouter({

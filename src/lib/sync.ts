@@ -54,7 +54,10 @@ function computeExpiringFields(title: Title): { expiredAt: Date | null; expiring
 }
 
 export class SyncService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly kv?: KVNamespace
+  ) {}
 
   /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
@@ -144,7 +147,7 @@ export class SyncService {
         episodeId: episode.episodeId,
         title: episode.title,
         description: episode.description,
-        releaseDate: new Date(episode.releaseDate),
+        releaseDate: dayjs(episode.releaseDate).toDate(),
         duration: episode.duration,
         maturityRating: episode.maturityRating,
         imageUrl: episode.imageUrl,
@@ -294,11 +297,26 @@ export class SyncService {
   /** 配信終了間近取得: 既存タイトルの expiredAt / expiringSeason を更新 */
   private async fetchExpiring(providerName: string): Promise<string[]> {
     const provider = getProvider(providerName)
+    if (this.kv && provider instanceof AmazonProvider) {
+      provider.kv = this.kv
+    }
+    logger.info({ context: 'fetch-expiring', action: 'start', provider: providerName })
     const titles = await provider.fetchTitleList({ expiringOnly: true })
+    logger.info({ context: 'fetch-expiring', action: 'fetched', provider: providerName, count: titles.length })
     const existingIds = await findExistingContentIds(
       this.prisma,
       titles.map((t) => t.contentId)
     )
+
+    logger.info({
+      context: 'fetch-expiring',
+      action: 'check-titles',
+      provider: provider.name,
+      total: titles.length,
+      existing: existingIds.size,
+      withExpiring: titles.filter((t) => t.expiring).length,
+      sampleTitles: JSON.stringify(titles.slice(0, 3).map((t) => ({ contentId: t.contentId, title: t.title, expiring: t.expiring })))
+    })
 
     // 既存タイトルの expiredAt を更新
     const titlesWithExpiring = titles.filter((t) => existingIds.has(t.contentId) && t.expiring)
