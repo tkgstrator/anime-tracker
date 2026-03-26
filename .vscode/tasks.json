@@ -50,6 +50,34 @@
       },
       "problemMatcher": [],
       "group": "none"
+    },
+    {
+      "label": "Queue: Fetch New Episode (Amazon)",
+      "type": "shell",
+      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"amazon\",\"category\":\"new_episode\"}}' | jq .",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue: Fetch New Episode (Hulu)",
+      "type": "shell",
+      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"hulu\",\"category\":\"new_episode\"}}' | jq .",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue: Fetch Expiring (Amazon)",
+      "type": "shell",
+      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"amazon\",\"category\":\"expiring\"}}' | jq .",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue: Fetch Expiring (Hulu)",
+      "type": "shell",
+      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"hulu\",\"category\":\"expiring\"}}' | jq .",
+      "problemMatcher": [],
+      "group": "test"
     }
   ]
 }
