@@ -38,4 +38,3 @@ export const TitleMetadataSchema = z
     message: 'Either tmdbId or aniListId is required'
   })
 export type TitleMetadata = z.infer<typeof TitleMetadataSchema>
-
