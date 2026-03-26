@@ -1,4 +1,5 @@
 import type { Title, TitleInfo } from '../../schemas/providers/common.dto'
+import type { CacheManager } from '../cache'
 
 export interface FetchTitleListOptions {
   /** true の場合、新エピソードが追加されたタイトルのみ返す */
@@ -16,6 +17,9 @@ export interface FetchTitleListOptions {
 export abstract class Provider {
   /** プロバイダの識別名 (例: "amazon", "hulu") */
   abstract readonly name: string
+
+  /** キャッシュマネージャ (生レスポンスの保存等に使用) */
+  cache: CacheManager | null = null
 
   abstract fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]>
 

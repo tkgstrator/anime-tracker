@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season, Title } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
+import { CacheManager } from './cache'
 import { logger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
 import { AmazonProvider } from './providers/amazon'
@@ -297,26 +298,14 @@ export class SyncService {
   /** 配信終了間近取得: 既存タイトルの expiredAt / expiringSeason を更新 */
   private async fetchExpiring(providerName: string): Promise<string[]> {
     const provider = getProvider(providerName)
-    if (this.kv && provider instanceof AmazonProvider) {
-      provider.kv = this.kv
+    if (this.kv) {
+      provider.cache = new CacheManager(this.kv)
     }
-    logger.info({ context: 'fetch-expiring', action: 'start', provider: providerName })
     const titles = await provider.fetchTitleList({ expiringOnly: true })
-    logger.info({ context: 'fetch-expiring', action: 'fetched', provider: providerName, count: titles.length })
     const existingIds = await findExistingContentIds(
       this.prisma,
       titles.map((t) => t.contentId)
     )
-
-    logger.info({
-      context: 'fetch-expiring',
-      action: 'check-titles',
-      provider: provider.name,
-      total: titles.length,
-      existing: existingIds.size,
-      withExpiring: titles.filter((t) => t.expiring).length,
-      sampleTitles: JSON.stringify(titles.slice(0, 3).map((t) => ({ contentId: t.contentId, title: t.title, expiring: t.expiring })))
-    })
 
     // 既存タイトルの expiredAt を更新
     const titlesWithExpiring = titles.filter((t) => existingIds.has(t.contentId) && t.expiring)

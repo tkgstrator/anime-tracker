@@ -1,10 +1,6 @@
 import jaconv from 'jaconv'
 import type { z } from 'zod'
-import {
-  MetadataMediaSchema,
-  MetadataResponseSchema,
-  type TitleMetadata
-} from '../../schemas/providers/metadata.dto'
+import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/providers/metadata.dto'
 import { MetadataAdapter } from './base'
 
 const ANILIST_API = 'https://graphql.anilist.co'
@@ -131,7 +127,8 @@ const MEDIA_FIELDS = `
  */
 function buildBatchQuery(searches: string[]): string {
   const fragments = searches.map(
-    (search, i) => `q${i}: Page(perPage: 5) { media(search: ${JSON.stringify(search)}, type: ANIME) { ${MEDIA_FIELDS} } }`
+    (search, i) =>
+      `q${i}: Page(perPage: 5) { media(search: ${JSON.stringify(search)}, type: ANIME) { ${MEDIA_FIELDS} } }`
   )
   return `query { ${fragments.join('\n')} }`
 }
@@ -175,7 +172,11 @@ const MONTH_TO_QUARTER = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3] as const
 
 function toMetadata(media: MetadataMedia): TitleMetadata | undefined {
   const year = media.seasonYear ?? media.startDate.year
-  const quarter = media.season ? SEASON_TO_QUARTER[media.season] : media.startDate.month ? MONTH_TO_QUARTER[media.startDate.month - 1] : null
+  const quarter = media.season
+    ? SEASON_TO_QUARTER[media.season]
+    : media.startDate.month
+      ? MONTH_TO_QUARTER[media.startDate.month - 1]
+      : null
   if (year == null || quarter == null) return undefined
   return {
     aniListId: media.id,
