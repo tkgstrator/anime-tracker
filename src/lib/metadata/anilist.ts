@@ -1,7 +1,10 @@
 import jaconv from 'jaconv'
 import type { z } from 'zod'
 import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/providers/metadata.dto'
+import { getAppLogger } from '../logger'
 import { MetadataAdapter } from './base'
+
+const logger = getAppLogger('anilist')
 
 const ANILIST_API = 'https://graphql.anilist.co'
 
@@ -146,12 +149,14 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
   const res = await fetch(url, init)
   if (res.status !== 429) return res
   const retryAfter = Math.min(Number(res.headers.get('Retry-After') || '2'), 5)
+  logger.warn({ action: 'rate-limited', retryAfter, status: res.status })
   await new Promise((r) => setTimeout(r, retryAfter * 1000))
   return fetch(url, init)
 }
 
 async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
   const search = cleanTitle(rawTitle)
+  logger.debug({ action: 'identify-single', rawTitle, search })
 
   const res = await fetchWithRetry(ANILIST_API, {
     method: 'POST',
@@ -162,7 +167,10 @@ async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
     body: JSON.stringify({ query: SEARCH_QUERY, variables: { search } })
   })
 
-  if (!res.ok) throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
+  if (!res.ok) {
+    logger.error({ action: 'identify-single', status: res.status, rawTitle, search })
+    throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
+  }
 
   const parsed = MetadataResponseSchema.parse(await res.json())
   return parsed.data.Page.media[0]
@@ -191,16 +199,21 @@ async function identifyBatch(rawTitles: string[]): Promise<(MetadataMedia | unde
   const searches = rawTitles.map((t) => cleanTitle(t))
   const query = buildBatchQuery(searches)
 
+  logger.debug({ action: 'identify-batch-start', count: rawTitles.length })
+
   const res = await fetchWithRetry(ANILIST_API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ query })
   })
 
-  if (!res.ok) throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
+  if (!res.ok) {
+    logger.error({ action: 'identify-batch', status: res.status, count: rawTitles.length })
+    throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
+  }
 
   const data = (await res.json()) as { data: Record<string, { media: unknown[] }> }
-  return searches.map((_, i) => {
+  const results = searches.map((_, i) => {
     const page = data.data[`q${i}`]
     if (!page?.media?.length) return undefined
     try {
@@ -209,6 +222,16 @@ async function identifyBatch(rawTitles: string[]): Promise<(MetadataMedia | unde
       return undefined
     }
   })
+
+  const identified = results.filter(Boolean).length
+  logger.debug({
+    action: 'identify-batch-done',
+    total: rawTitles.length,
+    identified,
+    unidentified: rawTitles.length - identified
+  })
+
+  return results
 }
 
 export class AniListAdapter extends MetadataAdapter {
@@ -216,7 +239,13 @@ export class AniListAdapter extends MetadataAdapter {
 
   async identify(rawTitle: string): Promise<TitleMetadata | undefined> {
     const media = await identifyAniList(rawTitle)
-    return toMetadata(media)
+    const meta = toMetadata(media)
+    if (meta) {
+      logger.debug({ action: 'identified', rawTitle, aniListId: meta.aniListId, title: meta.title })
+    } else {
+      logger.debug({ action: 'identify-no-metadata', rawTitle, mediaId: media?.id })
+    }
+    return meta
   }
 
   /**

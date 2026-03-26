@@ -1,6 +1,9 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { createPrismaClient } from '../lib/db'
+import { getAppLogger } from '../lib/logger'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '../schemas/recording.dto'
+
+const logger = getAppLogger('routes')
 
 type Bindings = { DB: D1Database }
 
@@ -92,7 +95,12 @@ recordings.openapi(
         data: { recorded: body.recorded }
       })
       return c.json({ id: episode.id, recorded: episode.recorded }, 200)
-    } catch {
+    } catch (e) {
+      logger.warn({
+        action: 'update-not-found',
+        episodeId: body.episodeId,
+        error: e instanceof Error ? e.message : String(e)
+      })
       return c.json({ error: 'Episode not found' }, 404 as const)
     }
   }

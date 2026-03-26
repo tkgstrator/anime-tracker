@@ -6,10 +6,12 @@ import {
   PaginateResponseSchema
 } from '../../../schemas/providers/amazon.dto'
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
-import { logger } from '../../logger'
+import { getAppLogger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
 import { FETCH_HEADERS, fetchAmazonTitleDetail } from './detail'
+
+const logger = getAppLogger('amazon')
 
 const PAGINATE_BASE = 'https://www.amazon.co.jp/gp/video/api/paginateCollection'
 
@@ -41,12 +43,15 @@ function parseHtml(html: string): Title[] {
     for (const [, content] of scripts) {
       if (!content.includes('titleID')) continue
       try {
-        return BrowseHTMLSchema.parse(JSON.parse(content))
+        const titles = BrowseHTMLSchema.parse(JSON.parse(content))
+        logger.debug({ action: 'parse-html', scriptType: type, titleCount: titles.length })
+        return titles
       } catch {
         // noop
       }
     }
   }
+  logger.warn({ action: 'parse-html', message: 'No titles found in HTML' })
   return []
 }
 
@@ -91,6 +96,8 @@ async function paginateCollection(
   url.searchParams.set('variant', 'desktopOSX')
   url.searchParams.set('journeyIngressContext', '')
 
+  logger.debug({ action: 'paginate-request', startIndex })
+
   const res = await fetch(url.toString(), {
     headers: {
       ...FETCH_HEADERS,
@@ -121,33 +128,47 @@ export class AmazonProvider extends Provider {
    * @returns アニメタイトル一覧
    */
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
+    const mode = options?.expiringOnly ? 'expiring' : options?.newEpisodesOnly ? 'new_episode' : 'all'
+    logger.info({ action: 'fetch-title-list-start', mode })
+
     if (options?.expiringOnly) {
-      return this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }))
+      const titles = await this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }))
+      logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
+      return titles
     }
 
-    return this.fetchBrowse(
+    const titles = await this.fetchBrowse(
       options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
     )
+    logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
+    return titles
   }
 
   /**
    * 指定 URL のブラウズページからタイトル一覧を取得する（ページネーション含む）。
    */
   private async fetchBrowse(url: string): Promise<Title[]> {
+    logger.debug({ action: 'fetch-browse', url })
     const response = await fetch(url, { headers: FETCH_HEADERS })
-    if (!response.ok) throw new Error(`Fetch browse error: ${response.status}`)
+    if (!response.ok) {
+      logger.error({ action: 'fetch-browse', status: response.status, url })
+      throw new Error(`Fetch browse error: ${response.status}`)
+    }
     const cookie = response.headers
       .getSetCookie()
       .map((c) => c.split(';')[0])
       .join('; ')
     const html: string = await response.text()
+    logger.debug({ action: 'fetch-browse-html', htmlSize: html.length })
     await this.cache?.put(`debug:browse:${url}`, html)
     const entries = [...parseHtml(html)]
     const params = extractPaginationParams(html)
 
     if (params?.paginationTargetId) {
+      logger.debug({ action: 'pagination-start', initialCount: entries.length })
       const seen = new Set(entries.map((e) => e.contentId))
       await this.fetchRemainingPages(params, cookie, entries.length, seen, entries)
+      logger.debug({ action: 'pagination-done', totalCount: entries.length })
     }
 
     return entries
@@ -166,16 +187,37 @@ export class AmazonProvider extends Provider {
     try {
       const res = await paginateCollection(params, startIndex, cookie)
       const entities = res.entities ?? []
-      if (entities.length === 0) return
+      if (entities.length === 0) {
+        logger.debug({ action: 'pagination-empty', startIndex })
+        return
+      }
 
+      let newCount = 0
+      let skipCount = 0
       for (const e of entities) {
         const parsed = BrowseEntitySchema.safeParse(e)
-        if (!parsed.success) continue
+        if (!parsed.success) {
+          skipCount++
+          continue
+        }
         const title = parsed.data
-        if (seen.has(title.contentId)) continue
+        if (seen.has(title.contentId)) {
+          skipCount++
+          continue
+        }
         seen.add(title.contentId)
         acc.push(title)
+        newCount++
       }
+
+      logger.debug({
+        action: 'pagination-page',
+        startIndex,
+        fetched: entities.length,
+        new: newCount,
+        skipped: skipCount,
+        hasMore: res.hasMoreItems
+      })
 
       if (!res.hasMoreItems) return
 
@@ -189,7 +231,6 @@ export class AmazonProvider extends Provider {
       )
     } catch (e) {
       logger.error({
-        context: 'amazon',
         action: 'pagination-error',
         startIndex,
         error: e instanceof Error ? e.message : String(e)
@@ -203,6 +244,15 @@ export class AmazonProvider extends Provider {
    * @returns タイトル詳細情報
    */
   async fetchTitleInfo(contentId: string): Promise<TitleInfo> {
-    return fetchAmazonTitleDetail(contentId)
+    logger.debug({ action: 'fetch-title-info-start', contentId })
+    const detail = await fetchAmazonTitleDetail(contentId)
+    logger.debug({
+      action: 'fetch-title-info-done',
+      contentId,
+      title: detail.title,
+      entityType: detail.entityType,
+      seasonCount: detail.seasons.length
+    })
+    return detail
   }
 }
