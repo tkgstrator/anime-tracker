@@ -9,7 +9,7 @@ import recordingsRoutes from './routes/recordings'
 import { scheduled } from './scheduled'
 import { MessageSchema } from './schemas/message.dto'
 
-type Bindings = { DB: D1Database; TMDB_API_KEY: string; SYNC_QUEUE: Queue }
+type Bindings = { DB: D1Database; TMDB_API_KEY: string; SYNC_QUEUE: Queue; KV: KVNamespace }
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>()
 
@@ -21,7 +21,7 @@ app.post('/api/queues', async (c) => {
   const body = MessageSchema.safeParse(await c.req.json())
   if (!body.success) return c.json({ error: body.error.flatten() }, 400)
   const prisma = createPrismaClient(c.env.DB)
-  const service = new SyncService(prisma)
+  const service = new SyncService(prisma, c.env.KV)
   logger.startCapture()
   try {
     if (body.data.type === 'fetch') {

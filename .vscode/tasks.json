@@ -78,6 +78,38 @@
       "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"hulu\",\"category\":\"expiring\"}}' | jq .",
       "problemMatcher": [],
       "group": "test"
+    },
+    {
+      "label": "Queue [Remote]: Fetch New Episode (Amazon)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-send.sh amazon new_episode",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue [Remote]: Fetch New Episode (Hulu)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-send.sh hulu new_episode",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue [Remote]: Fetch Expiring (Amazon)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-send.sh amazon expiring",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue [Remote]: Fetch Expiring (Hulu)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-send.sh hulu expiring",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
     }
   ]
 }

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import {
   BrowseEntitySchema,
   BrowseHTMLSchema,
@@ -32,6 +33,10 @@ const DYNAMIC_FEATURES = [
 ]
 
 function parseHtml(html: string): Title[] {
+  const hasHvm = html.includes('highValueMessage')
+  const hvmMatch = html.match(/"highValueMessage"\s*:\s*\{[^}]*"message"\s*:\s*"([^"]*)"/)
+  logger.info({ context: 'amazon', action: 'parse-html', hasHighValueMessage: hasHvm, rawHvmSample: hvmMatch?.[1] ?? null })
+
   const scriptTypes = ['text/template', 'application/json']
   for (const type of scriptTypes) {
     const scripts = [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].sort(
@@ -42,8 +47,8 @@ function parseHtml(html: string): Title[] {
       if (!content.includes('titleID')) continue
       try {
         return BrowseHTMLSchema.parse(JSON.parse(content))
-      } catch {
-        // noop
+      } catch (e) {
+        logger.warn({ context: 'amazon', action: 'parse-html-error', scriptType: type, error: e instanceof Error ? e.message : String(e) })
       }
     }
   }
@@ -111,6 +116,7 @@ async function paginateCollection(
  */
 export class AmazonProvider extends Provider {
   readonly name = 'amazon'
+  kv: KVNamespace | null = null
 
   /**
    * Prime Video のアニメタイトル一覧を取得する。
@@ -141,7 +147,17 @@ export class AmazonProvider extends Provider {
       .map((c) => c.split(';')[0])
       .join('; ')
     const html: string = await response.text()
+    logger.info({ context: 'amazon', action: 'fetch-browse', status: response.status, htmlLength: html.length, hasTitleID: html.includes('titleID') })
+    if (this.kv) {
+      try {
+        await this.kv.put(`debug:browse:${dayjs().toISOString()}`, html, { expirationTtl: 86400 })
+        logger.info({ context: 'amazon', action: 'kv-put', success: true })
+      } catch (e) {
+        logger.error({ context: 'amazon', action: 'kv-put', error: e instanceof Error ? e.message : String(e) })
+      }
+    }
     const entries = [...parseHtml(html)]
+    logger.info({ context: 'amazon', action: 'parse-result', entriesCount: entries.length, withExpiring: entries.filter((e) => e.expiring).length })
     const params = extractPaginationParams(html)
 
     if (params?.paginationTargetId) {

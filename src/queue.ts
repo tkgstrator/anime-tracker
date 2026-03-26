@@ -8,11 +8,12 @@ interface Env {
   DB: D1Database
   TMDB_API_KEY: string
   SYNC_QUEUE: Queue<Message>
+  KV: KVNamespace
 }
 
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
   const prisma = createPrismaClient(env.DB)
-  const service = new SyncService(prisma)
+  const service = new SyncService(prisma, env.KV)
 
   try {
     for (const message of batch.messages) {
