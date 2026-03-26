@@ -45,7 +45,18 @@ const RootComponent = () => {
       </main>
       <footer className='py-4 text-center text-xs text-muted-foreground'>
         <Link to='/changelog' className='transition-colors hover:text-foreground'>
-          v{__APP_VERSION__} ({__GIT_HASH__})
+          v{__APP_VERSION__} ({__GIT_HASH__}){' '}
+          {new Date(__GIT_DATE__)
+            .toLocaleString('ja-JP', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: false
+            })
+            .replace(/\//g, '/')}
         </Link>
         <p className='mt-0.5'>&copy; {new Date().getFullYear()} Anime Tracker</p>
       </footer>

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
-import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
+import type { Episode, Season, Title } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { logger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
@@ -13,10 +13,7 @@ const adapter = new AniListAdapter()
 /** D1 の SQL 変数上限 (999) を超えないよう IN 句をチャンク分割して findMany する */
 const D1_VARIABLE_LIMIT = 500
 
-async function findExistingContentIds(
-  prisma: PrismaClient,
-  contentIds: string[]
-): Promise<Set<string>> {
+async function findExistingContentIds(prisma: PrismaClient, contentIds: string[]): Promise<Set<string>> {
   const results: string[] = []
   for (let i = 0; i < contentIds.length; i += D1_VARIABLE_LIMIT) {
     const chunk = contentIds.slice(i, i + D1_VARIABLE_LIMIT)
@@ -45,6 +42,15 @@ function parseFutureDate(dateStr: string | null | undefined): Date | null {
   if (!dateStr) return null
   const d = dayjs(dateStr)
   return d.isAfter(dayjs()) ? d.toDate() : null
+}
+
+/** Title.expiring から DB 用の expiringAt / expiringSeason を算出する */
+function computeExpiringFields(title: Title): { expiringAt: Date | null; expiringSeason: number | null } {
+  if (!title.expiring) return { expiringAt: null, expiringSeason: null }
+  return {
+    expiringAt: dayjs().add(title.expiring.remainingHours, 'hour').toDate(),
+    expiringSeason: title.expiring.season
+  }
 }
 
 export class SyncService {
@@ -153,7 +159,10 @@ export class SyncService {
   async fetch({ message }: FetchMessage): Promise<string[]> {
     const provider = getProvider(message.provider)
     const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
-    const existingIds = await findExistingContentIds(this.prisma, titles.map((t) => t.contentId))
+    const existingIds = await findExistingContentIds(
+      this.prisma,
+      titles.map((t) => t.contentId)
+    )
     const newTitles = titles.filter((t) => !existingIds.has(t.contentId))
     logger.info({
       context: 'fetch',
@@ -189,6 +198,51 @@ export class SyncService {
       })
     }
 
+    // 配信終了間近: 既存タイトルの expiringAt を更新
+    const titlesWithExpiring = titles.filter((t) => existingIds.has(t.contentId) && t.expiring)
+    for (const t of titlesWithExpiring) {
+      const { expiringAt, expiringSeason } = computeExpiringFields(t)
+      await this.prisma.anime.update({
+        where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
+        data: { expiringAt, expiringSeason }
+      })
+    }
+
+    // 配信終了一覧から消えたタイトルの expiringAt をリセット
+    const expiringContentIds = new Set(titlesWithExpiring.map((t) => t.contentId))
+    const titlesHavingExpiring = await this.prisma.anime.findMany({
+      where: { provider: provider.name, expiringAt: { not: null } },
+      select: { contentId: true }
+    })
+    const expiringIdsToReset = titlesHavingExpiring
+      .filter((t) => !expiringContentIds.has(t.contentId))
+      .map((t) => t.contentId)
+    let expiringResetCount = 0
+    for (let i = 0; i < expiringIdsToReset.length; i += D1_VARIABLE_LIMIT) {
+      const chunk = expiringIdsToReset.slice(i, i + D1_VARIABLE_LIMIT)
+      const { count } = await this.prisma.anime.updateMany({
+        where: { contentId: { in: chunk } },
+        data: { expiringAt: null, expiringSeason: null }
+      })
+      expiringResetCount += count
+    }
+    if (expiringResetCount > 0) {
+      logger.info({
+        context: 'fetch',
+        action: 'reset-expiring',
+        provider: provider.name,
+        count: expiringResetCount
+      })
+    }
+    if (titlesWithExpiring.length > 0) {
+      logger.info({
+        context: 'fetch',
+        action: 'update-expiring',
+        provider: provider.name,
+        count: titlesWithExpiring.length
+      })
+    }
+
     // 50件ずつバッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
     const BATCH_SIZE = 20
     const identifiedContentIds: string[] = []
@@ -202,6 +256,7 @@ export class SyncService {
         if (meta) {
           const t = batch[j]
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
+          const { expiringAt, expiringSeason } = computeExpiringFields(t)
           await this.prisma.anime.create({
             data: {
               provider: provider.name,
@@ -217,7 +272,9 @@ export class SyncService {
               year: meta.year,
               quarter: meta.quarter,
               isIdentified: true,
-              nextEpisodeDate
+              nextEpisodeDate,
+              expiringAt,
+              expiringSeason
             }
           })
           logger.info({

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
 import { EntityType, TitleSchema } from './common.dto'
 
 /** ブラウズ URL 生成時の検索クエリ。`buildAmazonBrowseUrl` で使用。 */
@@ -24,11 +25,14 @@ export const BrowseEntitySchema = z
       cover: z.object({ url: z.url() })
     }),
     entitlementCues: z.object({
-      titleMetadataBadge: z.object({ message: z.string().nonempty().optional() })
+      titleMetadataBadge: z.object({ message: z.string().nonempty().optional() }),
+      highValueMessage: z.object({ message: z.string().nonempty().optional() }).optional()
     })
   })
-  .transform((v) =>
-    TitleSchema.parse({
+  .transform((v) => {
+    const hvm = v.entitlementCues.highValueMessage?.message
+    const parsed = hvm ? parseExpiringMessage(hvm) : undefined
+    return TitleSchema.parse({
       contentId: v.titleID,
       title: v.displayTitle,
       description: v.synopsis,
@@ -36,9 +40,10 @@ export const BrowseEntitySchema = z
       imageUrl: v.images.cover.url,
       maturityRating: null,
       benefitId: null,
-      hasNewContent: !!v.entitlementCues.titleMetadataBadge.message
+      hasNewContent: !!v.entitlementCues.titleMetadataBadge.message,
+      expiring: parsed ? { remainingHours: parsed.remainingHours, season: parsed.season } : undefined
     })
-  )
+  })
 
 /** コンテナ配列からエンティティを抽出する共通 transform */
 const ContainersSchema = z
