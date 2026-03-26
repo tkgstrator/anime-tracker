@@ -1,9 +1,12 @@
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import type { VodItem } from '../../../schemas/providers/hulu.dto'
+import { getAppLogger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { DECADE_AG, fetchCurrentSeasonAnime, fetchHuluAnimeByDecade, fetchRecentlyAdded } from './browse'
 
 import { fetchHuluTitleDetail, parseHuluDate } from './detail'
+
+const logger = getAppLogger('hulu')
 
 function vodItemToTitle(item: VodItem): Title {
   const badgeEndAt = item.additionalInfo.card_info.badge_text_end_at
@@ -37,7 +40,13 @@ export class HuluProvider extends Provider {
    */
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
     if (options?.newEpisodesOnly) {
+      logger.info({ action: 'fetch-title-list-start', mode: 'new_episode' })
       const [recentItems, seasonItems] = await Promise.all([fetchRecentlyAdded(), fetchCurrentSeasonAnime()])
+      logger.debug({
+        action: 'fetched-sources',
+        recentCount: recentItems.length,
+        seasonCount: seasonItems.length
+      })
       const seen = new Set<string>()
       const titles: Title[] = []
       for (const item of recentItems) {
@@ -52,11 +61,17 @@ export class HuluProvider extends Provider {
         seen.add(item.slug)
         titles.push(vodItemToTitle(item))
       }
+      logger.info({ action: 'fetch-title-list-done', mode: 'new_episode', count: titles.length })
       return titles
     }
 
+    logger.info({ action: 'fetch-title-list-start', mode: 'all' })
     const decades = Object.keys(DECADE_AG).map(Number)
     const results = await Promise.all(decades.map((decade) => fetchHuluAnimeByDecade(decade)))
+    logger.debug({
+      action: 'fetched-decades',
+      decades: decades.map((d, i) => ({ decade: d, count: results[i].length }))
+    })
     const seen = new Set<string>()
     const titles: Title[] = []
     for (const item of results.flat()) {
@@ -64,6 +79,7 @@ export class HuluProvider extends Provider {
       seen.add(item.slug)
       titles.push(vodItemToTitle(item))
     }
+    logger.info({ action: 'fetch-title-list-done', mode: 'all', count: titles.length })
     return titles
   }
 
@@ -74,6 +90,14 @@ export class HuluProvider extends Provider {
    * @returns タイトル詳細情報
    */
   async fetchTitleInfo(contentId: string): Promise<TitleInfo> {
-    return fetchHuluTitleDetail(contentId)
+    logger.debug({ action: 'fetch-title-info-start', contentId })
+    const detail = await fetchHuluTitleDetail(contentId)
+    logger.debug({
+      action: 'fetch-title-info-done',
+      contentId,
+      title: detail.title,
+      seasonCount: detail.seasons.length
+    })
+    return detail
   }
 }

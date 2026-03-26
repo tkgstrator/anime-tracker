@@ -1,7 +1,8 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { honoLogger } from '@logtape/hono'
 import { apiReference } from '@scalar/hono-api-reference'
 import { createPrismaClient } from './lib/db'
-import { logger } from './lib/logger'
+import { setupLogger, startCapture, stopCapture } from './lib/logger'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
@@ -11,7 +12,11 @@ import { MessageSchema } from './schemas/message.dto'
 
 type Bindings = { DB: D1Database; TMDB_API_KEY: string; SYNC_QUEUE: Queue; KV: KVNamespace }
 
+setupLogger()
+
 const app = new OpenAPIHono<{ Bindings: Bindings }>()
+
+app.use(honoLogger({ category: ['app', 'hono'] }))
 
 app.route('/api/anime', animeRoutes)
 app.route('/api/recordings', recordingsRoutes)
@@ -22,7 +27,7 @@ app.post('/api/queues', async (c) => {
   if (!body.success) return c.json({ error: body.error.flatten() }, 400)
   const prisma = createPrismaClient(c.env.DB)
   const service = new SyncService(prisma, c.env.KV)
-  logger.startCapture()
+  startCapture()
   try {
     if (body.data.type === 'fetch') {
       const contentIds = await service.fetch(body.data)
@@ -32,12 +37,12 @@ app.post('/api/queues', async (c) => {
           await service.update({ type: 'update', message: { provider, contentId } })
         }
       }
-      return c.json({ type: 'fetch', category, contentIds, logs: logger.stopCapture() })
+      return c.json({ type: 'fetch', category, contentIds, logs: stopCapture() })
     }
     await service.update(body.data)
-    return c.json({ type: 'update', success: true, logs: logger.stopCapture() })
+    return c.json({ type: 'update', success: true, logs: stopCapture() })
   } catch (e) {
-    return c.json({ error: e instanceof Error ? e.message : String(e), logs: logger.stopCapture() }, 500)
+    return c.json({ error: e instanceof Error ? e.message : String(e), logs: stopCapture() }, 500)
   } finally {
     await prisma.$disconnect()
   }

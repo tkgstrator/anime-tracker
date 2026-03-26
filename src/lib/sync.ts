@@ -3,7 +3,7 @@ import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season, Title } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { CacheManager } from './cache'
-import { logger } from './logger'
+import { getAppLogger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
 import { AmazonProvider } from './providers/amazon'
 import type { Provider } from './providers/base'
@@ -54,6 +54,9 @@ function computeExpiringFields(title: Title): { expiredAt: Date | null; expiring
   }
 }
 
+const syncLogger = getAppLogger('sync')
+const fetchLogger = getAppLogger('fetch')
+
 export class SyncService {
   constructor(
     private readonly prisma: PrismaClient,
@@ -63,7 +66,20 @@ export class SyncService {
   /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
     const provider = getProvider(message.provider)
+    syncLogger.debug({
+      action: 'update-start',
+      provider: message.provider,
+      contentId: message.contentId
+    })
     const detail = await provider.fetchTitleInfo(message.contentId)
+    syncLogger.debug({
+      action: 'fetched-title-info',
+      provider: message.provider,
+      contentId: message.contentId,
+      title: detail.title,
+      seasonCount: detail.seasons.length,
+      episodeCount: detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0)
+    })
 
     const anime = await this.prisma.anime.findUniqueOrThrow({
       where: { provider_contentId: { provider: message.provider, contentId: message.contentId } }
@@ -71,8 +87,7 @@ export class SyncService {
 
     await this.syncSeasons(anime.id, message.provider, message.contentId, detail.seasons)
 
-    logger.info({
-      context: 'sync',
+    syncLogger.info({
       action: 'update',
       provider: message.provider,
       contentId: message.contentId
@@ -99,12 +114,30 @@ export class SyncService {
 
       if (!existingEpisodes) {
         await this.createSeason(animeId, season)
+        syncLogger.info({
+          action: 'create-season',
+          provider,
+          contentId,
+          seasonNumber: season.seasonNumber,
+          displayName: season.displayName,
+          episodeCount: season.episodes.length
+        })
         continue
       }
 
       const dbSeason = anime.seasons.find((s) => s.seasonNumber === season.seasonNumber)
       if (!dbSeason) continue
       const newEpisodes = season.episodes.filter((ep) => !existingEpisodes.has(ep.episodeNumber))
+      if (newEpisodes.length > 0) {
+        syncLogger.info({
+          action: 'add-episodes',
+          provider,
+          contentId,
+          seasonNumber: season.seasonNumber,
+          count: newEpisodes.length,
+          episodes: newEpisodes.map((ep) => ep.episodeNumber)
+        })
+      }
       for (const episode of newEpisodes) {
         await this.createEpisode(dbSeason.id, episode)
       }
@@ -161,6 +194,11 @@ export class SyncService {
 
   /** プロバイダからタイトル一覧を取得し、更新対象のコンテンツIDを返す */
   async fetch({ message }: FetchMessage): Promise<string[]> {
+    fetchLogger.info({
+      action: 'fetch-start',
+      provider: message.provider,
+      category: message.category
+    })
     if (message.category === 'expiring') {
       return this.fetchExpiring(message.provider)
     }
@@ -176,8 +214,7 @@ export class SyncService {
       titles.map((t) => t.contentId)
     )
     const newTitles = titles.filter((t) => !existingIds.has(t.contentId))
-    logger.info({
-      context: 'fetch',
+    fetchLogger.info({
       action: 'check-titles',
       provider: provider.name,
       total: titles.length,
@@ -202,8 +239,7 @@ export class SyncService {
       resetCount += count
     }
     if (resetCount > 0) {
-      logger.info({
-        context: 'fetch',
+      fetchLogger.info({
         action: 'reset-next-episode-date',
         provider: provider.name,
         count: resetCount
@@ -216,6 +252,13 @@ export class SyncService {
 
     for (let i = 0; i < newTitles.length; i += BATCH_SIZE) {
       const batch = newTitles.slice(i, i + BATCH_SIZE)
+      fetchLogger.debug({
+        action: 'identify-batch',
+        provider: provider.name,
+        batchIndex: Math.floor(i / BATCH_SIZE),
+        batchSize: batch.length,
+        titles: batch.map((t) => t.title)
+      })
       const results = await adapter.identifyBatch(batch.map((t) => t.title))
 
       for (let j = 0; j < batch.length; j++) {
@@ -241,8 +284,7 @@ export class SyncService {
               nextEpisodeDate
             }
           })
-          logger.info({
-            context: 'fetch',
+          fetchLogger.info({
             action: 'create-anime',
             provider: provider.name,
             contentId: t.contentId,
@@ -253,8 +295,7 @@ export class SyncService {
           })
           identifiedContentIds.push(t.contentId)
         } else {
-          logger.warn({
-            context: 'sync',
+          syncLogger.warn({
             action: 'unidentified',
             provider: provider.name,
             title: batch[j].title,
@@ -267,14 +308,20 @@ export class SyncService {
 
     // browse API から取得できた nextEpisodeDate を既存タイトルに反映
     const titlesWithNextDate = titles.filter((t) => existingIds.has(t.contentId) && t.nextEpisodeDate)
+    if (titlesWithNextDate.length > 0) {
+      fetchLogger.debug({
+        action: 'update-next-episode-dates',
+        provider: provider.name,
+        count: titlesWithNextDate.length
+      })
+    }
     for (const t of titlesWithNextDate) {
       const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
       await this.prisma.anime.update({
         where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
         data: { nextEpisodeDate }
       })
-      logger.info({
-        context: 'fetch',
+      fetchLogger.debug({
         action: 'update-next-episode-date',
         provider: provider.name,
         contentId: t.contentId,
@@ -284,12 +331,18 @@ export class SyncService {
 
     // バッジ（新エピソード・新着等）があるタイトルだけを update 対象にする
     const updateTargets = titles.filter((t) => existingIds.has(t.contentId) && t.hasNewContent)
-    logger.info({
-      context: 'fetch',
+    fetchLogger.info({
       action: 'filter-by-badge',
       provider: provider.name,
       total: existingIds.size,
       withBadge: updateTargets.length
+    })
+
+    fetchLogger.info({
+      action: 'fetch-new-episode-done',
+      provider: provider.name,
+      identified: identifiedContentIds.length,
+      updateTargets: updateTargets.length
     })
 
     return [...updateTargets.map((t) => t.contentId), ...identifiedContentIds]
@@ -307,6 +360,13 @@ export class SyncService {
       titles.map((t) => t.contentId)
     )
 
+    fetchLogger.debug({
+      action: 'expiring-titles-fetched',
+      provider: provider.name,
+      total: titles.length,
+      existing: existingIds.size
+    })
+
     // 既存タイトルの expiredAt を更新
     const titlesWithExpiring = titles.filter((t) => existingIds.has(t.contentId) && t.expiring)
     for (const t of titlesWithExpiring) {
@@ -314,6 +374,13 @@ export class SyncService {
       await this.prisma.anime.update({
         where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
         data: { expiredAt, expiringSeason }
+      })
+      fetchLogger.debug({
+        action: 'update-expiring-title',
+        provider: provider.name,
+        contentId: t.contentId,
+        expiredAt: expiredAt?.toISOString() ?? null,
+        expiringSeason
       })
     }
 
@@ -336,16 +403,14 @@ export class SyncService {
       expiringResetCount += count
     }
     if (expiringResetCount > 0) {
-      logger.info({
-        context: 'fetch',
+      fetchLogger.info({
         action: 'reset-expiring',
         provider: provider.name,
         count: expiringResetCount
       })
     }
     if (titlesWithExpiring.length > 0) {
-      logger.info({
-        context: 'fetch',
+      fetchLogger.info({
         action: 'update-expiring',
         provider: provider.name,
         count: titlesWithExpiring.length
