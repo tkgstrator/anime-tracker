@@ -6,7 +6,7 @@ export type EntityType = z.infer<typeof EntityType>
 export const TitleSchema = z.object({
   contentId: z.string().nonempty(),
   title: z.string().nonempty(),
-  description: z.string(),
+  description: z.string().nonempty(),
   entityType: EntityType,
   imageUrl: z.string().nullable(),
   maturityRating: z.number().int().positive().nullable(),
@@ -36,14 +36,14 @@ export const SeasonSchema = z.object({
   seasonId: z.string().nonempty(),
   displayName: z.string().nonempty(),
   seasonNumber: z.number().int().positive(),
-  imageUrl: z.url().nullable(),
+  imageUrl: z.url(),
   episodes: z.array(EpisodeSchema)
 })
 export type Season = z.infer<typeof SeasonSchema>
 
 export const TitleInfoSchema = z.object({
   title: z.string().nonempty(),
-  description: z.string(),
+  description: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
   imageUrl: z.url(),
