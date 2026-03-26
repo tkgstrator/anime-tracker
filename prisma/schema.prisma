@@ -24,7 +24,7 @@ model Anime {
   status          String    @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
   aniListId       Int       @map("anilist_id")
   nextEpisodeDate DateTime? @map("next_episode_date") // 次回エピソード配信日 (UTC)
-  expiringAt      DateTime? @map("expiring_at") // 配信終了推定日時 (UTC)
+  expiredAt       DateTime? @map("expired_at") // 配信終了日時 (UTC)
   expiringSeason  Int?      @map("expiring_season") // 対象シーズン番号 (null=作品全体)
   scheduled       Boolean   @default(false) // 録画予約済み
   recorded        Boolean   @default(false) // 録画済み

@@ -3,6 +3,8 @@ import type { Title, TitleInfo } from '../../schemas/providers/common.dto'
 export interface FetchTitleListOptions {
   /** true の場合、新エピソードが追加されたタイトルのみ返す */
   newEpisodesOnly?: boolean
+  /** true の場合、配信終了間近タイトルのみ返す */
+  expiringOnly?: boolean
 }
 
 /**

@@ -57,7 +57,7 @@ export const Route = createFileRoute('/')({
     const upcoming = [...upcomingRes.data].sort(
       (a, b) => dayjs(a.nextEpisodeDate).valueOf() - dayjs(b.nextEpisodeDate).valueOf()
     )
-    const expiring = [...expiringRes.data].sort((a, b) => dayjs(a.expiringAt).valueOf() - dayjs(b.expiringAt).valueOf())
+    const expiring = [...expiringRes.data].sort((a, b) => dayjs(a.expiredAt).valueOf() - dayjs(b.expiredAt).valueOf())
 
     return {
       recentlyUpdated,
@@ -95,7 +95,7 @@ function HomePage() {
           badgeType='updatedAt'
         />
         <AnimeCarousel title='もうすぐ配信！' anime={upcoming} viewAllLink='/browse' badgeType='nextEpisodeDate' />
-        <AnimeCarousel title='もうすぐ配信終了' anime={expiring} viewAllLink='/browse' badgeType='expiringAt' />
+        <AnimeCarousel title='もうすぐ配信終了' anime={expiring} viewAllLink='/browse' badgeType='expiredAt' />
         <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
         <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
         {Object.entries(byProvider).map(([provider, anime]) => (

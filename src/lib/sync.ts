@@ -44,11 +44,11 @@ function parseFutureDate(dateStr: string | null | undefined): Date | null {
   return d.isAfter(dayjs()) ? d.toDate() : null
 }
 
-/** Title.expiring から DB 用の expiringAt / expiringSeason を算出する */
-function computeExpiringFields(title: Title): { expiringAt: Date | null; expiringSeason: number | null } {
-  if (!title.expiring) return { expiringAt: null, expiringSeason: null }
+/** Title.expiring から DB 用の expiredAt / expiringSeason を算出する */
+function computeExpiringFields(title: Title): { expiredAt: Date | null; expiringSeason: number | null } {
+  if (!title.expiring) return { expiredAt: null, expiringSeason: null }
   return {
-    expiringAt: dayjs().add(title.expiring.remainingHours, 'hour').toDate(),
+    expiredAt: dayjs().add(title.expiring.remainingHours, 'hour').toDate(),
     expiringSeason: title.expiring.season
   }
 }
@@ -157,7 +157,15 @@ export class SyncService {
 
   /** プロバイダからタイトル一覧を取得し、更新対象のコンテンツIDを返す */
   async fetch({ message }: FetchMessage): Promise<string[]> {
-    const provider = getProvider(message.provider)
+    if (message.category === 'expiring') {
+      return this.fetchExpiring(message.provider)
+    }
+    return this.fetchNewEpisode(message.provider)
+  }
+
+  /** 新着エピソード取得: AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
+  private async fetchNewEpisode(providerName: string): Promise<string[]> {
+    const provider = getProvider(providerName)
     const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
     const existingIds = await findExistingContentIds(
       this.prisma,
@@ -198,52 +206,7 @@ export class SyncService {
       })
     }
 
-    // 配信終了間近: 既存タイトルの expiringAt を更新
-    const titlesWithExpiring = titles.filter((t) => existingIds.has(t.contentId) && t.expiring)
-    for (const t of titlesWithExpiring) {
-      const { expiringAt, expiringSeason } = computeExpiringFields(t)
-      await this.prisma.anime.update({
-        where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
-        data: { expiringAt, expiringSeason }
-      })
-    }
-
-    // 配信終了一覧から消えたタイトルの expiringAt をリセット
-    const expiringContentIds = new Set(titlesWithExpiring.map((t) => t.contentId))
-    const titlesHavingExpiring = await this.prisma.anime.findMany({
-      where: { provider: provider.name, expiringAt: { not: null } },
-      select: { contentId: true }
-    })
-    const expiringIdsToReset = titlesHavingExpiring
-      .filter((t) => !expiringContentIds.has(t.contentId))
-      .map((t) => t.contentId)
-    let expiringResetCount = 0
-    for (let i = 0; i < expiringIdsToReset.length; i += D1_VARIABLE_LIMIT) {
-      const chunk = expiringIdsToReset.slice(i, i + D1_VARIABLE_LIMIT)
-      const { count } = await this.prisma.anime.updateMany({
-        where: { contentId: { in: chunk } },
-        data: { expiringAt: null, expiringSeason: null }
-      })
-      expiringResetCount += count
-    }
-    if (expiringResetCount > 0) {
-      logger.info({
-        context: 'fetch',
-        action: 'reset-expiring',
-        provider: provider.name,
-        count: expiringResetCount
-      })
-    }
-    if (titlesWithExpiring.length > 0) {
-      logger.info({
-        context: 'fetch',
-        action: 'update-expiring',
-        provider: provider.name,
-        count: titlesWithExpiring.length
-      })
-    }
-
-    // 50件ずつバッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
+    // バッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
     const BATCH_SIZE = 20
     const identifiedContentIds: string[] = []
 
@@ -256,7 +219,6 @@ export class SyncService {
         if (meta) {
           const t = batch[j]
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
-          const { expiringAt, expiringSeason } = computeExpiringFields(t)
           await this.prisma.anime.create({
             data: {
               provider: provider.name,
@@ -272,9 +234,7 @@ export class SyncService {
               year: meta.year,
               quarter: meta.quarter,
               isIdentified: true,
-              nextEpisodeDate,
-              expiringAt,
-              expiringSeason
+              nextEpisodeDate
             }
           })
           logger.info({
@@ -329,5 +289,62 @@ export class SyncService {
     })
 
     return [...updateTargets.map((t) => t.contentId), ...identifiedContentIds]
+  }
+
+  /** 配信終了間近取得: 既存タイトルの expiredAt / expiringSeason を更新 */
+  private async fetchExpiring(providerName: string): Promise<string[]> {
+    const provider = getProvider(providerName)
+    const titles = await provider.fetchTitleList({ expiringOnly: true })
+    const existingIds = await findExistingContentIds(
+      this.prisma,
+      titles.map((t) => t.contentId)
+    )
+
+    // 既存タイトルの expiredAt を更新
+    const titlesWithExpiring = titles.filter((t) => existingIds.has(t.contentId) && t.expiring)
+    for (const t of titlesWithExpiring) {
+      const { expiredAt, expiringSeason } = computeExpiringFields(t)
+      await this.prisma.anime.update({
+        where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
+        data: { expiredAt, expiringSeason }
+      })
+    }
+
+    // 配信終了一覧から消えたタイトルの expiredAt をリセット
+    const expiringContentIds = new Set(titlesWithExpiring.map((t) => t.contentId))
+    const titlesHavingExpiring = await this.prisma.anime.findMany({
+      where: { provider: provider.name, expiredAt: { not: null } },
+      select: { contentId: true }
+    })
+    const expiringIdsToReset = titlesHavingExpiring
+      .filter((t) => !expiringContentIds.has(t.contentId))
+      .map((t) => t.contentId)
+    let expiringResetCount = 0
+    for (let i = 0; i < expiringIdsToReset.length; i += D1_VARIABLE_LIMIT) {
+      const chunk = expiringIdsToReset.slice(i, i + D1_VARIABLE_LIMIT)
+      const { count } = await this.prisma.anime.updateMany({
+        where: { contentId: { in: chunk } },
+        data: { expiredAt: null, expiringSeason: null }
+      })
+      expiringResetCount += count
+    }
+    if (expiringResetCount > 0) {
+      logger.info({
+        context: 'fetch',
+        action: 'reset-expiring',
+        provider: provider.name,
+        count: expiringResetCount
+      })
+    }
+    if (titlesWithExpiring.length > 0) {
+      logger.info({
+        context: 'fetch',
+        action: 'update-expiring',
+        provider: provider.name,
+        count: titlesWithExpiring.length
+      })
+    }
+
+    return titlesWithExpiring.map((t) => t.contentId)
   }
 }
