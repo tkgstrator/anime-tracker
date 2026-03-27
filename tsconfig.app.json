@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/app/**/*.ts",
+    "src/app/**/*.tsx",
+    "src/schemas/anime.dto.ts",
+    "src/schemas/nagisa.dto.ts",
+    "src/schemas/recording.dto.ts",
+    "src/schemas/message.dto.ts",
+    "src/lib/image.ts"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"]
+  }
+}
