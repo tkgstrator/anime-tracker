@@ -179,6 +179,10 @@ anime.openapi(
         description: '録画リクエスト成功',
         content: { 'application/json': { schema: z.object({ success: z.boolean() }) } }
       },
+      400: {
+        description: '未録画エピソードなし',
+        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+      },
       404: {
         description: 'Not Found',
         content: { 'application/json': { schema: z.object({ error: z.string() }) } }
@@ -194,18 +198,36 @@ anime.openapi(
     const id = c.req.param('id')
     const row = await prisma.anime.findUnique({
       where: { id },
-      select: { provider: true, contentId: true }
+      select: { provider: true, contentId: true },
     })
     if (!row) return c.json({ error: 'Not found' }, 404)
+
+    // 未録画エピソードの episode_id を抽出
+    const unrecordedEpisodes = await prisma.episode.findMany({
+      where: {
+        recorded: false,
+        season: { animeId: id },
+      },
+      select: { episodeId: true },
+      orderBy: [{ season: { seasonNumber: 'asc' } }, { episodeNumber: 'asc' }],
+    })
+    const episodeIds = unrecordedEpisodes.map((e) => e.episodeId)
+
+    if (episodeIds.length === 0) {
+      return c.json({ error: 'No unrecorded episodes' }, 400 as const)
+    }
 
     const res = await fetch(`${c.env.BACKEND_URL}/api/queues`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'CF-Access-Client-Id': c.env.CF_ACCESS_CLIENT_ID,
-        'CF-Access-Client-Secret': c.env.CF_ACCESS_CLIENT_SECRET
+        'CF-Access-Client-Secret': c.env.CF_ACCESS_CLIENT_SECRET,
       },
-      body: JSON.stringify({ provider: row.provider, content_id: row.contentId })
+      body: JSON.stringify({
+        provider: row.provider,
+        items: [{ content_id: row.contentId, episode_ids: episodeIds }],
+      }),
     })
 
     if (!res.ok) {
@@ -216,12 +238,12 @@ anime.openapi(
         provider: row.provider,
         contentId: row.contentId,
         status: res.status,
-        body: text
+        body: text,
       })
       return c.json({ error: `Backend error: ${res.status} ${text}` }, 502 as const)
     }
 
-    logger.info({ action: 'record-sent', id, provider: row.provider, contentId: row.contentId })
+    logger.info({ action: 'record-sent', id, provider: row.provider, contentId: row.contentId, episodeCount: episodeIds.length })
     return c.json({ success: true }, 200)
   }
 )
