@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react'
-import { getCleanImageUrl } from '@/lib/image'
+import { ProxyImage } from '@/app/components/proxy-image'
 import type { AnimeInfoSchema } from '@/schemas/anime.dto'
 import { formatDate, formatDuration, getWatchUrl } from '../-lib/format'
 
@@ -31,9 +31,10 @@ export function EpisodeGrid({ seasons, provider }: { seasons: Season[]; provider
                   aria-disabled={!watchUrl}
                   className={`group rounded-lg px-2 py-2 sm:overflow-hidden sm:p-0 ${watchUrl ? 'transition-colors hover:bg-muted/50' : 'pointer-events-none opacity-50'}`}
                 >
-                  <img
-                    src={getCleanImageUrl(episode.imageUrl)}
+                  <ProxyImage
+                    src={episode.imageUrl}
                     alt={episode.title}
+                    w={270}
                     className='hidden aspect-video w-full rounded-t-lg object-cover sm:block'
                   />
                   <div className='flex items-center gap-2 sm:block sm:px-3 sm:py-2'>
