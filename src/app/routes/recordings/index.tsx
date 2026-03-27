@@ -1,31 +1,33 @@
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useCallback } from 'react'
+import { useState } from 'react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
 import { SmartPagination } from '@/app/components/smart-pagination'
 import { Badge } from '@/app/components/ui/badge'
-import { usePaginatedFetch } from '@/app/hooks/use-paginated-fetch'
-import api from '@/app/lib/api'
+import { animeListQueryOptions } from '@/app/lib/query-options'
 import { getCleanImageUrl } from '@/lib/image'
-import { type PaginatedAnimeSchema, QuarterLabel } from '@/schemas/anime.dto'
+import { QuarterLabel } from '@/schemas/anime.dto'
 
 const PAGE_SIZE = 24
 
 export const Route = createFileRoute('/recordings/')({
-  loader: () => api.getAnimeList({ queries: { scheduled: true, page: 1, limit: PAGE_SIZE } }),
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(animeListQueryOptions({ scheduled: true, page: 1, limit: PAGE_SIZE })),
   pendingComponent: LoadingSpinner,
   component: RecordingsPage
 })
 
 function RecordingsPage() {
-  const loaderData = Route.useLoaderData() as PaginatedAnimeSchema
-
-  const fetcher = useCallback(
-    (page: number) => api.getAnimeList({ queries: { scheduled: true, page, limit: PAGE_SIZE } }),
-    []
-  )
-  const { data: anime, page, setPage, totalPages, total } = usePaginatedFetch(loaderData, fetcher)
+  const [page, setPage] = useState(1)
+  const { data } = useQuery({
+    ...animeListQueryOptions({ scheduled: true, page, limit: PAGE_SIZE }),
+    placeholderData: keepPreviousData
+  })
+  const anime = data?.data ?? []
+  const totalPages = data?.totalPages ?? 0
+  const total = data?.total ?? 0
 
   return (
     <PageTransition>

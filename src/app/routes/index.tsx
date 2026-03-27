@@ -1,9 +1,11 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 import { AnimeCarousel } from '@/app/components/anime-carousel'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
-import api from '@/app/lib/api'
+import { homeQueryOptions } from '@/app/lib/query-options'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
 function getCurrentQuarter(): number {
@@ -14,48 +16,31 @@ function getCurrentQuarter(): number {
   return 3
 }
 
-type HomeData = {
-  recentlyUpdated: AnimeSchema[]
-  upcoming: AnimeSchema[]
-  expiring: AnimeSchema[]
-  currentSeason: AnimeSchema[]
-  scheduled: AnimeSchema[]
-  byProvider: Record<string, AnimeSchema[]>
-}
-
 export const Route = createFileRoute('/')({
-  loader: async (): Promise<HomeData> => {
-    const data = await api.getHomeData()
-
-    const byProvider: Record<string, AnimeSchema[]> = {}
-    for (const anime of data.currentSeason) {
-      const list = byProvider[anime.provider] ?? []
-      list.push(anime)
-      byProvider[anime.provider] = list
-    }
-    for (const list of Object.values(byProvider)) {
-      for (let i = list.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[list[i], list[j]] = [list[j], list[i]]
-      }
-    }
-
-    return {
-      recentlyUpdated: data.recentlyUpdated,
-      upcoming: data.upcoming,
-      expiring: data.expiring,
-      currentSeason: data.currentSeason,
-      scheduled: data.scheduled,
-      byProvider
-    }
-  },
-  staleTime: Number.POSITIVE_INFINITY,
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(homeQueryOptions()),
   pendingComponent: LoadingSpinner,
   component: HomePage
 })
 
 function HomePage() {
-  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled, byProvider } = Route.useLoaderData()
+  const { data } = useSuspenseQuery(homeQueryOptions())
+  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled } = data
+
+  const byProvider = useMemo(() => {
+    const map: Record<string, AnimeSchema[]> = {}
+    for (const anime of currentSeason) {
+      const list = map[anime.provider] ?? []
+      list.push(anime)
+      map[anime.provider] = list
+    }
+    for (const list of Object.values(map)) {
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[list[i], list[j]] = [list[j], list[i]]
+      }
+    }
+    return map
+  }, [currentSeason])
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
   const quarterLabel = ['冬', '春', '夏', '秋'][currentQuarter]
