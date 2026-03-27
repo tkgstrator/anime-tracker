@@ -1,4 +1,6 @@
-import { createRootRoute, Link, Outlet, useRouterState } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { createRootRouteWithContext, Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { AnimatePresence } from 'motion/react'
 import { Toaster } from 'sonner'
@@ -64,11 +66,12 @@ const RootComponent = () => {
       </footer>
       <Toaster richColors position='top-right' />
       <TanStackRouterDevtools position='bottom-right' />
+      <ReactQueryDevtools buttonPosition='bottom-left' />
     </div>
   )
 }
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   component: RootComponent,
   pendingComponent: LoadingSpinner,
   errorComponent: ({ error }) => <ErrorPage error={error} />,

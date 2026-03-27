@@ -4,7 +4,6 @@ import { AnimeCarousel } from '@/app/components/anime-carousel'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
 import api from '@/app/lib/api'
-import { nagisaStatusAtom, store } from '@/app/lib/atoms'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
 function getCurrentQuarter(): number {
@@ -27,12 +26,6 @@ type HomeData = {
 export const Route = createFileRoute('/')({
   loader: async (): Promise<HomeData> => {
     const data = await api.getHomeData()
-
-    // Nagisa status をバックグラウンドで取得して atom に保存
-    api.getNagisaStatus().then(
-      (s) => store.set(nagisaStatusAtom, s),
-      () => store.set(nagisaStatusAtom, null)
-    )
 
     const byProvider: Record<string, AnimeSchema[]> = {}
     for (const anime of data.currentSeason) {
@@ -62,8 +55,7 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled, byProvider } =
-    Route.useLoaderData()
+  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled, byProvider } = Route.useLoaderData()
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
   const quarterLabel = ['冬', '春', '夏', '秋'][currentQuarter]
