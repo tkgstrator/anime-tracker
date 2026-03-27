@@ -1,10 +1,20 @@
 {
-  "name": "hono_vite_workers",
+  "name": "anime-tracker",
   "version": "0.0.1",
-  "description": "Hono Vite Workers",
+  "description": "Anime recording management app on Cloudflare Workers with React + Hono + Prisma D1",
   "author": "@QuantumLeap",
   "private": true,
   "license": "MIT",
+  "keywords": [
+    "anime",
+    "cloudflare-workers",
+    "hono",
+    "react",
+    "prisma",
+    "d1",
+    "vite",
+    "typescript"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite --host",
