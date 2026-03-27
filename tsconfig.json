@@ -19,7 +19,8 @@
   },
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.worker.json" }
+    { "path": "./tsconfig.worker.json" },
+    { "path": "./tsconfig.scripts.json" }
   ],
   "files": []
 }

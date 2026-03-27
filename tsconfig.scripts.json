@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["scripts/fetch-expiring.ts", "src/**/*.ts"],
+  "exclude": ["src/app/**/*", "node_modules"],
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2023", "WebWorker"],
+    "types": ["@cloudflare/workers-types", "@types/bun", "@types/node"]
+  }
+}

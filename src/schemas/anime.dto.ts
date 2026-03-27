@@ -90,12 +90,3 @@ export const PaginatedAnimeSchema = z.object({
   totalPages: z.number().int()
 })
 export type PaginatedAnimeSchema = z.infer<typeof PaginatedAnimeSchema>
-
-export const HomeDataSchema = z.object({
-  recentlyUpdated: z.array(AnimeSchema),
-  upcoming: z.array(AnimeSchema),
-  expiring: z.array(AnimeSchema),
-  currentSeason: z.array(AnimeSchema),
-  scheduled: z.array(AnimeSchema)
-})
-export type HomeDataSchema = z.infer<typeof HomeDataSchema>
