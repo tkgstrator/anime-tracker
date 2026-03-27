@@ -7,6 +7,39 @@
 
 外部サーバーは適切な `Cache-Control: max-age=604800, public` を返しているが、クロスオリジン画像はブラウザが disk cache に入れないケースがある。
 
+## テスト結果（2026-03-27）
+
+Playwright + CDP（`Network.responseReceived` の `fromDiskCache`）で memory / disk cache を区別して検証。
+
+**対象ページ:**
+
+- `/anime/61d715f2-9a41-5bdd-87c8-68d1a52928d2`（Hulu）
+- `/anime/953ad4d5-4e59-50a0-a367-0cf4f3a82cdb`（Amazon）
+
+**同一コンテキスト内でリロード:**
+
+| | 1回目 | 2回目（リロード） |
+|---|---|---|
+| Memory cache | 0 | 12 |
+| Disk cache | 0 | 0 |
+| Network | 12 | 0 |
+
+→ memory cache は効くが、**disk cache には一切入らない**。
+
+**コンテキストを閉じて再訪問（タブ閉じ相当）:**
+
+| | 1回目 | 2回目（新コンテキスト） |
+|---|---|---|
+| Memory cache | 0 | 0 |
+| Disk cache | 0 | 0 |
+| Network | 12 | 12 |
+
+→ memory cache が破棄されるため **全画像を再取得**。
+
+**結論:** 外部画像は memory cache のみで保持され、disk cache には入らない。タブを閉じる・ブラウザを再起動する・デプロイで再読み込みすると、すべての画像が再取得される。
+
+テストコード: `e2e/image-cache.spec.ts`
+
 ---
 
 ## 解決策の比較
