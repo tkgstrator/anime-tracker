@@ -4,14 +4,15 @@ import { AnimeCarousel } from '@/app/components/anime-carousel'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
 import api from '@/app/lib/api'
+import { nagisaStatusAtom, store } from '@/app/lib/atoms'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
 function getCurrentQuarter(): number {
-  const month = dayjs().month() // 0-indexed
-  if (month < 3) return 0 // 冬 (1-3月)
-  if (month < 6) return 1 // 春 (4-6月)
-  if (month < 9) return 2 // 夏 (7-9月)
-  return 3 // 秋 (10-12月)
+  const month = dayjs().month()
+  if (month < 3) return 0
+  if (month < 6) return 1
+  if (month < 9) return 2
+  return 3
 }
 
 type HomeData = {
@@ -25,21 +26,16 @@ type HomeData = {
 
 export const Route = createFileRoute('/')({
   loader: async (): Promise<HomeData> => {
-    const currentYear = dayjs().year()
-    const currentQuarter = getCurrentQuarter()
+    const data = await api.getHomeData()
 
-    const [recentlyUpdatedRes, upcomingRes, expiringRes, currentSeasonRes, scheduledRes] = await Promise.all([
-      api.getAnimeList({ queries: { recentlyUpdated: true, limit: 50, sort: 'updatedAt', order: 'desc' } }),
-      api.getAnimeList({ queries: { upcoming: true, limit: 20, sort: 'title', order: 'asc' } }),
-      api.getAnimeList({ queries: { expiring: true, limit: 20, sort: 'title', order: 'asc' } }),
-      api.getAnimeList({
-        queries: { year: currentYear, quarter: currentQuarter, limit: 20, sort: 'title', order: 'asc' }
-      }),
-      api.getAnimeList({ queries: { scheduled: true, limit: 20, sort: 'title', order: 'asc' } })
-    ])
+    // Nagisa status をバックグラウンドで取得して atom に保存
+    api.getNagisaStatus().then(
+      (s) => store.set(nagisaStatusAtom, s),
+      () => store.set(nagisaStatusAtom, null)
+    )
 
     const byProvider: Record<string, AnimeSchema[]> = {}
-    for (const anime of currentSeasonRes.data) {
+    for (const anime of data.currentSeason) {
       const list = byProvider[anime.provider] ?? []
       list.push(anime)
       byProvider[anime.provider] = list
@@ -51,20 +47,12 @@ export const Route = createFileRoute('/')({
       }
     }
 
-    const recentlyUpdated = [...recentlyUpdatedRes.data].sort(
-      (a, b) => dayjs(b.updatedAt).valueOf() - dayjs(a.updatedAt).valueOf()
-    )
-    const upcoming = [...upcomingRes.data].sort(
-      (a, b) => dayjs(a.nextEpisodeDate).valueOf() - dayjs(b.nextEpisodeDate).valueOf()
-    )
-    const expiring = [...expiringRes.data].sort((a, b) => dayjs(a.expiredAt).valueOf() - dayjs(b.expiredAt).valueOf())
-
     return {
-      recentlyUpdated,
-      upcoming,
-      expiring,
-      currentSeason: currentSeasonRes.data,
-      scheduled: scheduledRes.data,
+      recentlyUpdated: data.recentlyUpdated,
+      upcoming: data.upcoming,
+      expiring: data.expiring,
+      currentSeason: data.currentSeason,
+      scheduled: data.scheduled,
       byProvider
     }
   },
@@ -74,7 +62,8 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled, byProvider } = Route.useLoaderData()
+  const { recentlyUpdated, upcoming, expiring, currentSeason, scheduled, byProvider } =
+    Route.useLoaderData()
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
   const quarterLabel = ['冬', '春', '夏', '秋'][currentQuarter]
