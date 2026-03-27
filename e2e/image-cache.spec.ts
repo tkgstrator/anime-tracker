@@ -59,7 +59,9 @@ async function collectImageLoads(page: Page, path: string, baseURL: string): Pro
     const requestUrl = requestMap.get(params.requestId)
     if (!requestUrl) return
     if (requestUrl.startsWith('data:')) return
-    if (requestUrl.startsWith(selfOrigin)) return
+    // 自ドメインの画像プロキシ (/api/img) は対象に含める
+    const isSelfProxy = requestUrl.startsWith(selfOrigin) && requestUrl.includes('/api/img')
+    if (requestUrl.startsWith(selfOrigin) && !isSelfProxy) return
 
     const info = responseInfo.get(params.requestId)
     const cached = params.encodedDataLength === 0

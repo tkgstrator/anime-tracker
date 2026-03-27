@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
+import { ProxyImage } from '@/app/components/proxy-image'
 import { SmartPagination } from '@/app/components/smart-pagination'
 import { Badge } from '@/app/components/ui/badge'
 import { animeListQueryOptions } from '@/app/lib/query-options'
-import { getCleanImageUrl } from '@/lib/image'
 import { QuarterLabel } from '@/schemas/anime.dto'
 
 const PAGE_SIZE = 24
@@ -54,9 +54,10 @@ function RecordingsPage() {
                 className='flex items-center gap-4 py-3 transition-colors hover:bg-muted/30'
               >
                 {item.imageUrl && (
-                  <img
-                    src={getCleanImageUrl(item.imageUrl)}
+                  <ProxyImage
+                    src={item.imageUrl}
                     alt={item.title}
+                    w={112}
                     className='h-16 w-28 shrink-0 rounded object-cover'
                   />
                 )}
