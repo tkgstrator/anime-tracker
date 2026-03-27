@@ -110,6 +110,56 @@
       "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": [],
       "group": "test"
+    },
+    {
+      "label": "CI: Integration (All)",
+      "type": "shell",
+      "command": "act push -W .github/workflows/integration.yaml",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CI: CommitLint",
+      "type": "shell",
+      "command": "act push -W .github/workflows/integration.yaml -j commitlint",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CI: Code Check",
+      "type": "shell",
+      "command": "act push -W .github/workflows/integration.yaml -j check",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CI: Run Tests",
+      "type": "shell",
+      "command": "act push -W .github/workflows/integration.yaml -j test",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "CI: Fetch Expiring",
+      "type": "shell",
+      "command": "act workflow_dispatch -W .github/workflows/fetch_expiring.yaml --secret CLOUDFLARE_API_TOKEN --secret CLOUDFLARE_ACCOUNT_ID",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "test"
     }
   ]
 }

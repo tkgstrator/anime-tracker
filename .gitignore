@@ -248,3 +248,7 @@ __tests__/fixtures/*/latest/
 # Temporary files
 tmp/
 
+# Seed SQL
+scripts/*.sql
+scripts/seed/
+
