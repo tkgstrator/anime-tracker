@@ -1,9 +1,7 @@
 /**
- * 表示用に画像URLを整理する。
- * Amazon・Hulu の画像はクエリパラメータを含めてそのまま返す。
- * Hulu (images.prod.hjholdings.tv) はクエリパラメータでリサイズ済み webp を
- * 返すため、除去すると元画像（数MB の PNG）になり disk cache に入らない。
+ * 外部画像を自ドメインの画像プロキシ経由の URL に変換する。
+ * 同一オリジンになるためブラウザの disk cache が確実に効く。
  */
 export function getCleanImageUrl(url: string): string {
-  return url
+  return `/api/img?url=${encodeURIComponent(url)}`
 }

@@ -7,6 +7,7 @@ import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
 import homeRoutes from './routes/home'
+import imgRoutes from './routes/img'
 import nagisaRoutes from './routes/nagisa'
 import recordingsRoutes from './routes/recordings'
 import webhooksRoutes from './routes/webhooks'
@@ -24,6 +25,7 @@ app.use(logger())
 
 app.route('/api/anime', animeRoutes)
 app.route('/api/home', homeRoutes)
+app.route('/api/img', imgRoutes)
 app.route('/api/nagisa', nagisaRoutes)
 app.route('/api/recordings', recordingsRoutes)
 app.route('/api/webhooks', webhooksRoutes)
