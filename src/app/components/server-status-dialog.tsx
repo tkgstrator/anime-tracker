@@ -16,7 +16,6 @@ import {
   WifiOff,
   Zap
 } from 'lucide-react'
-import type { NagisaStatusSchema } from '@/schemas/nagisa.dto'
 import { Badge } from '../lib/../components/ui/badge'
 import { nagisaStatusAtom } from '../lib/atoms'
 import { Button } from './ui/button'
@@ -31,29 +30,8 @@ const formatUptime = (seconds: number): string => {
   return `${m}m`
 }
 
-const DUMMY_STATUS: NagisaStatusSchema = {
-  version: '1.0.1',
-  uptime: 268,
-  queue: { wait: 1, active: 1, completed: 37, failed: 0, delayed: 0 },
-  active_jobs: [
-    {
-      job_id: '185',
-      provider: 'hulu',
-      content_id: 'fate-strange-fake',
-      title: 'Fate/strange Fake',
-      seasons: [{ season_number: 1, episodes: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }],
-      timestamp: 1774576887705,
-      processedOn: 1774576887707,
-      progress: { current: 2, total: 12 }
-    }
-  ],
-  redis: { connected: true, memory_used: '3.00M', uptime: 2929672 },
-  system: { cpu_percent: 37.3, memory_percent: 21.9, disk_free_gb: 2074.7 }
-}
-
 export const ServerStatusDialog = () => {
-  const remoteStatus = useAtomValue(nagisaStatusAtom)
-  const status = import.meta.env.DEV ? (remoteStatus ?? DUMMY_STATUS) : remoteStatus
+  const { data: status, isPending, isError } = useAtomValue(nagisaStatusAtom)
 
   return (
     <Dialog>
@@ -68,7 +46,12 @@ export const ServerStatusDialog = () => {
         <DialogHeader>
           <DialogTitle>Nagisa</DialogTitle>
         </DialogHeader>
-        {status === null ? (
+        {isPending ? (
+          <div className='flex items-center gap-3 py-2'>
+            <Loader2 className='size-5 animate-spin text-muted-foreground' />
+            <p className='text-sm text-muted-foreground'>Connecting...</p>
+          </div>
+        ) : isError || !status ? (
           <div className='flex items-center gap-3 py-2'>
             <WifiOff className='size-5 text-red-500' />
             <div>
@@ -110,21 +93,15 @@ export const ServerStatusDialog = () => {
               <div className='space-y-2'>
                 <div className='flex items-center gap-3'>
                   <Activity className='size-5 text-blue-500' />
-                  <p className='text-sm font-medium'>
-                    Active Jobs ({status.active_jobs.length})
-                  </p>
+                  <p className='text-sm font-medium'>Active Jobs ({status.active_jobs.length})</p>
                 </div>
                 <div className='space-y-1.5'>
                   {status.active_jobs.map((job) => (
                     <div key={job.job_id} className='rounded-lg bg-muted/40 px-3 py-2'>
                       <div className='flex items-center gap-2'>
                         <span className='inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-blue-500' />
-                        <p className='min-w-0 flex-1 truncate text-xs font-medium'>
-                          {job.title ?? job.content_id}
-                        </p>
-                        <span className='shrink-0 text-xs text-muted-foreground'>
-                          {job.provider}
-                        </span>
+                        <p className='min-w-0 flex-1 truncate text-xs font-medium'>{job.title ?? job.content_id}</p>
+                        <span className='shrink-0 text-xs text-muted-foreground'>{job.provider}</span>
                       </div>
                       <div className='mt-1 flex items-center gap-1.5 pl-3.5'>
                         {job.seasons && job.seasons.length > 0 && (
