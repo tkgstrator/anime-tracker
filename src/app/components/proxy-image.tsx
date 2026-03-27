@@ -48,5 +48,5 @@ export function ProxyImage({ src, alt, w, h, q, className }: ProxyImageProps) {
     q: q ?? (isHulu ? 80 : undefined)
   })
 
-  return <img src={url} alt={alt} loading='lazy' decoding='async' className={className} />
+  return <img src={url} alt={alt} loading='lazy' decoding='async' draggable={false} className={`select-none ${className ?? ''}`} />
 }

@@ -42,7 +42,7 @@ const RootComponent = () => {
           <ServerStatusDialog />
         </div>
       </header>
-      <main className='mx-auto max-w-6xl px-6 py-8'>
+      <main className='mx-auto max-w-6xl select-text px-6 py-8'>
         <AnimatePresence mode='wait'>
           <Outlet key={routeKey} />
         </AnimatePresence>
