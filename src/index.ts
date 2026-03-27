@@ -6,7 +6,6 @@ import { setupLogger, startCapture, stopCapture } from './lib/logger'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
-import homeRoutes from './routes/home'
 import imgRoutes from './routes/img'
 import nagisaRoutes from './routes/nagisa'
 import recordingsRoutes from './routes/recordings'
@@ -24,7 +23,6 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>()
 app.use(logger())
 
 app.route('/api/anime', animeRoutes)
-app.route('/api/home', homeRoutes)
 app.route('/api/img', imgRoutes)
 app.route('/api/nagisa', nagisaRoutes)
 app.route('/api/recordings', recordingsRoutes)

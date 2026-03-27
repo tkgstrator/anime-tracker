@@ -20,7 +20,7 @@ const OFFER_PARAMS = {
 
 type OfferType = keyof typeof OFFER_PARAMS
 
-interface BuildOptions {
+export interface BuildOptions {
   sort?: boolean
   /** オファータイプ (デフォルト: 'svod') */
   offer?: OfferType
@@ -151,7 +151,7 @@ function buildNestedMessage(query: BrowseQuery, options?: BuildOptions): number[
  * @param options - ビルドオプション
  * @returns URL-safe Base64 エンコードされた serviceToken 文字列
  */
-function buildServiceToken(query: BrowseQuery, options?: BuildOptions): string {
+export function buildServiceToken(query: BrowseQuery, options?: BuildOptions): string {
   const proto = [
     ...encodeString(2, options?.expiring ? 'filter' : 'query'),
     ...encodeVarintField(3, 1),

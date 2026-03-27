@@ -87,8 +87,13 @@ export function extractPageData(html: string): PageData {
  * @param str - HTML エンティティを含む文字列
  * @returns デコード済みのプレーンテキスト
  */
-function htmlUnescape(str: string): string {
+export function htmlUnescape(str: string): string {
   return parseHtml(str).textContent
+}
+
+/** Amazon API の entityType 文字列を共通の EntityType ('tv' | 'movie') にマッピングする */
+export function mapEntityType(raw: string): 'tv' | 'movie' {
+  return raw === 'Movie' ? 'movie' : 'tv'
 }
 
 /**

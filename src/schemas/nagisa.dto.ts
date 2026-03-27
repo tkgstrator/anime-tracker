@@ -72,7 +72,9 @@ export const NagisaJobSchema = z.object({
   data: z.object({
     provider: z.string(),
     content_id: z.string(),
-    seasons: z.array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() })).nullable(),
+    seasons: z
+      .array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() }))
+      .nullable(),
     marketplace: z.string().nullable()
   }),
   timestamp: z.number(),

@@ -23,7 +23,6 @@ function AnimeDetailPage() {
   const invalidateRelated = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.anime.detail(id) })
     queryClient.invalidateQueries({ queryKey: queryKeys.anime.all })
-    queryClient.invalidateQueries({ queryKey: queryKeys.home.data })
   }
 
   const updateAnimeMutation = useMutation({

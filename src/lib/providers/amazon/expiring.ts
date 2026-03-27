@@ -14,10 +14,10 @@
  * @returns パース結果。配信終了メッセージでない場合は null
  */
 export function parseExpiringMessage(message: string): { season: number | null; remainingHours: number } | null {
-  const match = message.match(/(?:シーズン(\d+)の)?Primeでの配信は(\d+)(日|時間)以内に終了/)
+  const match = message.match(/(?:シーズン(\d+)の)?Primeでの配信は(\d+)(日|時間|分)(?:\d+分)?以内に終了/)
   if (!match) return null
   const season = match[1] ? Number.parseInt(match[1], 10) : null
   const value = Number.parseInt(match[2], 10)
-  const remainingHours = match[3] === '日' ? value * 24 : value
+  const remainingHours = match[3] === '日' ? value * 24 : match[3] === '分' ? Math.ceil(value / 60) : value
   return { season, remainingHours }
 }
