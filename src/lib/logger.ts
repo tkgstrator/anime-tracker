@@ -22,7 +22,7 @@ const captureSink: Sink = (record: LogRecord): void => {
 
 /** LogTape を初期化する。Worker のエントリポイントで一度だけ呼ぶ。 */
 export function setupLogger(): void {
-  configureSync({
+  configureSync({ reset: true,
     sinks: {
       console: getConsoleSink({ formatter: getJsonLinesFormatter() }),
       capture: captureSink

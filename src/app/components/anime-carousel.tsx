@@ -1,9 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { ProviderBadge } from '@/app/components/anime-badges'
+import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/app/components/ui/carousel'
-import { getCleanImageUrl } from '@/lib/image'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
 type BadgeType = 'updatedAt' | 'nextEpisodeDate' | 'expiredAt'
@@ -84,9 +84,10 @@ function CarouselCard({
     <Link to='/anime/$id' params={{ id: anime.id }} className='group block'>
       <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
         {anime.imageUrl ? (
-          <img
-            src={getCleanImageUrl(anime.imageUrl)}
+          <ProxyImage
+            src={anime.imageUrl}
             alt={anime.title}
+            w={250}
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (

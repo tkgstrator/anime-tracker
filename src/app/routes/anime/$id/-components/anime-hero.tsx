@@ -1,7 +1,7 @@
 import { Circle, CircleCheck, Clock, Film, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
+import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
-import { getCleanImageUrl } from '@/lib/image'
 import { type AnimeInfoSchema, QuarterLabel } from '@/schemas/anime.dto'
 import { formatDuration } from '../-lib/format'
 
@@ -24,7 +24,7 @@ export function AnimeHero({
     <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6'>
       {anime.imageUrl && (
         <div className='-mx-6 shrink-0 overflow-hidden sm:mx-0 sm:w-56 sm:rounded-lg'>
-          <img src={getCleanImageUrl(anime.imageUrl)} alt={anime.title} className='w-full object-cover' />
+          <ProxyImage src={anime.imageUrl} alt={anime.title} w={224} className='w-full object-cover' />
         </div>
       )}
       <div className='min-w-0 space-y-4'>

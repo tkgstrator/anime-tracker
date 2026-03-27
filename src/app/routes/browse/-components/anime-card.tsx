@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
+import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
-import { getCleanImageUrl } from '@/lib/image'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
 export function AnimeCard({
@@ -25,9 +25,10 @@ export function AnimeCard({
     <Link to='/anime/$id' params={{ id: anime.id }} className='group block'>
       <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
         {anime.imageUrl ? (
-          <img
-            src={getCleanImageUrl(anime.imageUrl)}
+          <ProxyImage
+            src={anime.imageUrl}
             alt={anime.title}
+            w={270}
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (
