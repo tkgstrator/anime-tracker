@@ -6,9 +6,9 @@ describe('browse expiring (offline)', () => {
   test('parses fixture HTML', async () => {
     const html = await Bun.file(`${import.meta.dir}/fixtures/amazon/browse-expiring.html`).text()
 
-    const scripts = [
-      ...html.matchAll(/<script[^>]*type="application\/json"[^>]*>([\s\S]*?)<\/script>/g)
-    ].sort((a, b) => b[1].length - a[1].length)
+    const scripts = [...html.matchAll(/<script[^>]*type="application\/json"[^>]*>([\s\S]*?)<\/script>/g)].sort(
+      (a, b) => b[1].length - a[1].length
+    )
 
     let titles: ReturnType<typeof BrowseHTMLSchema.parse> | undefined
     for (const [, content] of scripts) {
@@ -18,13 +18,13 @@ describe('browse expiring (offline)', () => {
     }
 
     expect(titles).toBeDefined()
-    expect(titles!.length).toBeGreaterThan(0)
+    expect(titles?.length).toBeGreaterThan(0)
 
-    const withExpiring = titles!.filter((t) => t.expiring)
+    const withExpiring = titles?.filter((t) => t.expiring)
     expect(withExpiring.length).toBeGreaterThan(0)
 
     for (const t of withExpiring) {
-      expect(t.expiring!.remainingHours).toBeGreaterThan(0)
+      expect(t.expiring?.remainingHours).toBeGreaterThan(0)
     }
   })
 })
@@ -42,7 +42,7 @@ describe('browse expiring (online)', () => {
     for (const t of withExpiring) {
       expect(t.contentId).toBeTruthy()
       expect(t.title).toBeTruthy()
-      expect(t.expiring!.remainingHours).toBeGreaterThan(0)
+      expect(t.expiring?.remainingHours).toBeGreaterThan(0)
     }
   }, 30_000)
 })
