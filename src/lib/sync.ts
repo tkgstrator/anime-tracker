@@ -44,7 +44,6 @@ function parseFutureDate(dateStr: string | null | undefined): Date | null {
   return d.isAfter(dayjs()) ? d.toDate() : null
 }
 
-
 const syncLogger = getAppLogger('sync')
 const fetchLogger = getAppLogger('fetch')
 
