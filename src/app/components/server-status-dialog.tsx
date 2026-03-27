@@ -9,6 +9,7 @@ import {
   HardDrive,
   Loader2,
   MemoryStick,
+  Power,
   Server,
   Wifi,
   WifiOff,
@@ -40,9 +41,9 @@ export const ServerStatusDialog = () => {
       >
         <Server className='size-4' />
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className='select-none'>
         <DialogHeader>
-          <DialogTitle>Server Status</DialogTitle>
+          <DialogTitle>Nagisa</DialogTitle>
         </DialogHeader>
         {status === null ? (
           <div className='flex items-center gap-3 py-2'>
@@ -115,18 +116,27 @@ export const ServerStatusDialog = () => {
                       <p className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>Redis</p>
                     </div>
                     <div className='space-y-1 text-xs'>
-                      <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>Status</span>
+                      <div className='flex items-center justify-between'>
+                        <span className='inline-flex items-center gap-1 text-muted-foreground'>
+                          <Power className='size-3' />
+                          Status
+                        </span>
                         <span className={status.redis.connected ? 'text-green-500' : 'text-red-500'}>
                           {status.redis.connected ? 'Connected' : 'Disconnected'}
                         </span>
                       </div>
-                      <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>Memory</span>
+                      <div className='flex items-center justify-between'>
+                        <span className='inline-flex items-center gap-1 text-muted-foreground'>
+                          <MemoryStick className='size-3' />
+                          Memory
+                        </span>
                         <span className='font-mono'>{status.redis.memory_used}</span>
                       </div>
-                      <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>Uptime</span>
+                      <div className='flex items-center justify-between'>
+                        <span className='inline-flex items-center gap-1 text-muted-foreground'>
+                          <Clock className='size-3' />
+                          Uptime
+                        </span>
                         <span>{formatUptime(status.redis.uptime)}</span>
                       </div>
                     </div>
@@ -139,8 +149,11 @@ export const ServerStatusDialog = () => {
                       <p className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>System</p>
                     </div>
                     <div className='space-y-1 text-xs'>
-                      <div className='flex justify-between'>
-                        <span className='text-muted-foreground'>CPU</span>
+                      <div className='flex items-center justify-between'>
+                        <span className='inline-flex items-center gap-1 text-muted-foreground'>
+                          <Cpu className='size-3' />
+                          CPU
+                        </span>
                         <span className='font-mono'>{status.system.cpu_percent.toFixed(1)}%</span>
                       </div>
                       <div className='flex items-center justify-between'>

@@ -80,7 +80,6 @@ preview（エピソード一覧）はプロバイダ API から取得して返�
 |-------|------|----------|-------------|
 | `content_id` | `string` | Yes | コンテンツ ID (ASIN, slug 等) |
 | `seasons` | `SeasonFilter[]` | — | ダウンロードするシーズン。省略時は全シーズン |
-| `episode_ids` | `string[]` | — | プロバイダ固有のエピソード ID で直接指定 |
 | `language` | `string` | — | この作品の言語設定。トップレベルの `language` を上書き |
 | `marketplace` | `string` | — | この作品のマーケットプレイス。トップレベルの `marketplace` を上書き |
 
@@ -187,7 +186,6 @@ curl -X POST http://localhost:5000/api/queues \
         "provider": "amazon",
         "content_id": "B0DXV9MP4Y",
         "seasons": [{"season_number": 1, "episodes": [1]}],
-        "episode_ids": [],
         "marketplace": null
       },
       "timestamp": 1774567545049,
@@ -225,7 +223,6 @@ curl -X POST http://localhost:5000/api/queues \
         "provider": "amazon",
         "content_id": "B0DXV9MP4Y",
         "seasons": null,
-        "episode_ids": [],
         "marketplace": null
       },
       "timestamp": 1774567547992,
