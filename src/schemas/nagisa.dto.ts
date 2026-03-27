@@ -40,3 +40,39 @@ export const NagisaStatusSchema = z.object({
 })
 
 export type NagisaStatusSchema = z.infer<typeof NagisaStatusSchema>
+
+export const NagisaEpisodePreviewSchema = z.object({
+  number: z.number().int(),
+  title: z.string(),
+  content_id: z.string(),
+  duration: z.number().int().nullable()
+})
+
+export const NagisaPreviewSchema = z.object({
+  content_type: z.string(),
+  title: z.string(),
+  total_episodes: z.number().int(),
+  selected_episodes: z.number().int(),
+  media_capabilities: z.array(z.string()).nullable(),
+  episodes: z.array(NagisaEpisodePreviewSchema)
+})
+
+export const NagisaJobSchema = z.object({
+  job_id: z.string(),
+  status: z.string(),
+  name: z.string(),
+  data: z.object({
+    provider: z.string(),
+    content_id: z.string(),
+    seasons: z.array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() })).nullable(),
+    marketplace: z.string().nullable()
+  }),
+  timestamp: z.number(),
+  preview: NagisaPreviewSchema.optional()
+})
+
+export const NagisaQueueResponseSchema = z.object({
+  count: z.number().int(),
+  jobs: z.array(NagisaJobSchema)
+})
+export type NagisaQueueResponseSchema = z.infer<typeof NagisaQueueResponseSchema>
