@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import { ErrorPage } from '@/app/components/error-page'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { NotFoundPage } from '@/app/components/not-found-page'
+import { ServerStatusDialog } from '@/app/components/server-status-dialog'
 
 const RootComponent = () => {
   const routeKey = useRouterState({ select: (s) => s.location.pathname })
@@ -36,6 +37,7 @@ const RootComponent = () => {
               録画
             </Link>
           </nav>
+          <ServerStatusDialog />
         </div>
       </header>
       <main className='mx-auto max-w-6xl px-6 py-8'>

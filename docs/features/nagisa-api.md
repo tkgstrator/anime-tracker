@@ -322,7 +322,7 @@ curl -X POST http://localhost:5000/api/queues \
 
 ## `GET /api/status`
 
-サーバーバージョン、BullMQ キューの統計、実行中ジョブの詳細を返します。
+サーバーバージョン、BullMQ キューの統計、実行中ジョブの詳細、Redis / システムリソース情報を返します。Anime Tracker のサーバーステータスダイアログで表示されます。
 
 ### リクエスト例
 
@@ -335,6 +335,7 @@ curl http://localhost:5000/api/status
 ```json
 {
   "version": "1.0.0",
+  "uptime": 86400,
   "queue": {
     "wait": 1,
     "active": 1,
@@ -350,7 +351,17 @@ curl http://localhost:5000/api/status
       "seasons": null,
       "timestamp": 1774567547847
     }
-  ]
+  ],
+  "redis": {
+    "connected": true,
+    "memory_used": "5.2M",
+    "uptime": 172800
+  },
+  "system": {
+    "cpu_percent": 12.5,
+    "memory_percent": 45.2,
+    "disk_free_gb": 120.5
+  }
 }
 ```
 
@@ -359,13 +370,16 @@ curl http://localhost:5000/api/status
 | Field | Type | Description |
 |-------|------|-------------|
 | `version` | `string` | Nagisa のバージョン (`pyproject.toml` から取得) |
-| `queue` | `object \| null` | キューのジョブカウント。Redis 接続不可の場合は `null` |
+| `uptime` | `integer` | Nagisa プロセスの稼働時間 (秒)。起動時に `time.monotonic()` を記録して算出 |
+| `queue` | `object \| null` | キューのジョブカウント。Redis 未接続の場合は `null` |
 | `queue.wait` | `integer` | 待機中のジョブ数 |
 | `queue.active` | `integer` | 実行中のジョブ数 |
 | `queue.completed` | `integer` | 完了済みジョブ数 |
 | `queue.failed` | `integer` | 失敗したジョブ数 |
 | `queue.delayed` | `integer` | 遅延/スケジュール済みジョブ数 |
 | `active_jobs` | `ActiveJob[]` | 実行中ジョブの詳細リスト |
+| `redis` | `Redis \| null` | Redis 接続情報。Redis 未使用または取得失敗時は `null` |
+| `system` | `System \| null` | システムリソース情報。取得失敗時は `null` |
 
 #### ActiveJob
 
@@ -376,6 +390,26 @@ curl http://localhost:5000/api/status
 | `content_id` | `string` | コンテンツ ID (ASIN または slug) |
 | `seasons` | `SeasonFilter[] \| null` | シーズンフィルタ (`null` = 全シーズン) |
 | `timestamp` | `integer` | ジョブ作成時刻 (Unix ms) |
+
+#### Redis
+
+`redis.info()` から取得。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `connected` | `boolean` | Redis への接続状態 |
+| `memory_used` | `string` | メモリ使用量 (`INFO memory` の `used_memory_human`) |
+| `uptime` | `integer` | Redis の稼働時間 (秒、`INFO server` の `uptime_in_seconds`) |
+
+#### System
+
+`psutil` で取得。
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `cpu_percent` | `float` | CPU 使用率 (%) |
+| `memory_percent` | `float` | メモリ使用率 (%) |
+| `disk_free_gb` | `float` | 録画先ディスクの空き容量 (GB) |
 
 ---
 

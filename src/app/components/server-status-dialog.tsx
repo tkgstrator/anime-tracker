@@ -1,0 +1,194 @@
+import { useAtomValue } from 'jotai'
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Cpu,
+  Database,
+  HardDrive,
+  Loader2,
+  MemoryStick,
+  Server,
+  Wifi,
+  WifiOff,
+  Zap
+} from 'lucide-react'
+import { Badge } from '../lib/../components/ui/badge'
+import { nagisaStatusAtom } from '../lib/atoms'
+import { Button } from './ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
+
+const formatUptime = (seconds: number): string => {
+  const d = Math.floor(seconds / 86400)
+  const h = Math.floor((seconds % 86400) / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
+  if (d > 0) return `${d}d ${h}h`
+  if (h > 0) return `${h}h ${m}m`
+  return `${m}m`
+}
+
+export const ServerStatusDialog = () => {
+  const status = useAtomValue(nagisaStatusAtom)
+
+  return (
+    <Dialog>
+      <DialogTrigger
+        render={
+          <Button variant='ghost' size='icon-sm' className='ml-auto text-muted-foreground hover:text-foreground' />
+        }
+      >
+        <Server className='size-4' />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Server Status</DialogTitle>
+        </DialogHeader>
+        {status === null ? (
+          <div className='flex items-center gap-3 py-2'>
+            <WifiOff className='size-5 text-red-500' />
+            <div>
+              <p className='text-sm font-medium'>Offline</p>
+              <p className='text-xs text-muted-foreground'>Cannot reach Nagisa server</p>
+            </div>
+          </div>
+        ) : (
+          <div className='space-y-5'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-3'>
+                <Wifi className='size-5 text-green-500' />
+                <div>
+                  <p className='text-sm font-medium'>Online</p>
+                  <p className='text-xs text-muted-foreground'>Uptime: {formatUptime(status.uptime)}</p>
+                </div>
+              </div>
+              <Badge variant='secondary' className='font-mono'>
+                v{status.version}
+              </Badge>
+            </div>
+
+            {status.queue && (
+              <div className='grid grid-cols-5 gap-1.5'>
+                <QueueStat icon={Clock} label='Wait' value={status.queue.wait} />
+                <QueueStat icon={Loader2} label='Active' value={status.queue.active} active />
+                <QueueStat icon={CheckCircle} label='Done' value={status.queue.completed} />
+                <QueueStat
+                  icon={AlertTriangle}
+                  label='Fail'
+                  value={status.queue.failed}
+                  error={status.queue.failed > 0}
+                />
+                <QueueStat icon={Zap} label='Delay' value={status.queue.delayed} />
+              </div>
+            )}
+
+            {status.active_jobs.length > 0 && (
+              <div className='space-y-2'>
+                <div className='flex items-center gap-2'>
+                  <Activity className='size-3.5 text-blue-500' />
+                  <p className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>
+                    Active Jobs ({status.active_jobs.length})
+                  </p>
+                </div>
+                <div className='space-y-1.5'>
+                  {status.active_jobs.map((job) => (
+                    <div key={job.job_id} className='flex items-center gap-3 rounded-lg bg-muted/40 px-3 py-2'>
+                      <span className='inline-block size-1.5 animate-pulse rounded-full bg-blue-500' />
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate font-mono text-xs'>{job.content_id}</p>
+                      </div>
+                      <Badge variant='outline' className='shrink-0 text-[10px]'>
+                        {job.provider}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(status.redis || status.system) && (
+              <div className='grid grid-cols-2 gap-3'>
+                {status.redis && (
+                  <div className='space-y-2 rounded-lg bg-muted/40 p-3'>
+                    <div className='flex items-center gap-2'>
+                      <Database className='size-3.5 text-muted-foreground' />
+                      <p className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>Redis</p>
+                    </div>
+                    <div className='space-y-1 text-xs'>
+                      <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>Status</span>
+                        <span className={status.redis.connected ? 'text-green-500' : 'text-red-500'}>
+                          {status.redis.connected ? 'Connected' : 'Disconnected'}
+                        </span>
+                      </div>
+                      <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>Memory</span>
+                        <span className='font-mono'>{status.redis.memory_used}</span>
+                      </div>
+                      <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>Uptime</span>
+                        <span>{formatUptime(status.redis.uptime)}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {status.system && (
+                  <div className='space-y-2 rounded-lg bg-muted/40 p-3'>
+                    <div className='flex items-center gap-2'>
+                      <Cpu className='size-3.5 text-muted-foreground' />
+                      <p className='text-xs font-medium uppercase tracking-wider text-muted-foreground'>System</p>
+                    </div>
+                    <div className='space-y-1 text-xs'>
+                      <div className='flex justify-between'>
+                        <span className='text-muted-foreground'>CPU</span>
+                        <span className='font-mono'>{status.system.cpu_percent.toFixed(1)}%</span>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <span className='inline-flex items-center gap-1 text-muted-foreground'>
+                          <MemoryStick className='size-3' />
+                          RAM
+                        </span>
+                        <span className='font-mono'>{status.system.memory_percent.toFixed(1)}%</span>
+                      </div>
+                      <div className='flex items-center justify-between'>
+                        <span className='inline-flex items-center gap-1 text-muted-foreground'>
+                          <HardDrive className='size-3' />
+                          Disk
+                        </span>
+                        <span className='font-mono'>{status.system.disk_free_gb.toFixed(1)} GB</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+const QueueStat = ({
+  icon: Icon,
+  label,
+  value,
+  active,
+  error
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  value: number
+  active?: boolean
+  error?: boolean
+}) => (
+  <div className='flex flex-col items-center gap-1 rounded-lg bg-muted/40 px-1 py-2'>
+    <Icon
+      className={`size-3.5 ${
+        error ? 'text-red-500' : active && value > 0 ? 'animate-spin text-blue-500' : 'text-muted-foreground'
+      }`}
+    />
+    <span className={`text-base font-semibold tabular-nums ${error ? 'text-red-500' : ''}`}>{value}</span>
+    <span className='text-[10px] text-muted-foreground'>{label}</span>
+  </div>
+)
