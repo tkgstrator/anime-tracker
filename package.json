@@ -21,7 +21,8 @@
     "build": "tsc -b --noEmit && vite build --mode ${CLOUDFLARE_ENV:-staging}",
     "prebuild": "rimraf dist",
     "predeploy": "tsc -b --noEmit && vite build --mode ${CLOUDFLARE_ENV:-staging}",
-    "deploy": "wrangler deploy --keep-vars --env=${CLOUDFLARE_ENV:-staging}"
+    "deploy": "wrangler deploy --keep-vars --env=${CLOUDFLARE_ENV:-staging}",
+    "deploy:lambda": "bun run lambda/fetch/build.ts && terraform -chdir=infra apply -auto-approve"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
@@ -40,6 +41,7 @@
     "@tanstack/react-router": "^1.168.7",
     "@vitejs/plugin-react": "^6.0.1",
     "@zodios/core": "^10.9.6",
+    "aws4fetch": "^1.0.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.20",
@@ -51,6 +53,7 @@
     "lucide-react": "^1.7.0",
     "motion": "^12.38.0",
     "node-html-parser": "^7.1.0",
+    "p-limit": "^7.3.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "sonner": "^2.0.7",

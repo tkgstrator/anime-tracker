@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import type { ExpiringResponse, NewEpisodeResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
@@ -48,10 +49,7 @@ const syncLogger = getAppLogger('sync')
 const fetchLogger = getAppLogger('fetch')
 
 export class SyncService {
-  constructor(
-    private readonly prisma: PrismaClient,
-    private readonly kv?: KVNamespace
-  ) {}
+  constructor(private readonly prisma: PrismaClient) {}
 
   /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
@@ -183,22 +181,23 @@ export class SyncService {
   }
 
   /** プロバイダからタイトル一覧を取得し、更新対象のコンテンツIDを返す */
-  async fetch({ message }: FetchMessage): Promise<string[]> {
+  async fetch({ message }: FetchMessage, result: ExpiringResponse | NewEpisodeResponse): Promise<string[]> {
     fetchLogger.info({
       action: 'fetch-start',
       provider: message.provider,
       category: message.category
     })
     if (message.category === 'expiring') {
-      return this.fetchExpiring(message.provider)
+      return this.fetchExpiring(message.provider, result as ExpiringResponse)
     }
-    return this.fetchNewEpisode(message.provider)
+    return this.fetchNewEpisode(message.provider, result as NewEpisodeResponse)
   }
 
-  /** 新着エピソード取得: AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
-  private async fetchNewEpisode(providerName: string): Promise<string[]> {
+  /** 新着エピソード取得: Lambda レスポンス → AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
+  private async fetchNewEpisode(providerName: string, result: NewEpisodeResponse): Promise<string[]> {
     const provider = getProvider(providerName)
-    const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
+    const titles = result.entries
+
     const existingIds = await findExistingContentIds(
       this.prisma,
       titles.map((t) => t.contentId)
@@ -338,18 +337,9 @@ export class SyncService {
     return [...updateTargets.map((t) => t.contentId), ...identifiedContentIds]
   }
 
-  /** 配信終了間近取得: KV に保存済みの expiredAt データで DB を更新 */
-  private async fetchExpiring(providerName: string): Promise<string[]> {
-    const cachedJson = this.kv ? await this.kv.get('browse:expiring:latest') : null
-    if (!cachedJson) {
-      fetchLogger.warn({ action: 'expiring-cache-missing', provider: providerName })
-      return []
-    }
-
-    const { fetchedAt, entries } = JSON.parse(cachedJson) as {
-      fetchedAt: string
-      entries: { contentId: string; expiredAt: string; expiringSeason: number | null }[]
-    }
+  /** 配信終了間近取得: Lambda レスポンスの expiredAt データで DB を更新 */
+  private async fetchExpiring(providerName: string, result: ExpiringResponse): Promise<string[]> {
+    const { fetchedAt, entries } = result
 
     fetchLogger.info({
       action: 'expiring-cache-loaded',

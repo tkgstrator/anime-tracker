@@ -251,3 +251,11 @@ tmp/
 scripts/*.sql
 scripts/seed/
 
+# Terraform
+.terraform/
+*.tfstate*
+*.tfvars
+
+# Lambda build
+lambda/*/dist/
+

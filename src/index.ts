@@ -2,6 +2,7 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { apiReference } from '@scalar/hono-api-reference'
 import { logger } from 'hono/logger'
 import { createPrismaClient } from './lib/db'
+import { createLambdaClient } from './lib/lambda'
 import { setupLogger, startCapture, stopCapture } from './lib/logger'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
@@ -13,7 +14,15 @@ import webhooksRoutes from './routes/webhooks'
 import { scheduled } from './scheduled'
 import { MessageSchema } from './schemas/message.dto'
 
-type Bindings = { DB: D1Database; TMDB_API_KEY: string; SYNC_QUEUE: Queue; KV: KVNamespace }
+type Bindings = {
+  DB: D1Database
+  TMDB_API_KEY: string
+  SYNC_QUEUE: Queue
+  KV: KVNamespace
+  AWS_ACCESS_KEY_ID: string
+  AWS_SECRET_ACCESS_KEY: string
+  LAMBDA_FUNCTION_URL: string
+}
 
 setupLogger()
 
@@ -33,12 +42,17 @@ app.post('/api/queues', async (c) => {
   const body = MessageSchema.safeParse(await c.req.json())
   if (!body.success) return c.json({ error: body.error.flatten() }, 400)
   const prisma = createPrismaClient(c.env.DB)
-  const service = new SyncService(prisma, c.env.KV)
+  const service = new SyncService(prisma)
   startCapture()
   try {
     if (body.data.type === 'fetch') {
-      const contentIds = await service.fetch(body.data)
       const { provider, category } = body.data.message
+
+      // Lambda (日本IP) で fetch し、結果を直接渡す
+      const lambda = createLambdaClient(c.env)
+      const result =
+        category === 'expiring' ? await lambda.fetchExpiring({ provider }) : await lambda.fetchNewEpisode({ provider })
+      const contentIds = await service.fetch(body.data, result)
       if (category !== 'expiring') {
         for (const contentId of contentIds) {
           await service.update({ type: 'update', message: { provider, contentId } })

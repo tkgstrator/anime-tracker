@@ -91,37 +91,40 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
     return entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
   }
 
+  if (options?.newAnime) {
+    // 新着アニメTV: アニメジャンル(subgenre含む) + kids除外 + svod + 新着順
+    const bq =
+      "(and (and (and (and (or genre:'av_genre_anime' genre:'av_subgenre_anime*') " +
+      "(not entity_type:'Promotion|Trailer|Bonus Content')) " +
+      "(not entity_type:'Promotion|Trailer|Bonus Content')) " +
+      "(not entity_type:'Promotion|Trailer|Bonus Content')) " +
+      "(not entity_type:'Promotion|Trailer|Bonus Content'))"
+    entries.push(['p_n_theme_browse-bin', '4435524051'])
+    entries.push(['is_movie_collection', '0,0,0,0'])
+    entries.push(['sort', '-prime_video_start_date'])
+    entries.push(['field-ways_to_watch', params.waysToWatch])
+    entries.push(['p_n_entity_type', '4174099051'])
+    entries.push(['search-alias', query.searchAlias])
+    entries.push(['bq', bq])
+    entries.push(['p_n_ways_to_watch', '3746328051'])
+    return entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
+  }
+
   if (options?.node) entries.push(['node', options.node])
   entries.push(['qs-country-code', 'JP'])
-  if (options?.newAnime) {
-    // 新着アニメTV カテゴリのフィルタ
-    entries.push(['p_n_theme_browse-bin', '4435524051'])
-    entries.push(['p_n_subscription_id', '5602560051|10387742051'])
-  }
   if (options?.sort ?? true)
-    entries.push([
-      'sort',
-      options?.sortValue ?? (options?.newAnime ? '-prime_video_start_date' : 'pv-public-release-date-desc-rank')
-    ])
+    entries.push(['sort', options?.sortValue ?? 'pv-public-release-date-desc-rank'])
   entries.push(['field-ways_to_watch', params.waysToWatch])
   if (options?.subscriptionId) entries.push(['field-subscription_id', options.subscriptionId])
   if (options?.genreBin) entries.push(['field-genre-bin', 'av_genre_anime'])
   entries.push(['search-alias', query.searchAlias])
   entries.push(['bq', options?.bq ?? buildBqFilter(excludeKids)])
   entries.push(['qs-offer_type', params.offerType])
-  if (options?.newAnime) {
-    entries.push(['is_movie_collection', '0,0,0,0'])
-  }
   if (!hasBenefit) entries.push(['p_n_entity_type', '4174099051'])
-  if (options?.newAnime) {
-    entries.push(['p_n_feature_six_browse-bin', '5871472051'])
-  }
-  if (!options?.newAnime) {
-    entries.push(['adult-product', '0'])
-    entries.push(['pv_browse_internal_offer', params.internalOffer])
-    if (options?.benefit) entries.push(['pv_browse_internal_benefit', options.benefit])
-    entries.push(['pv_browse_internal_language', 'all'])
-  }
+  entries.push(['adult-product', '0'])
+  entries.push(['pv_browse_internal_offer', params.internalOffer])
+  if (options?.benefit) entries.push(['pv_browse_internal_benefit', options.benefit])
+  entries.push(['pv_browse_internal_language', 'all'])
 
   // スペースを %20 でエンコード（+ ではなく）
   return entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
@@ -185,4 +188,44 @@ export function buildAmazonBrowseUrl(params?: Partial<BrowseQuery>, options?: Bu
   const query = BrowseQuerySchema.parse(params ?? {})
   const token = buildServiceToken(query, options)
   return `${AMAZON_BROWSE_BASE}?serviceToken=v0_${encodeURIComponent(token)}`
+}
+
+/**
+ * ページネーション用の serviceToken を自前で生成する。
+ *
+ * ブラウズページの HTML をパースせずに、protobuf エンコードした
+ * ページネーショントークンを直接生成できる。Cookie さえあれば
+ * startIndex を変えて全ページを並列取得可能。
+ *
+ * @param options - ビルドオプション（検索パラメータの決定に使用）
+ * @returns `v0_` プレフィックス付きの URL-safe Base64 トークン
+ */
+export function buildPaginationToken(options?: BuildOptions): string {
+  const query = BrowseQuerySchema.parse({})
+  const searchParams = buildSearchParams(query, options)
+  const cursor = JSON.stringify({ sbsin: 0, cursize: 0, presize: 0 })
+
+  const nested = [
+    ...encodeString(3, searchParams),
+    ...encodeString(4, ''),
+    ...encodeVarintField(6, 0),
+    ...encodeString(7, cursor),
+    ...encodeVarintField(10, 20),
+    ...encodeVarintField(14, 0)
+  ]
+
+  const proto = [
+    ...encodeString(2, 'hpage'),
+    ...encodeVarintField(3, 0),
+    ...encodeString(4, 'browse'),
+    ...encodeString(5, 'default'),
+    ...encodeString(6, 'center'),
+    ...encodeString(7, 'search'),
+    ...encodeString(15, ''),
+    ...encodeBytes(16, nested)
+  ]
+
+  const bytes = new Uint8Array(proto)
+  const b64 = btoa(String.fromCharCode(...bytes))
+  return `v0_${b64.replace(/\+/g, '-').replace(/\//g, '_')}`
 }
