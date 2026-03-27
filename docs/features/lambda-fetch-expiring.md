@@ -1,166 +1,175 @@
-# 配信終了タイトル取得の AWS Lambda 移行
+# データ取得の AWS Lambda 移行
 
 ## 背景
 
-Amazon Prime Video のブラウズページは、日本国外の IP からアクセスすると `highValueMessage`（配信終了メッセージ）が返らない。
+Cloudflare Workers の Queue/Cron consumer はリージョン指定不可（Smart Placement 対象外）。
+Amazon Prime Video は日本国外 IP からのアクセスで 503 または日本向けデータが欠落する:
 
-- Cloudflare Workers: リージョン指定不可（Queue/Cron Trigger は Smart Placement 対象外）→ 503 or メッセージ欠落
-- GitHub Actions: runner が米国リージョン → 503
+- `highValueMessage`（配信終了メッセージ）がランキング情報に差し替わる
+- 一部ブラウズページで 503 が返る
 
-**解決策**: AWS Lambda を `ap-northeast-1`（東京）で実行し、日本 IP からの fetch を保証する。
+Hulu も今後同様の問題が発生する可能性があるため、**全プロバイダのブラウズ取得を日本リージョンの Lambda に統一**する。
 
-## 現行フロー
+## 提案アーキテクチャ
 
-```
-GitHub Actions (米国IP) → Amazon fetch → 503 エラー
-```
+```mermaid
+flowchart LR
+  subgraph CF["Cloudflare Workers"]
+    Cron["Cron Trigger"]
+    Queue["Queue Consumer"]
+    KV["KV Storage"]
+    D1["D1 Database"]
+  end
 
-## 提案フロー
+  subgraph AWS["AWS (ap-northeast-1)"]
+    Lambda["Lambda"]
+  end
 
-```
-EventBridge Scheduler (cron: 0 15 * * *)
-  → Lambda (ap-northeast-1, Node.js 24)
-    → Amazon Prime Video fetch (日本IP)
-    → expiredAt 計算
-    → Cloudflare KV REST API で保存
-```
+  subgraph External["外部サービス"]
+    Amazon["Amazon Prime Video"]
+    Hulu["Hulu"]
+  end
 
-Workers 側は変更なし — KV から読み取って DB 更新する既存フローがそのまま動く。
+  Cron -->|"1. スケジュール起動"| Queue
+  Queue -->|"2. SigV4 署名で呼び出し"| Lambda
+  Lambda -->|"3. fetch (日本IP)"| Amazon
+  Lambda -->|"3. fetch (日本IP)"| Hulu
+  Lambda -->|"4. Title[] を返す"| Queue
+  Queue -->|"5. KV に保存"| KV
+  Queue -->|"6. DB 更新"| D1
 
-## 前提条件
-
-- AWS アカウント（既存）
-- Cloudflare API Token（KV 書き込み権限）
-- Terraform CLI インストール済み
-- R2 バケット（Terraform state 管理用）
-
-## フェーズ一覧
-
-### Phase 1: Terraform 基盤セットアップ
-
-1. `infra/` ディレクトリ作成
-2. Terraform backend を Cloudflare R2 で構成（S3 互換）
-3. `.gitignore` に Terraform 関連ファイルを追加（`.terraform/`, `*.tfstate*`）
-4. AWS provider 設定（`ap-northeast-1`）
-
-**成果物**:
-- `infra/main.tf` — provider, backend
-- `infra/variables.tf` — 変数定義
-- `.gitignore` 更新
-
-### Phase 2: Lambda 関数の実装
-
-1. `lambda/fetch-expiring/` ディレクトリ作成
-2. Lambda ハンドラ実装（`index.ts`）
-   - 既存の `AmazonProvider.fetchTitleList({ expiringOnly: true })` を再利用
-   - `Bun.write()` → 不要（KV REST API で直接書き込み）
-   - `wrangler kv key put` → Cloudflare KV REST API（`fetch`）に置換
-   - `expiredAt` 計算ロジックは `scripts/fetch-expiring.ts` から移植
-3. `bun build --target=node` でバンドル
-   - エントリポイント: `lambda/fetch-expiring/index.ts`
-   - 出力: `lambda/fetch-expiring/dist/index.mjs`
-   - 単一ファイルにバンドル（`node_modules` 不要）
-
-**Bun 固有 API の置換**:
-| 現行 (`scripts/fetch-expiring.ts`) | Lambda 版 |
-|-------------------------------------|-----------|
-| `Bun.write(tmpFile, json)` | 不要（REST API で直接送信） |
-| `execSync('bunx wrangler ...')` | `fetch()` で Cloudflare KV API を呼び出し |
-
-**KV REST API**:
-```
-PUT https://api.cloudflare.com/client/v4/accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key}
-Authorization: Bearer {api_token}
-Content-Type: application/json
-
-{ "fetchedAt": "...", "entries": [...] }
+  style Amazon fill:#4a4,stroke:#383,color:#fff
+  style Hulu fill:#4a4,stroke:#383,color:#fff
 ```
 
-**成果物**:
-- `lambda/fetch-expiring/index.ts` — ハンドラ
-- `lambda/fetch-expiring/build.ts` — ビルドスクリプト
+### ポイント
 
-### Phase 3: Terraform で Lambda リソース定義
+- **スケジュールは Workers Cron に集約**（EventBridge 不要）
+- **Lambda は fetch プロキシ**（引数を受けて `Title[]` を返すだけ、KV/DB を触らない）
+- **Workers が KV 書き込み・DB 更新を一貫して管理**（タイミング問題なし）
+- **Function URL は AWS_IAM 認証**（不正リクエストは Lambda 到達前にブロック、課金ゼロ）
+- **Workers → Lambda は `aws4fetch` で SigV4 署名**
 
-1. IAM Role（Lambda 実行用、基本ログ権限のみ）
-2. Lambda 関数
-   - Runtime: `nodejs24.x`
-   - Architecture: `arm64`（Graviton、コスト最適）
-   - Memory: 256MB
-   - Timeout: 60 秒
-   - 環境変数: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `KV_NAMESPACE_ID`
-3. CloudWatch Logs（Lambda 自動作成）
+### データフロー
 
-**成果物**:
-- `infra/lambda.tf` — Lambda + IAM
+1. Workers Cron → Queue にメッセージ送信
+2. Queue Consumer → Lambda Function URL を SigV4 署名で呼び出し
+3. Lambda → プロバイダの fetch → `Title[]` をレスポンスとして返す
+4. Queue Consumer → `Title[]` を KV に保存 → DB 更新
 
-### Phase 4: EventBridge Scheduler 定義
+### KV キー設計
 
-1. EventBridge Scheduler ルール
-   - cron: `cron(0 15 * * ? *)` — 毎日 UTC 15:00（JST 00:00）
-   - ターゲット: Lambda 関数
-2. Scheduler 用 IAM Role
+| キー | 用途 |
+|------|------|
+| `browse:amazon:expiring` | Amazon 配信終了タイトル |
+| `browse:amazon:new_episode` | Amazon 新着タイトル (Phase 2) |
+| `browse:hulu:expiring` | Hulu 配信終了タイトル (Phase 2) |
+| `browse:hulu:new_episode` | Hulu 新着タイトル (Phase 2) |
 
-**成果物**:
-- `infra/scheduler.tf` — EventBridge + IAM
+### KV データ形式
 
-### Phase 5: ビルド・デプロイパイプライン
+```json
+{
+  "fetchedAt": "2026-03-27T15:00:00.000Z",
+  "entries": [
+    {
+      "contentId": "B0DBZJZ8FF",
+      "expiredAt": "2026-04-01T00:00:00+09:00",
+      "expiringSeason": 1
+    }
+  ]
+}
+```
 
-1. `package.json` にスクリプト追加
-   - `lambda:build` — `bun build --target=node` でバンドル
-   - `lambda:deploy` — `terraform apply`
-2. GitHub Actions ワークフロー更新
-   - `fetch_expiring.yaml` を削除（Lambda に移行済み）
-   - 必要に応じて `terraform plan` を CI に追加（任意）
+Lambda 側で `remainingHours` → `expiredAt`（JST 00:00 丸め）に変換済み。Workers 側は計算不要。
 
-**成果物**:
-- `package.json` 更新
-- `.github/workflows/fetch_expiring.yaml` 削除
+## Lambda 設計
 
-### Phase 6: Terraform state 用 R2 バケット準備
+### 単一関数・イベントルーティング
 
-1. R2 バケット作成（手動 or wrangler）
-   - バケット名: `terraform-state`（例）
-2. R2 API トークン発行（S3 互換アクセス用）
-3. backend 設定に R2 エンドポイント記載
+```typescript
+interface FetchEvent {
+  provider: 'amazon' | 'hulu'
+  category: 'expiring' | 'new_episode'
+}
 
-**注意**: R2 バケット自体は Terraform 管理外（鶏と卵問題のため手動作成）
+// レスポンス: Title[]
+```
 
-**成果物**:
-- R2 バケット（手動）
-- `infra/main.tf` の backend 設定確定
+- Cloudflare の認証情報は不要（fetch して加工して返すだけ）
+- `remainingHours` → `expiredAt`（JST 00:00 丸め）の変換は Lambda 側で実施
+- 環境変数なし（将来的にプロバイダ設定が必要になれば追加）
 
-### Phase 7: デプロイ・動作確認
+### 呼び出し方法
 
-1. `terraform init` — backend 初期化
-2. `terraform plan` — 差分確認
-3. `terraform apply` — リソース作成
-4. Lambda テスト実行（AWS Console or CLI）
-5. KV にデータが保存されることを確認
-6. Workers 側で `fetchExpiring()` が KV データを読めることを確認
+| 方法 | 用途 | 認証 |
+|------|------|------|
+| Workers → Function URL | 本番の定期実行 | SigV4 (`aws4fetch`) |
+| `aws lambda invoke` CLI | 手動実行・デバッグ | AWS CLI 認証 |
 
-### Phase 8: クリーンアップ
+## インフラ (Terraform)
 
-1. `.github/workflows/fetch_expiring.yaml` 削除
-2. `scripts/fetch-expiring.ts` 削除（Lambda に移行済み）
-3. ドキュメント更新
-   - `docs/features/github-actions-fetch.md` に Lambda 移行の旨を追記
-   - `docs/ROADMAP.md` 更新（該当あれば）
+### リソース一覧
 
-## 推奨実行順序
+| リソース | 名前 | 用途 |
+|----------|------|------|
+| IAM Role | `anime-tracker-lambda` | Lambda 実行（ログ権限のみ） |
+| Lambda Function | `anime-tracker-fetch` | fetch プロキシ |
+| Function URL | — | Workers からの呼び出し（AWS_IAM 認証） |
 
-Phase 6（R2 バケット準備）→ Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 7 → Phase 8
+EventBridge Scheduler は不要（Workers Cron に集約）。
 
-Phase 6 が最初に必要（Terraform backend の依存）。Phase 2（Lambda コード）と Phase 3-4（Terraform 定義）は並行作業可能。
+### Workers 側の追加設定
+
+| 項目 | 内容 |
+|------|------|
+| `aws4fetch` | `bun add aws4fetch` |
+| Workers 環境変数 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `LAMBDA_FUNCTION_URL` |
+
+### Terraform state
+
+Cloudflare R2 (S3 互換):
+
+- バケット: `terraform-state`
+- キー: `anime-tracker/terraform.tfstate`
+
+## フェーズ
+
+### Phase 1: Amazon expiring
+
+最小構成。Lambda で Amazon 配信終了タイトルを fetch → Workers が KV 保存 → DB 更新。
+
+| 項目 | 内容 |
+|------|------|
+| Lambda ハンドラ | `lambda/fetch-expiring/index.ts` — `AmazonProvider.fetchTitleList({ expiringOnly: true })` |
+| Terraform | `infra/*.tf` — Lambda + IAM + Function URL |
+| Workers 変更 | Queue Consumer で Lambda 呼び出し → KV 保存の統合 |
+| 依存追加 | `aws4fetch` |
+| ビルド | `bun build --target=node` → zip |
+| クリーンアップ | `fetch_expiring.yaml` 削除、`scripts/fetch-expiring.ts` 削除 |
+
+### Phase 2: 全プロバイダ×カテゴリ対応
+
+| 項目 | 内容 |
+|------|------|
+| Lambda ハンドラ | イベントルーティング追加（provider × category） |
+| Hulu expiring | `HuluProvider.fetchTitleList({ expiringOnly: true })` 実装 |
+| Workers 変更 | `fetchNewEpisode()` も Lambda + KV 経由に変更 |
+
+### Phase 3: Workers Cron 整理
+
+Workers の Queue Consumer から外部 fetch を完全に除去。全ての fetch は Lambda 経由に統一。
 
 ## コスト見積もり
 
 | リソース | 月間利用 | コスト |
 |----------|----------|--------|
-| Lambda | 30 回/月 × ~10 秒 × 256MB | 無料枠内 |
-| EventBridge Scheduler | 30 回/月 | 無料枠内 |
+| Lambda | 30〜750 回/月 × ~15 秒 × 256MB | 無料枠内 |
+| Function URL | Workers からの呼び出しのみ | 無料 |
 | CloudWatch Logs | ~1KB/回 | 無料枠内 |
 | R2 (state) | ~1 ファイル | 無料枠内 |
+
+不正リクエストは AWS_IAM 認証により Lambda 到達前にブロック → 課金ゼロ。
 
 ## ディレクトリ構成（完成時）
 
@@ -168,24 +177,29 @@ Phase 6 が最初に必要（Terraform backend の依存）。Phase 2（Lambda �
 infra/
   main.tf              # provider, backend (R2)
   variables.tf         # 変数定義
-  lambda.tf            # Lambda + IAM
-  scheduler.tf         # EventBridge + IAM
+  lambda.tf            # Lambda + IAM + Function URL
 lambda/
   fetch-expiring/
-    index.ts           # ハンドラ（Bun で記述）
+    index.ts           # ハンドラ（fetch → Title[] を返すだけ）
     build.ts           # bun build スクリプト
-    dist/
-      index.mjs        # バンドル済み（git 管理外）
+    dist/              # ビルド成果物 (git 管理外)
 ```
 
 ## 必要な Secrets / 環境変数
 
-| 名前 | 用途 | 保存先 |
-|------|------|--------|
-| `CLOUDFLARE_API_TOKEN` | KV 書き込み | Lambda 環境変数 |
-| `CLOUDFLARE_ACCOUNT_ID` | KV API | Lambda 環境変数 |
-| `KV_NAMESPACE_ID` | KV namespace 指定 | Lambda 環境変数 |
-| `AWS_ACCESS_KEY_ID` | Terraform / deploy | ローカル `~/.aws/credentials` |
-| `AWS_SECRET_ACCESS_KEY` | Terraform / deploy | ローカル `~/.aws/credentials` |
-| `R2_ACCESS_KEY_ID` | Terraform state backend | ローカル環境変数 |
-| `R2_SECRET_ACCESS_KEY` | Terraform state backend | ローカル環境変数 |
+### AWS (Terraform / デプロイ)
+
+| 名前 | 保存先 |
+|------|--------|
+| `AWS_ACCESS_KEY_ID` | `~/.aws/credentials` |
+| `AWS_SECRET_ACCESS_KEY` | `~/.aws/credentials` |
+| `R2_ACCESS_KEY_ID` | `.env` |
+| `R2_SECRET_ACCESS_KEY` | `.env` |
+
+### Cloudflare Workers 環境変数
+
+| 名前 | 用途 |
+|------|------|
+| `AWS_ACCESS_KEY_ID` | Lambda Function URL の SigV4 署名 |
+| `AWS_SECRET_ACCESS_KEY` | Lambda Function URL の SigV4 署名 |
+| `LAMBDA_FUNCTION_URL` | Lambda Function URL のエンドポイント |

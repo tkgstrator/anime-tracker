@@ -1,7 +1,6 @@
-import dayjs from 'dayjs'
+import pLimit from 'p-limit'
 import {
   BrowseEntitySchema,
-  BrowseHTMLSchema,
   type PaginateParams,
   type PaginateResponse,
   PaginateResponseSchema
@@ -9,7 +8,7 @@ import {
 import { type Title, type TitleInfo, TitleSchema } from '../../../schemas/providers/common.dto'
 import { getAppLogger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
-import { buildAmazonBrowseUrl } from './browse'
+import { buildPaginationToken } from './browse'
 
 export { buildServiceToken } from './browse'
 
@@ -36,44 +35,6 @@ const DYNAMIC_FEATURES = [
   'SupportChannelItemDecoration',
   'TvodMovieBundles'
 ]
-
-export function parseBrowseHtml(html: string): Title[] {
-  const scriptTypes = ['text/template', 'application/json']
-  for (const type of scriptTypes) {
-    const scripts = [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].sort(
-      (a, b) => b[1].length - a[1].length
-    )
-
-    for (const [, content] of scripts) {
-      if (!content.includes('titleID')) continue
-      try {
-        const titles = BrowseHTMLSchema.parse(JSON.parse(content))
-        logger.debug({ action: 'parse-html', scriptType: type, titleCount: titles.length })
-        return titles
-      } catch {
-        // noop
-      }
-    }
-  }
-  logger.warn({ action: 'parse-html', message: 'No titles found in HTML' })
-  return []
-}
-
-/**
- * ブラウズページ HTML からページネーション用パラメータを抽出する。
- */
-function extractPaginationParams(html: string): PaginateParams | null {
-  const target: RegExpMatchArray | null = (() => {
-    const match = html.match(/"paginationTargetId"\s*:\s*"([^"]+)"/)
-    return match
-  })()
-  const token: RegExpMatchArray | null = (() => {
-    const match = html.match(/"paginationServiceToken"\s*:\s*"(v0_[^"]+)"/)
-    return match
-  })()
-  if (!target || !token) return null
-  return { paginationTargetId: target[1], serviceToken: token[1] }
-}
 
 /**
  * paginateCollection API を呼び出してタイトル一覧の続きを取得する。
@@ -143,70 +104,89 @@ export class AmazonProvider extends Provider {
         logger.info({ action: 'fetch-title-list-cached', mode, fetchedAt: envelope.fetchedAt, count: titles.length })
         return titles
       }
-      const titles = await this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }), 'expiring')
-      logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
-      return titles
     }
 
-    const titles = await this.fetchBrowse(
-      options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl(),
-      mode
-    )
+    const buildOptions = options?.expiringOnly
+      ? { expiring: true as const }
+      : options?.newEpisodesOnly
+        ? { newAnime: true as const }
+        : undefined
+    const titles = await this.fetchParallel(buildOptions, mode)
     logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
     return titles
   }
 
   /**
-   * 指定 URL のブラウズページからタイトル一覧を取得する（ページネーション含む）。
+   * Cookie 取得 → 自前トークン生成 → 全ページ並列取得する。
+   *
+   * ブラウズページの HTML パースを不要にし、`p-limit` で同時実行数を制御しながら
+   * paginateCollection API を並列に呼び出す。
    */
-  private async fetchBrowse(url: string, label: string): Promise<Title[]> {
-    logger.debug({ action: 'fetch-browse', url })
-    const response = await fetch(url, { headers: FETCH_HEADERS })
-    if (!response.ok) {
-      logger.error({ action: 'fetch-browse', status: response.status, url })
-      throw new Error(`Fetch browse error: ${response.status}`)
-    }
-    const cookie = response.headers
+  private async fetchParallel(
+    buildOptions: Parameters<typeof buildPaginationToken>[0],
+    label: string
+  ): Promise<Title[]> {
+    // 1. 軽量ページから Cookie を取得
+    const cookieRes = await fetch('https://www.amazon.co.jp/gp/video/', {
+      headers: FETCH_HEADERS,
+      redirect: 'manual'
+    })
+    const cookie = cookieRes.headers
       .getSetCookie()
       .map((c) => c.split(';')[0])
       .join('; ')
-    const html: string = await response.text()
-    logger.debug({ action: 'fetch-browse-html', htmlSize: html.length })
-    await this.cache?.put(`debug:browse:${label}:${dayjs().format('YYYY-MM-DD:HH:mm:ss')}`, html)
-    const entries = [...parseBrowseHtml(html)]
-    const params = extractPaginationParams(html)
+    logger.debug({ action: 'fetch-cookie', label, hasCookie: cookie.length > 0 })
 
-    if (params?.paginationTargetId) {
-      logger.debug({ action: 'pagination-start', initialCount: entries.length })
-      const seen = new Set(entries.map((e) => e.contentId))
-      await this.fetchRemainingPages(params, cookie, entries.length, seen, entries)
-      logger.debug({ action: 'pagination-done', totalCount: entries.length })
+    // 2. ページネーショントークンを自前生成
+    const serviceToken = buildPaginationToken(buildOptions)
+    const params: PaginateParams = { paginationTargetId: 'default', serviceToken }
+
+    // 3. 最初のページを取得して総数を推定
+    const firstPage = await paginateCollection(params, 0, cookie)
+    const pageSize = firstPage.entities.length
+    if (pageSize === 0) {
+      logger.warn({ action: 'fetch-parallel-empty', label })
+      return []
     }
 
-    return entries
-  }
-
-  /**
-   * ページネーションで残りのタイトルを再帰的に取得する。
-   */
-  private async fetchRemainingPages(
-    params: PaginateParams,
-    cookie: string,
-    startIndex: number,
-    seen: Set<string>,
-    acc: Title[]
-  ): Promise<void> {
-    try {
-      const res = await paginateCollection(params, startIndex, cookie)
-      const entities = res.entities ?? []
-      if (entities.length === 0) {
-        logger.debug({ action: 'pagination-empty', startIndex })
-        return
+    // 4. 残りページを並列取得
+    const limit = pLimit(5)
+    const pageIndices: number[] = []
+    if (firstPage.hasMoreItems) {
+      // 最大ページ数の上限を設定 (安全弁)
+      const MAX_PAGES = 100
+      for (let i = 1; i <= MAX_PAGES; i++) {
+        pageIndices.push(i * pageSize)
       }
+    }
 
-      let newCount = 0
-      let skipCount = 0
-      for (const e of entities) {
+    const remainingPages = await Promise.all(
+      pageIndices.map((startIndex) =>
+        limit(async () => {
+          try {
+            return await paginateCollection(params, startIndex, cookie)
+          } catch (e) {
+            logger.error({
+              action: 'pagination-error',
+              startIndex,
+              error: e instanceof Error ? e.message : String(e)
+            })
+            return null
+          }
+        })
+      )
+    )
+
+    // 5. 全ページのエンティティを集約・パース
+    const allPages = [firstPage, ...remainingPages.filter((p): p is PaginateResponse => p !== null)]
+    const seen = new Set<string>()
+    const titles: Title[] = []
+    let skipCount = 0
+
+    for (const page of allPages) {
+      if (page.entities.length === 0) break // 空ページ以降は打ち切り
+
+      for (const e of page.entities) {
         const parsed = BrowseEntitySchema.safeParse(e)
         if (!parsed.success) {
           skipCount++
@@ -220,41 +200,22 @@ export class AmazonProvider extends Provider {
           continue
         }
         const title = parsed.data
-        if (seen.has(title.contentId)) {
-          skipCount++
-          continue
-        }
+        if (seen.has(title.contentId)) continue
         seen.add(title.contentId)
-        acc.push(title)
-        newCount++
+        titles.push(title)
       }
-
-      logger.debug({
-        action: 'pagination-page',
-        startIndex,
-        fetched: entities.length,
-        new: newCount,
-        skipped: skipCount,
-        hasMore: res.hasMoreItems
-      })
-
-      if (!res.hasMoreItems) return
-
-      const nextToken = res.pagination?.queryParameters?.serviceToken
-      await this.fetchRemainingPages(
-        { paginationTargetId: params.paginationTargetId, serviceToken: nextToken ?? params.serviceToken },
-        cookie,
-        startIndex + entities.length,
-        seen,
-        acc
-      )
-    } catch (e) {
-      logger.error({
-        action: 'pagination-error',
-        startIndex,
-        error: e instanceof Error ? e.message : String(e)
-      })
     }
+
+    logger.info({
+      action: 'fetch-parallel-done',
+      label,
+      pages: allPages.length,
+      totalEntities: allPages.reduce((sum, p) => sum + p.entities.length, 0),
+      unique: titles.length,
+      skipped: skipCount
+    })
+
+    return titles
   }
 
   /**

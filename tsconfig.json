@@ -20,7 +20,8 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.worker.json" },
-    { "path": "./tsconfig.scripts.json" }
+    { "path": "./tsconfig.scripts.json" },
+    { "path": "./tsconfig.lambda.json" }
   ],
   "files": []
 }
