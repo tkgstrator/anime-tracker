@@ -1,4 +1,5 @@
 import { createPrismaClient } from './lib/db'
+import { createLambdaClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
 import { SyncService } from './lib/sync'
 
@@ -11,11 +12,15 @@ interface Env {
   TMDB_API_KEY: string
   SYNC_QUEUE: Queue<Message>
   KV: KVNamespace
+  AWS_ACCESS_KEY_ID: string
+  AWS_SECRET_ACCESS_KEY: string
+  LAMBDA_FUNCTION_URL: string
 }
 
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
   const prisma = createPrismaClient(env.DB)
-  const service = new SyncService(prisma, env.KV)
+  const service = new SyncService(prisma)
+  const lambda = createLambdaClient(env)
 
   logger.info({ action: 'batch-start', batchSize: batch.messages.length, queue: batch.queue })
 
@@ -25,8 +30,14 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
       try {
         switch (message.body.type) {
           case 'fetch': {
-            const contentIds = await service.fetch(message.body)
             const { provider, category } = message.body.message
+
+            // Lambda (日本IP) で fetch し、結果を直接渡す
+            const result =
+              category === 'expiring'
+                ? await lambda.fetchExpiring({ provider })
+                : await lambda.fetchNewEpisode({ provider })
+            const contentIds = await service.fetch(message.body, result)
             if (category !== 'expiring') {
               for (const contentId of contentIds) {
                 await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })

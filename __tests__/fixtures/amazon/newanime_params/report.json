@@ -1,0 +1,1539 @@
+{
+  "timestamp": "2026-03-27T23:09:30.080Z",
+  "summary": [
+    {
+      "pNWaysToWatch": null,
+      "pNSubscriptionId": null,
+      "count": 534,
+      "newContentCount": 129,
+      "expiringCount": 92,
+      "elapsedMs": 6050,
+      "elapsedSec": 6.1
+    },
+    {
+      "pNWaysToWatch": null,
+      "pNSubscriptionId": "5602560051",
+      "count": 342,
+      "newContentCount": 100,
+      "expiringCount": 68,
+      "elapsedMs": 4042,
+      "elapsedSec": 4
+    },
+    {
+      "pNWaysToWatch": null,
+      "pNSubscriptionId": "10387742051",
+      "count": 249,
+      "newContentCount": 68,
+      "expiringCount": 41,
+      "elapsedMs": 3148,
+      "elapsedSec": 3.1
+    },
+    {
+      "pNWaysToWatch": null,
+      "pNSubscriptionId": "5602560051|10387742051",
+      "count": 424,
+      "newContentCount": 117,
+      "expiringCount": 75,
+      "elapsedMs": 4604,
+      "elapsedSec": 4.6
+    },
+    {
+      "pNWaysToWatch": "3746328051",
+      "pNSubscriptionId": null,
+      "count": 871,
+      "newContentCount": 194,
+      "expiringCount": 88,
+      "elapsedMs": 9588,
+      "elapsedSec": 9.6
+    },
+    {
+      "pNWaysToWatch": "3746328051",
+      "pNSubscriptionId": "5602560051",
+      "count": 864,
+      "newContentCount": 169,
+      "expiringCount": 78,
+      "elapsedMs": 9849,
+      "elapsedSec": 9.8
+    },
+    {
+      "pNWaysToWatch": "3746328051",
+      "pNSubscriptionId": "10387742051",
+      "count": 879,
+      "newContentCount": 133,
+      "expiringCount": 52,
+      "elapsedMs": 9636,
+      "elapsedSec": 9.6
+    },
+    {
+      "pNWaysToWatch": "3746328051",
+      "pNSubscriptionId": "5602560051|10387742051",
+      "count": 882,
+      "newContentCount": 183,
+      "expiringCount": 82,
+      "elapsedMs": 9274,
+      "elapsedSec": 9.3
+    }
+  ],
+  "uniquePerPattern": [
+    {
+      "label": "p_n_ways=なし / p_n_sub=なし",
+      "uniqueCount": 38,
+      "uniqueTitles": [
+        {
+          "contentId": "B0B8HYG6VZ",
+          "title": "「亜人」",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F4LQQLCK",
+          "title": "平穏世代の韋駄天達",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B08Z31DLBT",
+          "title": "ぷっちみく♪ D4DJ Petit Mix",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07R4ZJB88",
+          "title": "嫌な顔されながらおパンツ見せてもらいたい",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B00M3IER7Y",
+          "title": "ヤマノススメ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DXNCHGC1",
+          "title": "キャップ革命 ボトルマン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FR3DVCB3",
+          "title": "スーパーウィングス",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F4KG8KS2",
+          "title": "しまじろうのわお！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DYJLMWFP",
+          "title": "ハイキュー!!",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B08KYQN6C7",
+          "title": "それだけがネック",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01N7R4G3E",
+          "title": "ONE ROOM",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F494QWF5",
+          "title": "ハイキュー!! OAD",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DBLJWQ7T",
+          "title": "ハイキュー!! OVA",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B08H5VRXTS",
+          "title": "宇宙の騎士テッカマンブレードII",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07TZ6F7ZC",
+          "title": "ねこねこ日本史",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B00OJB4OEE",
+          "title": "アクビガール",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0888RX1CM",
+          "title": "てーきゅう",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B00X4SE2ZO",
+          "title": "高宮なすのです！～てーきゅうスピンオフ～",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0C7KT5QTZ",
+          "title": "無限の住人-IMMORTAL-",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DWSMLZ6F",
+          "title": "機動戦士ガンダム",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DSGR3C7H",
+          "title": "機動戦士Ζガンダム",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B081VY5C84",
+          "title": "通霊姫",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09RN8XGXJ",
+          "title": "ポケットモンスター サン＆ムーン",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B0752T7Y1V",
+          "title": "学校のコワイうわさ 新・花子さんがきた!! シーズン2",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01LY9Z0GQ",
+          "title": "ぼのぼの",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DSPK9WP8",
+          "title": "ドラゴンボール超",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B0DTB3WVGJ",
+          "title": "ワンパンマン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0GQ2G5732",
+          "title": "ピアシェ 私のイタリアン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09Q1QJ7VQ",
+          "title": "ポケットモンスター ＸＹ&Z",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B09T5RKV3J",
+          "title": "ポケットモンスターベストウイッシュ",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B09PQBKTYV",
+          "title": "ポケットモンスターダイヤモンド・パール",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B00YOII7I6",
+          "title": "チャギントン",
+          "hasNewContent": true,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B09S38GFGF",
+          "title": "ポケットモンスターアドバンスジェネレーション",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B09S4222F4",
+          "title": "ポケットモンスター",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09Q2CQTYK",
+          "title": "ポケットモンスター ＸＹ",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B0FMWCVR7J",
+          "title": "ショップキンズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DJ74FPH2",
+          "title": "新機動戦記ガンダムW",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F2TW64F6",
+          "title": "機動戦士ガンダムSEED HDリマスター",
+          "hasNewContent": false,
+          "hasExpiring": false
+        }
+      ]
+    },
+    {
+      "label": "p_n_ways=なし / p_n_sub=5602560051",
+      "uniqueCount": 0,
+      "uniqueTitles": []
+    },
+    {
+      "label": "p_n_ways=なし / p_n_sub=10387742051",
+      "uniqueCount": 0,
+      "uniqueTitles": []
+    },
+    {
+      "label": "p_n_ways=なし / p_n_sub=5602560051|10387742051",
+      "uniqueCount": 0,
+      "uniqueTitles": []
+    },
+    {
+      "label": "p_n_ways=3746328051 / p_n_sub=なし",
+      "uniqueCount": 32,
+      "uniqueTitles": [
+        {
+          "contentId": "B07VQ6DVSJ",
+          "title": "おジャ魔女どれみナ・イ・ショ",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DJZVFHZV",
+          "title": "エアマスター",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CHC6RVWT",
+          "title": "わんだふるぷりきゅあ！",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09PMQ25SD",
+          "title": "きかんしゃトーマス",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B0D8K97GDF",
+          "title": "負けヒロインが多すぎる！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D6C66CFB",
+          "title": "異世界スーサイド・スクワッド",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CVF8J6PH",
+          "title": "ガールズバンドクライ",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CVK94YDR",
+          "title": "変人のサラダボウル",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D873TX5V",
+          "title": "ゲゲゲの鬼太郎（第５作）",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CHNBYNYD",
+          "title": "名湯『異世界の湯』開拓記 ～アラフォー温泉マニアの転生先は、のんびり温泉天国でした～",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DBFSJZ6Y",
+          "title": "黒執事 Book of Circus",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D8C1VGX9",
+          "title": "黒執事 Book of Murder",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D6ZRPY48",
+          "title": "コタローは1人暮らし",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B00MF45090",
+          "title": "北斗の拳２",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B8N564YV",
+          "title": "ひろがるスカイ！プリキュア",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CLV2N697",
+          "title": "MONSTERS 一百三情飛龍侍極",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0BXHM578C",
+          "title": "「亜人」",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CPBNNQ71",
+          "title": "北斗の拳",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CG79QGG1",
+          "title": "キボウノチカラ～オトナプリキュア’２３～",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CB1Z776X",
+          "title": "ゾン100～ゾンビになるまでにしたい100のこと～",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0C9G5Y8S9",
+          "title": "七つの魔剣が支配する",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0BZK843FL",
+          "title": "岸辺露伴は動かない",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0BZJ2Z216",
+          "title": "絆のアリル",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09QG4TRS6",
+          "title": "デリシャスパーティ♡プリキュア",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPM4MCJM",
+          "title": "Yes！プリキュア５GoGo！",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQ1G86VD",
+          "title": "機動戦士ガンダム0080 ～ポケットの中の戦争～",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07Z2F43GT",
+          "title": "ドラゴンボール",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09KDNTRKY",
+          "title": "平家物語",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0112MWK34",
+          "title": "GATE 自衛隊 彼の地にて、斯く戦えり",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B083WJKDS6",
+          "title": "とある科学の超電磁砲Ｔ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B09PRQ7PXV",
+          "title": "東京24区",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQP4GY24",
+          "title": "RE-MAIN",
+          "hasNewContent": false,
+          "hasExpiring": false
+        }
+      ]
+    },
+    {
+      "label": "p_n_ways=3746328051 / p_n_sub=5602560051",
+      "uniqueCount": 28,
+      "uniqueTitles": [
+        {
+          "contentId": "B0FQ4KRTT1",
+          "title": "愛の若草物語",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01MDOB1J4",
+          "title": "ブレイブウィッチーズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D4WHPCFZ",
+          "title": "ピーター・グリルと賢者の時間",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B086RYP2WK",
+          "title": "新サクラ大戦 the Animation",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07Q3JBNJD",
+          "title": "爆丸バトルプラネット",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0C6PVZHWT",
+          "title": "PSYCHO-PASS サイコパス",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F7PV4HWZ",
+          "title": "アズールレーン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0BZRSY2KP",
+          "title": "C",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B019B2ICSE",
+          "title": "西洋骨董洋菓子店~アンティーク~",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CC6L2Q6Q",
+          "title": "うさぎドロップ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CKPH7P6B",
+          "title": "四畳半神話大系",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0C9QDT3RK",
+          "title": "つり球",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CBB39J1Z",
+          "title": "ギルティクラウン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FP3FH5SX",
+          "title": "東京マグニチュード８．０",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B7BFZ4GB",
+          "title": "モノノ怪",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B012XXSBQG",
+          "title": "東のエデン",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FH5KW5TY",
+          "title": "図書館戦争",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07X8D316Y",
+          "title": "プリンセス・プリンセス",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FP3KB63C",
+          "title": "新世界より",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07QKR69DY",
+          "title": "さらざんまい",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CBNRWWVY",
+          "title": "ガールズ＆パンツァー",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FMYBJHDT",
+          "title": "ラブライブ！2期",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FG7SS81X",
+          "title": "ラブライブ！サンシャイン!!TVアニメ2期",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FDBWFH39",
+          "title": "ラブライブ！サンシャイン!!",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPPVXG2Q",
+          "title": "ラブライブ！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0G9WF8TT2",
+          "title": "けものフレンズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CVQFJ2MT",
+          "title": "色づく世界の明日から",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DWYJ5WH8",
+          "title": "蒼天の拳 REGENESIS",
+          "hasNewContent": false,
+          "hasExpiring": false
+        }
+      ]
+    },
+    {
+      "label": "p_n_ways=3746328051 / p_n_sub=10387742051",
+      "uniqueCount": 138,
+      "uniqueTitles": [
+        {
+          "contentId": "B07Q4BJ3GS",
+          "title": "レベルＥ",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B6J3C93J",
+          "title": "ヒカルの碁",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B086R9P35C",
+          "title": "やはり俺の青春ラブコメはまちがっている。",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F9RCP2YS",
+          "title": "かぐや様は告らせたい？～天才たちの恋愛頭脳戦～",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B078TMJLV7",
+          "title": "ポチっと発明 ピカちんキット",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FMF8FQ5S",
+          "title": "ぼくたちは勉強ができない",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B8RTT9GS",
+          "title": "坂道のアポロン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B019B17MK4",
+          "title": "銀の匙 Silver Spoon",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DS6H7CLF",
+          "title": "銀魂",
+          "hasNewContent": false,
+          "hasExpiring": true
+        },
+        {
+          "contentId": "B06X18R3CM",
+          "title": "彼岸島",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FFGWKVYZ",
+          "title": "彼方のアストラ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DY4NSVTD",
+          "title": "かぐや様は告らせたい～天才たちの恋愛頭脳戦～",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FP83D81B",
+          "title": "ときめきトゥナイト",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B019AZJY70",
+          "title": "ピンポン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FGFFW2J5",
+          "title": "PSYCHO-PASS サイコパス",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07MJ7NGDN",
+          "title": "エガオノダイカ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D1B1G1G5",
+          "title": "BLACK LAGOON Roberta's Blood Trail",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07SYQT1W4",
+          "title": "BANANA FISH",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07G4DGCQ3",
+          "title": "ムヒョとロージーの魔法律相談事務所",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQ3FMBWG",
+          "title": "干物妹！うまるちゃん",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FNXBZ7DM",
+          "title": "精霊の守り人",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FHT56HTH",
+          "title": "モンスター娘のいる日常",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07HZ6FSCW",
+          "title": "走り続けてよかったって。",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F7D5N7JV",
+          "title": "殺戮の天使",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01LOX09Z2",
+          "title": "アカメが斬る！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07JJN71JR",
+          "title": "まじもじるるも",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0G61CX3RV",
+          "title": "はねバド！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FX5TQ8C6",
+          "title": "妖怪ウォッチ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQQ6GV6L",
+          "title": "ロクでなし魔術講師と禁忌教典",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0C9ZG814F",
+          "title": "ハッピーシュガーライフ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07FDR7TRZ",
+          "title": "はるかなレシーブ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FLHDTBCF",
+          "title": "ちおちゃんの通学路",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07FB5PYFK",
+          "title": "すのはら荘の管理人さん",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQCBB5YZ",
+          "title": "若おかみは小学生！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FJNCWF1X",
+          "title": "宇宙戦艦ヤマト2199(TV版)",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FD3K111Y",
+          "title": "サクラダリセット",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPZYNCK1",
+          "title": "妖怪アパートの幽雅な日常",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B016E4UWBW",
+          "title": "あそびにいくヨ！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B00FIXPX6U",
+          "title": "少年陰陽師",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPPDRGP5",
+          "title": "ダンガンロンパ３ -The End of 希望ヶ峰学園- 未来編",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FKMSY9WQ",
+          "title": "アルスラーン戦記 風塵乱舞",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B076B8WJXP",
+          "title": "ヨルムンガンド",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FLDJNL74",
+          "title": "ダンガンロンパ　The Animation",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B076B92W13",
+          "title": "ヨルムンガンド PERFECT ORDER",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FN2GWFWQ",
+          "title": "ダンガンロンパ3-The End of 希望ヶ峰学園-絶望編",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D1X5BJDC",
+          "title": "ハイスクールD×D HERO",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07C2QR82X",
+          "title": "ラストピリオド ―終わりなき螺旋の物語―",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPQT657N",
+          "title": "ハクメイとミコチ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DCCFTYPC",
+          "title": "〈物語〉シリーズ セカンドシーズン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B6DG1RSW",
+          "title": "トモダチゲーム【プライム会員なら3話までお試し見放題】",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FDXCXBVK",
+          "title": "メジャー 第１シリーズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FB95MJ61",
+          "title": "メジャー 第２シリーズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FLDCQF7V",
+          "title": "「鬼灯の冷徹」",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPFTKNFF",
+          "title": "citrus",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FKXKB7XY",
+          "title": "ハイスクールD×D NEW",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F5FS91QR",
+          "title": "STEINS;GATE",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQSZLKLZ",
+          "title": "ハイスクールD×D BorN",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FM26DV7B",
+          "title": "ハイスクールD×D",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B7BQ58YB",
+          "title": "恋は雨上がりのように",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DH92Y4HT",
+          "title": "刻刻",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07B9Q5779",
+          "title": "ReLIFE",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DBXXX8TW",
+          "title": "TVアニメ「Fate/stay night [Unlimited Blade Works]」",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FMZB3NKZ",
+          "title": "キルラキル",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01N5CS6PD",
+          "title": "虹色デイズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0GM2HSYNH",
+          "title": "天元突破グレンラガン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQ1J1PN3",
+          "title": "Just Because！",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0765WT3N2",
+          "title": "結城友奈は勇者である -鷲尾須美の章-／-勇者の章-",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B076C6F1D5",
+          "title": "このはな綺譚",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B076CC3DF5",
+          "title": "つうかあ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B078H29R7J",
+          "title": "彼氏彼女の事情",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07666359D",
+          "title": "アニメガタリズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPCQP9ZB",
+          "title": "僕の彼女がマジメ過ぎるしょびっちな件",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0C5GGFQJV",
+          "title": "いぬやしき",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01N0R4E0S",
+          "title": "美味しんぼ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D5J8Q11V",
+          "title": "鋼の錬金術師 FULLMETAL ALCHEMIST",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQKZCWPP",
+          "title": "ボールルームへようこそ",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F7B11YKC",
+          "title": "甘々と稲妻",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FPMX3CRH",
+          "title": "「鬼灯の冷徹」OAD",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B8MT3PC7",
+          "title": "笑ゥせぇるすまんNEW",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B075QWKGHP",
+          "title": "神のみぞ知るセカイⅡ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B075QX5QM5",
+          "title": "神のみぞ知るセカイ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01MRJMFT7",
+          "title": "怪盗ジョーカー",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FMNC8NKF",
+          "title": "学園黙示録 HIGHSCHOOL OF THE DEAD",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FN4X4ZZQ",
+          "title": "ロードス島戦記",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01GDBJLAO",
+          "title": "忍たま乱太郎",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B073QZM6PM",
+          "title": "18if",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B073SGGQ8T",
+          "title": "セントールの悩み",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B8MXWZSP",
+          "title": "となりの関くん",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B00JWLE3NI",
+          "title": "ジャングルはいつもハレのちグゥ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B8T42KRT",
+          "title": "アニメで分かる心療内科",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQMTLP6J",
+          "title": "はじめてのギャル",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FDQLVFJ5",
+          "title": "恋と嘘",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FP5V6H5N",
+          "title": "キノの旅-the Beautiful World-",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0CKFXC8WP",
+          "title": "モーレツ宇宙海賊",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B07475XPQQ",
+          "title": "フリップフラッパーズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F9JD88WV",
+          "title": "境界のRINNE",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FNV7S5V5",
+          "title": "Thunderbolt Fantasy 東離劍遊紀",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B06Y3Z37Z8",
+          "title": "神撃のバハムート　VIRGIN SOUL",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B073SJZRDF",
+          "title": "地獄少女 三鼎",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D8DDCM81",
+          "title": "鋼の錬金術師",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F3MWGYJ1",
+          "title": "猫物語(黒)",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B073G6RL49",
+          "title": "義風堂々!!兼続と慶次",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B06Y5GG8PK",
+          "title": "フレームアームズ・ガール",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F555V9Z1",
+          "title": "偽物語",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQHDJ88D",
+          "title": "地獄少女 二籠",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B072FR639J",
+          "title": "ファイ・ブレイン ～神のパズル　オルペウス・オーダー編",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B071W2JYKV",
+          "title": "ファイ・ブレイン　神のパズル 　第3シリーズ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B072PTQSYC",
+          "title": "ファイ・ブレイン ～神のパズル",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0D3X71N85",
+          "title": "Fate/Zero",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FFC6397N",
+          "title": "地獄少女",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQ1TWS6S",
+          "title": "鬼平",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01MS6500I",
+          "title": "クズの本懐",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DTLH5TG5",
+          "title": "青の祓魔師 京都不浄王篇",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01DVXJDMS",
+          "title": "あんハピ♪",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01LYPSOMD",
+          "title": "TRICKSTER -江戸川乱歩「少年探偵団」より-",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQMNK56N",
+          "title": "となりの怪物くん",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B06X19HPZK",
+          "title": "キョロちゃん",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F3Y7LK8P",
+          "title": "Charlotte",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DVTKRDB6",
+          "title": "化物語",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FKF9WZRS",
+          "title": "私がモテてどうすんだ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0F5TD6L8M",
+          "title": "ユーリ!!! on ICE",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FG93R9PW",
+          "title": "魔法少女まどか☆マギカ",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0DH173FQG",
+          "title": "青の祓魔師",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FJ53HKC1",
+          "title": "ViVid Strike!",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0GK7JXGVD",
+          "title": "るろうに剣心 ‐明治剣客浪漫譚‐追憶編",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0B6SDHMJT",
+          "title": "るろうに剣心 ‐明治剣客浪漫譚‐（1996）",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FV1M34CW",
+          "title": "るろうに剣心 ‐明治剣客浪漫譚‐星霜編",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FNHNV1VQ",
+          "title": "うみねこのなく頃に",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FJYPWP18",
+          "title": "とある魔術の禁書目録",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FN42C8J3",
+          "title": "迷家-マヨイガ-",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQKGB9KG",
+          "title": "魔法少女リリカルなのはStrikerS",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01N0ECDQN",
+          "title": "中華一番！",
+          "hasNewContent": true,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FZLV3CFB",
+          "title": "釣りキチ三平",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQSG8M97",
+          "title": "涼宮ハルヒの憂鬱(2009年放送版)",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQQJ1FVN",
+          "title": "少年メイド",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FL259J8W",
+          "title": "魔装学園H×H(ハイブリッドハート)",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B0FQK8WJL8",
+          "title": "ねじ巻き精霊戦記 天鏡のアルデラミン",
+          "hasNewContent": false,
+          "hasExpiring": false
+        },
+        {
+          "contentId": "B01LWP1NAR",
+          "title": "らんま1/2　デジタルリマスター版",
+          "hasNewContent": false,
+          "hasExpiring": false
+        }
+      ]
+    },
+    {
+      "label": "p_n_ways=3746328051 / p_n_sub=5602560051|10387742051",
+      "uniqueCount": 0,
+      "uniqueTitles": []
+    }
+  ]
+}
