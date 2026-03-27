@@ -4,10 +4,18 @@ export const NagisaActiveJobSchema = z.object({
   job_id: z.string(),
   provider: z.string(),
   content_id: z.string(),
+  title: z.string().optional(),
   seasons: z
     .array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() }))
     .nullable(),
-  timestamp: z.number()
+  timestamp: z.number(),
+  processedOn: z.number().optional(),
+  progress: z
+    .object({
+      current: z.number().int(),
+      total: z.number().int()
+    })
+    .optional()
 })
 
 export const NagisaQueueSchema = z.object({
