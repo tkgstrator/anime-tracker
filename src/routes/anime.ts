@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import { createPrismaClient } from '../lib/db'
 import { getAppLogger } from '../lib/logger'
 import { AnimeInfoSchema, AnimeListQuerySchema, AnimeSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
+import { NagisaQueueResponseSchema } from '../schemas/nagisa.dto'
 
 const logger = getAppLogger('routes')
 
@@ -177,7 +178,7 @@ anime.openapi(
     responses: {
       200: {
         description: '録画リクエスト成功',
-        content: { 'application/json': { schema: z.object({ success: z.boolean() }) } }
+        content: { 'application/json': { schema: NagisaQueueResponseSchema } }
       },
       400: {
         description: '未録画エピソードなし',
@@ -198,36 +199,48 @@ anime.openapi(
     const id = c.req.param('id')
     const row = await prisma.anime.findUnique({
       where: { id },
-      select: { provider: true, contentId: true },
+      select: { provider: true, contentId: true }
     })
     if (!row) return c.json({ error: 'Not found' }, 404)
 
-    // 未録画エピソードの episode_id を抽出
+    // 未録画エピソードをシーズン情報付きで取得
     const unrecordedEpisodes = await prisma.episode.findMany({
       where: {
         recorded: false,
-        season: { animeId: id },
+        season: { animeId: id }
       },
-      select: { episodeId: true },
-      orderBy: [{ season: { seasonNumber: 'asc' } }, { episodeNumber: 'asc' }],
+      select: { episodeNumber: true, season: { select: { seasonNumber: true } } },
+      orderBy: [{ season: { seasonNumber: 'asc' } }, { episodeNumber: 'asc' }]
     })
-    const episodeIds = unrecordedEpisodes.map((e) => e.episodeId)
 
-    if (episodeIds.length === 0) {
+    if (unrecordedEpisodes.length === 0) {
       return c.json({ error: 'No unrecorded episodes' }, 400 as const)
     }
+
+    // シーズンごとにエピソード番号をグループ化
+    const seasonMap = new Map<number, number[]>()
+    for (const ep of unrecordedEpisodes) {
+      const sn = ep.season.seasonNumber
+      const eps = seasonMap.get(sn)
+      if (eps) {
+        eps.push(ep.episodeNumber)
+      } else {
+        seasonMap.set(sn, [ep.episodeNumber])
+      }
+    }
+    const seasons = [...seasonMap.entries()].map(([season_number, episodes]) => ({ season_number, episodes }))
 
     const res = await fetch(`${c.env.BACKEND_URL}/api/queues`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'CF-Access-Client-Id': c.env.CF_ACCESS_CLIENT_ID,
-        'CF-Access-Client-Secret': c.env.CF_ACCESS_CLIENT_SECRET,
+        'CF-Access-Client-Secret': c.env.CF_ACCESS_CLIENT_SECRET
       },
       body: JSON.stringify({
         provider: row.provider,
-        items: [{ content_id: row.contentId, episode_ids: episodeIds }],
-      }),
+        items: [{ content_id: row.contentId, seasons }]
+      })
     })
 
     if (!res.ok) {
@@ -238,13 +251,20 @@ anime.openapi(
         provider: row.provider,
         contentId: row.contentId,
         status: res.status,
-        body: text,
+        body: text
       })
       return c.json({ error: `Backend error: ${res.status} ${text}` }, 502 as const)
     }
 
-    logger.info({ action: 'record-sent', id, provider: row.provider, contentId: row.contentId, episodeCount: episodeIds.length })
-    return c.json({ success: true }, 200)
+    const data = await res.json()
+    logger.info({
+      action: 'record-sent',
+      id,
+      provider: row.provider,
+      contentId: row.contentId,
+      episodeCount: unrecordedEpisodes.length
+    })
+    return c.json(data as NagisaQueueResponseSchema, 200)
   }
 )
 

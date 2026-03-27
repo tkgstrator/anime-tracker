@@ -1,7 +1,7 @@
 import { Zodios } from '@zodios/core'
 import { z } from 'zod'
 import { AnimeInfoSchema, AnimeSchema, HomeDataSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
-import { NagisaStatusSchema } from '@/schemas/nagisa.dto'
+import { NagisaQueueResponseSchema, NagisaStatusSchema } from '@/schemas/nagisa.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
 
 const api = new Zodios('/api', [
@@ -37,7 +37,7 @@ const api = new Zodios('/api', [
     method: 'post',
     path: '/anime/:id/record',
     alias: 'recordAnime',
-    response: z.object({ success: z.boolean() })
+    response: NagisaQueueResponseSchema
   },
   {
     method: 'patch',
