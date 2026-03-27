@@ -1,11 +1,13 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
-import { honoLogger } from '@logtape/hono'
 import { apiReference } from '@scalar/hono-api-reference'
+import { logger } from 'hono/logger'
 import { createPrismaClient } from './lib/db'
 import { setupLogger, startCapture, stopCapture } from './lib/logger'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
+import homeRoutes from './routes/home'
+import nagisaRoutes from './routes/nagisa'
 import recordingsRoutes from './routes/recordings'
 import webhooksRoutes from './routes/webhooks'
 import { scheduled } from './scheduled'
@@ -17,9 +19,12 @@ setupLogger()
 
 const app = new OpenAPIHono<{ Bindings: Bindings }>()
 
-app.use(honoLogger({ category: ['app', 'hono'] }))
+// app.use(honoLogger({ category: ['app', 'hono'] }))
+app.use(logger())
 
 app.route('/api/anime', animeRoutes)
+app.route('/api/home', homeRoutes)
+app.route('/api/nagisa', nagisaRoutes)
 app.route('/api/recordings', recordingsRoutes)
 app.route('/api/webhooks', webhooksRoutes)
 

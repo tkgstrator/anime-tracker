@@ -1,4 +1,10 @@
+import { atom, getDefaultStore } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
+import type { NagisaStatusSchema } from '@/schemas/nagisa.dto'
+
+export const store = getDefaultStore()
+
+export const nagisaStatusAtom = atom<NagisaStatusSchema | null>(null)
 
 export const filterProviderAtom = atomWithStorage<string | undefined>('filter-provider', undefined)
 export const filterYearAtom = atomWithStorage<number | undefined>('filter-year', undefined)
