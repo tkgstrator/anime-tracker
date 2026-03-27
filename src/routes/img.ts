@@ -30,13 +30,11 @@ app.use('/', cache({ cacheName: 'img-proxy', cacheControl: `public, max-age=${CA
 app.openapi(route, async (c) => {
   const { url } = c.req.valid('query')
 
-  const parsed = new URL(url)
-
-  if (!ALLOWED_HOSTS.has(parsed.hostname)) {
+  if (!ALLOWED_HOSTS.has(new URL(url).hostname)) {
     return c.text('Host not allowed', 403)
   }
 
-  const res = await fetch(parsed.href)
+  const res = await fetch(url)
 
   if (!res.ok) return c.text('Upstream error', 502)
 
