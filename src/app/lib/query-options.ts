@@ -2,9 +2,6 @@ import { queryOptions } from '@tanstack/react-query'
 import api from './api'
 import { queryKeys } from './query-keys'
 
-export const homeQueryOptions = () =>
-  queryOptions({ queryKey: queryKeys.home.data, queryFn: () => api.getHomeData(), staleTime: 10 * 60 * 1000 })
-
 export const animeListQueryOptions = (filters: Record<string, unknown>) =>
   queryOptions({ queryKey: queryKeys.anime.list(filters), queryFn: () => api.getAnimeList({ queries: filters }) })
 

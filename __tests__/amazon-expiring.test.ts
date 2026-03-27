@@ -18,6 +18,14 @@ describe('parseExpiringMessage', () => {
     // シーズン付き・時間単位
     ['シーズン1のPrimeでの配信は34時間以内に終了', { season: 1, remainingHours: 34 }],
 
+    // 時間+分単位
+    ['シーズン1のPrimeでの配信は3時間13分以内に終了', { season: 1, remainingHours: 3 }],
+    ['Primeでの配信は12時間45分以内に終了', { season: null, remainingHours: 12 }],
+
+    // 分単位のみ
+    ['シーズン1のPrimeでの配信は174分以内に終了', { season: 1, remainingHours: 3 }],
+    ['Primeでの配信は30分以内に終了', { season: null, remainingHours: 1 }],
+
     // シーズンなし・日単位
     ['Primeでの配信は6日以内に終了', { season: null, remainingHours: 144 }],
     ['Primeでの配信は9日以内に終了', { season: null, remainingHours: 216 }],

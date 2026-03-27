@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import {
   BrowseEntitySchema,
   BrowseHTMLSchema,
@@ -5,10 +6,13 @@ import {
   type PaginateResponse,
   PaginateResponseSchema
 } from '../../../schemas/providers/amazon.dto'
-import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
+import { type Title, type TitleInfo, TitleSchema } from '../../../schemas/providers/common.dto'
 import { getAppLogger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
 import { buildAmazonBrowseUrl } from './browse'
+
+export { buildServiceToken } from './browse'
+
 import { FETCH_HEADERS, fetchAmazonTitleDetail } from './detail'
 
 const logger = getAppLogger('amazon')
@@ -33,7 +37,7 @@ const DYNAMIC_FEATURES = [
   'TvodMovieBundles'
 ]
 
-function parseHtml(html: string): Title[] {
+export function parseBrowseHtml(html: string): Title[] {
   const scriptTypes = ['text/template', 'application/json']
   for (const type of scriptTypes) {
     const scripts = [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].sort(
@@ -132,13 +136,21 @@ export class AmazonProvider extends Provider {
     logger.info({ action: 'fetch-title-list-start', mode })
 
     if (options?.expiringOnly) {
-      const titles = await this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }))
+      const cached = await this.cache?.get('browse:expiring:latest')
+      if (cached) {
+        const envelope = JSON.parse(cached)
+        const titles = TitleSchema.array().parse(envelope.titles)
+        logger.info({ action: 'fetch-title-list-cached', mode, fetchedAt: envelope.fetchedAt, count: titles.length })
+        return titles
+      }
+      const titles = await this.fetchBrowse(buildAmazonBrowseUrl({}, { expiring: true }), 'expiring')
       logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
       return titles
     }
 
     const titles = await this.fetchBrowse(
-      options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl()
+      options?.newEpisodesOnly ? buildAmazonBrowseUrl({}, { newAnime: true }) : buildAmazonBrowseUrl(),
+      mode
     )
     logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
     return titles
@@ -147,7 +159,7 @@ export class AmazonProvider extends Provider {
   /**
    * 指定 URL のブラウズページからタイトル一覧を取得する（ページネーション含む）。
    */
-  private async fetchBrowse(url: string): Promise<Title[]> {
+  private async fetchBrowse(url: string, label: string): Promise<Title[]> {
     logger.debug({ action: 'fetch-browse', url })
     const response = await fetch(url, { headers: FETCH_HEADERS })
     if (!response.ok) {
@@ -160,8 +172,8 @@ export class AmazonProvider extends Provider {
       .join('; ')
     const html: string = await response.text()
     logger.debug({ action: 'fetch-browse-html', htmlSize: html.length })
-    await this.cache?.put(`debug:browse:${url}`, html)
-    const entries = [...parseHtml(html)]
+    await this.cache?.put(`debug:browse:${label}:${dayjs().format('YYYY-MM-DD:HH:mm:ss')}`, html)
+    const entries = [...parseBrowseHtml(html)]
     const params = extractPaginationParams(html)
 
     if (params?.paginationTargetId) {
@@ -198,6 +210,13 @@ export class AmazonProvider extends Provider {
         const parsed = BrowseEntitySchema.safeParse(e)
         if (!parsed.success) {
           skipCount++
+          const issue = parsed.error.issues[0]
+          logger.debug({
+            action: 'pagination-parse-skip',
+            titleID: (e as Record<string, unknown>).titleID ?? null,
+            path: issue?.path?.join('.'),
+            error: issue?.message
+          })
           continue
         }
         const title = parsed.data

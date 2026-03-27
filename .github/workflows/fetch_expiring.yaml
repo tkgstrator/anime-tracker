@@ -1,0 +1,23 @@
+name: Fetch Expiring Titles
+on:
+  schedule:
+    - cron: '0 15 * * *' # 00:00 JST
+  workflow_dispatch:
+jobs:
+  fetch:
+    name: Fetch expiring browse HTML
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+      - name: Fetch and save to KV
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bun run scripts/fetch-expiring.ts --env staging

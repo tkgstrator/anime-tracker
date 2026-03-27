@@ -1,6 +1,6 @@
 import { Zodios } from '@zodios/core'
 import { z } from 'zod'
-import { AnimeInfoSchema, AnimeSchema, HomeDataSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
+import { AnimeInfoSchema, AnimeSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
 import { NagisaQueueResponseSchema, NagisaStatusSchema } from '@/schemas/nagisa.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
 
@@ -96,12 +96,6 @@ const api = new Zodios('/api', [
     path: '/nagisa/status',
     alias: 'getNagisaStatus',
     response: NagisaStatusSchema
-  },
-  {
-    method: 'get',
-    path: '/home',
-    alias: 'getHomeData',
-    response: HomeDataSchema
   }
 ])
 
