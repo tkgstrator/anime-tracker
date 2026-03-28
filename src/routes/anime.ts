@@ -1,7 +1,13 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { createPrismaClient } from '../lib/db'
 import { getAppLogger } from '../lib/logger'
-import { AnimeInfoSchema, AnimeListQuerySchema, AnimeSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
+import {
+  AnimeInfoSchema,
+  AnimeListQuerySchema,
+  AnimeSchema,
+  BadgedAnimeSchema,
+  PaginatedAnimeSchema
+} from '../schemas/anime.dto'
 import { NagisaQueueResponseSchema } from '../schemas/nagisa.dto'
 
 const logger = getAppLogger('routes')
@@ -34,7 +40,7 @@ anime.openapi(
   }),
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
-    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, expiring, sort, order, q } =
+    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, sort, order, q } =
       c.req.valid('query')
     const where = {
       isIdentified: true,
@@ -45,8 +51,7 @@ anime.openapi(
       ...(scheduled != null ? { scheduled } : {}),
       ...(recorded != null ? { recorded } : {}),
       ...(q ? { title: { contains: q } } : {}),
-      ...(badge ? { badge } : {}),
-      ...(expiring ? { expiredAt: { not: null } } : {})
+      ...(badge ? { badge } : {})
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
     const [data, total] = await Promise.all([
@@ -61,6 +66,42 @@ anime.openapi(
     const totalPages = Math.ceil(total / limit)
     c.header('Cache-Control', 'no-store')
     return c.json({ data, total, page, limit, totalPages })
+  }
+)
+
+anime.openapi(
+  createRoute({
+    method: 'get',
+    path: '/badged',
+    tags: ['Anime'],
+    summary: 'バッジ付きアニメをバッジ種別ごとにグループ化して取得',
+    responses: {
+      200: {
+        description: 'バッジ別アニメ一覧',
+        content: { 'application/json': { schema: BadgedAnimeSchema } }
+      }
+    }
+  }),
+  async (c) => {
+    const prisma = createPrismaClient(c.env.DB)
+    const rows = await prisma.anime.findMany({
+      where: { isIdentified: true, badge: { not: null } },
+      orderBy: { title: 'asc' }
+    })
+    const result = {
+      NEW_EPISODE: [] as typeof rows,
+      RECENTLY_ADDED: [] as typeof rows,
+      COMING_SOON: [] as typeof rows,
+      EXPIRING: [] as typeof rows
+    }
+    for (const row of rows) {
+      const key = row.badge as keyof typeof result
+      if (key in result) {
+        result[key].push(row)
+      }
+    }
+    c.header('Cache-Control', 'no-store')
+    return c.json(result)
   }
 )
 
