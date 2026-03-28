@@ -92,18 +92,17 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
   }
 
   if (options?.newAnime) {
-    // 新着アニメTV: アニメジャンル(subgenre含む) + kids除外 + svod + 新着順
+    // 新着アニメ: アニメジャンル(subgenre含む) + kids除外 + svod + 新着順 (Movie含む)
     const bq =
-      "(and (and (and (and (or genre:'av_genre_anime' genre:'av_subgenre_anime*') " +
+      "(and (and (and (and (and (or genre:'av_genre_anime' genre:'av_subgenre_anime*') " +
+      "(not genre:'kids')) " +
       "(not entity_type:'Promotion|Trailer|Bonus Content')) " +
       "(not entity_type:'Promotion|Trailer|Bonus Content')) " +
       "(not entity_type:'Promotion|Trailer|Bonus Content')) " +
       "(not entity_type:'Promotion|Trailer|Bonus Content'))"
     entries.push(['p_n_theme_browse-bin', '4435524051'])
-    entries.push(['is_movie_collection', '0,0,0,0'])
     entries.push(['sort', '-prime_video_start_date'])
     entries.push(['field-ways_to_watch', params.waysToWatch])
-    entries.push(['p_n_entity_type', '4174099051'])
     entries.push(['search-alias', query.searchAlias])
     entries.push(['bq', bq])
     entries.push(['p_n_ways_to_watch', '3746328051'])
