@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { BadgeType } from './providers/common.dto'
 
 // ---- リクエスト ----
 
@@ -8,8 +9,11 @@ export const FetchExpiringRequestSchema = z.object({
   provider: ProviderSchema
 })
 
-export const FetchNewEpisodeRequestSchema = z.object({
-  provider: ProviderSchema
+export const TitleListCategorySchema = z.enum(['new_episode', 'recently_added', 'coming_soon'])
+
+export const FetchTitleListRequestSchema = z.object({
+  provider: ProviderSchema,
+  category: TitleListCategorySchema
 })
 
 // ---- レスポンス ----
@@ -26,7 +30,7 @@ export const ExpiringResponseSchema = z.object({
 })
 export type ExpiringResponse = z.infer<typeof ExpiringResponseSchema>
 
-export const NewEpisodeEntrySchema = z.object({
+export const TitleListEntrySchema = z.object({
   contentId: z.string(),
   title: z.string(),
   description: z.string(),
@@ -35,11 +39,11 @@ export const NewEpisodeEntrySchema = z.object({
   maturityRating: z.number().nullable(),
   benefitId: z.string().nullable(),
   nextEpisodeDate: z.string().nullable(),
-  hasNewContent: z.boolean()
+  badge: BadgeType.nullable()
 })
 
-export const NewEpisodeResponseSchema = z.object({
+export const TitleListResponseSchema = z.object({
   fetchedAt: z.string(),
-  entries: z.array(NewEpisodeEntrySchema)
+  entries: z.array(TitleListEntrySchema)
 })
-export type NewEpisodeResponse = z.infer<typeof NewEpisodeResponseSchema>
+export type TitleListResponse = z.infer<typeof TitleListResponseSchema>

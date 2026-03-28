@@ -15,8 +15,10 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
   switch (event.cron) {
     case '0 */1 * * *':
       for (const provider of providers) {
-        await env.SYNC_QUEUE.send({ type: 'fetch', message: { provider, category: 'new_episode' } })
-        logger.info({ action: 'enqueue', provider, category: 'new_episode' })
+        for (const category of ['new_episode', 'coming_soon'] as const) {
+          await env.SYNC_QUEUE.send({ type: 'fetch', message: { provider, category } })
+          logger.info({ action: 'enqueue', provider, category })
+        }
       }
       break
     case '0 0 * * *':

@@ -6,24 +6,26 @@
  *
  * パスベースルーティング:
  *   POST /expiring     — 配信終了間近タイトル取得
- *   POST /new_episode  — 最新エピソード取得
+ *   POST /title_list   — 新着エピソード / 最近更新タイトル取得
  */
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { AmazonProvider } from '../../src/lib/providers/amazon'
 import { HuluProvider } from '../../src/lib/providers/hulu'
+import type { Provider } from '../../src/lib/providers/base'
 
 dayjs.extend(utc)
+
+function getProvider(name: string): Provider {
+  if (name === 'hulu') return new HuluProvider()
+  return new AmazonProvider()
+}
 
 // ---- expiring ----
 
 async function fetchExpiring(provider: string) {
-  if (provider !== 'amazon') {
-    return { statusCode: 400, body: JSON.stringify({ error: `Unsupported provider for expiring: ${provider}` }) }
-  }
-
-  const amazon = new AmazonProvider()
-  const titles = await amazon.fetchTitleList({ expiringOnly: true })
+  const p = getProvider(provider)
+  const titles = await p.fetchTitleList({ category: 'expiring' })
 
   const now = dayjs()
   const entries = titles
@@ -45,11 +47,15 @@ async function fetchExpiring(provider: string) {
   return { statusCode: 200, body: JSON.stringify({ fetchedAt: now.toISOString(), entries }) }
 }
 
-// ---- new_episode ----
+// ---- title_list (new_episode / recently_added) ----
 
-async function fetchNewEpisode(providerName: string) {
-  const provider = providerName === 'hulu' ? new HuluProvider() : new AmazonProvider()
-  const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
+async function fetchTitleList(providerName: string, category: string) {
+  if (category !== 'new_episode' && category !== 'recently_added' && category !== 'coming_soon') {
+    return { statusCode: 400, body: JSON.stringify({ error: `Invalid category: ${category}` }) }
+  }
+
+  const provider = getProvider(providerName)
+  const titles = await provider.fetchTitleList({ category })
 
   const entries = titles.map((t) => ({
     contentId: t.contentId,
@@ -60,19 +66,14 @@ async function fetchNewEpisode(providerName: string) {
     maturityRating: t.maturityRating,
     benefitId: t.benefitId,
     nextEpisodeDate: t.nextEpisodeDate ?? null,
-    hasNewContent: t.hasNewContent ?? true
+    badge: t.badge ?? null
   }))
 
-  console.log(`Fetched ${entries.length} new episode entries for ${providerName}`)
+  console.log(`Fetched ${entries.length} ${category} entries for ${providerName}`)
   return { statusCode: 200, body: JSON.stringify({ fetchedAt: dayjs().toISOString(), entries }) }
 }
 
 // ---- handler ----
-
-const ROUTES: Record<string, (provider: string) => Promise<{ statusCode: number; body: string }>> = {
-  '/expiring': fetchExpiring,
-  '/new_episode': fetchNewEpisode
-}
 
 // biome-ignore lint: Lambda event type varies by invocation method
 export async function handler(event: any): Promise<{ statusCode: number; body: string }> {
@@ -81,16 +82,19 @@ export async function handler(event: any): Promise<{ statusCode: number; body: s
   const path = event.rawPath ?? event.path ?? '/'
   const body = event.body ? JSON.parse(event.body) : event
 
-  const route = ROUTES[path]
-  if (!route) {
-    return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
-  }
-
   const { provider } = body
   if (!provider) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
   }
 
   console.log(`${path} provider=${provider}`)
-  return route(provider)
+
+  switch (path) {
+    case '/expiring':
+      return fetchExpiring(provider)
+    case '/title_list':
+      return fetchTitleList(provider, body.category)
+    default:
+      return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
+  }
 }

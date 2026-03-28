@@ -255,6 +255,8 @@ scripts/seed/
 .terraform/
 *.tfstate*
 *.tfvars
+*.tfplan
+tfplan
 
 # Lambda build
 lambda/*/dist/

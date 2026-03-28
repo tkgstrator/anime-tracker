@@ -11,7 +11,7 @@ if (!TMDB_API_KEY) {
 const provider = new HuluProvider()
 
 console.log('=== Hulu 新着タイトルの識別テスト ===')
-const titles = await provider.fetchTitleList({ newEpisodesOnly: true })
+const titles = await provider.fetchTitleList({ category: 'new_episode' })
 console.log(`取得件数: ${titles.length}\n`)
 
 // 先頭5件で識別テスト

@@ -90,6 +90,42 @@ export async function fetchHuluAnimeByDecade(decade: number): Promise<VodItem[]>
 }
 
 /**
+ * Hulu Filtered API からアニメ全般 (TV + 映画) を取得する。
+ * `g:8` (アニメジャンル) のみで絞り込み、`edg:tv_animation` / `mt:*` は使用しない。
+ * @param sort - ソート値 (デフォルト: 人気順)
+ * @param from - 取得開始位置
+ * @param items - これまでに取得済みのアイテム
+ * @returns 全アイテム
+ */
+async function fetchHuluAnimeAllPage(sort: string, from: number, items: VodItem[]): Promise<VodItem[]> {
+  const to = from + PAGE_SIZE - 1
+  const params = new URLSearchParams([
+    ['id', 'gft:and'],
+    ['id', 'g:8'],
+    ['sort', sort],
+    ['service', 'hulu'],
+    ['from', String(from)],
+    ['to', String(to)]
+  ])
+  const url = `${HULU_FILTERED_API}?${params}`
+  const res = await fetch(url)
+  if (!res.ok) {
+    throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
+  }
+  const parsed = PaletteResponseSchema.parse(await res.json())
+  const accumulated = [...items, ...parsed.data]
+  if (accumulated.length >= parsed.total_count) return accumulated
+  return fetchHuluAnimeAllPage(sort, from + PAGE_SIZE, accumulated)
+}
+
+/**
+ * アニメ全般 (TV + 映画) を人気順で取得する。
+ */
+export async function fetchHuluAnimeAll(): Promise<VodItem[]> {
+  return fetchHuluAnimeAllPage('[{"values.weekly_uu":"desc"}]', 0, [])
+}
+
+/**
  * 最近追加されたアニメの VodItem 一覧を取得する。
  *
  * `recentlyadded-anime` パレット API から直接取得し、
@@ -98,6 +134,96 @@ export async function fetchHuluAnimeByDecade(decade: number): Promise<VodItem[]>
  */
 export async function fetchRecentlyAdded(): Promise<VodItem[]> {
   return fetchHuluAnimePage(RECENTLY_ADDED_SLUG, 0, [])
+}
+
+/** Hulu の日付文字列 ("2026/03/31 23:59:59") を dayjs に変換する */
+function parseHuluDateStr(dateStr: string): dayjs.Dayjs {
+  return dayjs(dateStr.replace(/\//g, '-'))
+}
+
+/**
+ * 最近配信開始されたアニメを Filtered API で取得する。
+ *
+ * `publish_start_at` 降順 + `ag:twenty_twenties` + `g:8` で取得し、
+ * `startAt` が閾値 (デフォルト30日) 以内のものを返す。
+ * 閾値を超えたページで早期打ち切りする。
+ */
+export async function fetchHuluRecentlyUpdated(thresholdDays = 30): Promise<VodItem[]> {
+  const cutoff = dayjs().subtract(thresholdDays, 'day')
+  const items: VodItem[] = []
+  let from = 0
+  for (;;) {
+    const to = from + PAGE_SIZE - 1
+    const params = new URLSearchParams()
+    params.append('id', 'ag:twenty_twenties')
+    params.append('id', 'gft:and')
+    params.append('id', 'g:8')
+    params.set('sort', '[{"publish_start_at":"desc"}]')
+    params.set('service', 'hulu')
+    params.set('from', String(from))
+    params.set('to', String(to))
+    const url = `${HULU_FILTERED_API}?${params}`
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
+    const parsed = PaletteResponseSchema.parse(await res.json())
+    if (parsed.data.length === 0) break
+
+    let allBelowCutoff = true
+    for (const item of parsed.data) {
+      if (parseHuluDateStr(item.startAt).isAfter(cutoff)) {
+        items.push(item)
+        allBelowCutoff = false
+      }
+    }
+    // ページ内の全アイテムが閾値より古い → 以降は全て古いので打ち切り
+    if (allBelowCutoff) break
+    if (items.length >= parsed.total_count) break
+    from += PAGE_SIZE
+  }
+  return items
+}
+
+/**
+ * 配信終了間近のアニメを Filtered API で取得する。
+ *
+ * `publish_end_at` 昇順 + `g:8` で取得し、
+ * `endAt` が閾値 (デフォルト30日) 以内のものを返す。
+ * 閾値を超えたページで早期打ち切りする。
+ */
+export async function fetchHuluExpiring(thresholdDays = 30): Promise<VodItem[]> {
+  const cutoff = dayjs().add(thresholdDays, 'day')
+  const items: VodItem[] = []
+  let from = 0
+  for (;;) {
+    const to = from + PAGE_SIZE - 1
+    const params = new URLSearchParams()
+    params.append('id', 'gft:and')
+    params.append('id', 'g:8')
+    params.set('sort', '[{"publish_end_at":"asc"}]')
+    params.set('service', 'hulu')
+    params.set('from', String(from))
+    params.set('to', String(to))
+    const url = `${HULU_FILTERED_API}?${params}`
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
+    const parsed = PaletteResponseSchema.parse(await res.json())
+    if (parsed.data.length === 0) break
+
+    let allBeyondCutoff = true
+    for (const item of parsed.data) {
+      const endAt = item.endAt
+      if (!endAt) continue
+      if (parseHuluDateStr(endAt).isBefore(cutoff)) {
+        items.push(item)
+        allBeyondCutoff = false
+      }
+    }
+    // ページ内の全アイテムが閾値より先 → 以降は全て先なので打ち切り
+    if (allBeyondCutoff) break
+    if (items.length >= parsed.total_count) break
+    from += PAGE_SIZE
+  }
+  return items
 }
 
 const SEASONS = ['winter', 'spring', 'summer', 'autumn'] as const
