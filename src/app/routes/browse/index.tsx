@@ -3,21 +3,12 @@ import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { ArrowDownAZ, ArrowUpAZ, X } from 'lucide-react'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { z } from 'zod'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { PageTransition } from '@/app/components/page-transition'
 import { SmartPagination } from '@/app/components/smart-pagination'
-import {
-  filterProviderAtom,
-  filterQuarterAtom,
-  filterStatusAtom,
-  filterYearAtom,
-  orderAtom,
-  pageAtom,
-  searchAtom,
-  sortAtom
-} from '@/app/lib/atoms'
+import { type BrowseFilters, browseFiltersAtom, defaultBrowseFilters } from '@/app/lib/atoms'
 import { animeListQueryOptions } from '@/app/lib/query-options'
 import { ProviderTypeEnum } from '@/schemas/message.dto'
 import { AnimeCard } from './-components/anime-card'
@@ -36,33 +27,37 @@ export const Route = createFileRoute('/browse/')({
 
 function AnimeListPage() {
   const { provider: searchProvider } = Route.useSearch()
-  const [atomProvider, setFilterProvider] = useAtom(filterProviderAtom)
-  const filterProvider = searchProvider ?? atomProvider
-  const [filterYear, setFilterYear] = useAtom(filterYearAtom)
-  const [filterQuarter, setFilterQuarter] = useAtom(filterQuarterAtom)
-  const [filterStatus, setFilterStatus] = useAtom(filterStatusAtom)
-  const [sort, setSort] = useAtom(sortAtom)
-  const [order, setOrder] = useAtom(orderAtom)
-  const [search, setSearch] = useAtom(searchAtom)
-  const [page, setPage] = useAtom(pageAtom)
+  const [filters, setFilters] = useAtom(browseFiltersAtom)
 
-  const filters = useMemo(
+  const provider = searchProvider ?? filters.provider
+
+  const setFilter = useCallback(
+    <K extends keyof BrowseFilters>(key: K) =>
+      (value: BrowseFilters[K]) => {
+        setFilters((prev) => ({ ...prev, [key]: value, page: key === 'page' ? (value as number) : 1 }))
+      },
+    [setFilters]
+  )
+
+  const queryFilters = useMemo(
     () => ({
-      page,
+      page: filters.page,
       limit: PAGE_SIZE,
-      provider: filterProvider,
-      year: filterYear,
-      quarter: filterQuarter,
-      status: filterStatus,
-      sort,
-      order,
-      q: search || undefined
+      provider,
+      year: filters.year,
+      quarter: filters.quarter,
+      status: filters.status,
+      badge: filters.badge,
+      aniListId: filters.aniListId,
+      sort: filters.sort,
+      order: filters.order,
+      q: filters.search || undefined
     }),
-    [page, filterProvider, filterYear, filterQuarter, filterStatus, sort, order, search]
+    [filters, provider]
   )
 
   const { data } = useQuery({
-    ...animeListQueryOptions(filters),
+    ...animeListQueryOptions(queryFilters),
     placeholderData: keepPreviousData
   })
   const animeList = data?.data ?? []
@@ -75,23 +70,17 @@ function AnimeListPage() {
   }, [])
 
   const hasFilters =
-    filterProvider != null || filterYear != null || filterQuarter != null || filterStatus != null || search
+    provider != null ||
+    filters.year != null ||
+    filters.quarter != null ||
+    filters.status != null ||
+    filters.badge != null ||
+    filters.aniListId != null ||
+    filters.search
 
   const resetFilters = () => {
-    setFilterProvider(undefined)
-    setFilterYear(undefined)
-    setFilterQuarter(undefined)
-    setFilterStatus(undefined)
-    setSearch('')
-    setPage(1)
+    setFilters({ ...defaultBrowseFilters })
   }
-
-  const setFilterWithPageReset =
-    <T,>(setter: (v: T) => void) =>
-    (v: T) => {
-      setter(v)
-      setPage(1)
-    }
 
   return (
     <PageTransition>
@@ -101,29 +90,29 @@ function AnimeListPage() {
           <p className='mt-1 text-sm text-muted-foreground'>{total} 件のアニメを管理中</p>
         </div>
 
-        <SearchBar value={search} onChange={setFilterWithPageReset(setSearch)} />
+        <SearchBar value={filters.search} onChange={setFilter('search')} />
 
         <div className='flex flex-wrap items-center gap-2'>
           <FilterPopover
             label='プロバイダ'
-            value={filterProvider}
+            value={provider}
             options={[
               { value: undefined, label: 'すべて' },
               { value: 'amazon', label: 'Prime Video' },
               { value: 'hulu', label: 'Hulu' },
               { value: 'netflix', label: 'Netflix' }
             ]}
-            onSelect={setFilterWithPageReset(setFilterProvider)}
+            onSelect={setFilter('provider')}
           />
           <FilterPopover
             label='年'
-            value={filterYear}
+            value={filters.year}
             options={[{ value: undefined, label: 'すべて' }, ...years.map((y) => ({ value: y, label: String(y) }))]}
-            onSelect={setFilterWithPageReset(setFilterYear)}
+            onSelect={setFilter('year')}
           />
           <FilterPopover
             label='シーズン'
-            value={filterQuarter}
+            value={filters.quarter}
             options={[
               { value: undefined, label: 'すべて' },
               { value: 0, label: '冬' },
@@ -131,11 +120,11 @@ function AnimeListPage() {
               { value: 2, label: '夏' },
               { value: 3, label: '秋' }
             ]}
-            onSelect={setFilterWithPageReset(setFilterQuarter)}
+            onSelect={setFilter('quarter')}
           />
           <FilterPopover
             label='ステータス'
-            value={filterStatus}
+            value={filters.status}
             options={[
               { value: undefined, label: 'すべて' },
               { value: 'RELEASING', label: '放送中' },
@@ -144,24 +133,36 @@ function AnimeListPage() {
               { value: 'CANCELLED', label: '中止' },
               { value: 'HIATUS', label: '休止' }
             ]}
-            onSelect={setFilterWithPageReset(setFilterStatus)}
+            onSelect={setFilter('status')}
+          />
+          <FilterPopover
+            label='バッジ'
+            value={filters.badge}
+            options={[
+              { value: undefined, label: 'すべて' },
+              { value: 'NEW_EPISODE', label: '新着エピソード' },
+              { value: 'RECENTLY_ADDED', label: '新着追加' },
+              { value: 'COMING_SOON', label: '配信予定' },
+              { value: 'EXPIRING', label: '配信終了予定' }
+            ]}
+            onSelect={setFilter('badge')}
           />
           <FilterPopover
             label='並び替え'
-            value={sort}
+            value={filters.sort}
             options={[
               { value: 'title' as const, label: 'タイトル' },
               { value: 'year' as const, label: 'リリース年' }
             ]}
-            onSelect={setFilterWithPageReset(setSort)}
+            onSelect={setFilter('sort')}
           />
           <button
             type='button'
-            onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
+            onClick={() => setFilters((prev) => ({ ...prev, order: prev.order === 'asc' ? 'desc' : 'asc' }))}
             className='inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted'
-            title={order === 'asc' ? '昇順' : '降順'}
+            title={filters.order === 'asc' ? '昇順' : '降順'}
           >
-            {order === 'asc' ? <ArrowDownAZ className='h-4 w-4' /> : <ArrowUpAZ className='h-4 w-4' />}
+            {filters.order === 'asc' ? <ArrowDownAZ className='h-4 w-4' /> : <ArrowUpAZ className='h-4 w-4' />}
           </button>
           {hasFilters && (
             <button
@@ -180,23 +181,23 @@ function AnimeListPage() {
             <p className='text-muted-foreground'>アニメが登録されていません</p>
           </div>
         ) : (
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
             {animeList.map((anime) => (
               <AnimeCard
                 key={anime.id}
                 anime={anime}
-                filterYear={filterYear}
-                filterProvider={filterProvider}
-                filterStatus={filterStatus}
-                onFilterYear={setFilterWithPageReset(setFilterYear)}
-                onFilterProvider={setFilterWithPageReset(setFilterProvider)}
-                onFilterStatus={setFilterWithPageReset(setFilterStatus)}
+                filterYear={filters.year}
+                filterProvider={provider}
+                filterStatus={filters.status}
+                onFilterYear={setFilter('year')}
+                onFilterProvider={setFilter('provider')}
+                onFilterStatus={setFilter('status')}
               />
             ))}
           </div>
         )}
 
-        <SmartPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        <SmartPagination page={filters.page} totalPages={totalPages} onPageChange={setFilter('page')} />
       </div>
     </PageTransition>
   )
