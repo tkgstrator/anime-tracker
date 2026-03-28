@@ -97,11 +97,7 @@ export class HuluProvider extends Provider {
     }
 
     const targetBadges: Set<BadgeType> =
-      category === 'new_episode'
-        ? new Set(['NEW_EPISODE', 'RECENTLY_ADDED'])
-        : category === 'coming_soon'
-          ? new Set(['COMING_SOON'])
-          : new Set(['RECENTLY_ADDED'])
+      category === 'new_episode' ? new Set(['NEW_EPISODE', 'RECENTLY_ADDED']) : new Set(['COMING_SOON'])
     const allItems = [...recentItems, ...seasonItems]
     const seen = new Set<string>()
     const titles: Title[] = []
