@@ -2,10 +2,8 @@ import type { Title, TitleInfo } from '../../schemas/providers/common.dto'
 import type { CacheManager } from '../cache'
 
 export interface FetchTitleListOptions {
-  /** true の場合、新エピソードが追加されたタイトルのみ返す */
-  newEpisodesOnly?: boolean
-  /** true の場合、配信終了間近タイトルのみ返す */
-  expiringOnly?: boolean
+  /** 取得カテゴリ。未指定時は全タイトル */
+  category?: 'new_episode' | 'recently_added' | 'coming_soon' | 'expiring'
 }
 
 /**

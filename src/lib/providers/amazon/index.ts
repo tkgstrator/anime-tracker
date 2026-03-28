@@ -89,16 +89,17 @@ export class AmazonProvider extends Provider {
   /**
    * Prime Video のアニメタイトル一覧を取得する。
    *
-   * - `expiringOnly` 時: 「配信終了間近」カテゴリのみ取得
-   * - `newEpisodesOnly` 時: 「新着アニメTV」カテゴリのみ取得
-   * - どちらも未指定: 全タイトル取得
+   * - `expiring`: 「配信終了間近」カテゴリのみ取得
+   * - `new_episode` / `recently_added`: 新着アニメ → バッジでフィルタ
+   * - 未指定: 全タイトル取得
    * @returns アニメタイトル一覧
    */
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const mode = options?.expiringOnly ? 'expiring' : options?.newEpisodesOnly ? 'new_episode' : 'all'
+    const category = options?.category
+    const mode = category ?? 'all'
     logger.info({ action: 'fetch-title-list-start', mode })
 
-    if (options?.expiringOnly) {
+    if (category === 'expiring') {
       const cached = await this.cache?.get('browse:expiring:latest')
       if (cached) {
         const envelope = JSON.parse(cached)
@@ -108,16 +109,33 @@ export class AmazonProvider extends Provider {
       }
     }
 
-    const buildOptions = options?.expiringOnly
-      ? { expiring: true as const }
-      : options?.newEpisodesOnly
-        ? { newAnime: true as const }
-        : undefined
+    const buildOptions =
+      category === 'expiring'
+        ? { expiring: true as const }
+        : category === 'new_episode' || category === 'recently_added'
+          ? { newAnime: true as const }
+          : undefined
     const allTitles = await this.fetchPages(buildOptions, mode)
-    // newAnime モードではバッジ付き（新エピソード/新着/セール等）のみ返す
-    const titles = buildOptions?.newAnime ? allTitles.filter((t) => t.hasNewContent) : allTitles
-    logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
-    return titles
+
+    // new_episode / recently_added: 同じ API から取得し、バッジ値でフィルタ
+    if (category === 'new_episode') {
+      const titles = allTitles.filter((t) => t.badge === 'NEW_EPISODE')
+      logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
+      return titles
+    }
+    if (category === 'recently_added') {
+      const titles = allTitles.filter((t) => t.badge === 'RECENTLY_ADDED')
+      logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
+      return titles
+    }
+    if (category === 'coming_soon') {
+      // Amazon にはもうすぐ配信のバッジがないため空を返す
+      logger.info({ action: 'fetch-title-list-done', mode, count: 0 })
+      return []
+    }
+
+    logger.info({ action: 'fetch-title-list-done', mode, count: allTitles.length })
+    return allTitles
   }
 
   /**

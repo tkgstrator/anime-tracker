@@ -1,5 +1,4 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import dayjs from 'dayjs'
 import { createPrismaClient } from '../lib/db'
 import { getAppLogger } from '../lib/logger'
 import { AnimeInfoSchema, AnimeListQuerySchema, AnimeSchema, PaginatedAnimeSchema } from '../schemas/anime.dto'
@@ -35,23 +34,8 @@ anime.openapi(
   }),
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
-    const {
-      page,
-      limit,
-      provider,
-      year,
-      quarter,
-      status,
-      scheduled,
-      recorded,
-      recentlyUpdated,
-      upcoming,
-      expiring,
-      sort,
-      order,
-      q
-    } = c.req.valid('query')
-    const sevenDaysAgo = dayjs().subtract(7, 'day').toDate()
+    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, expiring, sort, order, q } =
+      c.req.valid('query')
     const where = {
       isIdentified: true,
       ...(provider ? { provider } : {}),
@@ -61,8 +45,7 @@ anime.openapi(
       ...(scheduled != null ? { scheduled } : {}),
       ...(recorded != null ? { recorded } : {}),
       ...(q ? { title: { contains: q } } : {}),
-      ...(recentlyUpdated ? { seasons: { some: { episodes: { some: { releaseDate: { gte: sevenDaysAgo } } } } } } : {}),
-      ...(upcoming ? { nextEpisodeDate: { not: null } } : {}),
+      ...(badge ? { badge } : {}),
       ...(expiring ? { expiredAt: { not: null } } : {})
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }

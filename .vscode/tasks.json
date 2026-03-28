@@ -54,28 +54,48 @@
     {
       "label": "Queue: Fetch New Episode (Amazon)",
       "type": "shell",
-      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"amazon\",\"category\":\"new_episode\"}}' | jq .",
+      "command": ".vscode/scripts/queue-local.sh amazon new_episode",
+      "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": [],
       "group": "test"
     },
     {
       "label": "Queue: Fetch New Episode (Hulu)",
       "type": "shell",
-      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"hulu\",\"category\":\"new_episode\"}}' | jq .",
+      "command": ".vscode/scripts/queue-local.sh hulu new_episode",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue: Fetch Coming Soon (Amazon)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-local.sh amazon coming_soon",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue: Fetch Coming Soon (Hulu)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-local.sh hulu coming_soon",
+      "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": [],
       "group": "test"
     },
     {
       "label": "Queue: Fetch Expiring (Amazon)",
       "type": "shell",
-      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"amazon\",\"category\":\"expiring\"}}' | jq .",
+      "command": ".vscode/scripts/queue-local.sh amazon expiring",
+      "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": [],
       "group": "test"
     },
     {
       "label": "Queue: Fetch Expiring (Hulu)",
       "type": "shell",
-      "command": "curl -s -X POST http://localhost:25173/api/queues -H 'Content-Type: application/json' -d '{\"type\":\"fetch\",\"message\":{\"provider\":\"hulu\",\"category\":\"expiring\"}}' | jq .",
+      "command": ".vscode/scripts/queue-local.sh hulu expiring",
+      "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": [],
       "group": "test"
     },
@@ -91,6 +111,22 @@
       "label": "Queue [Remote]: Fetch New Episode (Hulu)",
       "type": "shell",
       "command": ".vscode/scripts/queue-send.sh hulu new_episode",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue [Remote]: Fetch Coming Soon (Amazon)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-send.sh amazon coming_soon",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Queue [Remote]: Fetch Coming Soon (Hulu)",
+      "type": "shell",
+      "command": ".vscode/scripts/queue-send.sh hulu coming_soon",
       "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": [],
       "group": "test"

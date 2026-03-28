@@ -17,9 +17,10 @@ describe('browse expiring (offline)', () => {
     }
 
     expect(titles).toBeDefined()
-    expect(titles?.length).toBeGreaterThan(0)
+    if (!titles) return
+    expect(titles.length).toBeGreaterThan(0)
 
-    const withExpiring = titles?.filter((t) => t.expiring)
+    const withExpiring = titles.filter((t) => t.expiring)
     expect(withExpiring.length).toBeGreaterThan(0)
 
     for (const t of withExpiring) {

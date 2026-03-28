@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import type { ExpiringResponse, NewEpisodeResponse } from '@/schemas/lambda.dto.ts'
+import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
@@ -181,7 +181,7 @@ export class SyncService {
   }
 
   /** プロバイダからタイトル一覧を取得し、更新対象のコンテンツIDを返す */
-  async fetch({ message }: FetchMessage, result: ExpiringResponse | NewEpisodeResponse): Promise<string[]> {
+  async fetch({ message }: FetchMessage, result: ExpiringResponse | TitleListResponse): Promise<string[]> {
     fetchLogger.info({
       action: 'fetch-start',
       provider: message.provider,
@@ -190,13 +190,27 @@ export class SyncService {
     if (message.category === 'expiring') {
       return this.fetchExpiring(message.provider, result as ExpiringResponse)
     }
-    return this.fetchNewEpisode(message.provider, result as NewEpisodeResponse)
+    return this.fetchTitleList(message.provider, message.category, result as TitleListResponse)
   }
 
-  /** 新着エピソード取得: Lambda レスポンス → AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
-  private async fetchNewEpisode(providerName: string, result: NewEpisodeResponse): Promise<string[]> {
+  /** 新着エピソード / 最近更新取得: Lambda レスポンス → AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
+  private async fetchTitleList(providerName: string, category: string, result: TitleListResponse): Promise<string[]> {
     const provider = getProvider(providerName)
-    const titles = result.entries
+
+    // new_episode の場合、COMING_SOON タイトル（nextEpisodeDate あり）を除外して上書きを防ぐ
+    const comingSoonContentIds =
+      category === 'new_episode'
+        ? new Set(result.entries.filter((t) => t.badge === 'COMING_SOON').map((t) => t.contentId))
+        : new Set<string>()
+    const titles = result.entries.filter((t) => !comingSoonContentIds.has(t.contentId))
+
+    if (comingSoonContentIds.size > 0) {
+      fetchLogger.info({
+        action: 'skip-coming-soon',
+        provider: provider.name,
+        count: comingSoonContentIds.size
+      })
+    }
 
     const existingIds = await findExistingContentIds(
       this.prisma,
@@ -211,25 +225,25 @@ export class SyncService {
       new: newTitles.length
     })
 
-    // browse API に含まれなかったタイトルの nextEpisodeDate をリセット
+    // browse API に含まれなかったタイトルの badge / nextEpisodeDate をリセット
     const allContentIds = new Set(titles.map((t) => t.contentId))
-    const titlesHavingNextDate = await this.prisma.anime.findMany({
-      where: { provider: provider.name, nextEpisodeDate: { not: null } },
+    const titlesHavingBadge = await this.prisma.anime.findMany({
+      where: { provider: provider.name, OR: [{ badge: { not: null } }, { nextEpisodeDate: { not: null } }] },
       select: { contentId: true }
     })
-    const idsToReset = titlesHavingNextDate.filter((t) => !allContentIds.has(t.contentId)).map((t) => t.contentId)
+    const idsToReset = titlesHavingBadge.filter((t) => !allContentIds.has(t.contentId)).map((t) => t.contentId)
     let resetCount = 0
     for (let i = 0; i < idsToReset.length; i += D1_VARIABLE_LIMIT) {
       const chunk = idsToReset.slice(i, i + D1_VARIABLE_LIMIT)
       const { count } = await this.prisma.anime.updateMany({
         where: { contentId: { in: chunk } },
-        data: { nextEpisodeDate: null }
+        data: { badge: null, nextEpisodeDate: null }
       })
       resetCount += count
     }
     if (resetCount > 0) {
       fetchLogger.info({
-        action: 'reset-next-episode-date',
+        action: 'reset-badge',
         provider: provider.name,
         count: resetCount
       })
@@ -270,6 +284,7 @@ export class SyncService {
               year: meta.year,
               quarter: meta.quarter,
               isIdentified: true,
+              badge: t.badge,
               nextEpisodeDate
             }
           })
@@ -295,31 +310,25 @@ export class SyncService {
       }
     }
 
-    // browse API から取得できた nextEpisodeDate を既存タイトルに反映
-    const titlesWithNextDate = titles.filter((t) => existingIds.has(t.contentId) && t.nextEpisodeDate)
-    if (titlesWithNextDate.length > 0) {
-      fetchLogger.debug({
-        action: 'update-next-episode-dates',
-        provider: provider.name,
-        count: titlesWithNextDate.length
-      })
-    }
-    for (const t of titlesWithNextDate) {
+    // 既存タイトルの badge / nextEpisodeDate を更新
+    const existingTitles = titles.filter((t) => existingIds.has(t.contentId))
+    for (const t of existingTitles) {
       const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
       await this.prisma.anime.update({
         where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
-        data: { nextEpisodeDate }
+        data: { badge: t.badge, nextEpisodeDate }
       })
+    }
+    if (existingTitles.length > 0) {
       fetchLogger.debug({
-        action: 'update-next-episode-date',
+        action: 'update-badge-and-dates',
         provider: provider.name,
-        contentId: t.contentId,
-        nextEpisodeDate: nextEpisodeDate ? dayjs(nextEpisodeDate).toISOString() : null
+        count: existingTitles.length
       })
     }
 
-    // バッジ（新エピソード・新着等）があるタイトルだけを update 対象にする
-    const updateTargets = titles.filter((t) => existingIds.has(t.contentId) && t.hasNewContent)
+    // バッジ付きタイトルだけを update 対象にする
+    const updateTargets = titles.filter((t) => existingIds.has(t.contentId) && t.badge)
     fetchLogger.info({
       action: 'filter-by-badge',
       provider: provider.name,
@@ -328,7 +337,7 @@ export class SyncService {
     })
 
     fetchLogger.info({
-      action: 'fetch-new-episode-done',
+      action: 'fetch-title-list-done',
       provider: provider.name,
       identified: identifiedContentIds.length,
       updateTargets: updateTargets.length

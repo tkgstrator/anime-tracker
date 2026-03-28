@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
-import { EntityType, TitleSchema } from './common.dto'
+import { type BadgeType, EntityType, TitleSchema } from './common.dto'
 
 /** ブラウズ URL 生成時の検索クエリ。`buildAmazonBrowseUrl` で使用。 */
 export const BrowseQuerySchema = z.object({
@@ -38,6 +38,9 @@ export const BrowseEntitySchema = z
   .transform((v) => {
     const hvm = v.entitlementCues.highValueMessage?.message
     const parsed = hvm ? parseExpiringMessage(hvm) : undefined
+    const badgeMsg = v.entitlementCues.titleMetadataBadge.message
+    const badge: BadgeType | null =
+      badgeMsg === '新エピソード' ? 'NEW_EPISODE' : badgeMsg === '新着' || badgeMsg === '新作' ? 'RECENTLY_ADDED' : null
     return TitleSchema.parse({
       contentId: v.titleID,
       title: v.displayTitle,
@@ -46,7 +49,7 @@ export const BrowseEntitySchema = z
       imageUrl: v.images.cover.url,
       maturityRating: null,
       benefitId: null,
-      hasNewContent: !!v.entitlementCues.titleMetadataBadge.message,
+      badge,
       expiring: parsed ? { remainingHours: parsed.remainingHours, season: parsed.season } : undefined
     })
   })

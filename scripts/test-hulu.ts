@@ -2,9 +2,9 @@ import { HuluProvider } from '../src/lib/providers/hulu'
 
 const provider = new HuluProvider()
 
-// newEpisodesOnly で最近追加されたタイトルのみ取得
+// new_episode で最近追加されたタイトルのみ取得
 console.log('=== Hulu 最近追加されたアニメ ===')
-const recentTitles = await provider.fetchTitleList({ newEpisodesOnly: true })
+const recentTitles = await provider.fetchTitleList({ category: 'new_episode' })
 console.log(`取得件数: ${recentTitles.length}`)
 console.log('\n--- 一覧 ---')
 for (const t of recentTitles) {
