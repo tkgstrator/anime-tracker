@@ -15,7 +15,7 @@ const RootComponent = () => {
   return (
     <div className='min-h-screen select-none bg-background'>
       <header className='sticky top-0 z-50 bg-background/80 backdrop-blur-sm'>
-        <div className='mx-auto flex h-14 max-w-6xl items-center gap-8 px-6'>
+        <div className='mx-auto flex h-14 max-w-screen-xl items-center gap-8 px-6'>
           <Link to='/' className='text-lg font-bold tracking-tight'>
             Anime Tracker
           </Link>
@@ -42,7 +42,7 @@ const RootComponent = () => {
           <ServerStatusDialog />
         </div>
       </header>
-      <main className='mx-auto max-w-6xl select-text px-6 py-8'>
+      <main className='mx-auto max-w-screen-xl select-text px-6 py-8'>
         <AnimatePresence mode='wait'>
           <Outlet key={routeKey} />
         </AnimatePresence>
