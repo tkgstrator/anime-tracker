@@ -1,4 +1,3 @@
-import pLimit from 'p-limit'
 import {
   BrowseEntitySchema,
   type PaginateParams,
@@ -35,6 +34,9 @@ const DYNAMIC_FEATURES = [
   'SupportChannelItemDecoration',
   'TvodMovieBundles'
 ]
+
+/** 新着系として打ち切り判定に使うバッジ */
+const NEW_BADGES = new Set(['新エピソード', '新着', '新作'])
 
 /**
  * paginateCollection API を呼び出してタイトル一覧の続きを取得する。
@@ -111,21 +113,20 @@ export class AmazonProvider extends Provider {
       : options?.newEpisodesOnly
         ? { newAnime: true as const }
         : undefined
-    const titles = await this.fetchParallel(buildOptions, mode)
-    logger.info({ action: 'fetch-title-list-done', mode, count: titles.length })
+    const allTitles = await this.fetchPages(buildOptions, mode)
+    // newAnime モードではバッジ付き（新エピソード/新着/セール等）のみ返す
+    const titles = buildOptions?.newAnime ? allTitles.filter((t) => t.hasNewContent) : allTitles
+    logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
     return titles
   }
 
   /**
-   * Cookie 取得 → 自前トークン生成 → 全ページ並列取得する。
+   * Cookie 取得 → 自前トークン生成 → 順次ページ取得する。
    *
-   * ブラウズページの HTML パースを不要にし、`p-limit` で同時実行数を制御しながら
-   * paginateCollection API を並列に呼び出す。
+   * ブラウズページの HTML パースを不要にし、paginateCollection API を順次呼び出す。
+   * newAnime モードでは新着系バッジが連続で出なくなったら早期に打ち切る。
    */
-  private async fetchParallel(
-    buildOptions: Parameters<typeof buildPaginationToken>[0],
-    label: string
-  ): Promise<Title[]> {
+  private async fetchPages(buildOptions: Parameters<typeof buildPaginationToken>[0], label: string): Promise<Title[]> {
     // 1. 軽量ページから Cookie を取得
     const cookieRes = await fetch('https://www.amazon.co.jp/gp/video/', {
       headers: FETCH_HEADERS,
@@ -141,62 +142,44 @@ export class AmazonProvider extends Provider {
     const serviceToken = buildPaginationToken(buildOptions)
     const params: PaginateParams = { paginationTargetId: 'default', serviceToken }
 
-    // 3. 最初のページを取得して総数を推定
-    const firstPage = await paginateCollection(params, 0, cookie)
-    const pageSize = firstPage.entities.length
-    if (pageSize === 0) {
-      logger.warn({ action: 'fetch-parallel-empty', label })
-      return []
-    }
+    // 3. 順次取得（newAnime は早期打ち切りあり）
+    const earlyStop = !!buildOptions?.newAnime
+    const MAX_EMPTY_PAGES = 2
 
-    // 4. 残りページを並列取得
-    const limit = pLimit(5)
-    const pageIndices: number[] = []
-    if (firstPage.hasMoreItems) {
-      // 最大ページ数の上限を設定 (安全弁)
-      const MAX_PAGES = 100
-      for (let i = 1; i <= MAX_PAGES; i++) {
-        pageIndices.push(i * pageSize)
-      }
-    }
-
-    const remainingPages = await Promise.all(
-      pageIndices.map((startIndex) =>
-        limit(async () => {
-          try {
-            return await paginateCollection(params, startIndex, cookie)
-          } catch (e) {
-            logger.error({
-              action: 'pagination-error',
-              startIndex,
-              error: e instanceof Error ? e.message : String(e)
-            })
-            return null
-          }
-        })
-      )
-    )
-
-    // 5. 全ページのエンティティを集約・パース
-    const allPages = [firstPage, ...remainingPages.filter((p): p is PaginateResponse => p !== null)]
     const seen = new Set<string>()
     const titles: Title[] = []
+    let startIndex = 0
+    let emptyStreak = 0
+    let pageCount = 0
     let skipCount = 0
 
-    for (const page of allPages) {
-      if (page.entities.length === 0) break // 空ページ以降は打ち切り
+    for (;;) {
+      let res: PaginateResponse
+      try {
+        res = await paginateCollection(params, startIndex, cookie)
+      } catch (e) {
+        logger.error({
+          action: 'pagination-error',
+          startIndex,
+          error: e instanceof Error ? e.message : String(e)
+        })
+        break
+      }
 
-      for (const e of page.entities) {
+      if (res.entities.length === 0) break
+      pageCount++
+
+      let hasNewBadge = false
+      for (const e of res.entities) {
+        if (earlyStop) {
+          const badge = (e as Record<string, { titleMetadataBadge?: { message?: string } }>).entitlementCues
+            ?.titleMetadataBadge?.message
+          if (badge && NEW_BADGES.has(badge)) hasNewBadge = true
+        }
+
         const parsed = BrowseEntitySchema.safeParse(e)
         if (!parsed.success) {
           skipCount++
-          const issue = parsed.error.issues[0]
-          logger.debug({
-            action: 'pagination-parse-skip',
-            titleID: (e as Record<string, unknown>).titleID ?? null,
-            path: issue?.path?.join('.'),
-            error: issue?.message
-          })
           continue
         }
         const title = parsed.data
@@ -204,15 +187,33 @@ export class AmazonProvider extends Provider {
         seen.add(title.contentId)
         titles.push(title)
       }
+
+      if (earlyStop) {
+        emptyStreak = hasNewBadge ? 0 : emptyStreak + 1
+        if (emptyStreak >= MAX_EMPTY_PAGES) {
+          logger.debug({ action: 'early-stop', startIndex, emptyStreak })
+          break
+        }
+      }
+
+      logger.debug({
+        action: 'pagination-page',
+        startIndex,
+        fetched: res.entities.length,
+        unique: titles.length
+      })
+
+      if (!res.hasMoreItems) break
+      startIndex += res.entities.length
     }
 
     logger.info({
-      action: 'fetch-parallel-done',
+      action: 'fetch-pages-done',
       label,
-      pages: allPages.length,
-      totalEntities: allPages.reduce((sum, p) => sum + p.entities.length, 0),
+      pages: pageCount,
       unique: titles.length,
-      skipped: skipCount
+      skipped: skipCount,
+      earlyStop
     })
 
     return titles

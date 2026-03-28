@@ -99,6 +99,28 @@ GET https://www.hulu.jp/api/v2/filtered?id=mt:tv&id=gft:and&id=g:8&id=edg:tv_ani
 
 ---
 
+## もうすぐ配信終了の取得
+
+`publish_end_at` の昇順ソートで配信終了日が近い順に取得できる。
+
+```
+GET https://www.hulu.jp/api/v2/filtered?id=mt:tv&id=gft:and&id=g:8&id=edg:tv_animation&sort=[{"publish_end_at":"asc"}]&service=hulu&from=0&to=49
+```
+
+- レスポンスの `endAt` フィールドに配信終了日時が含まれる（例: `"2026/03/31 23:59:59"`）
+- 配信終了日が N日以上先になった時点で取得打ち切り可能（Amazonの早期打ち切りと同様のアプローチ）
+- endAt は月末（3/31, 6/30 等）に集中する傾向がある
+
+### 2026-03-28 時点の配信終了状況
+
+| 終了日 | 件数 | 主なタイトル |
+|--------|------|-------------|
+| 2026/03/29 | 1 | 春夏秋冬代行者 春の舞 |
+| 2026/03/31 | 多数 | 想星のアクエリオン、FARMAGIA、勇者シリーズ等 |
+| 2026/05/31 | 1 | HUNTER×HUNTER |
+
+---
+
 ## 備考
 
 - 認証不要（未ログインでもアクセス可能）
