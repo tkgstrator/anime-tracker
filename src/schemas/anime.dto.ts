@@ -75,12 +75,19 @@ export const AnimeListQuerySchema = z.object({
   scheduled: z.coerce.boolean().optional(),
   recorded: z.coerce.boolean().optional(),
   badge: z.string().optional(),
-  expiring: z.coerce.boolean().optional(),
   sort: z.enum(['title', 'year', 'updatedAt']).default('title'),
   order: z.enum(['asc', 'desc']).default('asc'),
   q: z.string().optional()
 })
 export type AnimeListQuerySchema = z.infer<typeof AnimeListQuerySchema>
+
+export const BadgedAnimeSchema = z.object({
+  NEW_EPISODE: z.array(AnimeSchema),
+  RECENTLY_ADDED: z.array(AnimeSchema),
+  COMING_SOON: z.array(AnimeSchema),
+  EXPIRING: z.array(AnimeSchema)
+})
+export type BadgedAnimeSchema = z.infer<typeof BadgedAnimeSchema>
 
 export const PaginatedAnimeSchema = z.object({
   data: z.array(AnimeSchema),

@@ -5,6 +5,9 @@ import { queryKeys } from './query-keys'
 export const animeListQueryOptions = (filters: Record<string, unknown>) =>
   queryOptions({ queryKey: queryKeys.anime.list(filters), queryFn: () => api.getAnimeList({ queries: filters }) })
 
+export const badgedAnimeQueryOptions = () =>
+  queryOptions({ queryKey: queryKeys.anime.badged, queryFn: () => api.getBadgedAnime() })
+
 export const animeDetailQueryOptions = (id: string) =>
   queryOptions({ queryKey: queryKeys.anime.detail(id), queryFn: () => api.getAnime({ params: { id } }) })
 

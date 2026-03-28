@@ -47,10 +47,10 @@ async function fetchExpiring(provider: string) {
   return { statusCode: 200, body: JSON.stringify({ fetchedAt: now.toISOString(), entries }) }
 }
 
-// ---- title_list (new_episode / recently_added) ----
+// ---- title_list (new_episode / coming_soon) ----
 
 async function fetchTitleList(providerName: string, category: string) {
-  if (category !== 'new_episode' && category !== 'recently_added' && category !== 'coming_soon') {
+  if (category !== 'new_episode' && category !== 'coming_soon') {
     return { statusCode: 400, body: JSON.stringify({ error: `Invalid category: ${category}` }) }
   }
 

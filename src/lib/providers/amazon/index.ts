@@ -90,7 +90,7 @@ export class AmazonProvider extends Provider {
    * Prime Video のアニメタイトル一覧を取得する。
    *
    * - `expiring`: 「配信終了間近」カテゴリのみ取得
-   * - `new_episode` / `recently_added`: 新着アニメ → バッジでフィルタ
+   * - `new_episode`: 新着アニメ (NEW_EPISODE + RECENTLY_ADDED)
    * - 未指定: 全タイトル取得
    * @returns アニメタイトル一覧
    */
@@ -112,19 +112,14 @@ export class AmazonProvider extends Provider {
     const buildOptions =
       category === 'expiring'
         ? { expiring: true as const }
-        : category === 'new_episode' || category === 'recently_added'
+        : category === 'new_episode'
           ? { newAnime: true as const }
           : undefined
     const allTitles = await this.fetchPages(buildOptions, mode)
 
-    // new_episode / recently_added: 同じ API から取得し、バッジ値でフィルタ
+    // new_episode: NEW_EPISODE + RECENTLY_ADDED の両方を返す
     if (category === 'new_episode') {
-      const titles = allTitles.filter((t) => t.badge === 'NEW_EPISODE')
-      logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
-      return titles
-    }
-    if (category === 'recently_added') {
-      const titles = allTitles.filter((t) => t.badge === 'RECENTLY_ADDED')
+      const titles = allTitles.filter((t) => t.badge === 'NEW_EPISODE' || t.badge === 'RECENTLY_ADDED')
       logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
       return titles
     }

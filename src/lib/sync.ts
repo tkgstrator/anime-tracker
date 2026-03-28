@@ -225,28 +225,38 @@ export class SyncService {
       new: newTitles.length
     })
 
-    // browse API に含まれなかったタイトルの badge / nextEpisodeDate をリセット
-    const allContentIds = new Set(titles.map((t) => t.contentId))
-    const titlesHavingBadge = await this.prisma.anime.findMany({
-      where: { provider: provider.name, OR: [{ badge: { not: null } }, { nextEpisodeDate: { not: null } }] },
-      select: { contentId: true }
-    })
-    const idsToReset = titlesHavingBadge.filter((t) => !allContentIds.has(t.contentId)).map((t) => t.contentId)
-    let resetCount = 0
-    for (let i = 0; i < idsToReset.length; i += D1_VARIABLE_LIMIT) {
-      const chunk = idsToReset.slice(i, i + D1_VARIABLE_LIMIT)
-      const { count } = await this.prisma.anime.updateMany({
-        where: { contentId: { in: chunk } },
-        data: { badge: null, nextEpisodeDate: null }
-      })
-      resetCount += count
+    // このカテゴリに対応するバッジを持つタイトルのうち、今回の取得結果に含まれないものをリセット
+    const badgesForCategory: Record<string, string[]> = {
+      new_episode: ['NEW_EPISODE', 'RECENTLY_ADDED'],
+      coming_soon: ['COMING_SOON']
     }
-    if (resetCount > 0) {
-      fetchLogger.info({
-        action: 'reset-badge',
-        provider: provider.name,
-        count: resetCount
+    const targetBadges = badgesForCategory[category] ?? []
+    const allContentIds = new Set(titles.map((t) => t.contentId))
+
+    if (targetBadges.length > 0) {
+      const titlesHavingBadge = await this.prisma.anime.findMany({
+        where: { provider: provider.name, badge: { in: targetBadges } },
+        select: { contentId: true }
       })
+      const idsToReset = titlesHavingBadge.filter((t) => !allContentIds.has(t.contentId)).map((t) => t.contentId)
+      let resetCount = 0
+      for (let i = 0; i < idsToReset.length; i += D1_VARIABLE_LIMIT) {
+        const chunk = idsToReset.slice(i, i + D1_VARIABLE_LIMIT)
+        const { count } = await this.prisma.anime.updateMany({
+          where: { contentId: { in: chunk } },
+          data: { badge: null, nextEpisodeDate: null }
+        })
+        resetCount += count
+      }
+      if (resetCount > 0) {
+        fetchLogger.info({
+          action: 'reset-badge',
+          provider: provider.name,
+          category,
+          badges: targetBadges,
+          count: resetCount
+        })
+      }
     }
 
     // バッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
@@ -375,7 +385,7 @@ export class SyncService {
     for (const e of targets) {
       await this.prisma.anime.update({
         where: { provider_contentId: { provider: providerName, contentId: e.contentId } },
-        data: { expiredAt: dayjs(e.expiredAt).toDate(), expiringSeason: e.expiringSeason }
+        data: { badge: 'EXPIRING', expiredAt: dayjs(e.expiredAt).toDate(), expiringSeason: e.expiringSeason }
       })
       fetchLogger.debug({
         action: 'update-expiring-title',
@@ -400,7 +410,7 @@ export class SyncService {
       const chunk = expiringIdsToReset.slice(i, i + D1_VARIABLE_LIMIT)
       const { count } = await this.prisma.anime.updateMany({
         where: { contentId: { in: chunk } },
-        data: { expiredAt: null, expiringSeason: null }
+        data: { badge: null, expiredAt: null, expiringSeason: null }
       })
       expiringResetCount += count
     }
