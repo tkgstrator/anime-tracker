@@ -51,8 +51,9 @@ export class HuluProvider extends Provider {
   /**
    * Hulu のアニメタイトル一覧を取得する。
    *
-   * - `new_episode` / `recently_added`: Palette API (recentlyadded-anime + seasonal)
+   * - `new_episode`: Palette API (recentlyadded-anime + seasonal)
    *   → asset があるシリーズは NEW_EPISODE、それ以外は RECENTLY_ADDED
+   * - `coming_soon`: Palette API → COMING_SOON のみ
    * - `expiring`: Filtered API (publish_end_at 昇順) で配信終了間近のタイトル
    * - 未指定: Filtered API (g:8) で全アニメ (TV + 映画)
    * @returns アニメタイトル一覧
@@ -60,7 +61,7 @@ export class HuluProvider extends Provider {
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
     const category = options?.category
 
-    if (category === 'new_episode' || category === 'recently_added' || category === 'coming_soon') {
+    if (category === 'new_episode' || category === 'coming_soon') {
       return this.fetchNewAndRecent(category)
     }
     if (category === 'expiring') {
@@ -78,7 +79,7 @@ export class HuluProvider extends Provider {
    *
    * category で返すバッジをフィルタする。
    */
-  private async fetchNewAndRecent(category: 'new_episode' | 'recently_added' | 'coming_soon'): Promise<Title[]> {
+  private async fetchNewAndRecent(category: 'new_episode' | 'coming_soon'): Promise<Title[]> {
     logger.info({ action: 'fetch-title-list-start', mode: category })
     const [recentItems, seasonItems] = await Promise.all([fetchRecentlyAdded(), fetchCurrentSeasonAnime()])
     logger.debug({
@@ -95,8 +96,12 @@ export class HuluProvider extends Provider {
       }
     }
 
-    const targetBadge: BadgeType =
-      category === 'new_episode' ? 'NEW_EPISODE' : category === 'coming_soon' ? 'COMING_SOON' : 'RECENTLY_ADDED'
+    const targetBadges: Set<BadgeType> =
+      category === 'new_episode'
+        ? new Set(['NEW_EPISODE', 'RECENTLY_ADDED'])
+        : category === 'coming_soon'
+          ? new Set(['COMING_SOON'])
+          : new Set(['RECENTLY_ADDED'])
     const allItems = [...recentItems, ...seasonItems]
     const seen = new Set<string>()
     const titles: Title[] = []
@@ -112,7 +117,7 @@ export class HuluProvider extends Provider {
         : seriesWithAsset.has(item.id_in_schema)
           ? 'NEW_EPISODE'
           : 'RECENTLY_ADDED'
-      if (badge !== targetBadge) continue
+      if (!targetBadges.has(badge)) continue
 
       const comingSoonDate = comingSoonText ? parseComingSoonDate(comingSoonText) : null
       titles.push(vodItemToTitle(item, badge, comingSoonDate))

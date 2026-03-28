@@ -9,7 +9,7 @@ export const FetchExpiringRequestSchema = z.object({
   provider: ProviderSchema
 })
 
-export const TitleListCategorySchema = z.enum(['new_episode', 'recently_added', 'coming_soon'])
+export const TitleListCategorySchema = z.enum(['new_episode', 'coming_soon'])
 
 export const FetchTitleListRequestSchema = z.object({
   provider: ProviderSchema,

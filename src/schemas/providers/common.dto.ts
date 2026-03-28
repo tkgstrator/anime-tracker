@@ -4,7 +4,7 @@ export const EntityType = z.enum(['tv', 'movie'])
 export type EntityType = z.infer<typeof EntityType>
 
 /** タイトルのバッジ種別 */
-export const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON'])
+export const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
 export type BadgeType = z.infer<typeof BadgeType>
 
 export const TitleSchema = z.object({
