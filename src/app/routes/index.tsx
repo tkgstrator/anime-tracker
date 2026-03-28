@@ -20,8 +20,9 @@ const homeQueries = () => {
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
   return [
-    animeListQueryOptions({ recentlyUpdated: true, limit: 50, sort: 'updatedAt', order: 'desc' }),
-    animeListQueryOptions({ upcoming: true, limit: 20, sort: 'title', order: 'asc' }),
+    animeListQueryOptions({ badge: 'NEW_EPISODE', limit: 50, sort: 'title', order: 'asc' }),
+    animeListQueryOptions({ badge: 'RECENTLY_ADDED', limit: 50, sort: 'title', order: 'asc' }),
+    animeListQueryOptions({ badge: 'COMING_SOON', limit: 20, sort: 'title', order: 'asc' }),
     animeListQueryOptions({ expiring: true, limit: 20, sort: 'title', order: 'asc' }),
     animeListQueryOptions({ year: currentYear, quarter: currentQuarter, limit: 20, sort: 'title', order: 'asc' }),
     animeListQueryOptions({ scheduled: true, limit: 20, sort: 'title', order: 'asc' })
@@ -35,12 +36,13 @@ export const Route = createFileRoute('/')({
 })
 
 function HomePage() {
-  const [recentlyUpdatedQ, upcomingQ, expiringQ, currentSeasonQ, scheduledQ] = useSuspenseQueries({
+  const [newEpisodeQ, recentlyAddedQ, comingSoonQ, expiringQ, currentSeasonQ, scheduledQ] = useSuspenseQueries({
     queries: [...homeQueries()]
   })
 
-  const recentlyUpdated = recentlyUpdatedQ.data.data
-  const upcoming = upcomingQ.data.data
+  const newEpisode = newEpisodeQ.data.data
+  const recentlyAdded = recentlyAddedQ.data.data
+  const comingSoon = comingSoonQ.data.data
   const expiring = expiringQ.data.data
   const currentSeason = currentSeasonQ.data.data
   const scheduled = scheduledQ.data.data
@@ -73,13 +75,9 @@ function HomePage() {
   return (
     <PageTransition>
       <div className='space-y-10'>
-        <AnimeCarousel
-          title='最近更新されたアニメ'
-          anime={recentlyUpdated}
-          viewAllLink='/browse'
-          badgeType='updatedAt'
-        />
-        <AnimeCarousel title='もうすぐ配信！' anime={upcoming} viewAllLink='/browse' badgeType='nextEpisodeDate' />
+        <AnimeCarousel title='新着エピソード' anime={newEpisode} viewAllLink='/browse' badgeType='nextEpisodeDate' />
+        <AnimeCarousel title='最近追加されたアニメ' anime={recentlyAdded} viewAllLink='/browse' />
+        <AnimeCarousel title='もうすぐ配信' anime={comingSoon} viewAllLink='/browse' badgeType='nextEpisodeDate' />
         <AnimeCarousel title='もうすぐ配信終了' anime={expiring} viewAllLink='/browse' badgeType='expiredAt' />
         <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
         <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />

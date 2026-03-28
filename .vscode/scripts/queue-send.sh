@@ -4,7 +4,7 @@ set -euo pipefail
 # Cloudflare Queues REST API 経由でメッセージを送信する
 # Usage: .vscode/scripts/queue-send.sh <provider> <category>
 #   provider: amazon | hulu
-#   category: new_episode | expiring
+#   category: new_episode | coming_soon | expiring
 
 source .env
 export CLOUDFLARE_API_TOKEN

@@ -51,9 +51,11 @@ app.post('/api/queues', async (c) => {
       // Lambda (日本IP) で fetch し、結果を直接渡す
       const lambda = createLambdaClient(c.env)
       const result =
-        category === 'expiring' ? await lambda.fetchExpiring({ provider }) : await lambda.fetchNewEpisode({ provider })
+        category === 'expiring'
+          ? await lambda.fetchExpiring({ provider })
+          : await lambda.fetchTitleList({ provider, category })
       const contentIds = await service.fetch(body.data, result)
-      if (category !== 'expiring') {
+      if (category !== 'expiring' && category !== 'coming_soon') {
         for (const contentId of contentIds) {
           await service.update({ type: 'update', message: { provider, contentId } })
         }

@@ -3,8 +3,8 @@ import type { z } from 'zod'
 import {
   ExpiringResponseSchema,
   type FetchExpiringRequestSchema,
-  type FetchNewEpisodeRequestSchema,
-  NewEpisodeResponseSchema
+  type FetchTitleListRequestSchema,
+  TitleListResponseSchema
 } from '@/schemas/lambda.dto.ts'
 import { getAppLogger } from './logger'
 
@@ -52,7 +52,7 @@ export function createLambdaClient(env: LambdaEnv) {
   return {
     fetchExpiring: (body: z.infer<typeof FetchExpiringRequestSchema>) =>
       post(aws, baseUrl, '/expiring', body, ExpiringResponseSchema),
-    fetchNewEpisode: (body: z.infer<typeof FetchNewEpisodeRequestSchema>) =>
-      post(aws, baseUrl, '/new_episode', body, NewEpisodeResponseSchema)
+    fetchTitleList: (body: z.infer<typeof FetchTitleListRequestSchema>) =>
+      post(aws, baseUrl, '/title_list', body, TitleListResponseSchema)
   }
 }

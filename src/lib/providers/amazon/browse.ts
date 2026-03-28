@@ -111,8 +111,7 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
 
   if (options?.node) entries.push(['node', options.node])
   entries.push(['qs-country-code', 'JP'])
-  if (options?.sort ?? true)
-    entries.push(['sort', options?.sortValue ?? 'pv-public-release-date-desc-rank'])
+  if (options?.sort ?? true) entries.push(['sort', options?.sortValue ?? 'pv-public-release-date-desc-rank'])
   entries.push(['field-ways_to_watch', params.waysToWatch])
   if (options?.subscriptionId) entries.push(['field-subscription_id', options.subscriptionId])
   if (options?.genreBin) entries.push(['field-genre-bin', 'av_genre_anime'])

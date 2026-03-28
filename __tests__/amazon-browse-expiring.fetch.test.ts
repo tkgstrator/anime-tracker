@@ -4,7 +4,7 @@ import { AmazonProvider } from '../src/lib/providers/amazon'
 describe('browse expiring (online)', () => {
   test('fetches and parses expiring titles', async () => {
     const provider = new AmazonProvider()
-    const titles = await provider.fetchTitleList({ expiringOnly: true })
+    const titles = await provider.fetchTitleList({ category: 'expiring' })
 
     expect(titles.length).toBeGreaterThan(0)
 
