@@ -1,7 +1,10 @@
+import { Link } from '@tanstack/react-router'
+import { useSetAtom } from 'jotai'
 import { Circle, CircleCheck, Clock, Film, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
+import { browseFiltersAtom, defaultBrowseFilters } from '@/app/lib/atoms'
 import { type AnimeInfoSchema, QuarterLabel } from '@/schemas/anime.dto'
 import { formatDuration } from '../-lib/format'
 
@@ -20,6 +23,8 @@ export function AnimeHero({
   onToggleScheduled: () => void
   onToggleRecorded: () => void
 }) {
+  const setFilters = useSetAtom(browseFiltersAtom)
+
   return (
     <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6'>
       {anime.imageUrl && (
@@ -29,7 +34,15 @@ export function AnimeHero({
       )}
       <div className='min-w-0 space-y-4'>
         <div className='space-y-2'>
-          <h1 className='text-xl font-bold tracking-tight sm:text-2xl'>{anime.title}</h1>
+          <h1 className='text-xl font-bold tracking-tight sm:text-2xl'>
+            <Link
+              to='/browse'
+              onClick={() => setFilters({ ...defaultBrowseFilters, aniListId: anime.aniListId })}
+              className='transition-colors hover:text-indigo-600'
+            >
+              {anime.title}
+            </Link>
+          </h1>
           <div className='flex flex-wrap items-center gap-2'>
             <ProviderBadge provider={anime.provider} />
             {anime.entityType === 'movie' ? (

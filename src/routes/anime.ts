@@ -40,7 +40,7 @@ anime.openapi(
   }),
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
-    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, sort, order, q } =
+    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, aniListId, sort, order, q } =
       c.req.valid('query')
     const where = {
       isIdentified: true,
@@ -51,7 +51,8 @@ anime.openapi(
       ...(scheduled != null ? { scheduled } : {}),
       ...(recorded != null ? { recorded } : {}),
       ...(q ? { title: { contains: q } } : {}),
-      ...(badge ? { badge } : {})
+      ...(badge ? { badge } : {}),
+      ...(aniListId ? { aniListId } : {})
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
     const [data, total] = await Promise.all([
