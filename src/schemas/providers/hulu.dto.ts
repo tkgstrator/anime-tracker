@@ -121,7 +121,7 @@ const EpisodeSchema = z.object({
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   slug: z.string().nonempty(),
-  imageUrl: z.url(),
+  imageUrl: z.url().transform(stripQueryParams),
   rental: z.boolean(),
   startAt: z.string().nonempty(),
   endAt: z.preprocess((v: string) => (v.length === 0 ? null : v), z.string().nonempty().nullable()),
@@ -149,7 +149,7 @@ export const FalcorMetaSchema = z
     thumbnailUrl: ValueSchema,
     service: ValueSchema
   })
-  .transform(({ thumbnailUrl, ...rest }) => ({ ...rest, imageUrl: thumbnailUrl }))
+  .transform(({ thumbnailUrl, ...rest }) => ({ ...rest, imageUrl: stripQueryParams(thumbnailUrl) }))
 
 export const FalcorMetaResponseSchema = z
   .object({

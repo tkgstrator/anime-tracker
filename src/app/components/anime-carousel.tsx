@@ -87,7 +87,6 @@ function CarouselCard({
           <ProxyImage
             src={anime.imageUrl}
             alt={anime.title}
-            w={250}
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (

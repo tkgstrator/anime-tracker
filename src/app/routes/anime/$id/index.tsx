@@ -32,7 +32,13 @@ function AnimeDetailPage() {
 
   const recordAnimeMutation = useMutation({
     mutationFn: () => api.recordAnime(undefined, { params: { id } }),
-    onSuccess: () => toast.success('録画リクエストを送信しました'),
+    onSuccess: (data) => {
+      if (data.count === 0) {
+        toast.info('録画対象のエピソードがありません')
+        return
+      }
+      toast.success('録画を開始しました')
+    },
     onError: () => toast.error('録画リクエストに失敗しました')
   })
 

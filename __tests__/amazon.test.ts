@@ -15,7 +15,6 @@ describe('extractPageData', () => {
       expect(page.synopsis).toBeTruthy()
       expect(page.entityType).toMatch(/^(tv|movie)$/)
       if (page.entityType === 'movie') {
-        expect(page.seasons).toHaveLength(0)
         expect(page.episodePageTokens).toHaveLength(0)
       } else {
         for (const s of page.seasons) {

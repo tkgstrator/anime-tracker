@@ -31,3 +31,9 @@ terraform {
 provider "aws" {
   region = "ap-northeast-1"
 }
+
+# Crunchyroll API は US リージョンから呼ぶ必要がある
+provider "aws" {
+  alias  = "us"
+  region = "us-east-1"
+}

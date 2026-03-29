@@ -29,7 +29,7 @@ export function AnimeHero({
     <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6'>
       {anime.imageUrl && (
         <div className='-mx-6 shrink-0 overflow-hidden sm:mx-0 sm:w-56 sm:rounded-lg'>
-          <ProxyImage src={anime.imageUrl} alt={anime.title} w={224} className='w-full object-cover' />
+          <ProxyImage src={anime.imageUrl} alt={anime.title} className='w-full object-cover' />
         </div>
       )}
       <div className='min-w-0 space-y-4'>
