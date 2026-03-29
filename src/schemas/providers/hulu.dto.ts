@@ -24,7 +24,7 @@ const CardInfo = z
     is_mature: z.boolean().optional(),
     premiere_year: z.number().optional(),
     season_count: z.number().optional(),
-    badge_text_end_at: z.string().optional(),
+    badge_text_end_at: z.string().nonempty().optional(),
     coming_soon_text: z.string().optional()
   })
   .loose()
@@ -99,7 +99,7 @@ const AdditionalInfoSchema = z.object({
       has_closed_caption: z.boolean(),
       has_en_caption: z.boolean(),
       has_ja_caption: z.boolean(),
-      season_number_title: z.string().optional()
+      season_number_title: z.string().nonempty().optional()
     })
     .transform((v) => {
       return {

@@ -5,7 +5,7 @@
 
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
 const HULU_RE = /([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.(jpg|png)/i
-const AMAZON_RE = /([0-9a-f]{64})\.(jpg|png)/
+const AMAZON_RE = /([0-9a-f]{64}).*\.(jpg|png)/
 
 type ImageInfo = { id: string; ext: string } | null
 
