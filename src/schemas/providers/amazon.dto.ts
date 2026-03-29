@@ -2,6 +2,14 @@ import { z } from 'zod'
 import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
 import { type BadgeType, EntityType, TitleSchema } from './common.dto'
 
+/** Amazon 画像 URL からディレクティブ付き装飾を除去するスキーマ */
+const AmazonImageUrlSchema = z.string().transform((url) => {
+  const m = url.match(/\/([0-9a-f]{64})[._]/)
+  if (!m) return url
+  const ext = url.match(/\.(jpg|png)\s*$/)?.[1] ?? 'jpg'
+  return `https://m.media-amazon.com/images/S/pv-target-images/${m[1]}.${ext}`
+})
+
 /** ブラウズ URL 生成時の検索クエリ。`buildAmazonBrowseUrl` で使用。 */
 export const BrowseQuerySchema = z.object({
   keyword: z.string().default(''),
@@ -22,12 +30,12 @@ export const BrowseEntitySchema = z
     synopsis: z.string().nonempty(),
     entityType: EntityTypeEnum,
     images: z.object({
-      cover: z.object({ url: z.url() })
+      cover: z.object({ url: z.url().pipe(AmazonImageUrlSchema) })
     }),
     entitlementCues: z.object({
       titleMetadataBadge: z.object({ message: z.string().nonempty().optional() }),
       highValueMessage: z
-        .object({ message: z.string().optional() })
+        .object({ message: z.string().nonempty().optional() })
         .optional()
         .transform((v) => {
           const msg = v?.message?.trim()
@@ -109,11 +117,12 @@ const DetailHeaderSchema = z
     entityType: EntityTypeEnum,
     images: z
       .object({
-        covershot: z.string().optional(),
-        titleshot: z.string().optional(),
-        packshot: z.string().optional()
+        covershot: z.string().nonempty().optional(),
+        titleshot: z.string().nonempty().optional(),
+        packshot: z.string().nonempty().optional()
       })
-      .transform((v) => v.covershot || v.titleshot || v.packshot || ''),
+      .transform((v) => v.covershot || v.titleshot || v.packshot || '')
+      .pipe(AmazonImageUrlSchema),
     ratingBadge: z.object({
       displayText: z.string().nonempty()
     })

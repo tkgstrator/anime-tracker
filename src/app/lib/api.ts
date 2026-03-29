@@ -12,17 +12,17 @@ const api = new Zodios('/api', [
     parameters: [
       { name: 'page', type: 'Query', schema: z.number().int().min(1).optional() },
       { name: 'limit', type: 'Query', schema: z.number().int().min(1).max(100).optional() },
-      { name: 'provider', type: 'Query', schema: z.string().optional() },
+      { name: 'provider', type: 'Query', schema: z.string().nonempty().optional() },
       { name: 'year', type: 'Query', schema: z.number().int().optional() },
       { name: 'quarter', type: 'Query', schema: z.number().int().min(0).max(3).optional() },
-      { name: 'status', type: 'Query', schema: z.string().optional() },
-      { name: 'badge', type: 'Query', schema: z.string().optional() },
+      { name: 'status', type: 'Query', schema: z.string().nonempty().optional() },
+      { name: 'badge', type: 'Query', schema: z.string().nonempty().optional() },
       { name: 'aniListId', type: 'Query', schema: z.number().int().optional() },
       { name: 'scheduled', type: 'Query', schema: z.boolean().optional() },
       { name: 'recorded', type: 'Query', schema: z.boolean().optional() },
       { name: 'sort', type: 'Query', schema: z.enum(['title', 'year', 'updatedAt']).optional() },
       { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() },
-      { name: 'q', type: 'Query', schema: z.string().optional() }
+      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() }
     ],
     response: PaginatedAnimeSchema
   },

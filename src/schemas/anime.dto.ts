@@ -69,17 +69,17 @@ export const QuarterLabel: Record<number, string> = {
 export const AnimeListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(24),
-  provider: z.string().optional(),
+  provider: z.string().nonempty().optional(),
   year: z.coerce.number().int().optional(),
   quarter: z.coerce.number().int().min(0).max(3).optional(),
-  status: z.string().optional(),
+  status: z.string().nonempty().optional(),
   scheduled: z.coerce.boolean().optional(),
   recorded: z.coerce.boolean().optional(),
-  badge: z.string().optional(),
+  badge: z.string().nonempty().optional(),
   aniListId: z.coerce.number().int().optional(),
   sort: z.enum(['title', 'year', 'updatedAt']).default('title'),
   order: z.enum(['asc', 'desc']).default('asc'),
-  q: z.string().optional()
+  q: z.string().nonempty().optional()
 })
 export type AnimeListQuerySchema = z.infer<typeof AnimeListQuerySchema>
 
