@@ -17,7 +17,7 @@ const RootComponent = () => {
       <header className='sticky top-0 z-50 bg-background/80 backdrop-blur-sm'>
         <div className='mx-auto flex h-14 max-w-screen-xl items-center gap-8 px-6'>
           <Link to='/' className='text-lg font-bold tracking-tight'>
-            Anime Tracker
+            Nagisa
           </Link>
           <nav className='flex items-center gap-6 text-sm'>
             <Link
@@ -62,7 +62,7 @@ const RootComponent = () => {
             })
             .replace(/\//g, '/')}
         </Link>
-        <p className='mt-0.5'>&copy; {new Date().getFullYear()} Anime Tracker</p>
+        <p className='mt-0.5'>&copy; {new Date().getFullYear()} Nagisa</p>
       </footer>
       <Toaster richColors position='top-right' />
       <TanStackRouterDevtools position='bottom-right' />

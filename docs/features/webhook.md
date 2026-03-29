@@ -1,6 +1,6 @@
 # Webhook Specification
 
-Nagisa sends per-episode status webhooks to [Anime Tracker](https://github.com/qtmleap/anime-tracker) as episodes progress through the download pipeline. This document is the authoritative reference for the webhook contract between Nagisa (sender) and Anime Tracker (receiver).
+Nagisa sends per-episode status webhooks to [Nagisa WebUI](https://github.com/qtmleap/anime-tracker) as episodes progress through the download pipeline. This document is the authoritative reference for the webhook contract between Nagisa (sender) and Nagisa WebUI (receiver).
 
 ## Overview
 
@@ -15,7 +15,7 @@ All three must be set to enable webhooks. If any is missing, webhooks are silent
 
 | Variable | Description |
 |----------|-------------|
-| `TRACKER_URL` | Anime Tracker base URL (e.g. `https://anime-tracker.example.com`) |
+| `TRACKER_URL` | Nagisa WebUI base URL (e.g. `https://anime-tracker.example.com`) |
 | `CF_ACCESS_CLIENT_ID` | Cloudflare Access service token Client ID |
 | `CF_ACCESS_CLIENT_SECRET` | Cloudflare Access service token Client Secret |
 
@@ -180,9 +180,9 @@ All `pending` webhooks are sent first (batch), then episodes are processed seque
 {"provider": "amazon", "content_id": "B0INVALID", "episode_id": null, "status": "failed", "error": {"status": "CONTENT_NOT_FOUND", "message": "No episodes found for B0INVALID"}}
 ```
 
-## Receiver Contract (Anime Tracker)
+## Receiver Contract (Nagisa WebUI)
 
-For Anime Tracker to correctly handle these webhooks:
+For Nagisa WebUI to correctly handle these webhooks:
 
 1. **Endpoint**: Implement `POST /api/webhooks/record-status` accepting the JSON body above.
 2. **Authentication**: Protect the endpoint with Cloudflare Access; verify the service token.
@@ -211,4 +211,4 @@ Both Amazon and Hulu pipelines use the same `EpisodeCallbacks` interface, ensuri
 
 - HTTP timeout: 10 seconds.
 - On send failure: logged at `WARNING` level, pipeline continues.
-- No retry logic. Anime Tracker should treat missing webhooks gracefully (e.g. poll or show stale status).
+- No retry logic. Nagisa WebUI should treat missing webhooks gracefully (e.g. poll or show stale status).
