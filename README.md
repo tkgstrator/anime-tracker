@@ -1,4 +1,4 @@
-# AnimeTracker — 録画管理アプリ
+# Nagisa WebUI — 録画管理アプリ
 
 Prime Video / Hulu の今期アニメを管理し、録画状況を追跡するアプリ。
 
