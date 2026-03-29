@@ -13,7 +13,8 @@ import { mkdirSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
 import { cleanTitle, AniListAdapter } from '../src/lib/metadata/anilist'
 
-const BATCH_SIZE = 50
+// AniList の query complexity 上限 (500) に収まるようバッチサイズを制限
+const BATCH_SIZE = 30
 const CACHE_DIR = '.cache'
 
 // --- Types ---
@@ -101,17 +102,17 @@ async function processProvider(provider: string, fixtureDir: string) {
 
   console.log(`  To search: ${toProcess.length}, Already cached: ${alreadyCached.length}, Skipped: ${entries.length - toProcess.length - alreadyCached.length}`)
 
-  // Batch AniList lookup
-  let found = 0
-  let notFound = 0
+  // Batch AniList lookup (50件ずつ1リクエストにまとめる)
+  const found = { count: 0 }
+  const notFound = { count: 0 }
 
-  for (let i = 0; i < toProcess.length; i += BATCH_SIZE) {
+  for (const i of Array.from({ length: Math.ceil(toProcess.length / BATCH_SIZE) }, (_, k) => k * BATCH_SIZE)) {
     const batch = toProcess.slice(i, i + BATCH_SIZE)
 
-    // Sequential within batch to respect rate limits
-    for (const entry of batch) {
-      try {
-        const result = await adapter.identify(entry.title)
+    try {
+      const results = await adapter.identifyBatch(batch.map((e) => e.title))
+      for (const [j, entry] of batch.entries()) {
+        const result = results[j]
         if (result) {
           cache[entry.contentId] = {
             id: result.aniListId!,
@@ -120,19 +121,52 @@ async function processProvider(provider: string, fixtureDir: string) {
             year: result.year,
             quarter: result.quarter
           }
-          found++
+          found.count++
         } else {
           cache[entry.contentId] = null
-          notFound++
+          notFound.count++
         }
-      } catch {
-        cache[entry.contentId] = null
-        notFound++
+      }
+    } catch (e) {
+      // 429 rate limit の場合はリトライ
+      const msg = e instanceof Error ? e.message : String(e)
+      if (msg.includes('429')) {
+        console.log(`\n  Rate limited, waiting 60s...`)
+        await new Promise((r) => setTimeout(r, 60_000))
+        try {
+          const results = await adapter.identifyBatch(batch.map((e) => e.title))
+          for (const [j, entry] of batch.entries()) {
+            const result = results[j]
+            if (result) {
+              cache[entry.contentId] = {
+                id: result.aniListId!,
+                nativeTitle: result.title,
+                status: result.status,
+                year: result.year,
+                quarter: result.quarter
+              }
+              found.count++
+            } else {
+              cache[entry.contentId] = null
+              notFound.count++
+            }
+          }
+        } catch {
+          console.log(`  Retry failed, skipping batch`)
+          for (const entry of batch) {
+            notFound.count++
+          }
+        }
+      } else {
+        console.log(`\n  Error: ${msg}`)
+        for (const entry of batch) {
+          notFound.count++
+        }
       }
     }
 
     const done = Math.min(i + BATCH_SIZE, toProcess.length)
-    progress(`[${provider}] ${done}/${toProcess.length} — found: ${found}, not found: ${notFound}`)
+    progress(`[${provider}] ${done}/${toProcess.length} — found: ${found.count}, not found: ${notFound.count}`)
 
     // Save cache periodically
     if (done % (BATCH_SIZE * 5) === 0 || done === toProcess.length) {
@@ -141,7 +175,7 @@ async function processProvider(provider: string, fixtureDir: string) {
   }
 
   if (toProcess.length > 0) console.log('')
-  console.log(`  AniList result: ${found} found, ${notFound} not found`)
+  console.log(`  AniList result: ${found.count} found, ${notFound.count} not found`)
   await saveCache(provider, cache)
 
   // Apply metadata to fixture files
@@ -197,11 +231,12 @@ async function processProvider(provider: string, fixtureDir: string) {
 
 // --- Run ---
 
-for (const dir of ['amazon', 'hulu']) {
+for (const dir of ['amazon', 'hulu', 'crunchyroll']) {
   mkdirSync(`${CACHE_DIR}/${dir}`, { recursive: true })
 }
 
 await processProvider('hulu', '__tests__/fixtures/hulu/titles')
 await processProvider('amazon', '__tests__/fixtures/amazon/episodes_refetched')
+await processProvider('crunchyroll', '__tests__/fixtures/crunchyroll/episodes_refetched')
 
 console.log('\nDone!')

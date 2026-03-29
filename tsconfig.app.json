@@ -7,7 +7,8 @@
     "src/schemas/nagisa.dto.ts",
     "src/schemas/recording.dto.ts",
     "src/schemas/message.dto.ts",
-    "src/lib/image.ts"
+    "src/lib/image.ts",
+    "src/lib/image-key.ts"
   ],
   "compilerOptions": {
     "composite": true,

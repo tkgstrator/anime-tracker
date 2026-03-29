@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
-import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
+import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import { getAppLogger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
@@ -38,6 +38,9 @@ function getProvider(name: string): Provider {
   return provider
 }
 
+/** Lambda 経由で TitleInfo を取得する関数。外部から注入する */
+export type FetchTitleInfoFn = (provider: string, contentId: string) => Promise<TitleInfo>
+
 /** ISO 8601 文字列を Date に変換し、過去なら null を返す */
 function parseFutureDate(dateStr: string | null | undefined): Date | null {
   if (!dateStr) return null
@@ -49,17 +52,24 @@ const syncLogger = getAppLogger('sync')
 const fetchLogger = getAppLogger('fetch')
 
 export class SyncService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly fetchTitleInfoFn?: FetchTitleInfoFn
+  ) {}
 
   /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
-    const provider = getProvider(message.provider)
     syncLogger.debug({
       action: 'update-start',
       provider: message.provider,
       contentId: message.contentId
     })
-    const detail = await provider.fetchTitleInfo(message.contentId)
+
+    // Lambda 経由で取得（画像の R2 アップロードも Lambda 側で実行される）
+    const detail = this.fetchTitleInfoFn
+      ? await this.fetchTitleInfoFn(message.provider, message.contentId)
+      : await getProvider(message.provider).fetchTitleInfo(message.contentId)
+
     syncLogger.debug({
       action: 'fetched-title-info',
       provider: message.provider,

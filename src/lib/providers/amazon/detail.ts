@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { parse as parseHtml } from 'node-html-parser'
 import { DetailPageJsonSchema, type PageData } from '../../../schemas/providers/amazon.dto'
 import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
@@ -225,14 +226,41 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
   const { maturityRating } = page
 
   if (entityType === 'movie') {
+    const episodes = await fetchAllEpisodes(contentId, page.episodePageTokens, maturityRating)
+    const benefitId = episodes[0]?.benefitId ?? null
     return {
       title,
       description,
       entityType,
       maturityRating,
       imageUrl: page.imageUrl,
-      benefitId: null,
-      seasons: []
+      benefitId,
+      seasons: [
+        {
+          seasonId: contentId,
+          displayName: '本編',
+          seasonNumber: 1,
+          imageUrl: episodes[0]?.imageUrl ?? page.imageUrl,
+          episodes:
+            episodes.length > 0
+              ? episodes
+              : [
+                  {
+                    episodeNumber: 1,
+                    episodeId: contentId,
+                    title,
+                    description,
+                    releaseDate: dayjs().toISOString(),
+                    duration: 0,
+                    maturityRating,
+                    imageUrl: page.imageUrl,
+                    hasSubtitles: false,
+                    hasDub: false,
+                    benefitId: null
+                  }
+                ]
+        }
+      ]
     }
   }
 

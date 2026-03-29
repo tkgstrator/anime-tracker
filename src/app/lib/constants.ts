@@ -1,12 +1,14 @@
 export const providerLabel: Record<string, string> = {
   amazon: 'Prime Video',
   hulu: 'Hulu',
+  crunchyroll: 'Crunchyroll',
   netflix: 'Netflix'
 }
 
 export const providerColor: Record<string, string> = {
   amazon: 'bg-sky-500/30 text-sky-300',
   hulu: 'bg-emerald-500/30 text-emerald-300',
+  crunchyroll: 'bg-orange-500/30 text-orange-300',
   netflix: 'bg-red-500/30 text-red-300'
 }
 

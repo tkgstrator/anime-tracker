@@ -100,6 +100,7 @@ function AnimeListPage() {
               { value: undefined, label: 'すべて' },
               { value: 'amazon', label: 'Prime Video' },
               { value: 'hulu', label: 'Hulu' },
+              { value: 'crunchyroll', label: 'Crunchyroll' },
               { value: 'netflix', label: 'Netflix' }
             ]}
             onSelect={setFilter('provider')}

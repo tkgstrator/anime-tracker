@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { groupBy } from 'lodash-es'
 import { useEffect, useState } from 'react'
 
 type CommitEntry = { hash: string; date: string; message: string }
@@ -14,7 +13,11 @@ const ChangelogPage = () => {
       .catch(() => {})
   }, [])
 
-  const grouped = groupBy(commits, (c) => c.date)
+  const grouped = commits.reduce<Record<string, CommitEntry[]>>((acc, c) => {
+    if (!acc[c.date]) acc[c.date] = []
+    acc[c.date].push(c)
+    return acc
+  }, {})
 
   return (
     <div className='space-y-6'>

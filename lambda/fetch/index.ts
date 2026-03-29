@@ -3,22 +3,93 @@
  *
  * AWS Lambda (ap-northeast-1) で実行し、日本 IP からの fetch を保証する。
  * fetch → 整形 → レスポンスとして返す。KV/DB は触らない。
+ * 画像は取得時に自動的に R2 にアップロードする。
  *
  * パスベースルーティング:
  *   POST /expiring     — 配信終了間近タイトル取得
  *   POST /title_list   — 新着エピソード / 最近更新タイトル取得
+ *   POST /title_info   — タイトル詳細取得 + 画像 R2 アップロード
  */
+import { AwsClient } from 'aws4fetch'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { imageKey } from '../../src/lib/image-key'
 import { AmazonProvider } from '../../src/lib/providers/amazon'
-import { HuluProvider } from '../../src/lib/providers/hulu'
 import type { Provider } from '../../src/lib/providers/base'
+import { CrunchyrollProvider } from '../../src/lib/providers/crunchyroll'
+import { HuluProvider } from '../../src/lib/providers/hulu'
 
 dayjs.extend(utc)
 
 function getProvider(name: string): Provider {
   if (name === 'hulu') return new HuluProvider()
+  if (name === 'crunchyroll') return new CrunchyrollProvider()
   return new AmazonProvider()
+}
+
+// ---- R2 S3 互換 API クライアント ----
+
+function createR2Client() {
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
+  const accountId = process.env.R2_ACCOUNT_ID
+  if (!accessKeyId || !secretAccessKey || !accountId) {
+    return null
+  }
+  const aws = new AwsClient({ accessKeyId, secretAccessKey })
+  const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
+  return { aws, endpoint }
+}
+
+async function uploadToR2(imageUrl: string): Promise<boolean> {
+  const r2 = createR2Client()
+  if (!r2) {
+    console.warn('R2 credentials not configured, skipping image upload')
+    return false
+  }
+
+  const key = imageKey(imageUrl)
+  const bucket = process.env.R2_BUCKET_NAME ?? 'nagisa-images'
+  const r2Url = `${r2.endpoint}/${bucket}/${key}`
+
+  // HEAD で既に存在するか確認
+  const headRes = await r2.aws.fetch(r2Url, { method: 'HEAD' })
+  if (headRes.ok) return true
+
+  // 画像を取得
+  const res = await fetch(imageUrl)
+  if (!res.ok) {
+    console.warn(`Failed to fetch image: ${res.status} ${imageUrl}`)
+    return false
+  }
+
+  const body = await res.arrayBuffer()
+  const contentType = res.headers.get('content-type') ?? 'image/jpeg'
+
+  // R2 に PUT
+  const putRes = await r2.aws.fetch(r2Url, {
+    method: 'PUT',
+    headers: { 'Content-Type': contentType },
+    body
+  })
+
+  if (!putRes.ok) {
+    console.warn(`Failed to upload to R2: ${putRes.status} ${key}`)
+    return false
+  }
+
+  console.log(`Uploaded: ${key}`)
+  return true
+}
+
+async function uploadImages(imageUrls: string[]): Promise<number> {
+  const urls = imageUrls.filter(Boolean)
+  if (urls.length === 0) return 0
+
+  const results = await Promise.allSettled(urls.map((url) => uploadToR2(url)))
+  const uploaded = results.filter((r) => r.status === 'fulfilled' && r.value).length
+  console.log(`Uploaded ${uploaded}/${urls.length} images`)
+  return uploaded
 }
 
 // ---- expiring ----
@@ -57,6 +128,10 @@ async function fetchTitleList(providerName: string, category: string) {
   const provider = getProvider(providerName)
   const titles = await provider.fetchTitleList({ category })
 
+  // タイトル画像を R2 にアップロード
+  const imageUrls = titles.map((t) => t.imageUrl).filter((url): url is string => url !== null)
+  await uploadImages(imageUrls)
+
   const entries = titles.map((t) => ({
     contentId: t.contentId,
     title: t.title,
@@ -73,27 +148,59 @@ async function fetchTitleList(providerName: string, category: string) {
   return { statusCode: 200, body: JSON.stringify({ fetchedAt: dayjs().toISOString(), entries }) }
 }
 
+// ---- title_info ----
+
+async function fetchTitleInfo(providerName: string, contentId: string) {
+  const provider = getProvider(providerName)
+  const detail = await provider.fetchTitleInfo(contentId)
+
+  // 全画像を R2 にアップロード
+  const imageUrls: string[] = []
+  if (detail.imageUrl) imageUrls.push(detail.imageUrl)
+  for (const season of detail.seasons) {
+    if (season.imageUrl) imageUrls.push(season.imageUrl)
+    for (const ep of season.episodes) {
+      if (ep.imageUrl) imageUrls.push(ep.imageUrl)
+    }
+  }
+  await uploadImages(imageUrls)
+
+  console.log(
+    `Fetched title_info for ${providerName}/${contentId}: ${detail.seasons.length} seasons, ${imageUrls.length} images`
+  )
+  return { statusCode: 200, body: JSON.stringify(detail) }
+}
+
 // ---- handler ----
 
 // biome-ignore lint: Lambda event type varies by invocation method
 export async function handler(event: any): Promise<{ statusCode: number; body: string }> {
-  // Function URL: event.rawPath でルーティング、event.body にJSONが入る
-  // 直接呼び出し: event.path と event で直接アクセス
   const path = event.rawPath ?? event.path ?? '/'
   const body = event.body ? JSON.parse(event.body) : event
 
-  const { provider } = body
-  if (!provider) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-  }
-
-  console.log(`${path} provider=${provider}`)
+  console.log(`${path}`)
 
   switch (path) {
-    case '/expiring':
+    case '/expiring': {
+      const { provider } = body
+      if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
+      console.log(`provider=${provider}`)
       return fetchExpiring(provider)
-    case '/title_list':
-      return fetchTitleList(provider, body.category)
+    }
+    case '/title_list': {
+      const { provider, category } = body
+      if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
+      console.log(`provider=${provider}`)
+      return fetchTitleList(provider, category)
+    }
+    case '/title_info': {
+      const { provider, contentId } = body
+      if (!provider || !contentId) {
+        return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider or contentId' }) }
+      }
+      console.log(`provider=${provider} contentId=${contentId}`)
+      return fetchTitleInfo(provider, contentId)
+    }
     default:
       return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
   }

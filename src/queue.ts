@@ -19,8 +19,8 @@ interface Env {
 
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
   const prisma = createPrismaClient(env.DB)
-  const service = new SyncService(prisma)
   const lambda = createLambdaClient(env)
+  const service = new SyncService(prisma, (provider, contentId) => lambda.fetchTitleInfo({ provider, contentId }))
 
   logger.info({ action: 'batch-start', batchSize: batch.messages.length, queue: batch.queue })
 

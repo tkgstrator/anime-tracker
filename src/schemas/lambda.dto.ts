@@ -47,3 +47,8 @@ export const TitleListResponseSchema = z.object({
   entries: z.array(TitleListEntrySchema)
 })
 export type TitleListResponse = z.infer<typeof TitleListResponseSchema>
+
+export const FetchTitleInfoRequestSchema = z.object({
+  provider: z.string(),
+  contentId: z.string()
+})

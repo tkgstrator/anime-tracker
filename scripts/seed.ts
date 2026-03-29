@@ -40,7 +40,7 @@ interface Title {
 }
 
 function esc(value: string): string {
-  return value.replace(/'/g, "''")
+  return value.replace(/['\u2018\u2019]/g, "''").replace(/[\n\r]/g, ' ')
 }
 
 function sqlVal(value: unknown): string {
@@ -133,7 +133,7 @@ function generateSql(allData: { provider: string; titles: Title[] }[]): string[]
 
 const LINES_PER_FILE = 10000
 
-const allData = await Promise.all([loadTitles('amazon'), loadTitles('hulu')])
+const allData = await Promise.all([loadTitles('amazon'), loadTitles('hulu'), loadTitles('crunchyroll')])
 
 const lines = generateSql(allData)
 const outputDir = 'scripts/seed'

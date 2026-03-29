@@ -25,13 +25,9 @@ describe('fetchTitleInfo', () => {
       const detail = TitleInfoSchema.parse(await provider.fetchTitleInfo(id))
 
       expect(detail.title).toBeTruthy()
-      if (detail.entityType === 'movie') {
-        expect(detail.seasons).toEqual([])
-      } else {
-        expect(detail.seasons.length).toBeGreaterThan(0)
-        for (const season of detail.seasons) {
-          expect(season.episodes.length).toBeGreaterThan(0)
-        }
+      expect(detail.seasons.length).toBeGreaterThan(0)
+      for (const season of detail.seasons) {
+        expect(season.episodes.length).toBeGreaterThan(0)
       }
     }, 60_000)
   }
