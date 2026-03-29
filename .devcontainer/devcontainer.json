@@ -1,5 +1,5 @@
 {
-  "name": "AnimeTracker",
+  "name": "Nagisa WebUI",
   "dockerComposeFile": ["compose.yaml"],
   "service": "app",
   "workspaceFolder": "/home/vscode/app",
@@ -56,6 +56,7 @@
         "bierner.markdown-preview-github-styles",
         "biomejs.biome",
         "eamodio.gitlens",
+        "ms-playwright.playwright",
         "ms-vscode.vscode-typescript-next",
         "pHofer94.vscode-taskviewexplorer",
         "redhat.vscode-yaml",

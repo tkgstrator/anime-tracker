@@ -319,7 +319,7 @@ curl -X POST http://localhost:5000/api/queues \
 
 ## `GET /api/status`
 
-サーバーバージョン、BullMQ キューの統計、実行中ジョブの詳細、Redis / システムリソース情報を返します。Anime Tracker のサーバーステータスダイアログで表示されます。
+サーバーバージョン、BullMQ キューの統計、実行中ジョブの詳細、Redis / システムリソース情報を返します。Nagisa WebUI のサーバーステータスダイアログで表示されます。
 
 ### リクエスト例
 
