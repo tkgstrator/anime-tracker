@@ -4,7 +4,7 @@ export const NagisaActiveJobSchema = z.object({
   job_id: z.string(),
   provider: z.string(),
   content_id: z.string(),
-  title: z.string().optional(),
+  title: z.string().nonempty().optional(),
   seasons: z
     .array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() }))
     .nullable(),
