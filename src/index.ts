@@ -16,6 +16,7 @@ import { MessageSchema } from './schemas/message.dto'
 
 type Bindings = {
   DB: D1Database
+  IMAGES: R2Bucket
   TMDB_API_KEY: string
   SYNC_QUEUE: Queue
   KV: KVNamespace
@@ -42,14 +43,14 @@ app.post('/api/queues', async (c) => {
   const body = MessageSchema.safeParse(await c.req.json())
   if (!body.success) return c.json({ error: body.error.flatten() }, 400)
   const prisma = createPrismaClient(c.env.DB)
-  const service = new SyncService(prisma)
+  const lambda = createLambdaClient(c.env)
+  const service = new SyncService(prisma, (provider, contentId) => lambda.fetchTitleInfo({ provider, contentId }))
   startCapture()
   try {
     if (body.data.type === 'fetch') {
       const { provider, category } = body.data.message
 
       // Lambda (日本IP) で fetch し、結果を直接渡す
-      const lambda = createLambdaClient(c.env)
       const result =
         category === 'expiring'
           ? await lambda.fetchExpiring({ provider })

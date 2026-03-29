@@ -247,6 +247,13 @@ __tests__/fixtures/*/latest/
 # Temporary files
 tmp/
 
+# Image upload scripts
+scripts/.webp-images/
+scripts/.tmp-images/
+scripts/image-list.tsv
+scripts/image-download-done.txt
+scripts/image-upload-done.txt
+
 # Seed SQL
 scripts/*.sql
 scripts/seed/

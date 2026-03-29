@@ -255,6 +255,12 @@ anime.openapi(
     }
     const seasons = [...seasonMap.entries()].map(([season_number, episodes]) => ({ season_number, episodes }))
 
+    const requestBody = {
+      provider: row.provider,
+      items: [{ content_id: row.contentId, seasons }]
+    }
+    logger.info({ action: 'record-request', id, body: requestBody })
+
     const res = await fetch(`${c.env.BACKEND_URL}/api/queues`, {
       method: 'POST',
       headers: {
@@ -262,10 +268,7 @@ anime.openapi(
         'CF-Access-Client-Id': c.env.CF_ACCESS_CLIENT_ID,
         'CF-Access-Client-Secret': c.env.CF_ACCESS_CLIENT_SECRET
       },
-      body: JSON.stringify({
-        provider: row.provider,
-        items: [{ content_id: row.contentId, seasons }]
-      })
+      body: JSON.stringify(requestBody)
     })
 
     if (!res.ok) {

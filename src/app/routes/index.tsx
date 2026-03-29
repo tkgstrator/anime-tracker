@@ -66,6 +66,7 @@ function HomePage() {
   const providerLabels: Record<string, string> = {
     amazon: 'Prime Video',
     hulu: 'Hulu',
+    crunchyroll: 'Crunchyroll',
     netflix: 'Netflix'
   }
 

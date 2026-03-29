@@ -143,11 +143,11 @@ async function processFile(provider: string, inputPath: string, outputPath: stri
 }
 
 import { mkdirSync } from 'node:fs'
-for (const dir of ['amazon', 'hulu']) {
+for (const dir of ['amazon', 'hulu', 'crunchyroll']) {
   mkdirSync(`${CACHE_DIR}/${dir}`, { recursive: true })
 }
 
-const providers = ['amazon', 'hulu'] as const
+const providers = ['amazon', 'hulu', 'crunchyroll'] as const
 for (const provider of providers) {
   await processFile(
     provider,

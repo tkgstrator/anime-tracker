@@ -34,7 +34,6 @@ export function EpisodeGrid({ seasons, provider }: { seasons: Season[]; provider
                   <ProxyImage
                     src={episode.imageUrl}
                     alt={episode.title}
-                    w={270}
                     className='hidden aspect-video w-full rounded-t-lg object-cover sm:block'
                   />
                   <div className='flex items-center gap-2 sm:block sm:px-3 sm:py-2'>

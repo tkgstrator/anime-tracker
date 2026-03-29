@@ -57,7 +57,6 @@ function RecordingsPage() {
                   <ProxyImage
                     src={item.imageUrl}
                     alt={item.title}
-                    w={112}
                     className='h-16 w-28 shrink-0 rounded object-cover'
                   />
                 )}
