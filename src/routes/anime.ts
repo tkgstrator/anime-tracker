@@ -40,8 +40,38 @@ anime.openapi(
   }),
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
-    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, aniListId, sort, order, q } =
-      c.req.valid('query')
+    const {
+      page,
+      limit,
+      provider,
+      year,
+      quarter,
+      status,
+      scheduled,
+      recorded,
+      badge,
+      aniListId,
+      sort,
+      order,
+      q,
+      exclusive
+    } = c.req.valid('query')
+
+    // 独占配信フィルター: anilistId が1つのプロバイダーにしか存在しないものを抽出
+    let exclusiveAniListIds: number[] | undefined
+    if (exclusive != null) {
+      const providersByAniListId = await prisma.anime.findMany({
+        where: { isIdentified: true },
+        select: { aniListId: true, provider: true },
+        distinct: ['aniListId', 'provider']
+      })
+      const providerCountMap = new Map<number, number>()
+      for (const row of providersByAniListId) {
+        providerCountMap.set(row.aniListId, (providerCountMap.get(row.aniListId) ?? 0) + 1)
+      }
+      exclusiveAniListIds = [...providerCountMap.entries()].filter(([, count]) => count === 1).map(([id]) => id)
+    }
+
     const where = {
       isIdentified: true,
       ...(provider ? { provider } : {}),
@@ -52,7 +82,10 @@ anime.openapi(
       ...(recorded != null ? { recorded } : {}),
       ...(q ? { title: { contains: q } } : {}),
       ...(badge ? { badge } : {}),
-      ...(aniListId ? { aniListId } : {})
+      ...(aniListId ? { aniListId } : {}),
+      ...(exclusive != null && exclusiveAniListIds
+        ? { aniListId: exclusive ? { in: exclusiveAniListIds } : { notIn: exclusiveAniListIds } }
+        : {})
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
     const [data, total] = await Promise.all([

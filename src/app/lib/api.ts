@@ -22,7 +22,8 @@ const api = new Zodios('/api', [
       { name: 'recorded', type: 'Query', schema: z.boolean().optional() },
       { name: 'sort', type: 'Query', schema: z.enum(['title', 'year', 'updatedAt']).optional() },
       { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() },
-      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() }
+      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() },
+      { name: 'exclusive', type: 'Query', schema: z.boolean().optional() }
     ],
     response: PaginatedAnimeSchema
   },
