@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - node_modules:/home/vscode/app/node_modules
+      - cache:/home/vscode/app/.cache
       - ../:/home/vscode/app:cached
     environment:
       NODE_OPTIONS: "--no-deprecation"
@@ -13,4 +14,6 @@ services:
 
 volumes:
   node_modules:
+    driver: local
+  cache:
     driver: local
