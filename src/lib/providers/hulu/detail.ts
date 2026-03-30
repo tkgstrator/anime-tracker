@@ -89,7 +89,6 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
     seasonId: `hulu-${slug}-s${i + 1}`,
     displayName: seasonName,
     seasonNumber: i + 1,
-    imageUrl: eps[0]?.imageUrl,
     episodes: eps.map((episode, i) => mapToEpisode(episode, i))
   }))
 }

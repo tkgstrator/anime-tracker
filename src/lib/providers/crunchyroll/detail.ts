@@ -102,21 +102,12 @@ export async function fetchCrunchyrollTitleDetail(seriesId: string): Promise<Tit
   // 各シーズンのエピソードを並列取得
   const seasonEpisodes = await Promise.all(jaSeasons.map((s) => fetchEpisodes(s.id)))
 
-  const seasons: Season[] = jaSeasons.map((s, i) => {
-    const episodes = seasonEpisodes[i]
-    const imageUrl = s.images ? getBestImageUrl(s.images) : null
-    return {
-      seasonId: s.id,
-      displayName: s.title,
-      seasonNumber: s.season_number || i + 1,
-      imageUrl:
-        imageUrl ??
-        (episodes[0]?.images ? getBestThumbnailUrl(episodes[0].images) : null) ??
-        getBestImageUrl(seriesData.images) ??
-        'https://www.crunchyroll.com/build/assets/img/default-poster.png',
-      episodes: episodes.map((ep, j) => mapEpisode(ep, j))
-    }
-  })
+  const seasons: Season[] = jaSeasons.map((s, i) => ({
+    seasonId: s.id,
+    displayName: s.title,
+    seasonNumber: s.season_number || i + 1,
+    episodes: seasonEpisodes[i].map((ep, j) => mapEpisode(ep, j))
+  }))
 
   return {
     title: seriesData.title,

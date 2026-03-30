@@ -3,7 +3,7 @@ import { BadgeType } from './providers/common.dto'
 
 // ---- リクエスト ----
 
-export const ProviderSchema = z.enum(['amazon', 'hulu'])
+export const ProviderSchema = z.enum(['amazon', 'hulu', 'crunchyroll'])
 
 export const FetchExpiringRequestSchema = z.object({
   provider: ProviderSchema

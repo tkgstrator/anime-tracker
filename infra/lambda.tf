@@ -102,6 +102,19 @@ output "lambda_invoker_secret_access_key" {
 }
 
 # ============================================================
+# Bun ランタイム Layer (Crunchyroll の TLS fingerprint 対策)
+# ============================================================
+
+resource "aws_lambda_layer_version" "bun_runtime" {
+  provider            = aws.us
+  layer_name          = "bun-runtime"
+  filename            = "${path.module}/../lambda/layers/bun-runtime.zip"
+  source_code_hash    = filebase64sha256("${path.module}/../lambda/layers/bun-runtime.zip")
+  compatible_runtimes = ["provided.al2023"]
+  compatible_architectures = ["arm64"]
+}
+
+# ============================================================
 # US リージョン Lambda (Crunchyroll 用)
 # ============================================================
 
@@ -135,10 +148,12 @@ resource "aws_lambda_function" "fetch_us" {
   function_name = "anime-tracker-fetch-us"
   role          = aws_iam_role.lambda_exec_us.arn
   handler       = "index.handler"
-  runtime       = "nodejs22.x"
+  runtime       = "provided.al2023"
   architectures = ["arm64"]
   memory_size   = 256
   timeout       = 60
+
+  layers = [aws_lambda_layer_version.bun_runtime.arn]
 
   filename         = "${path.module}/../lambda/fetch/dist/function.zip"
   source_code_hash = filebase64sha256("${path.module}/../lambda/fetch/dist/function.zip")

@@ -1,5 +1,5 @@
 import { createPrismaClient } from './lib/db'
-import { createLambdaClient } from './lib/lambda'
+import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
 import { SyncService } from './lib/sync'
 
@@ -15,12 +15,13 @@ interface Env {
   AWS_ACCESS_KEY_ID: string
   AWS_SECRET_ACCESS_KEY: string
   LAMBDA_FUNCTION_URL: string
+  LAMBDA_FUNCTION_URL_US: string
 }
 
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
   const prisma = createPrismaClient(env.DB)
-  const lambda = createLambdaClient(env)
-  const service = new SyncService(prisma, (provider, contentId) => lambda.fetchTitleInfo({ provider, contentId }))
+  const lambda = createFetchClient(env)
+  const service = new SyncService(prisma, lambda)
 
   logger.info({ action: 'batch-start', batchSize: batch.messages.length, queue: batch.queue })
 

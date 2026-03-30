@@ -1,0 +1,161 @@
+{
+  "title": "死亡遊戯で飯を食う。",
+  "description": "これは、とあるいかれた世界の話。少女《プレイヤー》たちが挑むのは、死が隣り合わせのゲーム。生還すれば賞金を得るが、万全を尽くしても命を落とすことがある。そんな世界で、生きていく。この世にはそういう人間たちが確かにいる。プレイヤーネーム･幽鬼《ユウキ》。職業･殺人ゲームのプロフェッショナル。彼女は今日も、死亡遊戯で飯を食う。",
+  "entityType": "tv",
+  "maturityRating": null,
+  "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/050f923d-92d1-4a85-80b1-d6720ef486ed.png",
+  "benefitId": "hulu",
+  "seasons": [
+    {
+      "seasonId": "hulu-shiboyugi-playing-death-games-to-put-food-on-the-table-s1",
+      "displayName": "シーズン1",
+      "seasonNumber": 1,
+      "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/e86a8e3f-bf18-41dd-ab69-0558fcd465b2.png",
+      "episodes": [
+        {
+          "episodeNumber": 1,
+          "episodeId": "100249763",
+          "title": "All You Need Is ----",
+          "description": "窓の無い洋館、クラシカルなメイド服。知らないベッドの上で幽鬼は目を覚ます。先に集っていたのは五人の少女たち。まだ自らが置かれた状況を飲み込めない彼女たちに、幽鬼は口を開く。「みんなは、初めてなのかな?」命を賭けた、殺人ゲームの舞台の幕が上がる―― (28：GHOST HOUSE)",
+          "releaseDate": "2026-01-07T14:00:00.000Z",
+          "duration": 2860,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/e86a8e3f-bf18-41dd-ab69-0558fcd465b2.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 2,
+          "episodeId": "100250570",
+          "title": "Chains of ----",
+          "description": "月影の差し込む廃ビル、真っ白なワンピース。冷たいコンクリートの上で幽鬼は目を覚ます。参加者である四人の少女たちは、八回目だというプレイヤー･御城を中心にまとまろうとしていた。「もしかして、みなさん知り合い?」どこか居心地の悪い幽鬼をよそに、廃ビル探索が始まる――(10：SCRAP BUILDING)",
+          "releaseDate": "2026-01-14T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/c6220c71-e801-4fc8-96a8-e89540a5a78e.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 3,
+          "episodeId": "100251150",
+          "title": "In the Name of ----",
+          "description": "負傷した言葉を切り捨てた御城に対し、幽鬼は独り危険を顧みず彼女の救出へと向かう。生存だけを考えれば理解しがたい行動に疑問を抱く言葉。幽鬼は彼女へ一言で理由を告げる。「点数稼ぎかな」一方、別行動となった御城たちは、廃ビルに潜む新たな脅威に直面する―― (10：SCRAP BUILDING)",
+          "releaseDate": "2026-01-21T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/682f8414-2198-4073-9e45-b4b5713d70ae.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 4,
+          "episodeId": "100251945",
+          "title": "Bad ----",
+          "description": "獣に右腕を食われた御城の前に現れた幽鬼は、自らの非を認めて謝罪をすれば助けてやると彼女に告げる。だが、葛藤する御城からは、意外な言葉が口を衝いて出る。「ふざけないでくださいまし!」迫り来る獣を前に、彼女たちは生存できるのか。そして生存者たちを待ち受ける〈最後の試練〉とは―― (10：SCRAP BUILDING)",
+          "releaseDate": "2026-01-28T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/2a06b135-c3c5-4472-a7ab-a01b9fc028cd.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 5,
+          "episodeId": "100252511",
+          "title": "---- Is All You Need",
+          "description": "“三十回目近くのゲームで、生還率は急激に低下する”。いよいよ次回〈三十の壁〉へ挑む幽鬼だが、直近のゲームではどうにも精彩を欠き、思い悩んでいた。そんな折、彼女に一本の電話が入る。「金子と申します」 節目を目前に、幽鬼は命懸けのゲームに参加し続ける自らを今一度見つめる――",
+          "releaseDate": "2026-02-04T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/4b424a33-84f3-41a4-b102-70f97e0178a6.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 6,
+          "episodeId": "100253235",
+          "title": "Who's ----ing You",
+          "description": "湯気の立ち込める巨大浴場、身を包むのは一枚のタオル。他プレイヤーから随分と遅れて幽鬼は目を覚ます。脱出の鍵を巡るゲームは既に白熱し、盤面は膠着し始めていた。「ここに残ってるのは、〈出遅れ組〉なんだね」この窮地を打開し、幽鬼は〈三十の壁〉を超え、生還できるのか── (30：GOLDEN BATH)",
+          "releaseDate": "2026-02-11T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/afb3c2ef-7bbc-4a14-ae0d-1cbdf797840f.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 7,
+          "episodeId": "100253610",
+          "title": "Good ----",
+          "description": "御城が仕掛けた作戦が、弛緩していた幽鬼たちを強襲する。自戒する幽鬼だが、仲間たちは壊滅する。捕らえられた幽鬼は、遂に御城の面前へと引き据えられる。「……決着は、もっと劇的なものでなければならないはずだ」“四十回目”の御城と“三十回目”の幽鬼。彼女と彼女は再会する―― (30：GOLDEN BATH)",
+          "releaseDate": "2026-02-18T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/f1b1f234-42df-4d06-adf8-1171060a3d22.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 8,
+          "episodeId": "100254505",
+          "title": "---- It All",
+          "description": "森を想起させる箱庭、うさぎ耳が特徴的なバニースーツ。人工的な音声で幽鬼は目を覚ます。幽鬼が属する〈うさぎ〉チームは、師匠と仰ぐ白士を筆頭に常連たちがゲーム開始を待つ。「うさぎはな、切り株に殺されるんだ」一方、対峙する〈切り株〉チームではプレイヤー･萌黄が目を覚ますが―― (9：CANDLE WOODS)",
+          "releaseDate": "2026-02-25T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/1719a3b3-ac83-4118-bde7-74ac61e0bb00.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 9,
+          "episodeId": "100255150",
+          "title": "Can't Help Falling In ----",
+          "description": "初心者だらけの〈切り株〉チームを率いようとする萌黄。しかし常連の多い〈うさぎ〉たちを前に、仲間は次々と倒れていく。「チュートリアルは終わりだ。あとは自分たちで考えなさい」己の未熟さにもがく萌黄。そんな彼女にも幽鬼のように、師匠と仰ぐ人物がいた―― (9：CANDLE WOODS)",
+          "releaseDate": "2026-03-04T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/6e8be3fc-1bf7-4183-be86-8bab1d90fe81.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 10,
+          "episodeId": "100256090",
+          "title": "Goin' ----",
+          "description": "“〈うさぎ〉チームに殺人鬼が紛れ込んでいる。”白士の言葉とともに拠点は煙幕に包まれ、迫る殺人鬼を前に〈うさぎ〉たちは離散する。「一番に考えるべきこと、それは……私の生存だ」拠点を脱出した幽鬼は、庭園で〈切り株〉チームの萌黄と鉢合わせる。共に師匠を持つ、弟子同士の戦いが幕を開ける――(9：CANDLE WOODS)",
+          "releaseDate": "2026-03-11T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/f6199791-2822-4b3e-8d83-5547f14d49bf.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 11,
+          "episodeId": "100256669",
+          "title": "-- v -",
+          "description": "本気で挑んできた萌黄を、本気になれぬままセンスに任せて打倒してしまった幽鬼。その事実に彼女の心は曇る。「お前はなぜ〈ゲーム〉をするんだ」かつてその問いを投げかけてきた白士は、伽羅の手で無残な姿となっていた。白士の言葉を脳裏で反芻しながら、幽鬼は殺人鬼と対峙する―― (9：CANDLE WOODS)",
+          "releaseDate": "2026-03-18T14:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/8d35ce40-0060-4478-b5a0-d47af84c2f80.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        }
+      ]
+    }
+  ]
+}
