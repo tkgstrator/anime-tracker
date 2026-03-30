@@ -38,7 +38,6 @@ export interface MergedEpisode {
 export interface MergedSeason {
   seasonNumber: number
   displayName: string
-  imageUrl: string | null
   episodes: MergedEpisode[]
 }
 
@@ -52,7 +51,6 @@ export interface MergedTitle {
 export interface TmdbSeasonData {
   seasonNumber: number
   displayName: string
-  imageUrl: string | null
   episodes: {
     episodeNumber: number
     title: string
@@ -167,7 +165,6 @@ export function mergeTitle(tmdb: TmdbTitleData, providers: ProviderInput[]): Mer
     return {
       seasonNumber: tmdbSeason.seasonNumber,
       displayName: tmdbSeason.displayName,
-      imageUrl: tmdbSeason.imageUrl,
       episodes
     }
   })
