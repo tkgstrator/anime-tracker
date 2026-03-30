@@ -40,7 +40,6 @@ describe('BrowseResponseSchema', () => {
     for (const item of parsed.data) {
       const title = browseItemToTitle(item)
       TitleSchema.parse(title)
-      expect(title.benefitId).toBe('crunchyroll')
     }
   }, 30_000)
 })

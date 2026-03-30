@@ -1,10 +1,16 @@
 import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { parse as parseHtml } from 'node-html-parser'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 import { z } from 'zod'
 import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
-import { type BadgeType, EntityType, type Episode, TitleSchema } from './common.dto'
+import { type BadgeType, EntityType, EpisodeSchema, TitleSchema } from './common.dto'
 
-/** Amazon 画像 URL からディレクティブ付き装飾を除去するスキーマ */
+/** Amazon 画像 URL からディレクティブ付き装飾を除去する */
 const AmazonImageUrlSchema = z.string().transform((url) => {
   const m = url.match(/\/([0-9a-f]{64})[._]/)
   if (!m) return url
@@ -12,25 +18,25 @@ const AmazonImageUrlSchema = z.string().transform((url) => {
   return `https://m.media-amazon.com/images/S/pv-target-images/${m[1]}.${ext}`
 })
 
-/** ブラウズ URL 生成時の検索クエリ。`buildAmazonBrowseUrl` で使用。 */
+/** Amazon の entityType 文字列を共通の EntityType にマッピングする */
+const AmazonEntityType = z
+  .enum(['TV Show', 'Movie', 'Educational', 'Short Film', 'Unknown'])
+  .transform((v) => (v === 'Movie' ? EntityType.enum.movie : EntityType.enum.tv))
+
+// --- Browse schemas ---
+
 export const BrowseQuerySchema = z.object({
   keyword: z.string().default(''),
   searchAlias: z.string().default('instant-video')
 })
 export type BrowseQuery = z.infer<typeof BrowseQuerySchema>
 
-/** ブラウズページの entity.entityType に含まれるコンテンツ種別。 */
-const EntityTypeEnum = z
-  .enum(['TV Show', 'Movie', 'Educational', 'Short Film', 'Unknown'])
-  .transform((v) => (v === 'Movie' ? EntityType.enum.movie : EntityType.enum.tv))
-
-/** ブラウズページ `<script type="application/json">` 内の個別エンティティ。transform で {@link TitleSchema} に変換される。 */
 export const BrowseEntitySchema = z
   .object({
     titleID: z.string().nonempty(),
     displayTitle: z.string().nonempty(),
     synopsis: z.string().nonempty(),
-    entityType: EntityTypeEnum,
+    entityType: AmazonEntityType,
     images: z.object({
       cover: z.object({ url: z.url().pipe(AmazonImageUrlSchema) })
     }),
@@ -58,21 +64,17 @@ export const BrowseEntitySchema = z
       entityType: v.entityType,
       imageUrl: v.images.cover.url,
       maturityRating: null,
-      benefitId: null,
       badge,
       expiring: parsed ? { remainingHours: parsed.remainingHours, season: parsed.season } : undefined
     })
   })
 
-/** コンテナ配列からエンティティを抽出する共通 transform */
 const ContainersSchema = z
   .array(z.object({ entities: z.array(BrowseEntitySchema).nonempty() }))
   .nonempty()
   .transform((containers) => containers.flatMap((c) => c.entities))
 
-/** ブラウズページ `<script type="text/template">` の全体構造。transform で Title[] を返す。 */
 export const BrowseHTMLSchema = z.union([
-  // 新形式: props.body[].props.browse.containers
   z
     .object({
       props: z.object({
@@ -80,7 +82,6 @@ export const BrowseHTMLSchema = z.union([
       })
     })
     .transform((v) => v.props.body[0].props.browse.containers),
-  // 旧形式: init.preparations.body.containers
   z
     .object({
       init: z.object({
@@ -106,24 +107,28 @@ export const PaginateResponseSchema = z.object({
     })
     .optional()
 })
-
 export type PaginateResponse = z.infer<typeof PaginateResponseSchema>
 
 // --- getDetailWidgets API schemas ---
 
-/** 「2024年1月5日」形式の日本語日付文字列を ISO 8601 (JST) に変換する */
+/** 「2024年1月5日」形式の日本語日付文字列を ISO 8601 UTC に変換する。元データは JST。 */
 const JapaneseDateSchema = z
   .string()
   .default('')
   .transform((dateStr) => {
     const m = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/)
     if (!m) return ''
-    const [, year, month, day] = m
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00+09:00`
+    return dayjs.tz(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`, 'Asia/Tokyo').toISOString()
   })
 
-/** getDetailWidgets API のエピソード詳細 */
-const RawEpisodeDetailSchema = z.object({
+/** エピソードの action オブジェクトから benefitId を抽出する */
+function extractBenefitId(action: unknown): string | null {
+  const json = JSON.stringify(action ?? {})
+  const m = json.match(/"benefitId"\s*:\s*"([^"]+)"/)
+  return m?.[1]?.toLowerCase() ?? null
+}
+
+const EpisodeDetailSchema = z.object({
   episodeNumber: z.number().int().nonnegative().optional(),
   title: z.string().optional(),
   synopsis: z.string().optional(),
@@ -140,38 +145,23 @@ const RawEpisodeDetailSchema = z.object({
   subtitles: z.array(z.string()).default([]),
   audioTracks: z.array(z.string()).default([])
 })
-export type RawEpisodeDetail = z.infer<typeof RawEpisodeDetailSchema>
 
-/** エピソードの action オブジェクトから benefitId を抽出する */
-function extractBenefitId(action: unknown): string | null {
-  const json = JSON.stringify(action ?? {})
-  const m = json.match(/"benefitId"\s*:\s*"([^"]+)"/)
-  return m?.[1]?.toLowerCase() ?? null
-}
-
-/** getDetailWidgets API のエピソードエントリ → Episode に変換 */
 const WidgetEpisodeSchema = z
   .object({
     titleID: z.string().nonempty(),
-    detail: RawEpisodeDetailSchema,
+    detail: EpisodeDetailSchema,
     action: z.unknown().optional(),
     metadata: z
       .object({
-        maturityRating: z
-          .object({
-            displayText: z.string().optional()
-          })
-          .optional()
+        maturityRating: z.object({ displayText: z.string().optional() }).optional()
       })
       .optional()
   })
-  .transform((ep): Episode | null => {
+  .transform((ep) => {
     const d = ep.detail
-    if (d.episodeNumber == null) return null
-    const ratingText = ep.metadata?.maturityRating?.displayText
-    const ratingMatch = ratingText?.match(/(\d+)/)
+    const ratingMatch = ep.metadata?.maturityRating?.displayText?.match(/(\d+)/)
     return {
-      episodeNumber: d.episodeNumber,
+      episodeNumber: d.episodeNumber ?? 0,
       episodeId: ep.titleID,
       title: d.title ?? '',
       description: d.synopsis ? parseHtml(d.synopsis).textContent : '',
@@ -184,89 +174,70 @@ const WidgetEpisodeSchema = z
       benefitId: extractBenefitId(ep.action)
     }
   })
+  .pipe(EpisodeSchema)
 
-/** getDetailWidgets API のレスポンス → Episode[] に変換 */
 export const WidgetResponseSchema = z
   .object({
     widgets: z
       .object({
-        episodeList: z
-          .object({
-            episodes: z.array(WidgetEpisodeSchema).default([])
-          })
-          .optional()
+        episodeList: z.object({ episodes: z.array(WidgetEpisodeSchema).default([]) }).optional()
       })
       .optional()
   })
-  .transform((data): Episode[] => {
-    const episodes = data.widgets?.episodeList?.episodes ?? []
-    return episodes.filter((ep): ep is Episode => ep !== null)
-  })
+  .transform((data) => data.widgets?.episodeList?.episodes ?? [])
 
-// --- Detail page embedded JSON schemas ---
+// --- Detail page schemas ---
 
-/** 詳細ページ HTML の headerDetail セクション。タイトル・あらすじ・エンティティタイプ・レーティングを含む。 */
-const DetailHeaderSchema = z
+const HeaderSchema = z
   .object({
     title: z.string().nonempty(),
     synopsis: z.string().nonempty(),
-    entityType: EntityTypeEnum,
+    entityType: AmazonEntityType,
     images: z
       .object({
-        covershot: z.string().nonempty().optional(),
-        titleshot: z.string().nonempty().optional(),
-        packshot: z.string().nonempty().optional()
+        covershot: z.string().nonempty(),
+        titleshot: z.string().nonempty(),
+        packshot: z.string().nonempty()
       })
-      .transform((v) => v.covershot || v.titleshot || v.packshot || '')
+      .transform((v) => v.covershot)
       .pipe(AmazonImageUrlSchema),
-    ratingBadge: z.object({
-      displayText: z.string().nonempty()
-    })
+    ratingBadge: z.object({ displayText: z.string().nonempty() }),
+    subtitles: z.array(z.string()).default([]),
+    audioTracks: z.array(z.string()).default([]),
+    duration: z.number().nonnegative().optional(),
+    releaseDate: JapaneseDateSchema
   })
   .transform((v) => ({
-    ...v,
+    title: v.title,
+    synopsis: v.synopsis,
+    entityType: v.entityType,
     imageUrl: v.images,
     maturityRating: (() => {
       const match = v.ratingBadge.displayText.match(/(\d+)/)
       return match ? Number.parseInt(match[1], 10) : null
-    })()
+    })(),
+    hasSubtitles: v.subtitles.length > 0,
+    hasDub: v.audioTracks.length > 1,
+    duration: v.duration,
+    releaseDate: v.releaseDate
   }))
 
-/** 詳細ページ HTML のシーズンエントリ。シーズン選択 UI に使用。 */
-const DetailSeasonEntrySchema = z.object({
+const SeasonEntrySchema = z.object({
   seasonId: z.string().nonempty(),
   displayName: z.string().nonempty(),
   sequenceNumber: z.number().int().positive()
 })
 
-const EpisodePageTokenSchema = z.object({
-  token: z.string().nonempty().optional()
-})
-
-const DetailAtfStateSchema = z.object({
-  detail: z.object({
-    headerDetail: z.record(z.string().nonempty(), DetailHeaderSchema)
-  }),
-  seasons: z.record(z.string(), z.array(DetailSeasonEntrySchema).nonempty())
-})
-
-const DetailBtfStateSchema = z.object({
-  episodeList: z.object({
-    actions: z
-      .object({
-        episodePages: z.array(EpisodePageTokenSchema).nonempty()
-      })
-      .default({ episodePages: [] })
-  })
-})
-
-/** `extractPageData` が返すページデータ。detail.ts 内で TitleInfo 構築に使用。 */
 export const PageDataSchema = z.object({
   title: z.string().nonempty(),
   synopsis: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
   imageUrl: z.url(),
+  hasSubtitles: z.boolean(),
+  hasDub: z.boolean(),
+  duration: z.number().nonnegative().optional(),
+  releaseDate: z.string().optional(),
   seasons: z.array(
     z.object({
       seasonId: z.string().nonempty(),
@@ -278,53 +249,63 @@ export const PageDataSchema = z.object({
 })
 export type PageData = z.infer<typeof PageDataSchema>
 
-/** atf/btf を含む body 部分のスキーマ */
-const DetailBodySchema = z.object({
-  atf: z.object({ state: DetailAtfStateSchema }),
-  btf: z.object({ state: DetailBtfStateSchema })
-})
+const DetailBodySchema = z
+  .object({
+    atf: z.object({
+      state: z.object({
+        detail: z.object({
+          headerDetail: z
+            .record(z.string().nonempty(), HeaderSchema)
+            .refine((v) => Object.keys(v).length > 0, 'headerDetail must have at least one entry')
+            .transform((v) => Object.values(v)[0])
+        }),
+        seasons: z
+          .record(z.string(), z.array(SeasonEntrySchema).nonempty())
+          .default({})
+          .transform((v) =>
+            (Object.values(v)[0] ?? [])
+              .map((s) => ({ seasonId: s.seasonId, displayName: s.displayName, seasonNumber: s.sequenceNumber }))
+              .sort((a, b) => a.seasonNumber - b.seasonNumber)
+          )
+      })
+    }),
+    btf: z.object({
+      state: z.object({
+        episodeList: z.object({
+          actions: z
+            .object({ episodePages: z.array(z.object({ token: z.string().nonempty().optional() })).nonempty() })
+            .default({ episodePages: [] })
+            .transform((v) => v.episodePages.map((p) => p.token).filter((t): t is string => t !== undefined))
+        })
+      })
+    })
+  })
+  .transform(
+    (body): PageData => {
+      const hd = body.atf.state.detail.headerDetail
+      return PageDataSchema.parse({
+        ...hd,
+        seasons: body.atf.state.seasons,
+        episodePageTokens: body.btf.state.episodeList.actions
+      })
+    }
+  )
 
-/** atf/btf からフラットな PageData に変換する */
-function transformDetailBody(body: z.infer<typeof DetailBodySchema>) {
-  const { atf, btf } = body
-
-  const headerDetail = Object.values(atf.state.detail.headerDetail)[0]
-  if (!headerDetail) throw new Error('Parse failed: headerDetail not found')
-
-  const rawSeasons = Object.values(atf.state.seasons ?? {})[0] ?? []
-  const episodePages = btf.state.episodeList.actions.episodePages
-
-  return {
-    title: headerDetail.title,
-    synopsis: headerDetail.synopsis,
-    entityType: headerDetail.entityType,
-    maturityRating: headerDetail.maturityRating,
-    imageUrl: headerDetail.imageUrl,
-    seasons: rawSeasons
-      .map((s) => ({ seasonId: s.seasonId, displayName: s.displayName, seasonNumber: s.sequenceNumber }))
-      .sort((a, b) => a.seasonNumber - b.seasonNumber),
-    episodePageTokens: episodePages.map((p) => p.token).filter((t): t is string => t !== undefined)
-  }
-}
-
-/** 詳細ページ `<script type="text/template">` の全体構造。`extractPageData` で使用。transform でフラットな構造に変換。 */
 export const DetailPageJsonSchema = z
   .union([
-    // 新形式: props.body[].props.{atf,btf}
     z
       .object({
         props: z.object({
           body: z.array(z.object({ props: DetailBodySchema })).nonempty()
         })
       })
-      .transform((v) => transformDetailBody(v.props.body[0].props)),
-    // 旧形式: init.preparations.body.{atf,btf}
+      .transform((v) => v.props.body[0].props),
     z
       .object({
         init: z.object({
           preparations: z.object({ body: DetailBodySchema })
         })
       })
-      .transform((v) => transformDetailBody(v.init.preparations.body))
+      .transform((v) => v.init.preparations.body)
   ])
   .pipe(PageDataSchema)

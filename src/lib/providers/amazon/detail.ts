@@ -2,8 +2,7 @@ import dayjs from 'dayjs'
 import { sortBy, uniqBy } from 'lodash-es'
 import { parse as parseHtml } from 'node-html-parser'
 import { DetailPageJsonSchema, type PageData, WidgetResponseSchema } from '../../../schemas/providers/amazon.dto'
-import type { Episode, Season, TitleInfo } from '../../../schemas/providers/common.dto'
-import { extractSeasonNumber } from '../../title-parser'
+import { type Episode, EpisodeSchema, type Season, type TitleInfo } from '../../../schemas/providers/common.dto'
 
 const AMAZON_DETAIL_BASE = 'https://www.amazon.co.jp/gp/video/detail'
 const AMAZON_WIDGETS_API = 'https://www.amazon.co.jp/gp/video/api/getDetailWidgets'
@@ -27,23 +26,30 @@ async function fetchHtml(url: string): Promise<string> {
   return res.text()
 }
 
+/** HTML から指定 type の script タグの中身を抽出する */
+function extractScriptContents(html: string, types: string[]): string[] {
+  return types.flatMap((type) =>
+    [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].map((m) => m[1])
+  )
+}
+
 /**
  * Prime Video 詳細ページの HTML からタイトル情報を抽出する。
  */
 export function extractPageData(html: string): PageData {
-  const scripts = ['text/template', 'application/json'].flatMap((type) =>
-    [...html.matchAll(new RegExp(`<script[^>]*type="${type}"[^>]*>([\\s\\S]*?)</script>`, 'g'))].map((m) => m[1])
-  )
+  const scripts = extractScriptContents(html, ['text/template', 'application/json'])
+    .filter((s) => s.includes('headerDetail'))
+    .sort((a, b) => b.length - a.length)
 
-  for (const content of sortBy(scripts, (s) => -s.length)) {
-    if (!content.includes('headerDetail')) continue
+  let lastError: unknown
+  for (const content of scripts) {
     try {
       return DetailPageJsonSchema.parse(JSON.parse(content))
-    } catch {
-      // noop
+    } catch (e) {
+      lastError = e
     }
   }
-  throw new Error('Parse failed: no JSON script found')
+  throw lastError ?? new Error('Parse failed: no script containing headerDetail found')
 }
 
 /**
@@ -93,7 +99,6 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
     entityType: page.entityType,
     maturityRating: page.maturityRating,
     imageUrl: page.imageUrl,
-    benefitId: seasons[0]?.episodes[0]?.benefitId ?? null,
     seasons
   }
 }
@@ -110,32 +115,20 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
           episodes.length > 0
             ? episodes
             : [
-                {
+                EpisodeSchema.parse({
                   episodeNumber: 1,
                   episodeId: contentId,
                   title: page.title,
                   description: page.synopsis,
-                  releaseDate: dayjs().toISOString(),
-                  duration: 0,
+                  releaseDate: page.releaseDate || dayjs().toISOString(),
+                  duration: page.duration ?? 0,
                   maturityRating: page.maturityRating,
                   imageUrl: page.imageUrl,
-                  hasSubtitles: false,
-                  hasDub: false,
+                  hasSubtitles: page.hasSubtitles,
+                  hasDub: page.hasDub,
                   benefitId: null
-                }
+                })
               ]
-      }
-    ]
-  }
-
-  if (page.seasons.length === 0) {
-    const episodes = await fetchAllEpisodes(contentId, page.episodePageTokens)
-    return [
-      {
-        seasonId: contentId,
-        displayName: `シーズン${extractSeasonNumber(page.title)}`,
-        seasonNumber: extractSeasonNumber(page.title),
-        episodes
       }
     ]
   }

@@ -37,7 +37,6 @@ export const TitleListEntrySchema = z.object({
   entityType: z.string(),
   imageUrl: z.string().nullable(),
   maturityRating: z.number().nullable(),
-  benefitId: z.string().nullable(),
   nextEpisodeDate: z.string().nullable(),
   badge: BadgeType.nullable()
 })

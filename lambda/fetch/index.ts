@@ -130,7 +130,6 @@ async function fetchTitleList(providerName: string, category: string) {
     entityType: t.entityType,
     imageUrl: t.imageUrl,
     maturityRating: t.maturityRating,
-    benefitId: t.benefitId,
     nextEpisodeDate: t.nextEpisodeDate ?? null,
     badge: t.badge ?? null
   }))

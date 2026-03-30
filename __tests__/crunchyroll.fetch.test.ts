@@ -11,7 +11,6 @@ describe('fetchTitleList', () => {
 
     for (const t of titles.slice(0, 10)) {
       TitleSchema.parse(t)
-      expect(t.benefitId).toBe('crunchyroll')
       expect(t.badge).toMatch(/^(NEW_EPISODE|RECENTLY_ADDED)$/)
     }
   }, 30_000)
@@ -33,7 +32,6 @@ describe('fetchTitleInfo', () => {
     const detail = TitleInfoSchema.parse(await provider.fetchTitleInfo('GRMG8ZQZR'))
 
     expect(detail.title).toBeTruthy()
-    expect(detail.benefitId).toBe('crunchyroll')
     expect(detail.seasons.length).toBeGreaterThan(0)
     for (const season of detail.seasons) {
       expect(season.episodes.length).toBeGreaterThan(0)

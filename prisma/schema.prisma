@@ -17,7 +17,6 @@ model Anime {
   entityType      String    @default("tv") @map("entity_type") // 'tv' | 'movie'
   maturityRating  Int?      @map("maturity_rating")
   imageUrl        String    @map("image_url")
-  benefitId       String?   @map("benefit_id") // 'prime' | 'danime' | 'animetimesjp' etc.
   year            Int
   quarter         Int // 0=冬 1=春 2=夏 3=秋
   isIdentified    Boolean   @default(false) @map("is_identified")
