@@ -4,6 +4,3 @@ sudo chown -R $(whoami):$(whoami) node_modules
 sudo chown -R $(whoami):$(whoami) .cache
 bun install --frozen-lockfile --ignore-scripts
 bunx --bun biome migrate --write
-
-# Install Claude Code CLI
-bun install -g @anthropic-ai/claude-code
