@@ -115,7 +115,6 @@ export async function fetchCrunchyrollTitleDetail(seriesId: string): Promise<Tit
     entityType: 'tv',
     maturityRating: parseMaturityRating(seriesData.maturity_ratings),
     imageUrl: getBestImageUrl(seriesData.images) ?? 'https://www.crunchyroll.com/build/assets/img/default-poster.png',
-    benefitId: 'crunchyroll',
     seasons
   }
 }

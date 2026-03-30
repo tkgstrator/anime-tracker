@@ -12,7 +12,6 @@ export const AnimeSchema = z.object({
   entityType: z.string().nonempty(),
   maturityRating: z.number().int().nonnegative().nullable(),
   imageUrl: z.url(),
-  benefitId: z.string().nullable(),
   year: z.number().int(),
   quarter: z.number().int().min(0).max(3),
   isIdentified: z.boolean(),

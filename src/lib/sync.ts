@@ -277,7 +277,6 @@ export class SyncService {
               entityType: t.entityType,
               maturityRating: t.maturityRating,
               imageUrl: t.imageUrl ?? '',
-              benefitId: t.benefitId,
               aniListId: meta.aniListId ?? 0,
               status: meta.status,
               year: meta.year,

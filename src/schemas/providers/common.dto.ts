@@ -12,9 +12,8 @@ export const TitleSchema = z.object({
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   entityType: EntityType,
-  imageUrl: z.string().nullable(),
+  imageUrl: z.string().nonempty(),
   maturityRating: z.number().int().positive().nullable(),
-  benefitId: z.string().nullable(),
   nextEpisodeDate: z.string().nullable().optional(),
   badge: BadgeType.nullable().optional(),
   expiring: z
@@ -32,7 +31,7 @@ export const EpisodeSchema = z.object({
   episodeId: z.string().nonempty(),
   title: z.string().nonempty(),
   description: z.string().nonempty(),
-  releaseDate: z.string().nonempty(),
+  releaseDate: z.iso.datetime(),
   duration: z.number().int().nonnegative(),
   maturityRating: z.number().int().positive().nullable(),
   imageUrl: z.url(),
@@ -56,7 +55,6 @@ export const TitleInfoSchema = z.object({
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
   imageUrl: z.url(),
-  benefitId: z.string().nullable(),
   seasons: z.array(SeasonSchema)
 })
 export type TitleInfo = z.infer<typeof TitleInfoSchema>
