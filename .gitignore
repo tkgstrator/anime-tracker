@@ -267,4 +267,5 @@ tfplan
 
 # Lambda build
 lambda/*/dist/
+lambda/layers/
 

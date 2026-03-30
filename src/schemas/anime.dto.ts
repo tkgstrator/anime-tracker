@@ -36,7 +36,6 @@ export const AnimeInfoSchema = AnimeSchema.extend({
       seasonId: z.string().nonempty(),
       displayName: z.string().nonempty(),
       seasonNumber: z.number().int().nonnegative(),
-      imageUrl: z.string().nullable(),
       episodes: z.array(
         z.object({
           id: z.uuid(),

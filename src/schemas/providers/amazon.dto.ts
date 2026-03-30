@@ -1,6 +1,8 @@
+import dayjs from 'dayjs'
+import { parse as parseHtml } from 'node-html-parser'
 import { z } from 'zod'
 import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
-import { type BadgeType, EntityType, TitleSchema } from './common.dto'
+import { type BadgeType, EntityType, type Episode, TitleSchema } from './common.dto'
 
 /** Amazon 画像 URL からディレクティブ付き装飾を除去するスキーマ */
 const AmazonImageUrlSchema = z.string().transform((url) => {
@@ -106,6 +108,100 @@ export const PaginateResponseSchema = z.object({
 })
 
 export type PaginateResponse = z.infer<typeof PaginateResponseSchema>
+
+// --- getDetailWidgets API schemas ---
+
+/** 「2024年1月5日」形式の日本語日付文字列を ISO 8601 (JST) に変換する */
+const JapaneseDateSchema = z
+  .string()
+  .default('')
+  .transform((dateStr) => {
+    const m = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/)
+    if (!m) return ''
+    const [, year, month, day] = m
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T00:00:00+09:00`
+  })
+
+/** getDetailWidgets API のエピソード詳細 */
+const RawEpisodeDetailSchema = z.object({
+  episodeNumber: z.number().int().nonnegative().optional(),
+  title: z.string().optional(),
+  synopsis: z.string().optional(),
+  isPrime: z.boolean().optional(),
+  releaseDate: JapaneseDateSchema,
+  duration: z.number().nonnegative().default(0),
+  runtime: z.string().optional(),
+  images: z
+    .object({
+      covershot: z.string().optional(),
+      titleshot: z.string().optional()
+    })
+    .optional(),
+  subtitles: z.array(z.string()).default([]),
+  audioTracks: z.array(z.string()).default([])
+})
+export type RawEpisodeDetail = z.infer<typeof RawEpisodeDetailSchema>
+
+/** エピソードの action オブジェクトから benefitId を抽出する */
+function extractBenefitId(action: unknown): string | null {
+  const json = JSON.stringify(action ?? {})
+  const m = json.match(/"benefitId"\s*:\s*"([^"]+)"/)
+  return m?.[1]?.toLowerCase() ?? null
+}
+
+/** getDetailWidgets API のエピソードエントリ → Episode に変換 */
+const WidgetEpisodeSchema = z
+  .object({
+    titleID: z.string().nonempty(),
+    detail: RawEpisodeDetailSchema,
+    action: z.unknown().optional(),
+    metadata: z
+      .object({
+        maturityRating: z
+          .object({
+            displayText: z.string().optional()
+          })
+          .optional()
+      })
+      .optional()
+  })
+  .transform((ep): Episode | null => {
+    const d = ep.detail
+    if (d.episodeNumber == null) return null
+    const ratingText = ep.metadata?.maturityRating?.displayText
+    const ratingMatch = ratingText?.match(/(\d+)/)
+    return {
+      episodeNumber: d.episodeNumber,
+      episodeId: ep.titleID,
+      title: d.title ?? '',
+      description: d.synopsis ? parseHtml(d.synopsis).textContent : '',
+      releaseDate: d.releaseDate || dayjs().toISOString(),
+      duration: d.duration,
+      maturityRating: ratingMatch ? Number.parseInt(ratingMatch[1], 10) : null,
+      imageUrl: d.images?.covershot || d.images?.titleshot || '',
+      hasSubtitles: d.subtitles.length > 0,
+      hasDub: d.audioTracks.length > 1,
+      benefitId: extractBenefitId(ep.action)
+    }
+  })
+
+/** getDetailWidgets API のレスポンス → Episode[] に変換 */
+export const WidgetResponseSchema = z
+  .object({
+    widgets: z
+      .object({
+        episodeList: z
+          .object({
+            episodes: z.array(WidgetEpisodeSchema).default([])
+          })
+          .optional()
+      })
+      .optional()
+  })
+  .transform((data): Episode[] => {
+    const episodes = data.widgets?.episodeList?.episodes ?? []
+    return episodes.filter((ep): ep is Episode => ep !== null)
+  })
 
 // --- Detail page embedded JSON schemas ---
 

@@ -1,0 +1,161 @@
+{
+  "title": "SHIBOYUGI: Playing Death Games to Put Food on the Table",
+  "description": "At just seventeen, Yuki is a professional death game player. She’s survived enough rounds to know that survival is calculation, not luck—and that failure is final. For most players, the games are a nightmare with no escape. For Yuki, they’re simply business. Yet in a world where rooms turn into graves and every choice could be her last, even experience offers no protection.",
+  "entityType": "tv",
+  "maturityRating": 14,
+  "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/e08bad0e3f18efcc92d941746897ac8b.png",
+  "benefitId": "crunchyroll",
+  "seasons": [
+    {
+      "seasonId": "GS00365788JAJP",
+      "displayName": "Season 1",
+      "seasonNumber": 1,
+      "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/5e47457c2f02a524a8c2822d94e3098f.png",
+      "episodes": [
+        {
+          "episodeNumber": 1,
+          "episodeId": "GE00367376JAJP",
+          "title": "All You Need Is ----",
+          "description": "Five girls dressed in classical maid outfits wake up in a windowless mansion.",
+          "releaseDate": "2026-01-07T15:00:00.000Z",
+          "duration": 2860,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/5e47457c2f02a524a8c2822d94e3098f.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 2,
+          "episodeId": "GE00367377JAJP",
+          "title": "Chains of ----",
+          "description": "In her tenth game, Yuki becomes frustrated when the other players refuse to heed her advice.",
+          "releaseDate": "2026-01-14T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/4bdfeea05e4878c8a4bd24d63ba8359f.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 3,
+          "episodeId": "GE00367378JAJP",
+          "title": "In the Name of ----",
+          "description": "Mishiro refuses to admit her mistake and leads the others into harm's way.",
+          "releaseDate": "2026-01-21T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/4fa09db56e3c0e4789a12dc5d3b9c750.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 4,
+          "episodeId": "GE00367379JAJP",
+          "title": "Bad ----",
+          "description": "The players reach the finish line, but they must complete a final trial before they can leave.",
+          "releaseDate": "2026-01-28T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/d0c8460a4534d52fc64d37e5d451b90f.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 5,
+          "episodeId": "GE00367380JAJP",
+          "title": "---- Is All You Need",
+          "description": "Yuki prepares for her 30th game.",
+          "releaseDate": "2026-02-04T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/0093b23a3d1bf5e79e2a96469bcc62e5.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 6,
+          "episodeId": "GE00367381JAJP",
+          "title": "Who's ----ing you",
+          "description": "Yuki wakes up late to a game already in progress.",
+          "releaseDate": "2026-02-11T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/0dba24a9ef639e7b12f523872275d60f.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 7,
+          "episodeId": "GE00367382JAJP",
+          "title": "Good ----",
+          "description": "Yuki is captured after a surprise attack and dragged before the enemy leader.",
+          "releaseDate": "2026-02-18T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/7e99bfa218d8560db0ce863d7818576f.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 8,
+          "episodeId": "GE00367383JAJP",
+          "title": "---- It All",
+          "description": "In a garden reminiscent of a forest and wearing a bunny outfit, Yuki wakes up to artificial woodland sounds.",
+          "releaseDate": "2026-02-25T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/4c730b3ec7a0d0e6fa98d3ab0910e65b.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 9,
+          "episodeId": "GE00367384JAJP",
+          "title": "Can’t Help Falling In ----",
+          "description": "Moegi tries to lead her stump team full of beginners, but they fall one after another to the veteran rabbits.",
+          "releaseDate": "2026-03-04T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/8f165a35c46d934f0456bad55073bffb.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 10,
+          "episodeId": "GE00367385JAJP",
+          "title": "Goin' ----",
+          "description": "The rabbits flee from the approaching bloodthirsty killer.",
+          "releaseDate": "2026-03-11T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/89819e30fedd1c40f4ce721ce78d80a3.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        },
+        {
+          "episodeNumber": 11,
+          "episodeId": "GE00367386JAJP",
+          "title": "--v-",
+          "description": "Yuki easily defeats Moegi, but Moegi's death fills Yuki's mind with doubt.",
+          "releaseDate": "2026-03-18T15:30:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/d2161bbf97e8d2cac7db05665d28c561.png",
+          "hasSubtitles": true,
+          "hasDub": false,
+          "benefitId": "crunchyroll"
+        }
+      ]
+    }
+  ]
+}
