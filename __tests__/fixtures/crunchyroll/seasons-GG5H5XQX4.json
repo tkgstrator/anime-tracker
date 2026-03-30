@@ -1,0 +1,281 @@
+{
+  "data": [
+    {
+      "id": "GYE5CQMQ5",
+      "channel_id": "crunchyroll",
+      "title": "Season 1",
+      "slug_title": "season-1",
+      "series_id": "GG5H5XQX4",
+      "season_display_number": "",
+      "season_sequence_number": 1,
+      "season_number": 1,
+      "is_complete": false,
+      "description": "After the party of heroes defeated the Demon King, they restored peace to the land and returned to lives of solitude. Generations pass, and the elven mage Frieren comes face to face with humanity’s mortality. She takes on a new apprentice and promises to fulfill old friends’ dying wishes. Can an elven mind make peace with the nature of life and death? Frieren embarks on her quest to find out.",
+      "keywords": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023"
+      ],
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "images": {},
+      "extended_maturity_rating": {
+        "system": "cr-tv",
+        "rating": "14",
+        "level": "M2"
+      },
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "is_mature": false,
+      "mature_blocked": false,
+      "is_subbed": true,
+      "is_dubbed": true,
+      "is_simulcast": false,
+      "seo_title": "",
+      "seo_description": "",
+      "availability_notes": "",
+      "audio_locales": [
+        "ja-JP"
+      ],
+      "subtitle_locales": [
+        "ar-SA",
+        "en-US",
+        "ms-MY",
+        "zh-CN",
+        "es-ES",
+        "it-IT",
+        "ru-RU",
+        "pt-BR",
+        "th-TH",
+        "zh-HK",
+        "vi-VN",
+        "de-DE",
+        "id-ID",
+        "es-419",
+        "fr-FR"
+      ],
+      "audio_locale": "ja-JP",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GYE5CQMQ5",
+          "original": true,
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GYE5CQM05",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GRDQCGK7G",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GRZXCMK93",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GY8VCPX53",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "G6Q4CZJWG",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GYWEC3X00",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GYGGCV91P",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GR09CXPZV",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "G65VCDPGM",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GRP8CXPG4",
+          "original": false,
+          "variant": ""
+        }
+      ],
+      "identifier": "GG5H5XQX4|S00324919",
+      "number_of_episodes": 28
+    },
+    {
+      "id": "G6X0C4JDV",
+      "channel_id": "crunchyroll",
+      "title": "Season 2",
+      "slug_title": "season-2",
+      "series_id": "GG5H5XQX4",
+      "season_display_number": "",
+      "season_sequence_number": 2,
+      "season_number": 2,
+      "is_complete": false,
+      "description": "The journey of a millennium-old elf mage Frieren, a mage named Fern, and the warrior Stark continues. On their way to Aureole, the land where souls rest, the party learns from those that they meet along the way and fight off cunning demons and monsters. As the trio continues making irreplaceable memories, they begin to wonder what awaits them at the end of their journey.",
+      "keywords": [
+        "winter-2026"
+      ],
+      "season_tags": [
+        "winter-2026"
+      ],
+      "images": {},
+      "extended_maturity_rating": {
+        "system": "cr-tv",
+        "rating": "14",
+        "level": "M2"
+      },
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "is_mature": false,
+      "mature_blocked": false,
+      "is_subbed": true,
+      "is_dubbed": true,
+      "is_simulcast": false,
+      "seo_title": "",
+      "seo_description": "",
+      "availability_notes": "",
+      "audio_locales": [
+        "ja-JP"
+      ],
+      "subtitle_locales": [
+        "ms-MY",
+        "ar-SA",
+        "de-DE",
+        "ru-RU",
+        "es-ES",
+        "th-TH",
+        "fr-FR",
+        "it-IT",
+        "pt-BR",
+        "vi-VN",
+        "zh-CN",
+        "en-US",
+        "id-ID",
+        "zh-HK",
+        "es-419"
+      ],
+      "audio_locale": "ja-JP",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "G6X0C4JDV",
+          "original": true,
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "G6JQC19J7",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GR75CDMWJ",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "GR9PC25D5",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "G6X0C4JKW",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GR49C71M5",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GY19CP9EQ",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GRJQC19X7",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "G6NQCJ27J",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GRK5CNM43",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GRMGC3Q4E",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "th-TH",
+          "guid": "G6E5CQXGE",
+          "original": false,
+          "variant": ""
+        }
+      ],
+      "identifier": "GG5H5XQX4|S00365545",
+      "number_of_episodes": 10
+    }
+  ],
+  "meta": {
+    "versions_considered": true
+  },
+  "total": 2
+}

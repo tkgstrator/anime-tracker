@@ -1,0 +1,146 @@
+{
+  "title": "葬送のフリーレン 第2期",
+  "description": "勇者ヒンメル一行によって魔王が倒された世界。ヒンメルらと共に平和をもたらした千年以上生きるエルフの魔法使い･フリーレンは、寿命を迎えたヒンメルの死を受けての涙とその想いから、“人の心を知る旅”に出る。道中に出会った、かつての仲間ハイターに育てられた魔法使いフェルン、同じく仲間のアイゼンの弟子である戦士シュタルクと共に、魂の眠る地《オレオール》を目指すフリーレン。旅の中で出会う人々との交流、狡猾な魔族や魔物との戦い。時に穏やかに、時にくだらなく、時に激しく、時に胸に迫る…。その全てが、その一瞬一瞬が、3人のかけがえのないものとして積み重ねられていく。この旅の先に待っているものは、果たして――――。",
+  "entityType": "tv",
+  "maturityRating": null,
+  "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/b6462f1a-4575-4443-88fc-27f6f49ada64.jpg",
+  "seasons": [
+    {
+      "seasonId": "hulu-frieren-beyond-journeys-end-season2-s1",
+      "displayName": "第2期",
+      "seasonNumber": 1,
+      "episodes": [
+        {
+          "episodeNumber": 29,
+          "episodeId": "100250760",
+          "title": "じゃあ行こうか",
+          "description": "魔法都市オイサーストを後にし、北側諸国の道を行くフリーレン、フェルン、シュタルク。その道中、緩んだ地盤から穴の中へ落ちてしまう。そこは魔法を無効化する力を持った鉱石“封魔鉱”が一面に広がっていた。フリーレンとフェルンが魔法を使うことができず、地上に続く道を探すが、そこに魔物が現れて…。",
+          "releaseDate": "2026-01-16T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/ee958b25-4b18-4e8e-99de-2d8b6c475bc0.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 30,
+          "episodeId": "100251467",
+          "title": "南の勇者",
+          "description": "北側諸国の村で勇者の像を磨く依頼を受けたフリーレンたち。その像はヒンメルのものではなく、かつて人類最強と謳われた“南の勇者”の像だった。フリーレンは“南の勇者”と出会った時を思い出す…。その後訪れたダッハ伯爵領の城下町で、フリーレンたちは領主から「魔族から宝剣を取り戻してほしい」と頼まれて…。",
+          "releaseDate": "2026-01-23T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/871b056b-a8bd-4336-bde3-e828409291a5.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 31,
+          "episodeId": "100252098",
+          "title": "好きな場所",
+          "description": "温泉地のエトヴァスでフリーレンたちは温泉に思いを馳せるが、山村はすでに廃れていた。山奥に「エトヴァス山の秘湯」があるという話を聞いた3人はそこに向かうことに。険しく、魔物も棲む山道を進んでいった先に待つものは果たして…。そして次の都市に到着すると、フェルンはシュタルクから意外な誘いを受ける。",
+          "releaseDate": "2026-01-30T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/0eb2e0c5-7d8c-408f-8441-fdd53cf8dc6d.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 32,
+          "episodeId": "100252815",
+          "title": "誰かの故郷",
+          "description": "フェルンをからかうつもりで誘ったシュタルクだったが、結果2人はデートをすることに。街のさまざまな場所を訪れる2人はやがて展望広場へ。そこでフェルンが口にしたのは…。後日、街を後にした3人は過酷な北部高原へと足を踏み入れる。ある村落に立ち寄ると、その近くに強力な魔物が出現すると聞き…。",
+          "releaseDate": "2026-02-06T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/dcf8948d-2d30-48cf-a7f0-cf6f37e4d077.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 33,
+          "episodeId": "100253366",
+          "title": "北部高原の物流",
+          "description": "ある酒場町でフリーレンはドワーフのファスと再会する。彼は無類の酒好きで、200年以上も皇帝酒ボースハフトを探しており、自身が掘った坑道の先にその酒が眠っているという。果たして見つかるのか…。そして次に訪れるノルム商会領では、なんとフリーレンに80年前から多額の借金があることが判明し…。",
+          "releaseDate": "2026-02-13T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/3ed46495-2103-432a-a73a-639788c6722a.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 34,
+          "episodeId": "100254771",
+          "title": "討伐要請",
+          "description": "北部高原のある村に、ゼーリエからの魔族討伐の要請を受けた一級魔法使い、ゲナウとメトーデの姿があった。その村はゲナウの故郷だという…。そしてそこに、同じく討伐要請を受けたフェルン、そしてフリーレンとシュタルクもやって来た。村はすでに全滅しており、犠牲者の特徴的な傷跡から、ある魔族の姿が見え隠れする。",
+          "releaseDate": "2026-02-27T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/136743cc-d06e-4391-955d-b9a9690f8491.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 35,
+          "episodeId": "100255603",
+          "title": "神技のレヴォルテ",
+          "description": "ゲナウの村を全滅させた魔族、それは四本の腕で剣を自在に振るう強敵“神技のレヴォルテ”とその手下たちだった。フリーレン、フェルン、メトーデの3人は魔族探索のため森へ、シュタルクとゲナウは村民の遺体をノルム騎士団が引き取るまで村に残ることに。そしてそれぞれに、残忍な魔族たちが近づく。",
+          "releaseDate": "2026-03-06T15:30:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/df8ec58f-825f-4cce-bfc2-9f43bb2b14d8.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 36,
+          "episodeId": "100256390",
+          "title": "立派な最期",
+          "description": "村に現れた“神技のレヴォルテ”に対するは、戦士シュタルクと、“黒金の翼を操る魔法〈ディガドナハト〉”を駆使するゲナウ。レヴォルテの強烈な攻撃に、2人は打ち勝つことができるのか…!? 一方、フリーレン、フェルン、メトーデも、強力な魔法を操る魔族ゾリーダとヘモンと対峙していた―――!",
+          "releaseDate": "2026-03-13T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/607d7c7b-d4cc-4e58-8256-4a42ec9dd765.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 37,
+          "episodeId": "100256777",
+          "title": "ヒンメルの自伝",
+          "description": "竜の群れの脅威に苛まれるも故郷を捨てようとしない男の村。そして広大な湖･コリドーア湖の港町。旅の途中、さまざまな場所を訪れるフリーレンたち。コリドーア湖で渡し舟に乗ろうにも舟代が足らず、船頭から交換条件を持ち掛けられる。それは島の修道院に眠っている“ヒンメルの自伝”を見つけることだった。",
+          "releaseDate": "2026-03-20T15:00:00.000Z",
+          "duration": 1440,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/80a79dde-bf50-4ef4-af88-eb04a9602f24.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        },
+        {
+          "episodeNumber": 38,
+          "episodeId": "100257318",
+          "title": "美しい光景",
+          "description": "【シーズン2 最終話】トーア大渓谷にかけられた、ドワーフ･ゲーエンが200年以上かけて作った巨大な橋。その橋には、ヒンメルとゲーエンのかつての秘話が隠されていた…。その後シュマール雪原へとやって来たフリーレンたちは、路銀を稼ぐために魔物討伐の依頼を受ける。一方、ひとりの一級魔法使いがある場所を訪れて…。",
+          "releaseDate": "2026-03-27T15:00:00.000Z",
+          "duration": 1430,
+          "maturityRating": null,
+          "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/282713e5-2f57-4b21-b111-1bd7d2bd793e.png",
+          "hasSubtitles": false,
+          "hasDub": false,
+          "benefitId": "hulu"
+        }
+      ]
+    }
+  ]
+}

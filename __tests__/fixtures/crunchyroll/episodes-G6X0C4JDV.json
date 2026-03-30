@@ -1,0 +1,2773 @@
+{
+  "total": 10,
+  "data": [
+    {
+      "is_clip": false,
+      "mature_blocked": false,
+      "premium_available_date": "2026-01-16T15:00:00Z",
+      "is_dubbed": true,
+      "production_episode_id": "",
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "is_premium_only": true,
+      "seo_description": "",
+      "is_mature": false,
+      "premium_date": null,
+      "season_slug_title": "season-2",
+      "recent_variant": "",
+      "episode": "1",
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/ed283c4e91b4fc94da95fb6c479e652d.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "slug_title": "shall-we-go-then",
+      "next_episode_id": "GZ7UDVK1N",
+      "is_subbed": true,
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "series_id": "GG5H5XQX4",
+      "title": "Shall We Go, Then?",
+      "roles": [
+        "main"
+      ],
+      "sequence_number": 1,
+      "availability_notes": "",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "id": "G8WU7NX0K",
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 360006,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 720012,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1080018,
+          "type": "midroll"
+        }
+      ],
+      "listing_id": "",
+      "media_type": "episode",
+      "slug": "",
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "audio_locale": "ja-JP",
+      "available_date": null,
+      "season_display_number": "",
+      "episode_air_date": "2026-01-16T00:00:00Z",
+      "availability_status": "premium_only",
+      "channel_id": "crunchyroll",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "G8WU7NX0K",
+          "is_premium_only": true,
+          "media_guid": "G8WU7NX0KV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GMKUEXKDD",
+          "is_premium_only": true,
+          "media_guid": "GMKUEXKDDV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GMKUEXK85",
+          "is_premium_only": true,
+          "media_guid": "GMKUEXK85V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "GWDU7815J",
+          "is_premium_only": true,
+          "media_guid": "GWDU7815JV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "GN7UNDQ95",
+          "is_premium_only": true,
+          "media_guid": "GN7UNDQ95V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GQJUMGK1Q",
+          "is_premium_only": true,
+          "media_guid": "GQJUMGK1QV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "G14UV4NDZ",
+          "is_premium_only": true,
+          "media_guid": "G14UV4NDZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GZ7UDVZKZ",
+          "is_premium_only": true,
+          "media_guid": "GZ7UDVZKZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GX9U3Q553",
+          "is_premium_only": true,
+          "media_guid": "GX9U3Q553V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GEVUWZ992",
+          "is_premium_only": true,
+          "media_guid": "GEVUWZ992V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GVWU80K92",
+          "is_premium_only": true,
+          "media_guid": "GVWU80K92V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        },
+        {
+          "audio_locale": "th-TH",
+          "guid": "G8WU7NMQ2",
+          "is_premium_only": true,
+          "media_guid": "G8WU7NMQ2V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6E5CQXGE",
+          "variant": ""
+        }
+      ],
+      "description": "Frieren, Fern, and Stark leave the magic city of Äußerst behind and travel along a road in the northern lands.",
+      "duration_ms": 1440024,
+      "upload_date": "2026-01-16T00:00:00Z",
+      "next_episode_title": "The Hero of the South",
+      "hd_flag": true,
+      "identifier": "GG5H5XQX4|S00365545|E1",
+      "season_number": 2,
+      "episode_number": 1,
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "available_offline": true,
+      "series_title": "Frieren: Beyond Journey's End",
+      "seo_title": "",
+      "season_sequence_number": 2,
+      "closed_captions_available": false,
+      "season_id": "G6X0C4JDV",
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "eligible_region": "US",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "season_title": "Season 2",
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "recent_audio_locale": "ja-JP"
+    },
+    {
+      "season_title": "Season 2",
+      "premium_date": null,
+      "title": "The Hero of the South",
+      "next_episode_title": "Somewhere She'd Like",
+      "mature_blocked": false,
+      "audio_locale": "ja-JP",
+      "series_title": "Frieren: Beyond Journey's End",
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "is_subbed": true,
+      "slug_title": "the-hero-of-the-south",
+      "id": "GZ7UDVK1N",
+      "premium_available_date": "2026-01-23T15:00:00Z",
+      "episode": "2",
+      "available_date": null,
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "season_number": 2,
+      "channel_id": "crunchyroll",
+      "episode_air_date": "2026-01-23T00:00:00Z",
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/65b55e8e88e606d5d2511b130b9aeeaf.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "identifier": "GG5H5XQX4|S00365545|E2",
+      "production_episode_id": "",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GZ7UDVK1N",
+          "is_premium_only": true,
+          "media_guid": "GZ7UDVK1NV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GVWU80KG3",
+          "is_premium_only": true,
+          "media_guid": "GVWU80KG3V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GVWU80KQZ",
+          "is_premium_only": true,
+          "media_guid": "GVWU80KQZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "GG1UX283J",
+          "is_premium_only": true,
+          "media_guid": "GG1UX283JV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "GK9UG310Z",
+          "is_premium_only": true,
+          "media_guid": "GK9UG310ZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "G50UMZQ9X",
+          "is_premium_only": true,
+          "media_guid": "G50UMZQ9XV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GJWUQ2Z3P",
+          "is_premium_only": true,
+          "media_guid": "GJWUQ2Z3PV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GD9UEV5KX",
+          "is_premium_only": true,
+          "media_guid": "GD9UEV5KXV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "G4VUWQNND",
+          "is_premium_only": true,
+          "media_guid": "G4VUWQNNDV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "G7PU34QQE",
+          "is_premium_only": true,
+          "media_guid": "G7PU34QQEV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "G31UVXG9X",
+          "is_premium_only": true,
+          "media_guid": "G31UVXG9XV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        },
+        {
+          "audio_locale": "th-TH",
+          "guid": "GZ7UDV45X",
+          "is_premium_only": true,
+          "media_guid": "GZ7UDV45XV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6E5CQXGE",
+          "variant": ""
+        }
+      ],
+      "season_sequence_number": 2,
+      "listing_id": "",
+      "series_id": "GG5H5XQX4",
+      "seo_title": "",
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "upload_date": "2026-01-23T00:00:00Z",
+      "recent_variant": "",
+      "episode_number": 2,
+      "slug": "",
+      "is_premium_only": true,
+      "duration_ms": 1439982,
+      "season_slug_title": "season-2",
+      "next_episode_id": "GD9UEVK8N",
+      "media_type": "episode",
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "seo_description": "",
+      "recent_audio_locale": "ja-JP",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "is_mature": false,
+      "available_offline": true,
+      "season_id": "G6X0C4JDV",
+      "availability_notes": "",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "availability_status": "premium_only",
+      "hd_flag": true,
+      "description": "In a village in the northern lands, Frieren’s party are hired to polish a statue of a hero.",
+      "closed_captions_available": false,
+      "is_clip": false,
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "is_dubbed": true,
+      "roles": [
+        "main"
+      ],
+      "sequence_number": 2,
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 359995,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 719990,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1079985,
+          "type": "midroll"
+        }
+      ],
+      "eligible_region": "US",
+      "season_display_number": ""
+    },
+    {
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/68c077000059f53812cc5d1af434f422.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 360006,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 720012,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1080018,
+          "type": "midroll"
+        }
+      ],
+      "availability_notes": "",
+      "episode_air_date": "2026-01-30T00:00:00Z",
+      "is_clip": false,
+      "mature_blocked": false,
+      "slug": "",
+      "season_title": "Season 2",
+      "season_number": 2,
+      "roles": [
+        "main"
+      ],
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "description": "Frieren’s party dream of hot springs as they reach Etwas, but the village is abandoned.",
+      "season_display_number": "",
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "is_premium_only": true,
+      "hd_flag": true,
+      "next_episode_title": "Other People's Homes",
+      "sequence_number": 3,
+      "identifier": "GG5H5XQX4|S00365545|E3",
+      "episode": "3",
+      "season_id": "G6X0C4JDV",
+      "title": "Somewhere She'd Like",
+      "eligible_region": "US",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GD9UEVK8N",
+          "is_premium_only": true,
+          "media_guid": "GD9UEVK8NV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "G31UVXGJM",
+          "is_premium_only": true,
+          "media_guid": "G31UVXGJMV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "G31UVXG0Q",
+          "is_premium_only": true,
+          "media_guid": "G31UVXG0QV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "G0DUMN71G",
+          "is_premium_only": true,
+          "media_guid": "G0DUMN71GV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "GMKUEXK75",
+          "is_premium_only": true,
+          "media_guid": "GMKUEXK75V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GWDU781WJ",
+          "is_premium_only": true,
+          "media_guid": "GWDU781WJV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GN7UNDQE5",
+          "is_premium_only": true,
+          "media_guid": "GN7UNDQE5V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GQJUMGKJQ",
+          "is_premium_only": true,
+          "media_guid": "GQJUMGKJQV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "G14UV4NNZ",
+          "is_premium_only": true,
+          "media_guid": "G14UV4NNZV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "G9DU9E888",
+          "is_premium_only": true,
+          "media_guid": "G9DU9E888V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GPWU8KPG8",
+          "is_premium_only": true,
+          "media_guid": "GPWU8KPG8V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        },
+        {
+          "audio_locale": "th-TH",
+          "guid": "GD9UEVX0D",
+          "is_premium_only": true,
+          "media_guid": "GD9UEVX0DV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6E5CQXGE",
+          "variant": ""
+        }
+      ],
+      "upload_date": "2026-01-30T00:00:00Z",
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "listing_id": "",
+      "media_type": "episode",
+      "channel_id": "crunchyroll",
+      "available_offline": true,
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "is_dubbed": true,
+      "seo_description": "",
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "premium_date": null,
+      "id": "GD9UEVK8N",
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "episode_number": 3,
+      "series_id": "GG5H5XQX4",
+      "audio_locale": "ja-JP",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "available_date": null,
+      "is_mature": false,
+      "slug_title": "somewhere-shed-like",
+      "closed_captions_available": false,
+      "availability_status": "premium_only",
+      "recent_audio_locale": "ja-JP",
+      "duration_ms": 1440024,
+      "season_slug_title": "season-2",
+      "next_episode_id": "GQJUMGJQE",
+      "recent_variant": "",
+      "seo_title": "",
+      "premium_available_date": "2026-01-30T15:00:00Z",
+      "production_episode_id": "",
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "season_sequence_number": 2,
+      "is_subbed": true,
+      "series_title": "Frieren: Beyond Journey's End"
+    },
+    {
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "episode": "4",
+      "is_dubbed": true,
+      "description": "Stark only asked Fern out as a joke, but the two end up going on a date.",
+      "recent_audio_locale": "ja-JP",
+      "episode_air_date": "2026-02-06T00:00:00Z",
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "available_date": null,
+      "available_offline": true,
+      "slug_title": "other-peoples-homes",
+      "is_premium_only": true,
+      "availability_status": "premium_only",
+      "season_slug_title": "season-2",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GQJUMGJQE",
+          "is_premium_only": true,
+          "media_guid": "GQJUMGJQEV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GPWU8KP2Q",
+          "is_premium_only": true,
+          "media_guid": "GPWU8KP2QV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GPWU8KP11",
+          "is_premium_only": true,
+          "media_guid": "GPWU8KP11V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "GEVUWZ923",
+          "is_premium_only": true,
+          "media_guid": "GEVUWZ923V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "GVWU80K5Z",
+          "is_premium_only": true,
+          "media_guid": "GVWU80K5ZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GG1UX28QJ",
+          "is_premium_only": true,
+          "media_guid": "GG1UX28QJV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GK9UG31JZ",
+          "is_premium_only": true,
+          "media_guid": "GK9UG31JZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "G50UMZQPX",
+          "is_premium_only": true,
+          "media_guid": "G50UMZQPXV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GJWUQ2ZZP",
+          "is_premium_only": true,
+          "media_guid": "GJWUQ2ZZPV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GX9U3Q550",
+          "is_premium_only": true,
+          "media_guid": "GX9U3Q550V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "G2XUN0EQ9",
+          "is_premium_only": true,
+          "media_guid": "G2XUN0EQ9V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        },
+        {
+          "audio_locale": "th-TH",
+          "guid": "GQJUMG28P",
+          "is_premium_only": true,
+          "media_guid": "GQJUMG28PV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6E5CQXGE",
+          "variant": ""
+        }
+      ],
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "hd_flag": true,
+      "channel_id": "crunchyroll",
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "id": "GQJUMGJQE",
+      "season_number": 2,
+      "series_title": "Frieren: Beyond Journey's End",
+      "duration_ms": 1439940,
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/abb6a680ae3bce59f8badd92e3fb1325.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "recent_variant": "",
+      "production_episode_id": "",
+      "availability_notes": "",
+      "season_id": "G6X0C4JDV",
+      "next_episode_id": "G50UMZP14",
+      "audio_locale": "ja-JP",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "sequence_number": 4,
+      "premium_date": null,
+      "identifier": "GG5H5XQX4|S00365545|E4",
+      "seo_description": "",
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "series_id": "GG5H5XQX4",
+      "episode_number": 4,
+      "title": "Other People's Homes",
+      "listing_id": "",
+      "is_subbed": true,
+      "seo_title": "",
+      "upload_date": "2026-02-06T00:00:00Z",
+      "is_mature": false,
+      "mature_blocked": false,
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 359985,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 719970,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1079955,
+          "type": "midroll"
+        }
+      ],
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "is_clip": false,
+      "season_title": "Season 2",
+      "roles": [
+        "main"
+      ],
+      "slug": "",
+      "closed_captions_available": false,
+      "eligible_region": "US",
+      "premium_available_date": "2026-02-06T15:00:00Z",
+      "season_sequence_number": 2,
+      "media_type": "episode",
+      "next_episode_title": "Logistics in the Northern Plateau",
+      "season_display_number": ""
+    },
+    {
+      "availability_status": "premium_only",
+      "is_mature": false,
+      "episode_number": 5,
+      "production_episode_id": "",
+      "season_number": 2,
+      "season_id": "G6X0C4JDV",
+      "season_title": "Season 2",
+      "series_id": "GG5H5XQX4",
+      "season_display_number": "",
+      "roles": [
+        "main"
+      ],
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "eligible_region": "US",
+      "next_episode_title": "A Demon-Slaying Request",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "audio_locale": "ja-JP",
+      "episode": "5",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "sequence_number": 5,
+      "series_title": "Frieren: Beyond Journey's End",
+      "episode_air_date": "2026-02-13T00:00:00Z",
+      "season_sequence_number": 2,
+      "is_dubbed": true,
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/7ac8dbbcb877f857a671d602caf489d2.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "upload_date": "2026-02-13T00:00:00Z",
+      "recent_variant": "",
+      "season_slug_title": "season-2",
+      "slug_title": "logistics-in-the-northern-plateau",
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "hd_flag": true,
+      "title": "Logistics in the Northern Plateau",
+      "is_subbed": true,
+      "closed_captions_available": false,
+      "available_date": null,
+      "seo_title": "",
+      "premium_date": null,
+      "is_clip": false,
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "availability_notes": "",
+      "is_premium_only": true,
+      "next_episode_id": "GWDU78XQG",
+      "identifier": "GG5H5XQX4|S00365545|E5",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "G50UMZP14",
+          "is_premium_only": true,
+          "media_guid": "G50UMZP14V",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "G2XUN0EP5",
+          "is_premium_only": true,
+          "media_guid": "G2XUN0EP5V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "G2XUN0E8W",
+          "is_premium_only": true,
+          "media_guid": "G2XUN0E8WV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "G7PU34QZD",
+          "is_premium_only": true,
+          "media_guid": "G7PU34QZDV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "G31UVXGDQ",
+          "is_premium_only": true,
+          "media_guid": "G31UVXGDQV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "G0DUMN7PG",
+          "is_premium_only": true,
+          "media_guid": "G0DUMN7PGV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GMKUEXK25",
+          "is_premium_only": true,
+          "media_guid": "GMKUEXK25V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GWDU781XJ",
+          "is_premium_only": true,
+          "media_guid": "GWDU781XJV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GN7UNDQQ5",
+          "is_premium_only": true,
+          "media_guid": "GN7UNDQQ5V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "G4VUWQNN8",
+          "is_premium_only": true,
+          "media_guid": "G4VUWQNN8V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "G8WU7NZMQ",
+          "is_premium_only": true,
+          "media_guid": "G8WU7NZMQV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        },
+        {
+          "audio_locale": "th-TH",
+          "guid": "G50UMZ539",
+          "is_premium_only": true,
+          "media_guid": "G50UMZ539V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6E5CQXGE",
+          "variant": ""
+        }
+      ],
+      "media_type": "episode",
+      "premium_available_date": "2026-02-13T15:00:00Z",
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 360006,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 720012,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1080018,
+          "type": "midroll"
+        }
+      ],
+      "available_offline": true,
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "channel_id": "crunchyroll",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "mature_blocked": false,
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "description": "Frieren is reunited with Fass the dwarf, who has been searching for the Boshaft liquor for over 200 years.",
+      "duration_ms": 1440024,
+      "recent_audio_locale": "ja-JP",
+      "id": "G50UMZP14",
+      "seo_description": "",
+      "slug": "",
+      "listing_id": ""
+    },
+    {
+      "season_title": "Season 2",
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "duration_ms": 1439940,
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "available_date": null,
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "is_dubbed": true,
+      "audio_locale": "ja-JP",
+      "episode_air_date": "2026-02-27T00:00:00Z",
+      "seo_title": "",
+      "eligible_region": "US",
+      "season_slug_title": "season-2",
+      "mature_blocked": false,
+      "next_episode_id": "GG1UX29Z3",
+      "episode": "6",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "title": "A Demon-Slaying Request",
+      "listing_id": "",
+      "is_mature": false,
+      "identifier": "GG5H5XQX4|S00365545|E6",
+      "id": "GWDU78XQG",
+      "description": "A village on the Northern Plateau is wiped out, and the victims' distinctive wounds point to a certain demon.",
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 359985,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 719970,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1079955,
+          "type": "midroll"
+        }
+      ],
+      "roles": [
+        "main"
+      ],
+      "available_offline": true,
+      "recent_audio_locale": "ja-JP",
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/ba8818be1f3954f6ab5da7c38ed03c59.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "media_type": "episode",
+      "is_clip": false,
+      "closed_captions_available": false,
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "channel_id": "crunchyroll",
+      "sequence_number": 6,
+      "is_subbed": true,
+      "production_episode_id": "",
+      "is_premium_only": true,
+      "upload_date": "2026-02-27T00:00:00Z",
+      "premium_available_date": "2026-02-27T15:00:00Z",
+      "availability_status": "premium_only",
+      "season_id": "G6X0C4JDV",
+      "season_display_number": "",
+      "series_id": "GG5H5XQX4",
+      "hd_flag": true,
+      "seo_description": "",
+      "next_episode_title": "The Divine Revolte",
+      "episode_number": 6,
+      "premium_date": null,
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GWDU78XQG",
+          "is_premium_only": true,
+          "media_guid": "GWDU78XQGV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "G8WU7NZQW",
+          "is_premium_only": true,
+          "media_guid": "G8WU7NZQWV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "G8WU7NZ4X",
+          "is_premium_only": true,
+          "media_guid": "G8WU7NZ4XV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "G9DU9E8QE",
+          "is_premium_only": true,
+          "media_guid": "G9DU9E8QEV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "GPWU8KP41",
+          "is_premium_only": true,
+          "media_guid": "GPWU8KP41V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GEVUWZ9M3",
+          "is_premium_only": true,
+          "media_guid": "GEVUWZ9M3V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GVWU80KEZ",
+          "is_premium_only": true,
+          "media_guid": "GVWU80KEZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GG1UX289J",
+          "is_premium_only": true,
+          "media_guid": "GG1UX289JV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GK9UG311Z",
+          "is_premium_only": true,
+          "media_guid": "GK9UG311ZV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "G14UV4NN9",
+          "is_premium_only": true,
+          "media_guid": "G14UV4NN9V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GZ7UDVZ4W",
+          "is_premium_only": true,
+          "media_guid": "GZ7UDVZ4WV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        }
+      ],
+      "season_number": 2,
+      "slug_title": "a-demon-slaying-request",
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "availability_notes": "",
+      "series_title": "Frieren: Beyond Journey's End",
+      "season_sequence_number": 2,
+      "slug": "",
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "recent_variant": ""
+    },
+    {
+      "episode_air_date": "2026-03-06T00:00:00Z",
+      "available_date": null,
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/059bf71457d85aff06b206f3d9d7e13f.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "id": "GG1UX29Z3",
+      "availability_status": "premium_only",
+      "series_title": "Frieren: Beyond Journey's End",
+      "season_number": 2,
+      "series_id": "GG5H5XQX4",
+      "next_episode_id": "G0DUMNPJ1",
+      "title": "The Divine Revolte",
+      "seo_description": "",
+      "recent_audio_locale": "ja-JP",
+      "channel_id": "crunchyroll",
+      "season_slug_title": "season-2",
+      "is_mature": false,
+      "audio_locale": "ja-JP",
+      "production_episode_id": "",
+      "availability_notes": "",
+      "season_title": "Season 2",
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "duration_ms": 1440024,
+      "season_id": "G6X0C4JDV",
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "episode_number": 7,
+      "premium_date": null,
+      "episode": "7",
+      "next_episode_title": "A Magnificent End",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "is_premium_only": true,
+      "slug": "",
+      "mature_blocked": false,
+      "is_subbed": true,
+      "seo_title": "",
+      "media_type": "episode",
+      "available_offline": true,
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 360006,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 720012,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1080018,
+          "type": "midroll"
+        }
+      ],
+      "roles": [
+        "main"
+      ],
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "season_display_number": "",
+      "is_dubbed": true,
+      "premium_available_date": "2026-03-06T15:30:00Z",
+      "slug_title": "the-divine-revolte",
+      "hd_flag": true,
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "listing_id": "",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "identifier": "GG5H5XQX4|S00365545|E7",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GG1UX29Z3",
+          "is_premium_only": true,
+          "media_guid": "GG1UX29Z3V",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GZ7UDVZ5J",
+          "is_premium_only": true,
+          "media_guid": "GZ7UDVZ5JV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GZ7UDVZ0Z",
+          "is_premium_only": true,
+          "media_guid": "GZ7UDVZ0ZV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR75CDMWJ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "GX9U3Q5G3",
+          "is_premium_only": true,
+          "media_guid": "GX9U3Q5G3V",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR9PC25D5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "G2XUN0EWW",
+          "is_premium_only": true,
+          "media_guid": "G2XUN0EWWV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6X0C4JKW",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "G7PU34QED",
+          "is_premium_only": true,
+          "media_guid": "G7PU34QEDV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GR49C71M5",
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "G31UVXG1Q",
+          "is_premium_only": true,
+          "media_guid": "G31UVXG1QV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GY19CP9EQ",
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "G0DUMN77G",
+          "is_premium_only": true,
+          "media_guid": "G0DUMN77GV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "GRJQC19X7",
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "G50UMZQQE",
+          "is_premium_only": true,
+          "media_guid": "G50UMZQQEV",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "G6NQCJ27J",
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GJWUQ2ZZ0",
+          "is_premium_only": true,
+          "media_guid": "GJWUQ2ZZ0V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRK5CNM43",
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GD9UEV5X4",
+          "is_premium_only": true,
+          "media_guid": "GD9UEV5X4V",
+          "original": false,
+          "roles": [
+            "dub"
+          ],
+          "season_guid": "GRMGC3Q4E",
+          "variant": ""
+        }
+      ],
+      "description": "Frieren, Fern, and Methode enter the woods to look for the four-armed Divine Revolte.",
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "closed_captions_available": false,
+      "eligible_region": "US",
+      "season_sequence_number": 2,
+      "is_clip": false,
+      "upload_date": "2026-03-06T00:00:00Z",
+      "sequence_number": 7,
+      "recent_variant": ""
+    },
+    {
+      "duration_ms": 1439940,
+      "season_display_number": "",
+      "is_premium_only": true,
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "seo_description": "",
+      "audio_locale": "ja-JP",
+      "premium_available_date": "2026-03-13T15:00:00Z",
+      "media_type": "episode",
+      "availability_notes": "",
+      "is_subbed": true,
+      "upload_date": "2026-03-13T00:00:00Z",
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "seo_title": "",
+      "season_title": "Season 2",
+      "episode_number": 8,
+      "season_number": 2,
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "available_date": null,
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "roles": [
+        "main"
+      ],
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/42034fd19b896891c09fedb01ec4dbed.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "is_mature": false,
+      "recent_variant": "",
+      "next_episode_title": "Himmel’s Memoirs",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "G0DUMNPJ1",
+          "is_premium_only": true,
+          "media_guid": "G0DUMNPJ1V",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GD9UEV50P",
+          "is_premium_only": true,
+          "media_guid": "GD9UEV50PV",
+          "original": false,
+          "roles": [
+            "description",
+            "dub"
+          ],
+          "season_guid": "G6JQC19J7",
+          "variant": ""
+        }
+      ],
+      "description": "The Divine Revolte appears at the village, while Frieren, Fern, and Methode battle Solide and Hemmung.",
+      "episode_air_date": "2026-03-13T00:00:00Z",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "season_sequence_number": 2,
+      "series_id": "GG5H5XQX4",
+      "recent_audio_locale": "ja-JP",
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "next_episode_id": "GEVUWZMNM",
+      "series_title": "Frieren: Beyond Journey's End",
+      "season_id": "G6X0C4JDV",
+      "available_offline": true,
+      "slug": "",
+      "id": "G0DUMNPJ1",
+      "premium_date": null,
+      "season_slug_title": "season-2",
+      "identifier": "GG5H5XQX4|S00365545|E8",
+      "listing_id": "",
+      "is_clip": false,
+      "title": "A Magnificent End",
+      "eligible_region": "US",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "channel_id": "crunchyroll",
+      "is_dubbed": true,
+      "slug_title": "a-magnificent-end",
+      "mature_blocked": false,
+      "closed_captions_available": false,
+      "sequence_number": 8,
+      "production_episode_id": "",
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "hd_flag": true,
+      "availability_status": "premium_only",
+      "episode": "8",
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 359985,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 719970,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1079955,
+          "type": "midroll"
+        }
+      ]
+    },
+    {
+      "eligible_region": "US",
+      "is_premium_only": true,
+      "seo_title": "",
+      "slug": "",
+      "season_title": "Season 2",
+      "availability_status": "premium_only",
+      "hd_flag": true,
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "available_date": null,
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "audio_locale": "ja-JP",
+      "episode_number": 9,
+      "premium_date": null,
+      "season_display_number": "",
+      "duration_ms": 1440024,
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "id": "GEVUWZMNM",
+      "season_slug_title": "season-2",
+      "is_dubbed": false,
+      "recent_audio_locale": "ja-JP",
+      "sequence_number": 9,
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "is_clip": false,
+      "media_type": "episode",
+      "title": "Himmel’s Memoirs",
+      "identifier": "GG5H5XQX4|S00365545|E9",
+      "closed_captions_available": false,
+      "next_episode_id": "G7PU34EJQ",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GEVUWZMNM",
+          "is_premium_only": true,
+          "media_guid": "GEVUWZMNMV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        }
+      ],
+      "upload_date": "2026-03-20T00:00:00Z",
+      "seo_description": "",
+      "episode": "9",
+      "episode_air_date": "2026-03-20T00:00:00Z",
+      "season_number": 2,
+      "season_tags": [
+        "winter-2024",
+        "summer-2023",
+        "fall-2023",
+        "winter-2026"
+      ],
+      "is_subbed": true,
+      "roles": [
+        "main"
+      ],
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Violence"
+      ],
+      "mature_blocked": false,
+      "premium_available_date": "2026-03-20T15:00:00Z",
+      "description": "When Frieren's party cannot afford the fare to cross Lake Korridor, the captain proposes a trade.",
+      "series_id": "GG5H5XQX4",
+      "series_title": "Frieren: Beyond Journey's End",
+      "season_id": "G6X0C4JDV",
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/74ff976559084b953a3431e75745f9d8.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "is_mature": false,
+      "recent_variant": "",
+      "slug_title": "himmels-memoirs",
+      "channel_id": "crunchyroll",
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 360006,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 720012,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1080018,
+          "type": "midroll"
+        }
+      ],
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "availability_notes": "",
+      "production_episode_id": "",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "season_sequence_number": 2,
+      "available_offline": true,
+      "next_episode_title": "A Beautiful Sight",
+      "listing_id": ""
+    },
+    {
+      "identifier": "GG5H5XQX4|S00365545|E10",
+      "subtitle_locales": [
+        "ar-SA",
+        "de-DE",
+        "en-US",
+        "es-419",
+        "es-ES",
+        "fr-FR",
+        "id-ID",
+        "it-IT",
+        "ms-MY",
+        "pt-BR",
+        "ru-RU",
+        "th-TH",
+        "vi-VN",
+        "zh-CN",
+        "zh-HK"
+      ],
+      "availability_starts": "9998-11-30T17:45:00Z",
+      "is_dubbed": false,
+      "language_presentation": {
+        "audio_notation": "1",
+        "text_notation": "EN"
+      },
+      "upload_date": "2026-03-27T00:00:00Z",
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Profanity",
+        "Smoking",
+        "Violence"
+      ],
+      "duration_ms": 1430139,
+      "season_tags": [
+        "winter-2026"
+      ],
+      "episode_air_date": "2026-03-27T00:00:00Z",
+      "recent_audio_locale": "ja-JP",
+      "series_title": "Frieren: Beyond Journey's End",
+      "ad_breaks": [
+        {
+          "offset_ms": 0,
+          "type": "preroll"
+        },
+        {
+          "offset_ms": 357534,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 715068,
+          "type": "midroll"
+        },
+        {
+          "offset_ms": 1072602,
+          "type": "midroll"
+        }
+      ],
+      "id": "G7PU34EJQ",
+      "season_slug_title": "season-2",
+      "series_id": "GG5H5XQX4",
+      "mature_blocked": false,
+      "episode": "10",
+      "slug": "",
+      "free_available_date": "9998-11-30T17:45:00Z",
+      "premium_available_date": "2026-03-27T15:00:00Z",
+      "availability_status": "premium_only",
+      "is_clip": false,
+      "season_sequence_number": 2,
+      "episode_number": 10,
+      "sequence_number": 10,
+      "availability_ends": "9998-11-30T17:45:00Z",
+      "channel_id": "crunchyroll",
+      "is_premium_only": true,
+      "eligible_region": "US",
+      "hd_flag": true,
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "G7PU34EJQ",
+          "is_premium_only": true,
+          "media_guid": "G7PU34EJQV",
+          "original": true,
+          "roles": [
+            "main"
+          ],
+          "season_guid": "G6X0C4JDV",
+          "variant": ""
+        }
+      ],
+      "season_id": "G6X0C4JDV",
+      "is_mature": false,
+      "closed_captions_available": false,
+      "available_date": null,
+      "season_title": "Season 2",
+      "description": "Hidden within the massive bridge spanning the Great Canyon Tor is a secret story of Himmel and Gehen.",
+      "images": {
+        "thumbnail": [
+          [
+            {
+              "height": 180,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 320
+            },
+            {
+              "height": 338,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 600
+            },
+            {
+              "height": 360,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 640
+            },
+            {
+              "height": 450,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 800
+            },
+            {
+              "height": 675,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 1200
+            },
+            {
+              "height": 810,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 1440
+            },
+            {
+              "height": 900,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 1600
+            },
+            {
+              "height": 1080,
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/82fedb47e733445e89bee0b3646a0969.png",
+              "type": "thumbnail",
+              "width": 1920
+            }
+          ]
+        ]
+      },
+      "production_episode_id": "",
+      "season_number": 2,
+      "media_type": "episode",
+      "slug_title": "a-beautiful-sight",
+      "listing_id": "",
+      "roles": [
+        "main"
+      ],
+      "seo_title": "",
+      "seo_description": "",
+      "recent_variant": "",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "season_display_number": "",
+      "audio_locale": "ja-JP",
+      "series_slug_title": "frieren-beyond-journeys-end",
+      "available_offline": true,
+      "is_subbed": true,
+      "premium_date": null,
+      "title": "A Beautiful Sight",
+      "extended_maturity_rating": {
+        "level": "M2",
+        "rating": "14",
+        "system": "cr-tv"
+      },
+      "availability_notes": ""
+    }
+  ],
+  "meta": {
+    "versions_considered": true
+  }
+}
