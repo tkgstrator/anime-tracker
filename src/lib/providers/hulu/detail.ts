@@ -134,7 +134,6 @@ export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
     entityType: 'tv',
     maturityRating: null,
     imageUrl: meta.imageUrl,
-    benefitId: meta.service,
     seasons: rsc?.seasons ?? []
   }
 }

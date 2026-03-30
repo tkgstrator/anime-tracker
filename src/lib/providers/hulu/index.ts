@@ -33,7 +33,6 @@ function vodItemToTitle(item: VodItem, badge?: BadgeType | null, comingSoonDate?
     entityType: item.schema_key === 'series' ? 'tv' : 'movie',
     imageUrl: item.imageUrl,
     maturityRating: null,
-    benefitId: 'hulu',
     nextEpisodeDate: comingSoonDate ?? (badgeEndAt ? parseHuluDate(badgeEndAt) : null),
     badge: badge ?? null
   }

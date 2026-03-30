@@ -1,0 +1,60 @@
+{
+  "amazon": {
+    "title": "映画 聲の形",
+    "description": "“退屈すること”を何よりも嫌う少年、石田将也。ガキ大将だった小学生の彼は、転校生の少女、西宮硝子に無邪気な好奇心を覚える。彼女が来たことを期に、少年は退屈から解放された日々を手に入れた。しかし、硝子とのある出来事がきっかけで将也は周囲から孤立してしまう。やがて５年の時を経て、別々の場所で高校生へと成長した将也と硝子。“ある出来事”以来、固く心を閉ざしていた将也は硝子のもとを訪れるが……。(c) 大今良時・講談社／映画聲の形製作委員会",
+    "entityType": "movie",
+    "maturityRating": null,
+    "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/fb149522cd239dd486e50a4efbcf268792280081cfe7b47445c0125dac70a736.jpg",
+    "seasons": [
+      {
+        "seasonId": "B0D4RQ2FWW",
+        "displayName": "本編",
+        "seasonNumber": 1,
+        "episodes": [
+          {
+            "episodeNumber": 1,
+            "episodeId": "B0D4RQ2FWW",
+            "title": "映画 聲の形",
+            "description": "“退屈すること”を何よりも嫌う少年、石田将也。ガキ大将だった小学生の彼は、転校生の少女、西宮硝子に無邪気な好奇心を覚える。彼女が来たことを期に、少年は退屈から解放された日々を手に入れた。しかし、硝子とのある出来事がきっかけで将也は周囲から孤立してしまう。やがて５年の時を経て、別々の場所で高校生へと成長した将也と硝子。“ある出来事”以来、固く心を閉ざしていた将也は硝子のもとを訪れるが……。(c) 大今良時・講談社／映画聲の形製作委員会",
+            "releaseDate": "2026-03-30T01:50:14.126Z",
+            "duration": 0,
+            "maturityRating": null,
+            "imageUrl": "https://m.media-amazon.com/images/S/pv-target-images/fb149522cd239dd486e50a4efbcf268792280081cfe7b47445c0125dac70a736.jpg",
+            "hasSubtitles": true,
+            "hasDub": false,
+            "benefitId": null
+          }
+        ]
+      }
+    ]
+  },
+  "crunchyroll": {
+    "title": "A Silent Voice",
+    "description": "Shoya Ishida once bullied his deaf classmate, Shoko Nishimiya, pushing her to transfer schools and leaving himself abandoned by his friends. Now a lonely high schooler consumed by guilt, he seeks her out to apologize. When their paths cross again, Shoya and Shoko must navigate friendship, blame, and the fragile hope that they can rewrite the story they started years ago.",
+    "entityType": "tv",
+    "maturityRating": 14,
+    "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/94fa8efd884d23a259816b1889a8eedd.png",
+    "seasons": [
+      {
+        "seasonId": "G6P8CX40K",
+        "displayName": "A Silent Voice",
+        "seasonNumber": 1,
+        "episodes": [
+          {
+            "episodeNumber": 1,
+            "episodeId": "GPWUKD19D",
+            "title": "A Silent Voice",
+            "description": "Shoya Ishida once bullied his deaf classmate, Shoko Nishimiya, pushing her to transfer schools and leaving himself abandoned by his friends. Now a lonely high schooler consumed by guilt, he seeks her out to apologize. When their paths cross again, Shoya and Shoko must navigate friendship, blame, and the fragile hope that they can rewrite the story they started years ago.",
+            "releaseDate": "2023-06-09T00:00:00.000Z",
+            "duration": 7782,
+            "maturityRating": null,
+            "imageUrl": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/d38bb97470270e801a39c6975595cd28.png",
+            "hasSubtitles": true,
+            "hasDub": false,
+            "benefitId": "crunchyroll"
+          }
+        ]
+      }
+    ]
+  }
+}
