@@ -8,7 +8,7 @@ interface Env {
 }
 
 export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> {
-  const providers = ['hulu', 'amazon'] as const
+  const providers = ['hulu', 'amazon', 'crunchyroll'] as const
 
   logger.debug({ action: 'trigger', cron: event.cron, scheduledTime: new Date(event.scheduledTime).toISOString() })
 

@@ -12,6 +12,7 @@ region = "aws:us-east-1"
 CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
 BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
 LAMBDA_FUNCTION_URL = "https://esxey6x7zbx2c3fdm6kkla4v4q0ftaol.lambda-url.ap-northeast-1.on.aws/"
+LAMBDA_FUNCTION_URL_US = "https://ytyebcratcyemkikzh3427i7eu0lasjk.lambda-url.us-east-1.on.aws/"
 
 [assets]
 directory = "dist"
@@ -63,6 +64,7 @@ name = "anime-tracker-staging"
 CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
 BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
 LAMBDA_FUNCTION_URL = "https://esxey6x7zbx2c3fdm6kkla4v4q0ftaol.lambda-url.ap-northeast-1.on.aws/"
+LAMBDA_FUNCTION_URL_US = "https://ytyebcratcyemkikzh3427i7eu0lasjk.lambda-url.us-east-1.on.aws/"
 
 [[env.staging.r2_buckets]]
 binding = "IMAGES"

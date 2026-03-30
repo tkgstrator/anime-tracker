@@ -46,7 +46,6 @@ export const SeasonSchema = z.object({
   seasonId: z.string().nonempty(),
   displayName: z.string().nonempty(),
   seasonNumber: z.number().int().positive(),
-  imageUrl: z.url(),
   episodes: z.array(EpisodeSchema)
 })
 export type Season = z.infer<typeof SeasonSchema>

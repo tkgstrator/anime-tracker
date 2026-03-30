@@ -1,13 +1,11 @@
 import dayjs from 'dayjs'
 import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
-import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.ts'
+import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
+import type { FetchClient } from './lambda'
 import { getAppLogger } from './logger'
 import { AniListAdapter, cleanTitle } from './metadata/anilist'
-import { AmazonProvider } from './providers/amazon'
-import type { Provider } from './providers/base'
-import { HuluProvider } from './providers/hulu'
 
 const adapter = new AniListAdapter()
 
@@ -27,20 +25,6 @@ async function findExistingContentIds(prisma: PrismaClient, contentIds: string[]
   return new Set(results)
 }
 
-const providers: Record<string, Provider> = {
-  amazon: new AmazonProvider(),
-  hulu: new HuluProvider()
-}
-
-function getProvider(name: string): Provider {
-  const provider = providers[name]
-  if (!provider) throw new Error(`Unknown provider: ${name}`)
-  return provider
-}
-
-/** Lambda 経由で TitleInfo を取得する関数。外部から注入する */
-export type FetchTitleInfoFn = (provider: string, contentId: string) => Promise<TitleInfo>
-
 /** ISO 8601 文字列を Date に変換し、過去なら null を返す */
 function parseFutureDate(dateStr: string | null | undefined): Date | null {
   if (!dateStr) return null
@@ -54,7 +38,7 @@ const fetchLogger = getAppLogger('fetch')
 export class SyncService {
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly fetchTitleInfoFn?: FetchTitleInfoFn
+    private readonly lambda: FetchClient
   ) {}
 
   /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
@@ -66,9 +50,7 @@ export class SyncService {
     })
 
     // Lambda 経由で取得（画像の R2 アップロードも Lambda 側で実行される）
-    const detail = this.fetchTitleInfoFn
-      ? await this.fetchTitleInfoFn(message.provider, message.contentId)
-      : await getProvider(message.provider).fetchTitleInfo(message.contentId)
+    const detail = await this.lambda.fetchTitleInfo({ provider: message.provider, contentId: message.contentId })
 
     syncLogger.debug({
       action: 'fetched-title-info',
@@ -205,8 +187,6 @@ export class SyncService {
 
   /** 新着エピソード / 最近更新取得: Lambda レスポンス → AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
   private async fetchTitleList(providerName: string, category: string, result: TitleListResponse): Promise<string[]> {
-    const provider = getProvider(providerName)
-
     // new_episode の場合、COMING_SOON タイトル（nextEpisodeDate あり）を除外して上書きを防ぐ
     const comingSoonContentIds =
       category === 'new_episode'
@@ -217,7 +197,7 @@ export class SyncService {
     if (comingSoonContentIds.size > 0) {
       fetchLogger.info({
         action: 'skip-coming-soon',
-        provider: provider.name,
+        provider: providerName,
         count: comingSoonContentIds.size
       })
     }
@@ -229,7 +209,7 @@ export class SyncService {
     const newTitles = titles.filter((t) => !existingIds.has(t.contentId))
     fetchLogger.info({
       action: 'check-titles',
-      provider: provider.name,
+      provider: providerName,
       total: titles.length,
       existing: existingIds.size,
       new: newTitles.length
@@ -245,7 +225,7 @@ export class SyncService {
 
     if (targetBadges.length > 0) {
       const titlesHavingBadge = await this.prisma.anime.findMany({
-        where: { provider: provider.name, badge: { in: targetBadges } },
+        where: { provider: providerName, badge: { in: targetBadges } },
         select: { contentId: true }
       })
       const idsToReset = titlesHavingBadge.filter((t) => !allContentIds.has(t.contentId)).map((t) => t.contentId)
@@ -261,7 +241,7 @@ export class SyncService {
       if (resetCount > 0) {
         fetchLogger.info({
           action: 'reset-badge',
-          provider: provider.name,
+          provider: providerName,
           category,
           badges: targetBadges,
           count: resetCount
@@ -277,7 +257,7 @@ export class SyncService {
       const batch = newTitles.slice(i, i + BATCH_SIZE)
       fetchLogger.debug({
         action: 'identify-batch',
-        provider: provider.name,
+        provider: providerName,
         batchIndex: Math.floor(i / BATCH_SIZE),
         batchSize: batch.length,
         titles: batch.map((t) => t.title)
@@ -291,7 +271,7 @@ export class SyncService {
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
           await this.prisma.anime.create({
             data: {
-              provider: provider.name,
+              provider: providerName,
               contentId: t.contentId,
               title: meta.title,
               description: t.description,
@@ -310,7 +290,7 @@ export class SyncService {
           })
           fetchLogger.info({
             action: 'create-anime',
-            provider: provider.name,
+            provider: providerName,
             contentId: t.contentId,
             title: meta.title,
             year: meta.year,
@@ -321,7 +301,7 @@ export class SyncService {
         } else {
           syncLogger.warn({
             action: 'unidentified',
-            provider: provider.name,
+            provider: providerName,
             title: batch[j].title,
             search: cleanTitle(batch[j].title),
             contentId: batch[j].contentId
@@ -335,14 +315,14 @@ export class SyncService {
     for (const t of existingTitles) {
       const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
       await this.prisma.anime.update({
-        where: { provider_contentId: { provider: provider.name, contentId: t.contentId } },
+        where: { provider_contentId: { provider: providerName, contentId: t.contentId } },
         data: { badge: t.badge, nextEpisodeDate }
       })
     }
     if (existingTitles.length > 0) {
       fetchLogger.debug({
         action: 'update-badge-and-dates',
-        provider: provider.name,
+        provider: providerName,
         count: existingTitles.length
       })
     }
@@ -351,14 +331,14 @@ export class SyncService {
     const updateTargets = titles.filter((t) => existingIds.has(t.contentId) && t.badge)
     fetchLogger.info({
       action: 'filter-by-badge',
-      provider: provider.name,
+      provider: providerName,
       total: existingIds.size,
       withBadge: updateTargets.length
     })
 
     fetchLogger.info({
       action: 'fetch-title-list-done',
-      provider: provider.name,
+      provider: providerName,
       identified: identifiedContentIds.length,
       updateTargets: updateTargets.length
     })
