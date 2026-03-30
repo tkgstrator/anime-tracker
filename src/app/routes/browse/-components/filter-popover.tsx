@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover'
 
-export function FilterPopover<T extends string | number | undefined>({
+export function FilterPopover<T extends string | number | boolean | undefined>({
   label,
   value,
   options,

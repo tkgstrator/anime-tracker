@@ -11,6 +11,7 @@ interface BrowseFilters {
   status?: string
   badge?: string
   aniListId?: number
+  exclusive?: boolean
   sort: 'title' | 'year'
   order: 'asc' | 'desc'
   search: string

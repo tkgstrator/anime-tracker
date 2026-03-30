@@ -72,8 +72,6 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
   const offer = options?.offer ?? 'svod'
   const params = OFFER_PARAMS[offer]
   const excludeKids = options?.excludeKids ?? true
-  const hasBenefit = !!options?.subscriptionId
-
   const entries: [string, string][] = []
 
   if (options?.expiring) {
@@ -118,7 +116,6 @@ function buildSearchParams(query: BrowseQuery, options?: BuildOptions): string {
   entries.push(['search-alias', query.searchAlias])
   entries.push(['bq', options?.bq ?? buildBqFilter(excludeKids)])
   entries.push(['qs-offer_type', params.offerType])
-  if (!hasBenefit) entries.push(['p_n_entity_type', '4174099051'])
   entries.push(['adult-product', '0'])
   entries.push(['pv_browse_internal_offer', params.internalOffer])
   if (options?.benefit) entries.push(['pv_browse_internal_benefit', options.benefit])
