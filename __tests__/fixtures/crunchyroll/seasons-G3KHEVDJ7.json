@@ -1,0 +1,262 @@
+{
+  "data": [
+    {
+      "id": "GR09CXPEK",
+      "channel_id": "crunchyroll",
+      "title": "The Apothecary Diaries",
+      "slug_title": "the-apothecary-diaries",
+      "series_id": "G3KHEVDJ7",
+      "season_display_number": "1",
+      "season_sequence_number": 1,
+      "season_number": 1,
+      "is_complete": false,
+      "description": "",
+      "keywords": [],
+      "season_tags": [
+        "fall-2023",
+        "winter-2024"
+      ],
+      "images": {},
+      "extended_maturity_rating": {
+        "system": "cr-tv",
+        "rating": "14",
+        "level": "M2"
+      },
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Smoking",
+        "Sexualized Imagery",
+        "Suggestive Dialogue",
+        "Suicide",
+        "Violence"
+      ],
+      "is_mature": false,
+      "mature_blocked": false,
+      "is_subbed": true,
+      "is_dubbed": true,
+      "is_simulcast": false,
+      "seo_title": "",
+      "seo_description": "",
+      "availability_notes": "",
+      "audio_locales": [
+        "ja-JP"
+      ],
+      "subtitle_locales": [
+        "es-ES",
+        "de-DE",
+        "it-IT",
+        "ar-SA",
+        "pt-BR",
+        "en-US",
+        "fr-FR",
+        "ru-RU",
+        "es-419"
+      ],
+      "audio_locale": "ja-JP",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "GR09CXPEK",
+          "original": true,
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GYP8CX7W5",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GYMGC32JJ",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "G6VNC2EDV",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GY3VC21M7",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GR8VCPZ39",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "G62PCVEXM",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GYGGCV89M",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "GR09CX7P9",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "G6P8CXG5Q",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GR2PCVQ35",
+          "original": false,
+          "variant": ""
+        }
+      ],
+      "identifier": "G3KHEVDJ7|S1",
+      "number_of_episodes": 24
+    },
+    {
+      "id": "G63VC291N",
+      "channel_id": "crunchyroll",
+      "title": "The Apothecary Diaries Season 2",
+      "slug_title": "the-apothecary-diaries-season-2",
+      "series_id": "G3KHEVDJ7",
+      "season_display_number": "2",
+      "season_sequence_number": 2,
+      "season_number": 2,
+      "is_complete": false,
+      "description": "",
+      "keywords": [],
+      "season_tags": [
+        "winter-2025",
+        "spring-2025"
+      ],
+      "images": {},
+      "extended_maturity_rating": {
+        "system": "cr-tv",
+        "rating": "14",
+        "level": "M2"
+      },
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Smoking",
+        "Sexualized Imagery",
+        "Suggestive Dialogue",
+        "Suicide",
+        "Violence"
+      ],
+      "is_mature": false,
+      "mature_blocked": false,
+      "is_subbed": true,
+      "is_dubbed": true,
+      "is_simulcast": true,
+      "seo_title": "",
+      "seo_description": "",
+      "availability_notes": "",
+      "audio_locales": [
+        "ja-JP"
+      ],
+      "subtitle_locales": [
+        "pt-BR",
+        "en-US",
+        "it-IT",
+        "es-419",
+        "fr-FR",
+        "ru-RU",
+        "ar-SA",
+        "es-ES",
+        "de-DE"
+      ],
+      "audio_locale": "ja-JP",
+      "versions": [
+        {
+          "audio_locale": "ja-JP",
+          "guid": "G63VC291N",
+          "original": true,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-419",
+          "guid": "GYWEC3DDJ",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "pt-BR",
+          "guid": "GYGGCVGGJ",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "fr-FR",
+          "guid": "GR09CX8JG",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "de-DE",
+          "guid": "GYE5CQEN3",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "hi-IN",
+          "guid": "GR75CD9JD",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "ta-IN",
+          "guid": "GR9PC23GE",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "te-IN",
+          "guid": "G6X0C40Z3",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "en-US",
+          "guid": "GR49C728D",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "it-IT",
+          "guid": "G69PC2G02",
+          "original": false,
+          "variant": ""
+        },
+        {
+          "audio_locale": "es-ES",
+          "guid": "GYX0C4ZEQ",
+          "original": false,
+          "variant": ""
+        }
+      ],
+      "identifier": "G3KHEVDJ7|S2",
+      "number_of_episodes": 24
+    }
+  ],
+  "meta": {
+    "versions_considered": true
+  },
+  "total": 2
+}

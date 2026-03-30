@@ -1,0 +1,206 @@
+{
+  "total": 1,
+  "data": [
+    {
+      "id": "G3KHEVDJ7",
+      "channel_id": "crunchyroll",
+      "title": "The Apothecary Diaries",
+      "slug": "",
+      "slug_title": "the-apothecary-diaries",
+      "description": "The Apothecary Diaries is a captivating anime series that weaves together mystery, historical intrigue, and medical science within the richly detailed world of an imperial court. \r\n\r\nAt the heart of the story is Maomao, a clever young woman obsessed with medicine and poisons. After being kidnapped and sold into servitude in the inner palace, she plans to keep a low profile until she finishes her apprenticeship. However, when she hears of a strange “curse” affecting the Imperial Consorts and their children, Maomao reluctantly intervenes, using her expertise to help.\r\n\r\nHer efforts attract the attention of Jinshi, a handsome and enigmatic high-ranking eunuch who promotes her to the position of food taster for Imperial Consort Gyokuyou. She soon finds herself entangled in political schemes, hidden dangers, and intricate relationships, all while trying to stay true to her independent nature.\r\n\r\nThe first season of The Apothecary Diaries centers on Maomao’s life as a palace servant, focusing on her curiosity, cleverness, and the daily intricacies of court life. Season 2 shifts toward deeper political intrigue.\r\n\r\nThe Apothecary Diaries has released two seasons so far, with the first season premiering October 2023 and the second airing January 2025. The series is produced by TOHO Animation STUDIO and OLM, with direction from Norihiro Naganuma for Season 1, and both Naganuma and Akinori Fudesaka for Season 2.",
+      "extended_description": "",
+      "keywords": [
+        "drama",
+        "shojo",
+        "olm",
+        "deutsche synchro"
+      ],
+      "season_tags": [
+        "fall-2023",
+        "winter-2024",
+        "winter-2025",
+        "spring-2025"
+      ],
+      "images": {
+        "poster_tall": [
+          [
+            {
+              "width": 60,
+              "height": 90,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/60x90/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 120,
+              "height": 180,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/120x180/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 240,
+              "height": 360,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/240x360/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 480,
+              "height": 720,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/480x720/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 750,
+              "height": 1125,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/750x1125/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 960,
+              "height": 1440,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/960x1440/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 1125,
+              "height": 1688,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1125x1688/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 1200,
+              "height": 1800,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x1800/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            },
+            {
+              "width": 1560,
+              "height": 2340,
+              "type": "poster_tall",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1560x2340/catalog/crunchyroll/af8f1de4c1b2d5345294490a45fcb22d.jpg"
+            }
+          ]
+        ],
+        "poster_wide": [
+          [
+            {
+              "width": 320,
+              "height": 180,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/320x180/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 600,
+              "height": 338,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/600x338/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 640,
+              "height": 360,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/640x360/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 800,
+              "height": 450,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/800x450/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 1200,
+              "height": 675,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1200x675/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 1440,
+              "height": 810,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1440x810/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 1600,
+              "height": 900,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1600x900/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            },
+            {
+              "width": 1920,
+              "height": 1080,
+              "type": "poster_wide",
+              "source": "https://www.crunchyroll.com/imgsrv/display/thumbnail/1920x1080/catalog/crunchyroll/880a9a293ef5b71e1122e85543f8e86d.jpg"
+            }
+          ]
+        ]
+      },
+      "episode_count": 48,
+      "season_count": 2,
+      "media_count": 48,
+      "content_provider": "ntv",
+      "maturity_ratings": [
+        "TV-14"
+      ],
+      "extended_maturity_rating": {
+        "system": "cr-tv",
+        "rating": "14",
+        "level": "M2"
+      },
+      "is_mature": false,
+      "mature_blocked": false,
+      "is_subbed": true,
+      "is_dubbed": true,
+      "is_simulcast": true,
+      "seo_title": "",
+      "seo_description": "",
+      "subtitle_locales": [
+        "en-US",
+        "es-ES",
+        "pt-BR",
+        "ru-RU",
+        "es-419",
+        "de-DE",
+        "fr-FR",
+        "ar-SA",
+        "it-IT",
+        "hi-IN"
+      ],
+      "audio_locales": [
+        "fr-FR",
+        "es-419",
+        "ja-JP",
+        "en-US",
+        "hi-IN",
+        "te-IN",
+        "pt-BR",
+        "de-DE",
+        "ta-IN",
+        "es-ES",
+        "it-IT"
+      ],
+      "availability_status": "available",
+      "availability_notes": "",
+      "series_launch_year": 2023,
+      "awards": [
+        {
+          "text": "2025 Anime Awards Nominee",
+          "icon_url": "https://imgsrv.crunchyroll.com/cdn-cgi/image/width=48,height=48/awards/anime_award_icon.png",
+          "is_current_award": false,
+          "is_winner": false
+        }
+      ],
+      "content_descriptors": [
+        "Drug/Alcohol Use",
+        "Smoking",
+        "Sexualized Imagery",
+        "Suggestive Dialogue",
+        "Suicide",
+        "Violence"
+      ],
+      "language_presentation": {
+        "audio_notation": "JA",
+        "text_notation": "10"
+      }
+    }
+  ],
+  "meta": {}
+}
