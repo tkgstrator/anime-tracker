@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { buildExclusiveQuery } from '../lib/anime-query'
 import { createPrismaClient } from '../lib/db'
 import { getAppLogger } from '../lib/logger'
 import {
@@ -71,83 +72,30 @@ anime.openapi(
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
 
-    // 独占配信フィルター: D1 に直接 SQL を投げてサブクエリで DB 側完結
+    // 独占配信フィルター: Prisma $queryRawUnsafe でサブクエリを使って DB 側完結
     if (exclusive != null) {
-      const conditions: string[] = ['is_identified = 1']
-      const binds: (string | number)[] = []
-      if (provider) {
-        conditions.push('provider = ?')
-        binds.push(provider)
-      }
-      if (year) {
-        conditions.push('year = ?')
-        binds.push(year)
-      }
-      if (quarter != null) {
-        conditions.push('quarter = ?')
-        binds.push(quarter)
-      }
-      if (status) {
-        conditions.push('status = ?')
-        binds.push(status)
-      }
-      if (scheduled != null) {
-        conditions.push('scheduled = ?')
-        binds.push(scheduled ? 1 : 0)
-      }
-      if (recorded != null) {
-        conditions.push('recorded = ?')
-        binds.push(recorded ? 1 : 0)
-      }
-      if (q) {
-        conditions.push('title LIKE ?')
-        binds.push(`%${q}%`)
-      }
-      if (badge) {
-        conditions.push('badge = ?')
-        binds.push(badge)
-      }
-      if (aniListId) {
-        conditions.push('anilist_id = ?')
-        binds.push(aniListId)
-      }
+      const { countSql, countBinds, dataSql, dataBinds } = buildExclusiveQuery({
+        provider,
+        year,
+        quarter,
+        status,
+        scheduled,
+        recorded,
+        q,
+        badge,
+        aniListId,
+        sort,
+        order,
+        exclusive,
+        page,
+        limit
+      })
 
-      const subquery =
-        'SELECT anilist_id FROM anime WHERE is_identified = 1 GROUP BY anilist_id HAVING COUNT(DISTINCT provider) > 1'
-      conditions.push(exclusive ? `anilist_id NOT IN (${subquery})` : `anilist_id IN (${subquery})`)
+      const countResult = await prisma.$queryRawUnsafe<{ cnt: number }[]>(countSql, ...countBinds)
+      const total = countResult[0]?.cnt ?? 0
 
-      const whereSql = conditions.join(' AND ')
-      const orderCol = sort === 'year' ? 'year' : sort === 'updatedAt' ? 'updated_at' : 'title'
-      const orderDir = order === 'desc' ? 'DESC' : 'ASC'
+      const data = await prisma.$queryRawUnsafe<z.infer<typeof AnimeSchema>[]>(dataSql, ...dataBinds)
 
-      const countResult = await c.env.DB.prepare(`SELECT COUNT(*) as cnt FROM anime WHERE ${whereSql}`)
-        .bind(...binds)
-        .first<{ cnt: number }>()
-      const total = countResult?.cnt ?? 0
-
-      const offset = (page - 1) * limit
-      const dataResult = await c.env.DB.prepare(
-        `SELECT * FROM anime WHERE ${whereSql} ORDER BY ${orderCol} ${orderDir} LIMIT ? OFFSET ?`
-      )
-        .bind(...binds, limit, offset)
-        .all()
-
-      const columnMap: Record<string, string> = {
-        content_id: 'contentId',
-        entity_type: 'entityType',
-        maturity_rating: 'maturityRating',
-        image_url: 'imageUrl',
-        is_identified: 'isIdentified',
-        anilist_id: 'aniListId',
-        next_episode_date: 'nextEpisodeDate',
-        expired_at: 'expiredAt',
-        expiring_season: 'expiringSeason',
-        created_at: 'createdAt',
-        updated_at: 'updatedAt'
-      }
-      const data = dataResult.results.map((row) =>
-        Object.fromEntries(Object.entries(row).map(([k, v]) => [columnMap[k] ?? k, v]))
-      ) as unknown as z.infer<typeof AnimeSchema>[]
       const totalPages = Math.ceil(total / limit)
       c.header('Cache-Control', 'no-store')
       return c.json({ data, total, page, limit, totalPages })
@@ -218,7 +166,7 @@ anime.openapi(
       },
       404: {
         description: 'Not Found',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       }
     }
   }),
@@ -267,7 +215,7 @@ anime.openapi(
       },
       404: {
         description: 'Not Found',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       }
     }
   }),
@@ -305,15 +253,15 @@ anime.openapi(
       },
       400: {
         description: '未録画エピソードなし',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       },
       404: {
         description: 'Not Found',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       },
       502: {
         description: 'バックエンドエラー',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       }
     }
   }),

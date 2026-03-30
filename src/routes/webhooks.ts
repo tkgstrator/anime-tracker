@@ -29,7 +29,7 @@ webhooks.openapi(
       },
       404: {
         description: 'エピソードが見つからない',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       },
       422: {
         description: 'バリデーションエラー',

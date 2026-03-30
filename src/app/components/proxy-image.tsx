@@ -14,7 +14,7 @@ type ProxyImageProps = {
 export function ProxyImage({ src, alt, className }: ProxyImageProps) {
   // TODO: R2 移行完了後に UUIDv5 ベースに戻す
   // const proxySrc = `/api/img/${imageKey(src)}`
-  const proxySrc = `/api/img/${btoa(src)}`
+  const proxySrc = `/api/img/${btoa(src).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`
   return (
     <img
       src={proxySrc}
