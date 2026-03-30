@@ -5,7 +5,9 @@
       "Bash(mv amazon_browse_all.ts fetch/)",
       "Bash(mv fetch_amazon.ts fetch/)",
       "Bash(mv fetch_amazon_episodes.ts fetch/)",
-      "Bash(mv fetch_hulu_episodes.ts fetch/)"
+      "Bash(mv fetch_hulu_episodes.ts fetch/)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
