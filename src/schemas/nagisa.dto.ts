@@ -1,29 +1,41 @@
 import { z } from 'zod'
 
-export const NagisaActiveJobSchema = z.object({
+const NagisaSeasonSchema = z.object({
+  season_number: z.number().int(),
+  episodes: z.array(z.number().int()).nullable().optional()
+})
+
+const NagisaJobProgressSchema = z.object({
+  current: z.number().int(),
+  total: z.number().int()
+})
+
+export const NagisaJobSchema = z.object({
   job_id: z.string(),
   provider: z.string(),
   content_id: z.string(),
-  title: z.string().nonempty().optional(),
-  seasons: z
-    .array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() }))
-    .nullable(),
+  title: z.string().nullable().optional(),
+  seasons: z.array(NagisaSeasonSchema).nullable(),
   timestamp: z.number(),
-  processedOn: z.number().optional(),
-  progress: z
-    .object({
-      current: z.number().int(),
-      total: z.number().int()
-    })
-    .optional()
+  processedOn: z.number().nullable().optional(),
+  finishedOn: z.number().nullable().optional(),
+  progress: NagisaJobProgressSchema.nullable().optional(),
+  failedReason: z.string().nullable().optional()
+})
+
+export type NagisaJob = z.infer<typeof NagisaJobSchema>
+
+export const NagisaQueueCategorySchema = z.object({
+  count: z.number().int(),
+  jobs: z.array(NagisaJobSchema)
 })
 
 export const NagisaQueueSchema = z.object({
-  wait: z.number().int(),
-  active: z.number().int(),
-  completed: z.number().int(),
-  failed: z.number().int(),
-  delayed: z.number().int()
+  active: NagisaQueueCategorySchema,
+  wait: NagisaQueueCategorySchema,
+  completed: NagisaQueueCategorySchema,
+  failed: NagisaQueueCategorySchema,
+  delayed: NagisaQueueCategorySchema
 })
 
 export const NagisaRedisSchema = z.object({
@@ -41,8 +53,7 @@ export const NagisaSystemSchema = z.object({
 export const NagisaStatusSchema = z.object({
   version: z.string(),
   uptime: z.number().int(),
-  queue: NagisaQueueSchema.nullable(),
-  active_jobs: z.array(NagisaActiveJobSchema),
+  queue: NagisaQueueSchema,
   redis: NagisaRedisSchema.nullable(),
   system: NagisaSystemSchema.nullable()
 })
@@ -65,16 +76,14 @@ export const NagisaPreviewSchema = z.object({
   episodes: z.array(NagisaEpisodePreviewSchema)
 })
 
-export const NagisaJobSchema = z.object({
+export const NagisaQueueResponseJobSchema = z.object({
   job_id: z.string(),
   status: z.string(),
   name: z.string(),
   data: z.object({
     provider: z.string(),
     content_id: z.string(),
-    seasons: z
-      .array(z.object({ season_number: z.number().int(), episodes: z.array(z.number().int()).nullable().optional() }))
-      .nullable(),
+    seasons: z.array(NagisaSeasonSchema).nullable(),
     marketplace: z.string().nullable()
   }),
   timestamp: z.number(),
@@ -83,6 +92,6 @@ export const NagisaJobSchema = z.object({
 
 export const NagisaQueueResponseSchema = z.object({
   count: z.number().int(),
-  jobs: z.array(NagisaJobSchema)
+  jobs: z.array(NagisaQueueResponseJobSchema)
 })
 export type NagisaQueueResponseSchema = z.infer<typeof NagisaQueueResponseSchema>

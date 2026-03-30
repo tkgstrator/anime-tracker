@@ -16,6 +16,7 @@ import {
   WifiOff,
   Zap
 } from 'lucide-react'
+import type { NagisaJob } from '@/schemas/nagisa.dto'
 import { Badge } from '../lib/../components/ui/badge'
 import { nagisaStatusAtom } from '../lib/atoms'
 import { Button } from './ui/button'
@@ -30,6 +31,50 @@ const formatUptime = (seconds: number): string => {
   return `${m}m`
 }
 
+const formatSeasons = (seasons: NagisaJob['seasons']) => {
+  if (!seasons || seasons.length === 0) return null
+  return seasons
+    .map((s) => {
+      const ep = s.episodes
+      if (!ep || ep.length === 0) return `S${s.season_number}`
+      return `S${s.season_number} Ep${ep[0]}–${ep[ep.length - 1]}`
+    })
+    .join(', ')
+}
+
+const JobItem = ({ job }: { job: NagisaJob }) => {
+  const seasonText = formatSeasons(job.seasons)
+
+  return (
+    <div className='rounded-lg bg-muted/40 px-3 py-2'>
+      <div className='flex items-center gap-2'>
+        <span className='inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-blue-500' />
+        <p className='min-w-0 flex-1 truncate text-xs font-medium'>{job.title ?? job.content_id}</p>
+        <span className='shrink-0 text-xs text-muted-foreground'>{job.provider}</span>
+      </div>
+      <div className='mt-1 flex items-center gap-1.5 pl-3.5'>
+        {seasonText && <span className='text-[10px] text-muted-foreground'>{seasonText}</span>}
+        <span className='ml-auto text-[10px] text-muted-foreground'>
+          {dayjs(job.processedOn ?? job.timestamp).format('MM/DD HH:mm')}
+        </span>
+      </div>
+      {job.progress && (
+        <div className='mt-1.5 flex items-center gap-2 pl-3.5'>
+          <div className='h-1 flex-1 overflow-hidden rounded-full bg-muted'>
+            <div
+              className='h-full rounded-full bg-blue-500 transition-all'
+              style={{ width: `${(job.progress.current / job.progress.total) * 100}%` }}
+            />
+          </div>
+          <span className='text-[10px] tabular-nums text-muted-foreground'>
+            {job.progress.current}/{job.progress.total}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export const ServerStatusDialog = () => {
   const { data: status, isPending, isError } = useAtomValue(nagisaStatusAtom)
 
@@ -42,7 +87,7 @@ export const ServerStatusDialog = () => {
       >
         <Server className='size-4' />
       </DialogTrigger>
-      <DialogContent className='select-none sm:max-w-lg'>
+      <DialogContent className='max-h-[80vh] select-none overflow-y-auto sm:max-w-lg'>
         <DialogHeader>
           <DialogTitle>Nagisa</DialogTitle>
         </DialogHeader>
@@ -74,65 +119,28 @@ export const ServerStatusDialog = () => {
               </Badge>
             </div>
 
-            {status.queue && (
-              <div className='grid grid-cols-5 gap-1.5'>
-                <QueueStat icon={Clock} label='Wait' value={status.queue.wait} />
-                <QueueStat icon={Loader2} label='Active' value={status.queue.active} active />
-                <QueueStat icon={CheckCircle} label='Done' value={status.queue.completed} />
-                <QueueStat
-                  icon={AlertTriangle}
-                  label='Fail'
-                  value={status.queue.failed}
-                  error={status.queue.failed > 0}
-                />
-                <QueueStat icon={Zap} label='Delay' value={status.queue.delayed} />
-              </div>
-            )}
+            <div className='grid grid-cols-5 gap-1.5'>
+              <QueueStat icon={Clock} label='Wait' value={status.queue.wait.count} />
+              <QueueStat icon={Loader2} label='Active' value={status.queue.active.count} active />
+              <QueueStat icon={CheckCircle} label='Done' value={status.queue.completed.count} />
+              <QueueStat
+                icon={AlertTriangle}
+                label='Fail'
+                value={status.queue.failed.count}
+                error={status.queue.failed.count > 0}
+              />
+              <QueueStat icon={Zap} label='Delay' value={status.queue.delayed.count} />
+            </div>
 
-            {status.active_jobs.length > 0 && (
+            {status.queue.active.jobs.length > 0 && (
               <div className='space-y-2'>
                 <div className='flex items-center gap-3'>
                   <Activity className='size-5 text-blue-500' />
-                  <p className='text-sm font-medium'>Active Jobs ({status.active_jobs.length})</p>
+                  <p className='text-sm font-medium'>Active Jobs ({status.queue.active.count})</p>
                 </div>
                 <div className='space-y-1.5'>
-                  {status.active_jobs.map((job) => (
-                    <div key={job.job_id} className='rounded-lg bg-muted/40 px-3 py-2'>
-                      <div className='flex items-center gap-2'>
-                        <span className='inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-blue-500' />
-                        <p className='min-w-0 flex-1 truncate text-xs font-medium'>{job.title ?? job.content_id}</p>
-                        <span className='shrink-0 text-xs text-muted-foreground'>{job.provider}</span>
-                      </div>
-                      <div className='mt-1 flex items-center gap-1.5 pl-3.5'>
-                        {job.seasons && job.seasons.length > 0 && (
-                          <span className='text-[10px] text-muted-foreground'>
-                            {job.seasons
-                              .map((s) => {
-                                const ep = s.episodes
-                                if (!ep || ep.length === 0) return `S${s.season_number}`
-                                return `S${s.season_number} Ep${ep[0]}–${ep[ep.length - 1]}`
-                              })
-                              .join(', ')}
-                          </span>
-                        )}
-                        <span className='ml-auto text-[10px] text-muted-foreground'>
-                          {dayjs(job.processedOn ?? job.timestamp).format('MM/DD HH:mm')}
-                        </span>
-                      </div>
-                      {job.progress && (
-                        <div className='mt-1.5 flex items-center gap-2 pl-3.5'>
-                          <div className='h-1 flex-1 overflow-hidden rounded-full bg-muted'>
-                            <div
-                              className='h-full rounded-full bg-blue-500 transition-all'
-                              style={{ width: `${(job.progress.current / job.progress.total) * 100}%` }}
-                            />
-                          </div>
-                          <span className='text-[10px] tabular-nums text-muted-foreground'>
-                            {job.progress.current}/{job.progress.total}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                  {status.queue.active.jobs.map((job) => (
+                    <JobItem key={job.job_id} job={job} />
                   ))}
                 </div>
               </div>
