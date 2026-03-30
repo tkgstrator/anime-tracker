@@ -57,24 +57,6 @@ anime.openapi(
       exclusive
     } = c.req.valid('query')
 
-    // 独占配信フィルター: anilistId が1つのプロバイダーにしか存在しないものを抽出
-    const exclusiveAniListIds =
-      exclusive != null
-        ? await prisma.anime
-            .findMany({
-              where: { isIdentified: true },
-              select: { aniListId: true, provider: true },
-              distinct: ['aniListId', 'provider']
-            })
-            .then((rows) => {
-              const counts = new Map<number, number>()
-              for (const row of rows) {
-                counts.set(row.aniListId, (counts.get(row.aniListId) ?? 0) + 1)
-              }
-              return [...counts.entries()].filter(([, count]) => count === 1).map(([id]) => id)
-            })
-        : undefined
-
     const where = {
       isIdentified: true,
       ...(provider ? { provider } : {}),
@@ -85,12 +67,92 @@ anime.openapi(
       ...(recorded != null ? { recorded } : {}),
       ...(q ? { title: { contains: q } } : {}),
       ...(badge ? { badge } : {}),
-      ...(aniListId ? { aniListId } : {}),
-      ...(exclusiveAniListIds
-        ? { aniListId: exclusive ? { in: exclusiveAniListIds } : { notIn: exclusiveAniListIds } }
-        : {})
+      ...(aniListId ? { aniListId } : {})
     }
     const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
+
+    // 独占配信フィルター: D1 に直接 SQL を投げてサブクエリで DB 側完結
+    if (exclusive != null) {
+      const conditions: string[] = ['is_identified = 1']
+      const binds: (string | number)[] = []
+      if (provider) {
+        conditions.push('provider = ?')
+        binds.push(provider)
+      }
+      if (year) {
+        conditions.push('year = ?')
+        binds.push(year)
+      }
+      if (quarter != null) {
+        conditions.push('quarter = ?')
+        binds.push(quarter)
+      }
+      if (status) {
+        conditions.push('status = ?')
+        binds.push(status)
+      }
+      if (scheduled != null) {
+        conditions.push('scheduled = ?')
+        binds.push(scheduled ? 1 : 0)
+      }
+      if (recorded != null) {
+        conditions.push('recorded = ?')
+        binds.push(recorded ? 1 : 0)
+      }
+      if (q) {
+        conditions.push('title LIKE ?')
+        binds.push(`%${q}%`)
+      }
+      if (badge) {
+        conditions.push('badge = ?')
+        binds.push(badge)
+      }
+      if (aniListId) {
+        conditions.push('anilist_id = ?')
+        binds.push(aniListId)
+      }
+
+      const subquery =
+        'SELECT anilist_id FROM anime WHERE is_identified = 1 GROUP BY anilist_id HAVING COUNT(DISTINCT provider) > 1'
+      conditions.push(exclusive ? `anilist_id NOT IN (${subquery})` : `anilist_id IN (${subquery})`)
+
+      const whereSql = conditions.join(' AND ')
+      const orderCol = sort === 'year' ? 'year' : sort === 'updatedAt' ? 'updated_at' : 'title'
+      const orderDir = order === 'desc' ? 'DESC' : 'ASC'
+
+      const countResult = await c.env.DB.prepare(`SELECT COUNT(*) as cnt FROM anime WHERE ${whereSql}`)
+        .bind(...binds)
+        .first<{ cnt: number }>()
+      const total = countResult?.cnt ?? 0
+
+      const offset = (page - 1) * limit
+      const dataResult = await c.env.DB.prepare(
+        `SELECT * FROM anime WHERE ${whereSql} ORDER BY ${orderCol} ${orderDir} LIMIT ? OFFSET ?`
+      )
+        .bind(...binds, limit, offset)
+        .all()
+
+      const columnMap: Record<string, string> = {
+        content_id: 'contentId',
+        entity_type: 'entityType',
+        maturity_rating: 'maturityRating',
+        image_url: 'imageUrl',
+        is_identified: 'isIdentified',
+        anilist_id: 'aniListId',
+        next_episode_date: 'nextEpisodeDate',
+        expired_at: 'expiredAt',
+        expiring_season: 'expiringSeason',
+        created_at: 'createdAt',
+        updated_at: 'updatedAt'
+      }
+      const data = dataResult.results.map((row) =>
+        Object.fromEntries(Object.entries(row).map(([k, v]) => [columnMap[k] ?? k, v]))
+      ) as unknown as z.infer<typeof AnimeSchema>[]
+      const totalPages = Math.ceil(total / limit)
+      c.header('Cache-Control', 'no-store')
+      return c.json({ data, total, page, limit, totalPages })
+    }
+
     const [data, total] = await Promise.all([
       prisma.anime.findMany({
         where,
