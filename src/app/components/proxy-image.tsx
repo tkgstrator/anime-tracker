@@ -1,8 +1,9 @@
 /**
- * R2 に保存された画像を表示するコンポーネント。
- * DB の imageUrl から UUIDv5 でファイル名を生成し、/api/img/ 経由で配信する。
+ * 画像プロキシコンポーネント。
+ * imageUrl をそのままプロキシ経由で配信する。
  */
-import { imageKey } from '@/lib/image-key'
+// TODO: R2 移行完了後に UUIDv5 ベースに戻す
+// import { imageKey } from '@/lib/image-key'
 
 type ProxyImageProps = {
   src: string
@@ -11,9 +12,12 @@ type ProxyImageProps = {
 }
 
 export function ProxyImage({ src, alt, className }: ProxyImageProps) {
+  // TODO: R2 移行完了後に UUIDv5 ベースに戻す
+  // const proxySrc = `/api/img/${imageKey(src)}`
+  const proxySrc = `/api/img/${btoa(src)}`
   return (
     <img
-      src={`/api/img/${imageKey(src)}`}
+      src={proxySrc}
       alt={alt}
       loading='lazy'
       decoding='async'
