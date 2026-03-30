@@ -25,7 +25,7 @@ nagisa.openapi(
       },
       502: {
         description: 'Nagisaサーバーに接続できない',
-        content: { 'application/json': { schema: z.object({ error: z.string() }) } }
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
       }
     }
   }),

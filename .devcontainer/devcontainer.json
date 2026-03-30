@@ -36,6 +36,7 @@
       "moby": false,
       "dockerDashComposeVersion": "v2"
     },
+    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {},
     "ghcr.io/dhoeric/features/act:1": {}
   },
   "postAttachCommand": "/bin/sh .devcontainer/postAttachCommand.sh",

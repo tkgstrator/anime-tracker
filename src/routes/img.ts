@@ -24,7 +24,8 @@ app.use('/:key', cache({ cacheName: 'img-proxy', cacheControl: 'public, max-age=
 
 app.get('/:key', async (c) => {
   const key = c.req.param('key')
-  const url = atob(key)
+  const padded = key.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice(0, (4 - (key.length % 4)) % 4)
+  const url = atob(padded)
 
   const res = await fetch(url)
   if (!res.ok) return c.text('Upstream error', 502)
