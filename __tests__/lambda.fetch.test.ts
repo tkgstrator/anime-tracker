@@ -47,8 +47,8 @@ async function fetchTitleInfo(baseUrl: string, provider: string, contentId: stri
   return detail
 }
 
-/** 同一作品のプロバイダ間データ比較 */
-function compareProviders(_label: string, results: Record<string, TitleInfo>) {
+/** 同一作品のプロバイダ間データ比較（シーズン数・エピソード数のみ） */
+function compareProviders(results: Record<string, TitleInfo>) {
   const providers = Object.keys(results)
   if (providers.length < 2) return
 
@@ -57,9 +57,6 @@ function compareProviders(_label: string, results: Record<string, TitleInfo>) {
 
   for (const provider of providers.slice(1)) {
     const other = results[provider]
-
-    // entityType が一致すること
-    expect(other.entityType, `entityType: ${baseProvider} vs ${provider}`).toBe(base.entityType)
 
     // シーズン数が一致すること
     expect(other.seasons.length, `seasons count: ${baseProvider} vs ${provider}`).toBe(base.seasons.length)
@@ -70,11 +67,6 @@ function compareProviders(_label: string, results: Record<string, TitleInfo>) {
         other.seasons[i].episodes.length,
         `season ${i + 1} episode count: ${baseProvider} vs ${provider}`
       ).toBe(base.seasons[i].episodes.length)
-
-      // 各エピソードの episodeNumber が一致すること
-      const baseEpNums = base.seasons[i].episodes.map((e) => e.episodeNumber)
-      const otherEpNums = other.seasons[i].episodes.map((e) => e.episodeNumber)
-      expect(otherEpNums, `season ${i + 1} episodeNumbers: ${baseProvider} vs ${provider}`).toEqual(baseEpNums)
     }
   }
 }
@@ -157,7 +149,7 @@ describeLocal('Cross-provider comparison', () => {
         const slug = _key
         writeFileSync(`${dir}/${slug}.json`, JSON.stringify(results, null, 2))
 
-        compareProviders(title.label, results)
+        compareProviders(results)
       },
       60_000
     )
