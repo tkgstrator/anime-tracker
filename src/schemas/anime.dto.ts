@@ -14,15 +14,15 @@ export const AnimeSchema = z.object({
   imageUrl: z.url(),
   year: z.number().int(),
   quarter: z.number().int().min(0).max(3),
-  isIdentified: z.boolean(),
+  isIdentified: z.coerce.boolean(),
   status: z.string(),
   aniListId: z.number().int(),
   badge: z.string().nullable(),
   nextEpisodeDate: z.coerce.string().nullable(),
   expiredAt: z.coerce.string().nullable(),
   expiringSeason: z.number().int().positive().nullable(),
-  scheduled: z.boolean(),
-  recorded: z.boolean(),
+  scheduled: z.coerce.boolean(),
+  recorded: z.coerce.boolean(),
   createdAt: z.coerce.string().nonempty(),
   updatedAt: z.coerce.string().nonempty()
 })
@@ -46,10 +46,10 @@ export const AnimeInfoSchema = AnimeSchema.extend({
           duration: z.number().int().nonnegative(),
           maturityRating: z.number().int().nonnegative().nullable(),
           imageUrl: z.string().nonempty(),
-          hasSubtitles: z.boolean(),
-          hasDub: z.boolean(),
+          hasSubtitles: z.coerce.boolean(),
+          hasDub: z.coerce.boolean(),
           benefitId: z.string().nonempty().nullable(),
-          recorded: z.boolean()
+          recorded: z.coerce.boolean()
         })
       )
     })
