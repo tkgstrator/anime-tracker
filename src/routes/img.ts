@@ -20,11 +20,13 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>()
 //   })
 // })
 
-app.use('/:key', cache({ cacheName: 'img-proxy', cacheControl: 'public, max-age=86400' }))
+app.use('/:key{.+}', cache({ cacheName: 'img-proxy', cacheControl: 'public, max-age=86400' }))
 
-app.get('/:key', async (c) => {
-  const key = c.req.param('key')
-  const padded = key.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice(0, (4 - (key.length % 4)) % 4)
+app.get('/:key{.+}', async (c) => {
+  const raw = c.req.param('key')
+  // base64url → standard base64 に変換（旧 base64 パスもそのまま通る）
+  const key = raw.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = key + '==='.slice(0, (4 - (key.length % 4)) % 4)
   const url = atob(padded)
 
   const res = await fetch(url)
