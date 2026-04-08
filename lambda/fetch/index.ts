@@ -11,13 +11,14 @@
 // import { AwsClient } from 'aws4fetch'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-// import { imageKey } from '../../src/lib/image-key'
+import { setupLogger } from '../../src/lib/logger'
 import { AmazonProvider } from '../../src/lib/providers/amazon'
 import type { Provider } from '../../src/lib/providers/base'
 import { CrunchyrollProvider } from '../../src/lib/providers/crunchyroll'
 import { HuluProvider } from '../../src/lib/providers/hulu'
 
 dayjs.extend(utc)
+setupLogger()
 
 function getProvider(name: string): Provider {
   if (name === 'hulu') return new HuluProvider()

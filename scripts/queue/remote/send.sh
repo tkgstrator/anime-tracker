@@ -2,16 +2,17 @@
 set -euo pipefail
 
 # Cloudflare Queues REST API 経由でメッセージを送信する
-# Usage: .vscode/scripts/queue-send.sh <provider> <category>
+# Usage: scripts/queue/send.sh <provider> <category>
 #   provider: amazon | hulu
 #   category: new_episode | coming_soon | expiring
 
+cd "$(dirname "$0")/../../.."
 source .env
 export CLOUDFLARE_API_TOKEN
 export CLOUDFLARE_ACCOUNT_ID
 
-PROVIDER="${1:?Usage: queue-send.sh <provider> <category>}"
-CATEGORY="${2:?Usage: queue-send.sh <provider> <category>}"
+PROVIDER="${1:?Usage: send.sh <provider> <category>}"
+CATEGORY="${2:?Usage: send.sh <provider> <category>}"
 QUEUE_NAME="anime-tracker-sync-staging"
 
 # キュー名からキューIDを取得
