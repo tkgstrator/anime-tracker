@@ -8,7 +8,7 @@ dayjs.extend(timezone)
 
 import { z } from 'zod'
 import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
-import { type BadgeType, EntityType, EpisodeSchema, TitleSchema } from './common.dto'
+import { type BadgeType, EntityType, EpisodeSchema, stripQueryParams, TitleSchema } from './common.dto'
 
 /** Amazon 画像 URL からディレクティブ付き装飾を除去する */
 const AmazonImageUrlSchema = z.string().transform((url) => {
@@ -233,7 +233,7 @@ export const PageDataSchema = z.object({
   synopsis: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url(),
+  imageUrl: z.url().transform(stripQueryParams),
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
   duration: z.number().nonnegative().optional(),

@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+/** URL からクエリパラメータを除去する */
+export const stripQueryParams = (url: string) => new URL(url).origin + new URL(url).pathname
+
 export const EntityType = z.enum(['tv', 'movie'])
 export type EntityType = z.infer<typeof EntityType>
 
@@ -12,7 +15,7 @@ export const TitleSchema = z.object({
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   entityType: EntityType,
-  imageUrl: z.string().nonempty(),
+  imageUrl: z.url().transform(stripQueryParams),
   maturityRating: z.number().int().positive().nullable(),
   nextEpisodeDate: z.string().nullable().optional(),
   badge: BadgeType.nullable().optional(),
@@ -34,7 +37,7 @@ export const EpisodeSchema = z.object({
   releaseDate: z.iso.datetime(),
   duration: z.number().int().nonnegative(),
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url(),
+  imageUrl: z.url().transform(stripQueryParams),
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
   benefitId: z.string().nullable()
@@ -54,7 +57,7 @@ export const TitleInfoSchema = z.object({
   description: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url(),
+  imageUrl: z.url().transform(stripQueryParams),
   seasons: z.array(SeasonSchema)
 })
 export type TitleInfo = z.infer<typeof TitleInfoSchema>
