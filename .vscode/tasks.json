@@ -5,9 +5,7 @@
       "label": "Update Dependencies",
       "type": "shell",
       "command": "act workflow_dispatch -W .github/workflows/update_dependencies.yaml --secret GITHUB_TOKEN=$(gh auth token)",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     },
@@ -15,185 +13,239 @@
       "label": "Update Dependencies (Dry Run)",
       "type": "shell",
       "command": "act workflow_dispatch -W .github/workflows/update_dependencies.yaml --secret GITHUB_TOKEN=$(gh auth token) -n",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     },
     {
       "label": "Set Secrets (staging)",
       "type": "shell",
-      "command": ".vscode/scripts/set-secrets.sh .dev.vars",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "command": "${workspaceFolder}/scripts/cloudflare/set-secrets.sh .dev.vars",
+      "options": { "cwd": "${workspaceFolder}/scripts/cloudflare" },
       "problemMatcher": [],
       "group": "none"
     },
     {
-      "label": "D1: Local → Remote",
+      "label": "Local → Remote",
       "type": "shell",
-      "command": ".vscode/scripts/d1-local-to-remote.sh",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "command": "${workspaceFolder}/scripts/d1/local-to-remote.sh",
+      "options": { "cwd": "${workspaceFolder}/scripts/d1" },
       "problemMatcher": [],
       "group": "none"
     },
     {
-      "label": "D1: Remote → Local",
+      "label": "Remote → Local",
       "type": "shell",
-      "command": ".vscode/scripts/d1-remote-to-local.sh",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "command": "${workspaceFolder}/scripts/d1/remote-to-local.sh",
+      "options": { "cwd": "${workspaceFolder}/scripts/d1" },
       "problemMatcher": [],
       "group": "none"
     },
     {
-      "label": "Queue: Fetch New Episode (Amazon)",
+      "label": "Fetch New Episode (Amazon)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-local.sh amazon new_episode",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/local.sh amazon new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue: Fetch New Episode (Hulu)",
+      "label": "Fetch New Episode (Hulu)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-local.sh hulu new_episode",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/local.sh hulu new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue: Fetch Coming Soon (Amazon)",
+      "label": "Fetch Coming Soon (Amazon)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-local.sh amazon coming_soon",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/local.sh amazon coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue: Fetch Coming Soon (Hulu)",
+      "label": "Fetch Coming Soon (Hulu)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-local.sh hulu coming_soon",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/local.sh hulu coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue: Fetch Expiring (Amazon)",
+      "label": "Fetch Expiring (Amazon)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-local.sh amazon expiring",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/local.sh amazon expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue: Fetch Expiring (Hulu)",
+      "label": "Fetch Expiring (Hulu)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-local.sh hulu expiring",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/local.sh hulu expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue [Remote]: Fetch New Episode (Amazon)",
+      "label": "Fetch New Episode (Amazon)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-send.sh amazon new_episode",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh amazon new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue [Remote]: Fetch New Episode (Hulu)",
+      "label": "Fetch New Episode (Hulu)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-send.sh hulu new_episode",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh hulu new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue [Remote]: Fetch Coming Soon (Amazon)",
+      "label": "Fetch Coming Soon (Amazon)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-send.sh amazon coming_soon",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh amazon coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue [Remote]: Fetch Coming Soon (Hulu)",
+      "label": "Fetch Coming Soon (Hulu)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-send.sh hulu coming_soon",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh hulu coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue [Remote]: Fetch Expiring (Amazon)",
+      "label": "Fetch Expiring (Amazon)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-send.sh amazon expiring",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh amazon expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "Queue [Remote]: Fetch Expiring (Hulu)",
+      "label": "Fetch Expiring (Hulu)",
       "type": "shell",
-      "command": ".vscode/scripts/queue-send.sh hulu expiring",
-      "options": { "cwd": "${workspaceFolder}" },
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh hulu expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "CI: Integration (All)",
+      "label": "Title List (Amazon, new_episode)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list amazon new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (Amazon, coming_soon)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list amazon coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (Hulu, new_episode)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list hulu new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (Hulu, coming_soon)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list hulu coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (Crunchyroll, new_episode)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list crunchyroll new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (Crunchyroll, coming_soon)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list crunchyroll coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Expiring (Amazon)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh expiring amazon",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Expiring (Hulu)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh expiring hulu",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Expiring (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh expiring crunchyroll",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Integration (All)",
       "type": "shell",
       "command": "act push -W .github/workflows/integration.yaml",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "CI: CommitLint",
+      "label": "CommitLint",
       "type": "shell",
       "command": "act push -W .github/workflows/integration.yaml -j commitlint",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "CI: Code Check",
+      "label": "Code Check",
       "type": "shell",
       "command": "act push -W .github/workflows/integration.yaml -j check",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "CI: Run Tests",
+      "label": "Run Tests",
       "type": "shell",
       "command": "act push -W .github/workflows/integration.yaml -j test",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     },
     {
-      "label": "CI: Fetch Expiring",
+      "label": "Fetch Expiring",
       "type": "shell",
       "command": "act workflow_dispatch -W .github/workflows/fetch_expiring.yaml --secret CLOUDFLARE_API_TOKEN --secret CLOUDFLARE_ACCOUNT_ID",
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
+      "options": { "cwd": "${workspaceFolder}/.github/workflows" },
       "problemMatcher": [],
       "group": "test"
     }

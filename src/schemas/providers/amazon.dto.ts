@@ -43,7 +43,7 @@ export const BrowseEntitySchema = z
     entitlementCues: z.object({
       titleMetadataBadge: z.object({ message: z.string().nonempty().optional() }),
       highValueMessage: z
-        .object({ message: z.string().nonempty().optional() })
+        .object({ message: z.string().optional() })
         .optional()
         .transform((v) => {
           const msg = v?.message?.trim()
