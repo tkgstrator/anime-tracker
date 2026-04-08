@@ -18,7 +18,7 @@ LAMBDA_FUNCTION_URL_US = "https://ytyebcratcyemkikzh3427i7eu0lasjk.lambda-url.us
 directory = "dist"
 not_found_handling = "single-page-application"
 binding = "ASSETS"
-run_worker_first = ["/api/*", "/__scheduled"]
+run_worker_first = ["/api/*", "/__scheduled", "/anime/*"]
 
 [[r2_buckets]]
 binding = "IMAGES"
