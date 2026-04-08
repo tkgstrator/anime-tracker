@@ -1,9 +1,8 @@
 import { kanji2number } from '@geolonia/japanese-numeral'
 import z from 'zod'
+import { stripQueryParams } from './common.dto'
 
 // --- Browse schemas (Palette API / Filtered API) ---
-
-const stripQueryParams = (url: string) => new URL(url).origin + new URL(url).pathname
 
 const EpisodeInfo = z.object({
   meta_id: z.number(),
