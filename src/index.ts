@@ -17,6 +17,7 @@ import { MessageSchema } from './schemas/message.dto'
 type Bindings = {
   DB: D1Database
   IMAGES: R2Bucket
+  ASSETS: Fetcher
   TMDB_API_KEY: string
   SYNC_QUEUE: Queue
   KV: KVNamespace
@@ -108,6 +109,59 @@ app.get(
     pageTitle: 'AnimeTracker API Reference'
   })
 )
+
+// OG メタタグ注入: /anime/:id へのリクエストに対してアニメ情報を埋め込む
+app.get('/anime/:id', async (c) => {
+  const id = c.req.param('id')
+  const prisma = createPrismaClient(c.env.DB)
+  try {
+    const anime = await prisma.anime.findUnique({
+      where: { id },
+      select: { title: true, description: true, imageUrl: true }
+    })
+
+    // SPA の index.html を ASSETS から取得
+    const asset = await c.env.ASSETS.fetch(new URL('/', c.req.url))
+    const html = await asset.text()
+
+    if (!anime) {
+      return c.html(html)
+    }
+
+    const title = escapeHtml(anime.title)
+    const description = escapeHtml(anime.description.slice(0, 200))
+    const image = escapeHtml(anime.imageUrl)
+    const url = escapeHtml(c.req.url)
+
+    const ogTags = [
+      `<meta property="og:title" content="${title}" />`,
+      `<meta property="og:description" content="${description}" />`,
+      `<meta property="og:image" content="${image}" />`,
+      `<meta property="og:url" content="${url}" />`,
+      `<meta property="og:type" content="website" />`,
+      `<meta name="twitter:card" content="summary_large_image" />`,
+      `<meta name="twitter:title" content="${title}" />`,
+      `<meta name="twitter:description" content="${description}" />`,
+      `<meta name="twitter:image" content="${image}" />`,
+      `<title>${title} | Nagisa</title>`
+    ].join('\n    ')
+
+    const injected = html
+      .replace('<title>Nagisa</title>', ogTags)
+      .replace(
+        '<meta name="description" content="Prime Video / Hulu / Netflix のアニメ録画状況を管理するアプリ" />',
+        `<meta name="description" content="${description}" />`
+      )
+
+    return c.html(injected)
+  } finally {
+    await prisma.$disconnect()
+  }
+})
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
 
 export default {
   fetch: app.fetch,
