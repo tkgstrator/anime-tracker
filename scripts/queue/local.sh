@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # ローカル開発サーバーの /api/queues にメッセージを送信する
-# Usage: .vscode/scripts/queue-local.sh <provider> <category>
+# Usage: scripts/queue/local.sh <provider> <category>
 #   provider: amazon | hulu
 #   category: new_episode | coming_soon | expiring
 
-PROVIDER="${1:?Usage: queue-local.sh <provider> <category>}"
-CATEGORY="${2:?Usage: queue-local.sh <provider> <category>}"
+PROVIDER="${1:?Usage: local.sh <provider> <category>}"
+CATEGORY="${2:?Usage: local.sh <provider> <category>}"
 PORT="${3:-25173}"
 
 MESSAGE=$(jq -n --arg provider "$PROVIDER" --arg category "$CATEGORY" \

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cd "$(dirname "$0")/../.."
+
 ENV_FILE="${1:-.dev.vars}"
 
 if [[ ! -f "$ENV_FILE" ]]; then

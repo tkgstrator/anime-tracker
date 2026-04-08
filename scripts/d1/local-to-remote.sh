@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # ローカルD1をリモートD1にリストアする
-# Usage: .vscode/scripts/d1-local-to-remote.sh
+# Usage: scripts/d1/local-to-remote.sh
 
+cd "$(dirname "$0")/../.."
 source .env
 export CLOUDFLARE_API_TOKEN
 export CLOUDFLARE_ACCOUNT_ID
