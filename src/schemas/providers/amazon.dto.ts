@@ -280,16 +280,14 @@ const DetailBodySchema = z
       })
     })
   })
-  .transform(
-    (body): PageData => {
-      const hd = body.atf.state.detail.headerDetail
-      return PageDataSchema.parse({
-        ...hd,
-        seasons: body.atf.state.seasons,
-        episodePageTokens: body.btf.state.episodeList.actions
-      })
-    }
-  )
+  .transform((body): PageData => {
+    const hd = body.atf.state.detail.headerDetail
+    return PageDataSchema.parse({
+      ...hd,
+      seasons: body.atf.state.seasons,
+      episodePageTokens: body.btf.state.episodeList.actions
+    })
+  })
 
 export const DetailPageJsonSchema = z
   .union([

@@ -23,11 +23,7 @@ export function FilterPopover<T extends string | number | boolean | undefined>({
             : 'bg-muted text-muted-foreground hover:bg-muted/80'
         }`}
       >
-        {value != null ? (
-          <span>{selected?.label ?? 'すべて'}</span>
-        ) : (
-          <span>{label}</span>
-        )}
+        {value != null ? <span>{selected?.label ?? 'すべて'}</span> : <span>{label}</span>}
       </PopoverTrigger>
       <PopoverContent align='start' className='w-40 p-1'>
         {options.map((opt) => (
