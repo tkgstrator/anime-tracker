@@ -84,7 +84,7 @@ export const NagisaQueueResponseJobSchema = z.object({
     provider: z.string(),
     content_id: z.string(),
     seasons: z.array(NagisaSeasonSchema).nullable(),
-    marketplace: z.string().nullable()
+    marketplace: z.string().optional()
   }),
   timestamp: z.number(),
   preview: NagisaPreviewSchema.optional()
