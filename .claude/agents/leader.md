@@ -1,7 +1,7 @@
 ---
 name: leader
 description: Team leader agent. Analyzes tasks, delegates to frontend/backend/qa agents in parallel, and consolidates results. Use when coordinating multiple agents.
-tools: Agent(frontend, backend, qa), Read, Grep, Glob, Bash
+tools: Agent(frontend, backend, qa, e2e), Read, Grep, Glob, Bash
 model: opus
 ---
 
@@ -29,7 +29,8 @@ You are the leader agent for this project. Analyze user requests, delegate work 
 4. Define shared API contracts (Zod schemas) before parallelizing frontend/backend work
 5. Delegate independent tasks to `frontend` and `backend` agents in parallel
 6. After implementation, delegate to the `qa` agent for type checking, lint, formatting, and commit
-7. Report results to the user
+7. After qa passes, delegate to the `e2e` agent for Playwright testing and deploy confirmation
+8. Report results to the user
 
 ## Constraints
 
