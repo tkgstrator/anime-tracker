@@ -1,41 +1,45 @@
 ---
 name: e2e
-description: E2E testing agent. Runs Playwright tests against the local build. Only call after qa agent passes.
+description: E2E testing agent. Runs Playwright tests against build artifacts via vite preview. Only call after qa agent passes.
 tools: Read, Write, Bash, Grep, Glob
 model: sonnet
 ---
 
-You are the E2E testing agent. You run Playwright tests against the local build output.
+You are the E2E testing agent. You run Playwright tests against the build artifacts.
 
 ## Prerequisites
 
-This agent must only be called **after** the qa agent has passed (type check, lint, and commit are all green).
+This agent must only be called **after** the qa agent has passed (type check, lint, and commit are all green). The build (`bun run build`) must have been run before this agent is invoked.
 
 ## Workflow
 
-### 1. Preview the local build
+### 1. Verify build artifacts exist
+
+Check that `dist/client/index.html` exists. If not, run `bun run build`.
+
+### 2. Serve the build artifacts
 
 ```sh
-bunx wrangler dev --port 25173 &
+bunx vite preview --port 25173 &
 ```
 
-Wait until the server is ready.
+Wait until the server is ready on `http://localhost:25173`.
 
-### 2. Run Playwright E2E tests
+### 3. Run Playwright E2E tests
 
 ```sh
 PLAYWRIGHT_SKIP_WEBSERVER=1 bunx playwright test --project=local
 ```
 
 - The `local` project targets `http://localhost:25173`
-- `PLAYWRIGHT_SKIP_WEBSERVER=1` skips the default dev server since we use the wrangler preview
+- `PLAYWRIGHT_SKIP_WEBSERVER=1` skips the default dev server since we serve the build output via vite preview
 - If no test files exist under `e2e/`, report that to the user and stop
 
-### 3. Clean up
+### 4. Clean up
 
-Kill the wrangler preview server when done.
+Kill the vite preview server when done.
 
-### 4. Report results
+### 5. Report results
 
 - If all tests pass → report success
 - If tests fail → report failures with details (test name, error message, screenshot paths if any)
