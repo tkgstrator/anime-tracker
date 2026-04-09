@@ -2,7 +2,6 @@ import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-q
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
-import { SlideUpTransition } from '@/app/components/page-transition'
 import api from '@/app/lib/api'
 import { queryKeys } from '@/app/lib/query-keys'
 import { animeDetailQueryOptions } from '@/app/lib/query-options'
@@ -59,25 +58,23 @@ function AnimeDetailPage() {
   const totalDuration = anime.seasons.reduce((sum, s) => sum + s.episodes.reduce((es, e) => es + e.duration, 0), 0)
 
   return (
-    <SlideUpTransition>
-      <div className='space-y-8'>
-        <div>
-          <Link to='/' className='text-sm text-muted-foreground hover:text-foreground'>
-            ← 一覧に戻る
-          </Link>
-        </div>
-
-        <AnimeHero
-          anime={anime}
-          totalEpisodes={totalEpisodes}
-          totalDuration={totalDuration}
-          updating={updating}
-          onToggleScheduled={toggleScheduled}
-          onToggleRecorded={toggleRecorded}
-        />
-
-        <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
+    <div className='space-y-8'>
+      <div>
+        <Link to='/' className='text-sm text-muted-foreground hover:text-foreground'>
+          ← 一覧に戻る
+        </Link>
       </div>
-    </SlideUpTransition>
+
+      <AnimeHero
+        anime={anime}
+        totalEpisodes={totalEpisodes}
+        totalDuration={totalDuration}
+        updating={updating}
+        onToggleScheduled={toggleScheduled}
+        onToggleRecorded={toggleRecorded}
+      />
+
+      <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
+    </div>
   )
 }
