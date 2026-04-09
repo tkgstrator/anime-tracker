@@ -2,7 +2,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import { AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { Toaster } from 'sonner'
 import { ErrorPage } from '@/app/components/error-page'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
@@ -43,8 +43,16 @@ const RootComponent = () => {
         </div>
       </header>
       <main className='mx-auto max-w-screen-xl select-text px-6 py-8'>
-        <AnimatePresence mode='wait'>
-          <Outlet key={routeKey} />
+        <AnimatePresence mode='wait' initial={false}>
+          <motion.div
+            key={routeKey}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            <Outlet />
+          </motion.div>
         </AnimatePresence>
       </main>
       <footer className='py-4 text-center text-xs text-muted-foreground'>
