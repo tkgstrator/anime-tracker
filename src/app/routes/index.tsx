@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { AnimeCarousel } from '@/app/components/anime-carousel'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
-import { PageTransition } from '@/app/components/page-transition'
 import { animeListQueryOptions, badgedAnimeQueryOptions } from '@/app/lib/query-options'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
@@ -71,34 +70,32 @@ function HomePage() {
   }
 
   return (
-    <PageTransition>
-      <div className='space-y-10'>
+    <div className='space-y-10'>
+      <AnimeCarousel
+        title='新着エピソード'
+        anime={badged.NEW_EPISODE}
+        viewAllLink='/browse'
+        badgeType='nextEpisodeDate'
+      />
+      <AnimeCarousel title='最近追加されたアニメ' anime={badged.RECENTLY_ADDED} viewAllLink='/browse' />
+      <AnimeCarousel
+        title='もうすぐ配信'
+        anime={badged.COMING_SOON}
+        viewAllLink='/browse'
+        badgeType='nextEpisodeDate'
+      />
+      <AnimeCarousel title='もうすぐ配信終了' anime={badged.EXPIRING} viewAllLink='/browse' badgeType='expiredAt' />
+      <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
+      <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
+      {Object.entries(byProvider).map(([provider, anime]) => (
         <AnimeCarousel
-          title='新着エピソード'
-          anime={badged.NEW_EPISODE}
-          viewAllLink='/browse'
-          badgeType='nextEpisodeDate'
+          key={provider}
+          title={providerLabels[provider] ?? provider}
+          anime={anime}
+          viewAllLink={`/browse?provider=${provider}`}
+          showProvider={false}
         />
-        <AnimeCarousel title='最近追加されたアニメ' anime={badged.RECENTLY_ADDED} viewAllLink='/browse' />
-        <AnimeCarousel
-          title='もうすぐ配信'
-          anime={badged.COMING_SOON}
-          viewAllLink='/browse'
-          badgeType='nextEpisodeDate'
-        />
-        <AnimeCarousel title='もうすぐ配信終了' anime={badged.EXPIRING} viewAllLink='/browse' badgeType='expiredAt' />
-        <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
-        <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
-        {Object.entries(byProvider).map(([provider, anime]) => (
-          <AnimeCarousel
-            key={provider}
-            title={providerLabels[provider] ?? provider}
-            anime={anime}
-            viewAllLink={`/browse?provider=${provider}`}
-            showProvider={false}
-          />
-        ))}
-      </div>
-    </PageTransition>
+      ))}
+    </div>
   )
 }
