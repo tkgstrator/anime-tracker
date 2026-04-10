@@ -28,6 +28,7 @@ export function AnimeCard({
           <ProxyImage
             src={anime.imageUrl}
             alt={anime.title}
+            width={480}
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (
