@@ -1,41 +1,40 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { cache } from 'hono/cache'
+import { optimizeImage } from 'wasm-image-optimization/workerd'
 
-type Bindings = { IMAGES: R2Bucket }
+const app = new OpenAPIHono()
 
-const app = new OpenAPIHono<{ Bindings: Bindings }>()
-
-// TODO: R2 移行完了後に UUIDv5 ベースに戻す
-// app.use('/:filename', cache({ cacheName: 'img-proxy', cacheControl: 'public, max-age=31536000, immutable' }))
-//
-// app.get('/:filename', async (c) => {
-//   const filename = c.req.param('filename')
-//   const object = await c.env.IMAGES.get(filename)
-//   if (!object) return c.text('Not found', 404)
-//   return new Response(object.body, {
-//     headers: {
-//       'content-type': object.httpMetadata?.contentType ?? 'image/jpeg',
-//       'cache-control': 'public, max-age=31536000, immutable'
-//     }
-//   })
-// })
-
-app.use('/:key{.+}', cache({ cacheName: 'img-proxy', cacheControl: 'public, max-age=86400' }))
+app.use('/:key{.+}', cache({ cacheName: 'img-proxy', cacheControl: 'public, max-age=31536000, immutable' }))
 
 app.get('/:key{.+}', async (c) => {
   const raw = c.req.param('key')
-  // base64url → standard base64 に変換（旧 base64 パスもそのまま通る）
   const key = raw.replace(/-/g, '+').replace(/_/g, '/')
   const padded = key + '==='.slice(0, (4 - (key.length % 4)) % 4)
   const url = atob(padded)
 
+  const wParam = c.req.query('w')
+  const wParsed = wParam ? Number.parseInt(wParam, 10) : undefined
+  const width = wParsed && Number.isFinite(wParsed) && wParsed >= 1 ? Math.min(wParsed, 4096) : undefined
+
   const res = await fetch(url)
   if (!res.ok) return c.text('Upstream error', 502)
 
-  return new Response(res.body, {
+  const contentType = res.headers.get('content-type') ?? ''
+  if (!contentType.startsWith('image/')) return c.text('Not an image', 502)
+
+  const image = await res.arrayBuffer()
+
+  let result: Awaited<ReturnType<typeof optimizeImage>>
+  try {
+    result = await optimizeImage({ image, format: 'webp', width, quality: 80 })
+  } catch {
+    return c.text('Optimization failed', 500)
+  }
+
+  return new Response(result.data.buffer as ArrayBuffer, {
     headers: {
-      'content-type': res.headers.get('content-type') ?? 'image/jpeg',
-      'cache-control': 'public, max-age=86400'
+      'content-type': 'image/webp',
+      'cache-control': 'public, max-age=31536000, immutable'
     }
   })
 })
