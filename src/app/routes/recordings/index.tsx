@@ -52,7 +52,12 @@ function RecordingsPage() {
               className='flex items-center gap-4 py-3 transition-colors hover:bg-muted/30'
             >
               {item.imageUrl && (
-                <ProxyImage src={item.imageUrl} alt={item.title} className='h-16 w-28 shrink-0 rounded object-cover' />
+                <ProxyImage
+                  src={item.imageUrl}
+                  alt={item.title}
+                  width={240}
+                  className='h-16 w-28 shrink-0 rounded object-cover'
+                />
               )}
               <div className='min-w-0 flex-1'>
                 <p className='truncate font-medium'>{item.title}</p>
