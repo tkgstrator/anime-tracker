@@ -11,6 +11,7 @@ import { buildPaginationToken } from './browse'
 
 export { buildServiceToken } from './browse'
 
+import { fetchAllChannelNewArrivals } from './channel'
 import { FETCH_HEADERS, fetchAmazonTitleDetail } from './detail'
 
 const logger = getAppLogger('amazon')
@@ -109,20 +110,32 @@ export class AmazonProvider extends Provider {
       }
     }
 
-    const buildOptions =
-      category === 'expiring'
-        ? { expiring: true as const }
-        : category === 'new_episode'
-          ? { newAnime: true as const }
-          : undefined
-    const allTitles = await this.fetchPages(buildOptions, mode)
-
-    // new_episode: NEW_EPISODE + RECENTLY_ADDED の両方を返す
+    // new_episode: svod (NEW_EPISODE + RECENTLY_ADDED) ∪ channel 新着 carousels
     if (category === 'new_episode') {
-      const titles = allTitles.filter((t) => t.badge === 'NEW_EPISODE' || t.badge === 'RECENTLY_ADDED')
-      logger.info({ action: 'fetch-title-list-done', mode, count: titles.length, total: allTitles.length })
-      return titles
+      const [svodRaw, channelTitles] = await Promise.all([
+        this.fetchPages({ newAnime: true as const }, 'new_episode'),
+        fetchAllChannelNewArrivals()
+      ])
+      const svod = svodRaw.filter((t) => t.badge === 'NEW_EPISODE' || t.badge === 'RECENTLY_ADDED')
+      const seen = new Set<string>()
+      const result: Title[] = []
+      for (const t of [...svod, ...channelTitles]) {
+        if (seen.has(t.contentId)) continue
+        seen.add(t.contentId)
+        result.push(t)
+      }
+      logger.info({
+        action: 'fetch-title-list-done',
+        mode: 'new_episode',
+        svod: svod.length,
+        channels: channelTitles.length,
+        union: result.length
+      })
+      return result
     }
+
+    const buildOptions = category === 'expiring' ? { expiring: true as const } : undefined
+    const allTitles = await this.fetchPages(buildOptions, mode)
     if (category === 'coming_soon') {
       // Amazon にはもうすぐ配信のバッジがないため空を返す
       logger.info({ action: 'fetch-title-list-done', mode, count: 0 })
