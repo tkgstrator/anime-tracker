@@ -1,13 +1,33 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir -p fetch enrich db)",
-      "Bash(mv amazon_browse_all.ts fetch/)",
-      "Bash(mv fetch_amazon.ts fetch/)",
-      "Bash(mv fetch_amazon_episodes.ts fetch/)",
-      "Bash(mv fetch_hulu_episodes.ts fetch/)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
-    ]
-  }
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Agent",
+      "Skill",
+      "WebFetch",
+      "WebSearch",
+      "NotebookEdit",
+      "TaskCreate",
+      "TaskUpdate"
+    ],
+    "deny": [],
+    "bypassPermissionsMode": "allow",
+    "defaultMode": "bypassPermissions"
+  },
+  "model": "claude-opus-4-6",
+  "effortLevel": "high",
+  "alwaysThinkingEnabled": true,
+  "enabledMcpjsonServers": [
+    "docker",
+    "github",
+    "tailwindcss",
+    "shadcn",
+    "prisma",
+    "zod"
+  ]
 }
