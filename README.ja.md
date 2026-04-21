@@ -2,13 +2,7 @@
 
 配信サービスの今期アニメを管理し、録画状況を追跡するアプリ。
 
-## 対応配信サービス
-
-| サービス | 状態 | 備考 |
-|---------|------|------|
-| Amazon Prime Video | 対応済み | サブスクリプションチャンネル (dアニメストア, アニメタイムズ, 東映アニメチャンネル) 含む |
-| Hulu | 対応済み | Hulu Japan |
-| Netflix | 対応予定 | [docs/features/netflix-provider.md](docs/features/netflix-provider.md) 参照 |
+> **[English README](README.md)**
 
 ## スクリーンショット
 
@@ -30,6 +24,14 @@
     <td><img src="docs/screenshots/recordings.webp" width="480" /></td>
   </tr>
 </table>
+
+## 対応配信サービス
+
+| サービス | 状態 | 備考 |
+|---------|------|------|
+| Amazon Prime Video | 対応済み | サブスクリプションチャンネル (dアニメストア, アニメタイムズ, 東映アニメチャンネル) 含む |
+| Hulu | 対応済み | Hulu Japan |
+| Netflix | 対応予定 | [docs/features/netflix-provider.md](docs/features/netflix-provider.md) 参照 |
 
 > [!NOTE]
 > 録画機能を利用するには [Nagisa Backend](https://github.com/tkgstrator/Nagisa) と各配信サービスの有効なサブスクリプションが必要です。
@@ -83,11 +85,11 @@
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph TD
-    Cron["Scheduled<br/>(hourly cron)"] -->|enqueue| Queue["Cloudflare Queues"]
+    Cron["Scheduled<br/>(毎時 cron)"] -->|enqueue| Queue["Cloudflare Queues"]
     Queue -->|consume| Sync["SyncService"]
 
-    Sync -->|fetch catalog| Providers["Providers<br/>Amazon / Hulu"]
-    Sync -->|enrich metadata| Metadata["Metadata<br/>AniList"]
+    Sync -->|カタログ取得| Providers["Providers<br/>Amazon / Hulu"]
+    Sync -->|メタデータ補完| Metadata["Metadata<br/>AniList"]
 
     Providers --> DB["Cloudflare D1<br/>(Prisma)"]
     Metadata --> DB
@@ -130,23 +132,27 @@ graph TD
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    Params["検索パラメータ<br/>(ジャンル/ソート/オファー)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
-    Token --> Paginate["paginateCollection API"]
-    Paginate -->|"hasMoreItems?"| Paginate
-    Paginate --> Titles["タイトル一覧"]
-
-    subgraph 新着取得
-        SVOD["SVOD ブラウズ"] --> Union["マージ + 重複排除"]
-        Channels["チャンネルカルーセル<br/>(dアニメ / アニメタイムズ / 東映)"] --> Union
+    subgraph SVOD ["SVOD ブラウズ"]
+        Params["検索パラメータ<br/>(ジャンル/ソート/オファー)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
+        Token --> Paginate["paginateCollection API"]
+        Paginate -->|"hasMoreItems?"| Paginate
     end
+
+    subgraph Channels ["チャンネル新着"]
+        ChPage["/gp/video/channel/{id}<br/>HTML取得"] -->|"カルーセル抽出"| ChPag["paginateCollection API<br/>(チャンネルごと)"]
+    end
+
+    Paginate --> Merge["マージ + 重複排除"]
+    ChPag --> Merge
+    Merge --> Titles["タイトル一覧"]
 
     style Params fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
     style Token fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
-    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
     style Paginate fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style SVOD fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
-    style Channels fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
-    style Union fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style ChPage fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style ChPag fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Merge fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
 #### タイトル詳細
@@ -191,24 +197,23 @@ graph LR
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    subgraph 新着取得
-        Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["マージ + バッジ分類"]
-        Season["Palette API<br/>今期スラッグ"] --> Dedup
-    end
-    subgraph 全件取得
-        Filtered["Filtered API<br/>g:8 (アニメジャンル)"] --> All["全アニメ<br/>(TV + 映画)"]
-    end
-    subgraph 配信終了間近
-        Expiring["Filtered API<br/>publish_end_at 昇順"] --> Exp["30日以内に<br/>配信終了するタイトル"]
-    end
+    Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["マージ + バッジ分類"]
+    Season["Palette API<br/>今期スラッグ"] --> Dedup
+    Filtered["Filtered API<br/>g:8 (アニメジャンル)"] --> All["全タイトル<br/>(TV + 映画)"]
+    ExpNode["Filtered API<br/>publish_end_at 昇順"] --> Exp["配信終了間近<br/>(30日以内)"]
+
+    Dedup --> Titles["タイトル一覧"]
+    All --> Titles
+    Exp --> Titles
 
     style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Season fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Dedup fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
     style Filtered fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
     style All fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
-    style Expiring fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style ExpNode fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
     style Exp fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
 #### タイトル詳細
