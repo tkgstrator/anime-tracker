@@ -108,23 +108,27 @@ For new arrivals, two sources are fetched in parallel and merged:
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    Params["Search Params<br/>(genre/sort/offer)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
-    Token --> Paginate["paginateCollection API"]
-    Paginate -->|"hasMoreItems?"| Paginate
-    Paginate --> Titles["Title List"]
-
-    subgraph NewArrivals ["New Arrivals"]
-        SVOD["SVOD Browse"] --> Union["Merge + Dedupe"]
-        Channels["Channel Carousels<br/>(dAnime / AnimeTime / Toei)"] --> Union
+    subgraph SVOD ["SVOD Browse"]
+        Params["Search Params<br/>(genre/sort/offer)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
+        Token --> Paginate["paginateCollection API"]
+        Paginate -->|"hasMoreItems?"| Paginate
     end
+
+    subgraph Channels ["Channel New Arrivals"]
+        ChPage["Channel HTML<br/>(dAnime / AnimeTime / Toei)"] -->|"extract carousel"| ChPag["paginateCollection API<br/>(per channel)"]
+    end
+
+    Paginate --> Merge["Merge + Dedupe"]
+    ChPag --> Merge
+    Merge --> Titles["Title List"]
 
     style Params fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
     style Token fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
-    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
     style Paginate fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style SVOD fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
-    style Channels fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
-    style Union fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style ChPage fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style ChPag fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style Merge fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
 #### Title Detail
