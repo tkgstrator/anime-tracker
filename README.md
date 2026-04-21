@@ -4,6 +4,27 @@ An app for managing and tracking anime recordings from streaming services.
 
 > **[日本語版 README はこちら](README.ja.md)**
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><strong>Home</strong></td>
+    <td><strong>Browse</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home.webp" width="480" /></td>
+    <td><img src="docs/screenshots/browse.webp" width="480" /></td>
+  </tr>
+  <tr>
+    <td><strong>Anime Detail</strong></td>
+    <td><strong>Recordings</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/anime-detail.webp" width="480" /></td>
+    <td><img src="docs/screenshots/recordings.webp" width="480" /></td>
+  </tr>
+</table>
+
 ## Supported Streaming Services
 
 | Service | Status | Notes |
