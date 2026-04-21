@@ -33,6 +33,9 @@ An app for managing and tracking anime recordings from streaming services.
 | Hulu | Supported | Hulu Japan |
 | Netflix | Planned | See [docs/features/netflix-provider.md](docs/features/netflix-provider.md) |
 
+> [!NOTE]
+> Recording functionality requires [Nagisa Backend](https://github.com/tkgstrator/Nagisa) and active subscriptions to the respective streaming services.
+
 ## Features
 
 ### Data Collection (Automated Backend Sync)
