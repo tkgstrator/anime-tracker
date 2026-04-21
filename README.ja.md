@@ -1,6 +1,14 @@
 # Nagisa WebUI — 録画管理アプリ
 
-Prime Video / Hulu の今期アニメを管理し、録画状況を追跡するアプリ。
+配信サービスの今期アニメを管理し、録画状況を追跡するアプリ。
+
+## 対応配信サービス
+
+| サービス | 状態 | 備考 |
+|---------|------|------|
+| Amazon Prime Video | 対応済み | サブスクリプションチャンネル (dアニメストア, アニメタイムズ, 東映アニメチャンネル) 含む |
+| Hulu | 対応済み | Hulu Japan |
+| Netflix | 対応予定 | [docs/features/netflix-provider.md](docs/features/netflix-provider.md) 参照 |
 
 ## 機能
 
@@ -85,29 +93,36 @@ graph TD
 
 #### タイトル一覧
 
-ブラウズページ (`/gp/video/browse`) を利用する。検索パラメータ (ジャンルフィルタ・ソート順・オファータイプ等) を protobuf でエンコードし、URL-safe Base64 に変換して `serviceToken` としてURLに埋め込む。
+検索パラメータ (ジャンルフィルタ・ソート順・オファータイプ等) を protobuf でエンコードし、URL-safe Base64 に変換して `serviceToken` を自前生成する。HTML パースは不要で、`paginateCollection` API を直接呼び出す。serviceToken のフォーマットやパラメータの詳細は [docs/features/amazon-browse-urls.md](docs/features/amazon-browse-urls.md) を参照。
 
-1. ブラウズ URL にリクエストし、レスポンス HTML 内の `<script type="application/json">` からタイトル一覧を抽出
-2. HTML からページネーション用パラメータ (`paginationTargetId`, `serviceToken`) を正規表現で抽出
-3. `paginateCollection` API を再帰的に呼び出し、`hasMoreItems: false` になるまで全ページを取得
+1. 軽量ページからセッション Cookie を取得
+2. 検索パラメータを protobuf エンコードして `serviceToken` を生成
+3. `paginateCollection` API を順次呼び出し、`startIndex` を進めて `hasMoreItems: false` になるまで全ページ取得
 
-新着取得時 (`newEpisodesOnly`) は「新着アニメTV」カテゴリフィルタ (`p_n_theme_browse-bin=4435524051`) を適用する。
+新着取得時は2つのソースを並列取得してマージする:
+- **SVOD ブラウズ** — 配信開始日順のアニメタイトルから `NEW_EPISODE` / `RECENTLY_ADDED` バッジでフィルタ
+- **サブスクリプションチャンネル** — dアニメストア・アニメタイムズ・東映アニメチャンネルの「新着」カルーセルを取得
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
     Params["検索パラメータ<br/>(ジャンル/ソート/オファー)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
-    Token --> Browse["/gp/video/browse"]
-    Browse -->|"HTML parse<br/>script[type=application/json]"| Titles["タイトル一覧"]
-    Browse -->|"regex extract<br/>paginationTargetId"| Paginate["paginateCollection API"]
+    Token --> Paginate["paginateCollection API"]
     Paginate -->|"hasMoreItems?"| Paginate
-    Paginate --> Titles
+    Paginate --> Titles["タイトル一覧"]
+
+    subgraph 新着取得
+        SVOD["SVOD ブラウズ"] --> Union["マージ + 重複排除"]
+        Channels["チャンネルカルーセル<br/>(dアニメ / アニメタイムズ / 東映)"] --> Union
+    end
 
     style Params fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
     style Token fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
-    style Browse fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
     style Paginate fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style SVOD fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Channels fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Union fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
 ```
 
 #### タイトル詳細
@@ -142,10 +157,10 @@ graph LR
 
 #### タイトル一覧
 
-2つのAPIを使い分ける:
+取得カテゴリに応じて2つの API を使い分ける:
 
-- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — スラッグ指定で一覧取得。新着取得時は `recentlyadded-anime` スラッグを使用し、エピソード単位のエントリは `series_id` で重複排除する
-- **Filtered API** (`/api/v2/filtered`) — 年代 (`ag:twenty_twenties` 等) + ジャンル (`edg:tv_animation`) でフィルタ。全件取得時は 2000s / 2010s / 2020s を並列取得
+- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — スラッグ指定で一覧取得。新着取得時は `recentlyadded-anime` + 今期スラッグ (例: `april-june-quarter-anime26`) を併用し、slug で重複排除。バッジは `NEW_EPISODE` (新エピソードあり) / `RECENTLY_ADDED` / `COMING_SOON` に分類
+- **Filtered API** (`/api/v2/filtered`) — 全件取得時は `g:8` (アニメジャンル) フィルタで TV + 映画を週間人気順に取得。配信終了間近は `publish_end_at` 昇順で 30 日以内のタイトルを打ち切り取得
 
 いずれも `from`/`to` パラメータで50件ずつページネーションし、`total_count` に達するまで再帰的に取得する。
 
@@ -153,23 +168,23 @@ graph LR
 %%{init: {'theme': 'dark'}}%%
 graph LR
     subgraph 新着取得
-        Palette["Palette API<br/>recentlyadded-anime"] -->|"50件ずつ"| Dedup["series_id で重複排除"]
+        Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["マージ + バッジ分類"]
+        Season["Palette API<br/>今期スラッグ"] --> Dedup
     end
     subgraph 全件取得
-        Filtered2000["Filtered API<br/>2000s"] --> Merge["マージ + 重複排除"]
-        Filtered2010["Filtered API<br/>2010s"] --> Merge
-        Filtered2020["Filtered API<br/>2020s"] --> Merge
+        Filtered["Filtered API<br/>g:8 (アニメジャンル)"] --> All["全アニメ<br/>(TV + 映画)"]
     end
-    Dedup --> Titles["タイトル一覧"]
-    Merge --> Titles
+    subgraph 配信終了間近
+        Expiring["Filtered API<br/>publish_end_at 昇順"] --> Exp["30日以内に<br/>配信終了するタイトル"]
+    end
 
     style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Season fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Dedup fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
-    style Filtered2000 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style Filtered2010 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style Filtered2020 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style Merge fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
-    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Filtered fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style All fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Expiring fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style Exp fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
 #### タイトル詳細
@@ -271,6 +286,7 @@ src/
 │       ├── base.ts             # 抽象プロバイダ
 │       ├── amazon/             # Amazon Prime Video
 │       │   ├── browse.ts
+│       │   ├── channel.ts
 │       │   ├── detail.ts
 │       │   ├── protobuf.ts
 │       │   └── index.ts
