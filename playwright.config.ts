@@ -19,7 +19,7 @@ export default defineConfig({
       name: 'staging',
       use: {
         browserName: 'chromium',
-        baseURL: 'STAGING_URL'
+        baseURL: process.env.STAGING_URL
       }
     }
   ],
