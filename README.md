@@ -113,7 +113,7 @@ graph LR
     Paginate -->|"hasMoreItems?"| Paginate
     Paginate --> Titles["Title List"]
 
-    subgraph New Arrivals
+    subgraph NewArrivals ["New Arrivals"]
         SVOD["SVOD Browse"] --> Union["Merge + Dedupe"]
         Channels["Channel Carousels<br/>(dAnime / AnimeTime / Toei)"] --> Union
     end
@@ -169,15 +169,15 @@ Both paginate in batches of 50 using `from`/`to` parameters, recursively fetchin
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    subgraph New Arrivals
+    subgraph NewArrivals ["New Arrivals"]
         Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["Merge + Classify badges"]
         Season["Palette API<br/>current season slug"] --> Dedup
     end
-    subgraph Full Fetch
+    subgraph FullFetch ["Full Fetch"]
         Filtered["Filtered API<br/>g:8 (anime genre)"] --> All["All anime<br/>(TV + movies)"]
     end
-    subgraph Expiring
-        Expiring["Filtered API<br/>publish_end_at asc"] --> Exp["Titles expiring<br/>within 30 days"]
+    subgraph ExpiringGroup ["Expiring"]
+        ExpNode["Filtered API<br/>publish_end_at asc"] --> Exp["Titles expiring<br/>within 30 days"]
     end
 
     style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
@@ -185,7 +185,7 @@ graph LR
     style Dedup fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
     style Filtered fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
     style All fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
-    style Expiring fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style ExpNode fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
     style Exp fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
