@@ -115,7 +115,7 @@ graph LR
     end
 
     subgraph Channels ["Channel New Arrivals"]
-        ChPage["Channel HTML<br/>(dAnime / AnimeTime / Toei)"] -->|"extract carousel"| ChPag["paginateCollection API<br/>(per channel)"]
+        ChPage["/gp/video/channel/{id}<br/>Fetch HTML"] -->|"extract carousel"| ChPag["paginateCollection API<br/>(per channel)"]
     end
 
     Paginate --> Merge["Merge + Dedupe"]
