@@ -10,6 +10,30 @@
 | Hulu | 対応済み | Hulu Japan |
 | Netflix | 対応予定 | [docs/features/netflix-provider.md](docs/features/netflix-provider.md) 参照 |
 
+## スクリーンショット
+
+<table>
+  <tr>
+    <td><strong>ホーム</strong></td>
+    <td><strong>一覧</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home.webp" width="480" /></td>
+    <td><img src="docs/screenshots/browse.webp" width="480" /></td>
+  </tr>
+  <tr>
+    <td><strong>アニメ詳細</strong></td>
+    <td><strong>録画</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/anime-detail.webp" width="480" /></td>
+    <td><img src="docs/screenshots/recordings.webp" width="480" /></td>
+  </tr>
+</table>
+
+> [!NOTE]
+> 録画機能を利用するには [Nagisa Backend](https://github.com/tkgstrator/Nagisa) と各配信サービスの有効なサブスクリプションが必要です。
+
 ## 機能
 
 ### データ収集 (バックエンド自動同期)
