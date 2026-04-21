@@ -1,8 +1,16 @@
 # Nagisa WebUI — Recording Manager
 
-An app for managing and tracking anime recordings from Prime Video and Hulu.
+An app for managing and tracking anime recordings from streaming services.
 
 > **[日本語版 README はこちら](README.ja.md)**
+
+## Supported Streaming Services
+
+| Service | Status | Notes |
+|---------|--------|-------|
+| Amazon Prime Video | Supported | Including subscription channels (d Anime Store, Anime Times, Toei Animation) |
+| Hulu | Supported | Hulu Japan |
+| Netflix | Planned | See [docs/features/netflix-provider.md](docs/features/netflix-provider.md) |
 
 ## Features
 
@@ -87,29 +95,36 @@ graph TD
 
 #### Title List
 
-Uses the browse page (`/gp/video/browse`). Search parameters (genre filter, sort order, offer type, etc.) are protobuf-encoded and converted to URL-safe Base64 as a `serviceToken` embedded in the URL.
+Generates a `serviceToken` by protobuf-encoding search parameters (genre filter, sort order, offer type, etc.) and converting to URL-safe Base64. This token is passed directly to the `paginateCollection` API without any HTML parsing. For details on the serviceToken format and parameters, see [docs/features/amazon-browse-urls.md](docs/features/amazon-browse-urls.md).
 
-1. Request the browse URL and extract the title list from `<script type="application/json">` in the response HTML
-2. Extract pagination parameters (`paginationTargetId`, `serviceToken`) from the HTML via regex
-3. Recursively call the `paginateCollection` API until `hasMoreItems: false`
+1. Fetch a lightweight page to obtain session cookies
+2. Build a `serviceToken` via protobuf encoding with the desired search parameters
+3. Call the `paginateCollection` API sequentially, incrementing `startIndex` until `hasMoreItems: false`
 
-For new arrivals (`newEpisodesOnly`), the "New Anime TV" category filter (`p_n_theme_browse-bin=4435524051`) is applied.
+For new arrivals, two sources are fetched in parallel and merged:
+- **SVOD browse** — Anime titles sorted by release date, filtered by `NEW_EPISODE` / `RECENTLY_ADDED` badges
+- **Subscription channels** — "Recently Added" carousels from d Anime Store, Anime Times, and Toei Animation channel pages
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
     Params["Search Params<br/>(genre/sort/offer)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
-    Token --> Browse["/gp/video/browse"]
-    Browse -->|"HTML parse<br/>script[type=application/json]"| Titles["Title List"]
-    Browse -->|"regex extract<br/>paginationTargetId"| Paginate["paginateCollection API"]
+    Token --> Paginate["paginateCollection API"]
     Paginate -->|"hasMoreItems?"| Paginate
-    Paginate --> Titles
+    Paginate --> Titles["Title List"]
+
+    subgraph New Arrivals
+        SVOD["SVOD Browse"] --> Union["Merge + Dedupe"]
+        Channels["Channel Carousels<br/>(dAnime / AnimeTime / Toei)"] --> Union
+    end
 
     style Params fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
     style Token fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
-    style Browse fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
     style Paginate fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style SVOD fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Channels fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Union fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
 ```
 
 #### Title Detail
@@ -144,10 +159,10 @@ graph LR
 
 #### Title List
 
-Two APIs are used:
+Two APIs are used depending on the fetch category:
 
-- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — Fetches list by slug. For new arrivals, uses the `recentlyadded-anime` slug and deduplicates episode-level entries by `series_id`
-- **Filtered API** (`/api/v2/filtered`) — Filters by era (`ag:twenty_twenties`, etc.) + genre (`edg:tv_animation`). For full fetches, 2000s / 2010s / 2020s are fetched in parallel
+- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — Fetches by slug. For new arrivals, combines `recentlyadded-anime` + current season slugs (e.g. `april-june-quarter-anime26`), deduplicates by slug, and classifies badges as `NEW_EPISODE` (has new assets) / `RECENTLY_ADDED` / `COMING_SOON`
+- **Filtered API** (`/api/v2/filtered`) — For full fetches, uses `g:8` (anime genre) filter to retrieve all anime (TV + movies) sorted by weekly popularity. For expiring titles, sorts by `publish_end_at` ascending with a 30-day threshold cutoff
 
 Both paginate in batches of 50 using `from`/`to` parameters, recursively fetching until `total_count` is reached.
 
@@ -155,23 +170,23 @@ Both paginate in batches of 50 using `from`/`to` parameters, recursively fetchin
 %%{init: {'theme': 'dark'}}%%
 graph LR
     subgraph New Arrivals
-        Palette["Palette API<br/>recentlyadded-anime"] -->|"50 per page"| Dedup["Deduplicate by series_id"]
+        Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["Merge + Classify badges"]
+        Season["Palette API<br/>current season slug"] --> Dedup
     end
     subgraph Full Fetch
-        Filtered2000["Filtered API<br/>2000s"] --> Merge["Merge + Deduplicate"]
-        Filtered2010["Filtered API<br/>2010s"] --> Merge
-        Filtered2020["Filtered API<br/>2020s"] --> Merge
+        Filtered["Filtered API<br/>g:8 (anime genre)"] --> All["All anime<br/>(TV + movies)"]
     end
-    Dedup --> Titles["Title List"]
-    Merge --> Titles
+    subgraph Expiring
+        Expiring["Filtered API<br/>publish_end_at asc"] --> Exp["Titles expiring<br/>within 30 days"]
+    end
 
     style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
+    style Season fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Dedup fill:#5e4a2d,stroke:#d4a04c,color:#f0e0c0
-    style Filtered2000 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style Filtered2010 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style Filtered2020 fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
-    style Merge fill:#2d3e5e,stroke:#4c8cd4,color:#c0d8f0
-    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Filtered fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
+    style All fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Expiring fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
+    style Exp fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
 #### Title Detail
@@ -273,6 +288,7 @@ src/
 │       ├── base.ts             # Abstract provider
 │       ├── amazon/             # Amazon Prime Video
 │       │   ├── browse.ts
+│       │   ├── channel.ts
 │       │   ├── detail.ts
 │       │   ├── protobuf.ts
 │       │   └── index.ts
