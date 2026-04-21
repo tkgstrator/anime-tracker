@@ -1,52 +1,54 @@
-# Nagisa WebUI — 録画管理アプリ
+# Nagisa WebUI — Recording Manager
 
-Prime Video / Hulu の今期アニメを管理し、録画状況を追跡するアプリ。
+An app for managing and tracking anime recordings from Prime Video and Hulu.
 
-## 機能
+> **[日本語版 README はこちら](README.ja.md)**
 
-### データ収集 (バックエンド自動同期)
+## Features
 
-- **プロバイダスクレイピング** — Amazon Prime Video / Hulu のアニメカタログを毎時自動取得
-- **AniList 識別** — 取得したタイトルを AniList GraphQL API で照合し、アニメ作品として識別 (50件バッチ処理)
-- **メタデータ補完** — AniList から放送ステータス・放送年・クールなどのメタデータを付与
-- **差分同期** — 既存データと比較し、新規シーズン・エピソードのみを追加 (重複なし)
-- **キューベース処理** — Cloudflare Queues による非同期メッセージ処理 (fetch → update の2段階)
+### Data Collection (Automated Backend Sync)
+
+- **Provider Scraping** — Automatically fetches anime catalogs from Amazon Prime Video / Hulu every hour
+- **AniList Identification** — Matches fetched titles against the AniList GraphQL API to identify anime (50-item batch processing)
+- **Metadata Enrichment** — Attaches metadata such as airing status, year, and season from AniList
+- **Differential Sync** — Compares with existing data and adds only new seasons/episodes (no duplicates)
+- **Queue-Based Processing** — Asynchronous message processing via Cloudflare Queues (fetch → update, two-stage pipeline)
 
 ### API
 
-- `GET /api/anime` — アニメ一覧 (ページネーション・フィルタ・ソート・検索)
-- `GET /api/anime/:id` — アニメ詳細 (シーズン・エピソード含む)
-- `PATCH /api/anime/:id` — 録画予約 / 録画済みフラグ更新
-- `POST /api/anime/:id/record` — 外部バックエンドへの録画リクエスト送信
-- `GET /api/recordings` — 録画済みエピソード一覧
-- `PUT /api/recordings` — エピソード録画状態更新
-- `PUT /api/recordings/bulk` — 一括録画状態更新
-- OpenAPI ドキュメント (`/docs`, `/openapi.json`)
+- `GET /api/anime` — Anime list (pagination, filters, sorting, search)
+- `GET /api/anime/:id` — Anime details (including seasons and episodes)
+- `PATCH /api/anime/:id` — Update recording reservation / recorded flags
+- `POST /api/anime/:id/record` — Send recording request to external backend
+- `GET /api/recordings` — List of recorded episodes
+- `PUT /api/recordings` — Update episode recording status
+- `PUT /api/recordings/bulk` — Bulk update recording status
+- OpenAPI documentation (`/docs`, `/openapi.json`)
 
-### フロントエンド
+### Frontend
 
-- **アニメ一覧** (`/`) — カード形式の一覧表示、プロバイダ・年・クール・ステータスでのフィルタリング、タイトル検索、ソート切替、ページネーション
-- **アニメ詳細** (`/anime/:id`) — ヒーロー画像付きの詳細ページ、シーズン・エピソードのグリッド表示、録画予約トグル、録画リクエスト送信
-- **録画一覧** (`/recordings`) — 録画予約済みアニメの専用ビュー
+- **Anime List** (`/`) — Card-based list view with filtering by provider, year, season, and status; title search; sort toggle; pagination
+- **Anime Detail** (`/anime/:id`) — Detail page with hero image, season/episode grid, recording reservation toggle, recording request submission
+- **Recordings** (`/recordings`) — Dedicated view for anime with recording reservations
 
-## 技術スタック
+## Tech Stack
 
-- [Vite](https://vite.dev/) - ビルドツール
-- [React](https://react.dev/) - UI ライブラリ
-- [TanStack Router](https://tanstack.com/router) - 型安全なファイルベースルーター
-- [Tailwind CSS](https://tailwindcss.com/) - スタイリング
-- [shadcn/ui](https://ui.shadcn.com/) - UI コンポーネント
-- [Hono](https://hono.dev/) + [Zod OpenAPI](https://github.com/honojs/middleware/tree/main/packages/zod-openapi) - API フレームワーク
-- [Cloudflare Workers](https://workers.cloudflare.com/) + [D1](https://developers.cloudflare.com/d1/) + [Queues](https://developers.cloudflare.com/queues/) - エッジランタイム・データベース・非同期キュー
+- [Vite](https://vite.dev/) - Build tool
+- [React](https://react.dev/) - UI library
+- [TanStack Router](https://tanstack.com/router) - Type-safe file-based router
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [shadcn/ui](https://ui.shadcn.com/) - UI components
+- [Hono](https://hono.dev/) + [Zod OpenAPI](https://github.com/honojs/middleware/tree/main/packages/zod-openapi) - API framework
+- [Cloudflare Workers](https://workers.cloudflare.com/) + [D1](https://developers.cloudflare.com/d1/) + [Queues](https://developers.cloudflare.com/queues/) - Edge runtime, database, async queues
 - [Prisma](https://www.prisma.io/) + [@prisma/adapter-d1](https://www.prisma.io/docs/orm/overview/databases/cloudflare-d1) - ORM
-- [Zodios](https://www.zodios.org/) - 型安全な API クライアント
-- [Zod](https://zod.dev/) - バリデーション
-- [Jotai](https://jotai.org/) - 状態管理
-- [Bun](https://bun.sh/) - ランタイム / パッケージマネージャー
+- [Zodios](https://www.zodios.org/) - Type-safe API client
+- [Zod](https://zod.dev/) - Validation
+- [Jotai](https://jotai.org/) - State management
+- [Bun](https://bun.sh/) - Runtime / package manager
 - [TypeScript](https://www.typescriptlang.org/)
 - [Biome](https://biomejs.dev/) - Linter / Formatter
 
-## アーキテクチャ
+## Architecture
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
@@ -73,32 +75,32 @@ graph TD
     style Frontend fill:#2d3a5e,stroke:#4c6cd4,color:#c0d0f0
 ```
 
-### データ同期フロー
+### Data Sync Flow
 
-1. **Scheduled** — 毎時 Cron で `hulu` / `amazon` の fetch メッセージを Queue に enqueue
-2. **Queue Consumer** — バッチでメッセージを消費し SyncService に委譲
-3. **Provider** — Amazon / Hulu のカタログ・詳細ページをスクレイピング
-4. **Metadata** — AniList GraphQL でメタデータを補完
-5. **Upsert** — Prisma 経由で D1 に Anime / Season / Episode を upsert
+1. **Scheduled** — Hourly cron enqueues `hulu` / `amazon` fetch messages to the Queue
+2. **Queue Consumer** — Consumes messages in batches, delegates to SyncService
+3. **Provider** — Scrapes catalogs and detail pages from Amazon / Hulu
+4. **Metadata** — Enriches with metadata via AniList GraphQL
+5. **Upsert** — Upserts Anime / Season / Episode into D1 via Prisma
 
-### Prime Video のデータ取得
+### Prime Video Data Fetching
 
-#### タイトル一覧
+#### Title List
 
-ブラウズページ (`/gp/video/browse`) を利用する。検索パラメータ (ジャンルフィルタ・ソート順・オファータイプ等) を protobuf でエンコードし、URL-safe Base64 に変換して `serviceToken` としてURLに埋め込む。
+Uses the browse page (`/gp/video/browse`). Search parameters (genre filter, sort order, offer type, etc.) are protobuf-encoded and converted to URL-safe Base64 as a `serviceToken` embedded in the URL.
 
-1. ブラウズ URL にリクエストし、レスポンス HTML 内の `<script type="application/json">` からタイトル一覧を抽出
-2. HTML からページネーション用パラメータ (`paginationTargetId`, `serviceToken`) を正規表現で抽出
-3. `paginateCollection` API を再帰的に呼び出し、`hasMoreItems: false` になるまで全ページを取得
+1. Request the browse URL and extract the title list from `<script type="application/json">` in the response HTML
+2. Extract pagination parameters (`paginationTargetId`, `serviceToken`) from the HTML via regex
+3. Recursively call the `paginateCollection` API until `hasMoreItems: false`
 
-新着取得時 (`newEpisodesOnly`) は「新着アニメTV」カテゴリフィルタ (`p_n_theme_browse-bin=4435524051`) を適用する。
+For new arrivals (`newEpisodesOnly`), the "New Anime TV" category filter (`p_n_theme_browse-bin=4435524051`) is applied.
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    Params["検索パラメータ<br/>(ジャンル/ソート/オファー)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
+    Params["Search Params<br/>(genre/sort/offer)"] -->|protobuf encode| Token["serviceToken<br/>(URL-safe Base64)"]
     Token --> Browse["/gp/video/browse"]
-    Browse -->|"HTML parse<br/>script[type=application/json]"| Titles["タイトル一覧"]
+    Browse -->|"HTML parse<br/>script[type=application/json]"| Titles["Title List"]
     Browse -->|"regex extract<br/>paginationTargetId"| Paginate["paginateCollection API"]
     Paginate -->|"hasMoreItems?"| Paginate
     Paginate --> Titles
@@ -110,23 +112,23 @@ graph LR
     style Paginate fill:#4e2d5e,stroke:#a44cd4,color:#e0c0f0
 ```
 
-#### タイトル詳細
+#### Title Detail
 
-詳細ページ (`/gp/video/detail/{contentId}`) の HTML を取得し、`<script type="application/json">` から以下を抽出する:
+Fetches the detail page HTML (`/gp/video/detail/{contentId}`) and extracts the following from `<script type="application/json">`:
 
-- タイトル名、あらすじ、エンティティタイプ (movie/tv)、レーティング、画像URL
-- シーズン一覧 (seasonId, displayName, seasonNumber)
-- エピソードリストのウィジェットトークン (`episodePageTokens`)
+- Title name, synopsis, entity type (movie/tv), rating, image URL
+- Season list (seasonId, displayName, seasonNumber)
+- Episode list widget tokens (`episodePageTokens`)
 
-エピソード情報は `getDetailWidgets` API をトークンごとに呼び出して取得する。複数シーズンの場合は各シーズンの詳細ページを追加取得してトークンを得る。
+Episode info is fetched by calling the `getDetailWidgets` API for each token. For multi-season titles, additional detail pages are fetched per season to obtain tokens.
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    Detail["/gp/video/detail/{id}<br/>HTML取得"] -->|"HTML parse"| Meta["タイトル情報<br/>(title, synopsis, seasons)"]
+    Detail["/gp/video/detail/{id}<br/>Fetch HTML"] -->|"HTML parse"| Meta["Title Info<br/>(title, synopsis, seasons)"]
     Detail -->|"HTML parse"| Tokens["episodePageTokens"]
-    Tokens -->|"トークンごと"| Widgets["getDetailWidgets API"]
-    Widgets --> Episodes["エピソード一覧"]
+    Tokens -->|"per token"| Widgets["getDetailWidgets API"]
+    Widgets --> Episodes["Episode List"]
     Meta --> Result["TitleInfo"]
     Episodes --> Result
 
@@ -138,29 +140,29 @@ graph LR
     style Result fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
 ```
 
-### Hulu のデータ取得
+### Hulu Data Fetching
 
-#### タイトル一覧
+#### Title List
 
-2つのAPIを使い分ける:
+Two APIs are used:
 
-- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — スラッグ指定で一覧取得。新着取得時は `recentlyadded-anime` スラッグを使用し、エピソード単位のエントリは `series_id` で重複排除する
-- **Filtered API** (`/api/v2/filtered`) — 年代 (`ag:twenty_twenties` 等) + ジャンル (`edg:tv_animation`) でフィルタ。全件取得時は 2000s / 2010s / 2020s を並列取得
+- **Palette API** (`/api/v2/palettes/{slug}/vod/objects`) — Fetches list by slug. For new arrivals, uses the `recentlyadded-anime` slug and deduplicates episode-level entries by `series_id`
+- **Filtered API** (`/api/v2/filtered`) — Filters by era (`ag:twenty_twenties`, etc.) + genre (`edg:tv_animation`). For full fetches, 2000s / 2010s / 2020s are fetched in parallel
 
-いずれも `from`/`to` パラメータで50件ずつページネーションし、`total_count` に達するまで再帰的に取得する。
+Both paginate in batches of 50 using `from`/`to` parameters, recursively fetching until `total_count` is reached.
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    subgraph 新着取得
-        Palette["Palette API<br/>recentlyadded-anime"] -->|"50件ずつ"| Dedup["series_id で重複排除"]
+    subgraph New Arrivals
+        Palette["Palette API<br/>recentlyadded-anime"] -->|"50 per page"| Dedup["Deduplicate by series_id"]
     end
-    subgraph 全件取得
-        Filtered2000["Filtered API<br/>2000s"] --> Merge["マージ + 重複排除"]
+    subgraph Full Fetch
+        Filtered2000["Filtered API<br/>2000s"] --> Merge["Merge + Deduplicate"]
         Filtered2010["Filtered API<br/>2010s"] --> Merge
         Filtered2020["Filtered API<br/>2020s"] --> Merge
     end
-    Dedup --> Titles["タイトル一覧"]
+    Dedup --> Titles["Title List"]
     Merge --> Titles
 
     style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
@@ -172,12 +174,12 @@ graph LR
     style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
-#### タイトル詳細
+#### Title Detail
 
-2つのデータソースを並列で取得しマージする:
+Two data sources are fetched in parallel and merged:
 
-- **Falcor JSON Graph API** (`/anon/ja/webp/path`) — slug をキーにタイトルのメタ情報 (name, description, thumbnailUrl, service) を取得。`titleSlug` パスで slug から内部IDへの解決を Falcor 側で行う
-- **RSC (React Server Component) ペイロード** — エピソードページ (`/{slug}/assets?ht=episode`) の HTML から `self.__next_f.push()` チャンクを結合し、`"metas"` 配列を抽出してエピソード情報をパースする。エピソードは `season_number_title` でシーズンにグループ化する
+- **Falcor JSON Graph API** (`/anon/ja/webp/path`) — Fetches title metadata (name, description, thumbnailUrl, service) by slug. Resolves slug to internal ID via the `titleSlug` path on the Falcor side
+- **RSC (React Server Component) Payload** — Fetches the episode page HTML (`/{slug}/assets?ht=episode`), concatenates `self.__next_f.push()` chunks, extracts the `"metas"` array, and parses episode info. Episodes are grouped into seasons by `season_number_title`
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
@@ -185,10 +187,10 @@ graph LR
     Slug["slug"] --> Falcor["Falcor API<br/>/anon/ja/webp/path"]
     Slug --> RSC["/{slug}/assets?ht=episode"]
 
-    Falcor -->|"titleSlug → meta/{id}"| Meta["メタ情報<br/>(name, description,<br/>thumbnailUrl, service)"]
-    RSC -->|"HTML取得"| Chunks["self.__next_f.push()<br/>チャンク結合"]
-    Chunks -->|"metas 配列抽出"| EpParse["エピソード パース"]
-    EpParse -->|"season_number_title<br/>でグループ化"| Seasons["シーズン + エピソード"]
+    Falcor -->|"titleSlug -> meta/{id}"| Meta["Metadata<br/>(name, description,<br/>thumbnailUrl, service)"]
+    RSC -->|"Fetch HTML"| Chunks["self.__next_f.push()<br/>Concatenate chunks"]
+    Chunks -->|"Extract metas array"| EpParse["Episode Parse"]
+    EpParse -->|"Group by<br/>season_number_title"| Seasons["Seasons + Episodes"]
 
     Meta --> Result["TitleInfo"]
     Seasons --> Result
@@ -203,72 +205,72 @@ graph LR
     style Result fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
 ```
 
-## セットアップ
+## Setup
 
 ```bash
 bun install
 ```
 
-## 開発
+## Development
 
 ```bash
 bun run dev
 ```
 
-## ビルド
+## Build
 
 ```bash
 bun run build
 ```
 
-## デプロイ
+## Deploy
 
 ```bash
 bun run deploy
 ```
 
-`CLOUDFLARE_ENV` 環境変数でデプロイ先を指定できます（デフォルト: `staging`）。
+You can specify the deploy target with the `CLOUDFLARE_ENV` environment variable (default: `staging`).
 
-## Lint / 型チェック
+## Lint / Type Check
 
 ```bash
-bunx tsc -b --noEmit        # 型チェック
-bunx biome check src/        # lint + format チェック
+bunx tsc -b --noEmit        # Type check
+bunx biome check src/        # Lint + format check
 ```
 
-## テスト
+## Test
 
 ```bash
 bun test
 ```
 
-テストスイート: Amazon プロバイダ、Hulu プロバイダ、タイトルパーサー
+Test suites: Amazon provider, Hulu provider, title parser
 
-## プロジェクト構成
+## Project Structure
 
 ```
 prisma/
-├── schema.prisma               # Prisma スキーマ (Anime, Season, Episode)
-└── migrations/                 # D1 マイグレーション
+├── schema.prisma               # Prisma schema (Anime, Season, Episode)
+└── migrations/                 # D1 migrations
 src/
-├── index.ts                    # Hono エントリーポイント (fetch, scheduled, queue)
+├── index.ts                    # Hono entrypoint (fetch, scheduled, queue)
 ├── queue.ts                    # Cloudflare Queue consumer
-├── scheduled.ts                # Cron trigger (毎時プロバイダ同期)
+├── scheduled.ts                # Cron trigger (hourly provider sync)
 ├── lib/
-│   ├── db.ts                   # PrismaClient + D1 Adapter 初期化
-│   ├── sync.ts                 # 同期サービス (fetch → enrich → upsert)
-│   ├── merge.ts                # データマージロジック
-│   ├── title-parser.ts         # アニメタイトル解析
-│   ├── html-parser.ts          # HTML パーサーヘルパー
-│   ├── image.ts                # 画像処理
-│   ├── logger.ts               # ロガー
-│   ├── metadata/               # メタデータ連携
-│   │   ├── base.ts             # 抽象エンリッチャー
+│   ├── db.ts                   # PrismaClient + D1 Adapter init
+│   ├── sync.ts                 # Sync service (fetch → enrich → upsert)
+│   ├── merge.ts                # Data merge logic
+│   ├── title-parser.ts         # Anime title parser
+│   ├── html-parser.ts          # HTML parser helpers
+│   ├── image.ts                # Image processing
+│   ├── logger.ts               # Logger
+│   ├── metadata/               # Metadata integration
+│   │   ├── base.ts             # Abstract enricher
 │   │   ├── tmdb.ts             # TMDB API
 │   │   ├── anilist.ts          # AniList GraphQL
-│   │   └── index.ts            # ルーター
-│   └── providers/              # プロバイダモジュール
-│       ├── base.ts             # 抽象プロバイダ
+│   │   └── index.ts            # Router
+│   └── providers/              # Provider modules
+│       ├── base.ts             # Abstract provider
 │       ├── amazon/             # Amazon Prime Video
 │       │   ├── browse.ts
 │       │   ├── detail.ts
@@ -279,13 +281,13 @@ src/
 │           ├── detail.ts
 │           ├── rsc-parser.ts
 │           └── index.ts
-├── routes/                     # Backend API ルート
+├── routes/                     # Backend API routes
 │   ├── anime.ts                # /api/anime
 │   └── recordings.ts           # /api/recordings
-├── schemas/                    # Zod スキーマ (*.dto.ts)
+├── schemas/                    # Zod schemas (*.dto.ts)
 │   ├── anime.dto.ts
 │   ├── recording.dto.ts
-│   ├── message.dto.ts          # Queue メッセージ (tagged union)
+│   ├── message.dto.ts          # Queue messages (tagged union)
 │   └── providers/
 │       ├── common.dto.ts
 │       ├── amazon.dto.ts
@@ -295,7 +297,7 @@ src/
     ├── main.tsx
     ├── index.css
     ├── lib/
-    │   ├── api.ts              # Zodios クライアント
+    │   ├── api.ts              # Zodios client
     │   ├── atoms.ts            # Jotai atoms
     │   ├── constants.ts
     │   └── utils.ts
@@ -307,14 +309,14 @@ src/
     │   ├── loading-spinner.tsx
     │   ├── page-transition.tsx
     │   └── smart-pagination.tsx
-    └── routes/                 # TanStack Router (ディレクトリ分離)
-        ├── __root.tsx          # ルートレイアウト
-        ├── index.tsx           # / アニメ一覧
+    └── routes/                 # TanStack Router (directory-based)
+        ├── __root.tsx          # Root layout
+        ├── index.tsx           # / Anime list
         ├── anime/$id/
-        │   └── index.tsx       # /anime/:id 詳細
+        │   └── index.tsx       # /anime/:id Detail
         ├── recordings/
-        │   └── index.tsx       # /recordings 録画一覧
-        └── -components/        # ルート共有コンポーネント
+        │   └── index.tsx       # /recordings Recording list
+        └── -components/        # Shared route components
             ├── anime-card.tsx
             ├── search-bar.tsx
             └── filter-popover.tsx
