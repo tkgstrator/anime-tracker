@@ -183,4 +183,4 @@ flowchart LR
 
 ## 手動実行
 
-`POST /api/queues` でキューを経由せず SyncService を直接実行できる。詳細は [sync-queue-api.md](sync-queue-api.md) を参照。
+`POST /api/queues` でキューを経由せず SyncService を直接実行できる。詳細は [sync-queue-endpoints.md](sync-queue-endpoints.md) を参照。
