@@ -34,7 +34,7 @@
 | Netflix | 対応予定 | [docs/features/netflix-provider.md](docs/features/netflix-provider.md) 参照 |
 
 > [!NOTE]
-> 録画機能を利用するには [Nagisa Backend](https://github.com/tkgstrator/Nagisa) と各配信サービスの有効なサブスクリプションが必要です。
+> 録画機能を利用するには [Nagisa Backend](https://github.com/qtmleap/nagisa) と各配信サービスの有効なサブスクリプションが必要です。
 
 ## 機能
 
