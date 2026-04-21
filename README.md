@@ -173,16 +173,14 @@ Both paginate in batches of 50 using `from`/`to` parameters, recursively fetchin
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 graph LR
-    subgraph NewArrivals ["New Arrivals"]
-        Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["Merge + Classify badges"]
-        Season["Palette API<br/>current season slug"] --> Dedup
-    end
-    subgraph FullFetch ["Full Fetch"]
-        Filtered["Filtered API<br/>g:8 (anime genre)"] --> All["All anime<br/>(TV + movies)"]
-    end
-    subgraph ExpiringGroup ["Expiring"]
-        ExpNode["Filtered API<br/>publish_end_at asc"] --> Exp["Titles expiring<br/>within 30 days"]
-    end
+    Palette["Palette API<br/>recentlyadded-anime"] --> Dedup["Merge + Classify badges"]
+    Season["Palette API<br/>current season slug"] --> Dedup
+    Filtered["Filtered API<br/>g:8 (anime genre)"] --> All["All titles<br/>(TV + movies)"]
+    ExpNode["Filtered API<br/>publish_end_at asc"] --> Exp["Expiring titles<br/>(within 30 days)"]
+
+    Dedup --> Titles["Title List"]
+    All --> Titles
+    Exp --> Titles
 
     style Palette fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
     style Season fill:#2d5e3e,stroke:#4cd48c,color:#c0f0d8
@@ -191,6 +189,7 @@ graph LR
     style All fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
     style ExpNode fill:#5e3a4d,stroke:#d4789c,color:#f0d0e0
     style Exp fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
+    style Titles fill:#5e4e2d,stroke:#d4b44c,color:#f0e4c0
 ```
 
 #### Title Detail
