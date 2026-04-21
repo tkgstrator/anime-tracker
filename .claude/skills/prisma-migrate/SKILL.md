@@ -1,7 +1,7 @@
 ---
 name: prisma-migrate
 description: Prisma + Cloudflare D1 migration workflow — schema changes, diff, local/remote apply
-user_invocable: true
+user-invocable: true
 ---
 
 # /prisma-migrate — Prisma + Cloudflare D1
