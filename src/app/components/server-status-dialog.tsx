@@ -16,7 +16,7 @@ import {
   WifiOff,
   Zap
 } from 'lucide-react'
-import type { NagisaJob } from '@/schemas/nagisa.dto'
+import type { NagisaActiveJob } from '@/schemas/nagisa.dto'
 import { Badge } from '../lib/../components/ui/badge'
 import { nagisaStatusAtom } from '../lib/atoms'
 import { Button } from './ui/button'
@@ -31,31 +31,25 @@ const formatUptime = (seconds: number): string => {
   return `${m}m`
 }
 
-const formatSeasons = (seasons: NagisaJob['seasons']) => {
+const formatSeasons = (seasons: NagisaActiveJob['seasons']) => {
   if (!seasons || seasons.length === 0) return null
-  return seasons
-    .map((s) => {
-      const ep = s.episodes
-      if (!ep || ep.length === 0) return `S${s.season_number}`
-      return `S${s.season_number} Ep${ep[0]}–${ep[ep.length - 1]}`
-    })
-    .join(', ')
+  return seasons.map((s) => `S${s}`).join(', ')
 }
 
-const JobItem = ({ job }: { job: NagisaJob }) => {
+const JobItem = ({ job }: { job: NagisaActiveJob }) => {
   const seasonText = formatSeasons(job.seasons)
 
   return (
     <div className='rounded-lg bg-muted/40 px-3 py-2'>
       <div className='flex items-center gap-2'>
         <span className='inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-blue-500' />
-        <p className='min-w-0 flex-1 truncate text-xs font-medium'>{job.title ?? job.content_id}</p>
+        <p className='min-w-0 flex-1 truncate text-xs font-medium'>{job.title}</p>
         <span className='shrink-0 text-xs text-muted-foreground'>{job.provider}</span>
       </div>
       <div className='mt-1 flex items-center gap-1.5 pl-3.5'>
         {seasonText && <span className='text-[10px] text-muted-foreground'>{seasonText}</span>}
         <span className='ml-auto text-[10px] text-muted-foreground'>
-          {dayjs(job.processedOn ?? job.timestamp).format('MM/DD HH:mm')}
+          {dayjs(job.processedOn).format('MM/DD HH:mm')}
         </span>
       </div>
       {job.progress && (
@@ -120,26 +114,26 @@ export const ServerStatusDialog = () => {
             </div>
 
             <div className='grid grid-cols-5 gap-1.5'>
-              <QueueStat icon={Clock} label='Wait' value={status.queue.wait.count} />
-              <QueueStat icon={Loader2} label='Active' value={status.queue.active.count} active />
-              <QueueStat icon={CheckCircle} label='Done' value={status.queue.completed.count} />
+              <QueueStat icon={Clock} label='Wait' value={status.queue?.wait ?? 0} />
+              <QueueStat icon={Loader2} label='Active' value={status.queue?.active ?? 0} active />
+              <QueueStat icon={CheckCircle} label='Done' value={status.queue?.completed ?? 0} />
               <QueueStat
                 icon={AlertTriangle}
                 label='Fail'
-                value={status.queue.failed.count}
-                error={status.queue.failed.count > 0}
+                value={status.queue?.failed ?? 0}
+                error={(status.queue?.failed ?? 0) > 0}
               />
-              <QueueStat icon={Zap} label='Delay' value={status.queue.delayed.count} />
+              <QueueStat icon={Zap} label='Delay' value={status.queue?.delayed ?? 0} />
             </div>
 
-            {status.queue.active.jobs.length > 0 && (
+            {status.active_jobs.length > 0 && (
               <div className='space-y-2'>
                 <div className='flex items-center gap-3'>
                   <Activity className='size-5 text-blue-500' />
-                  <p className='text-sm font-medium'>Active Jobs ({status.queue.active.count})</p>
+                  <p className='text-sm font-medium'>Active Jobs ({status.active_jobs.length})</p>
                 </div>
                 <div className='space-y-1.5'>
-                  {status.queue.active.jobs.map((job) => (
+                  {status.active_jobs.map((job) => (
                     <JobItem key={job.job_id} job={job} />
                   ))}
                 </div>
