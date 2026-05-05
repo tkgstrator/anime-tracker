@@ -5,6 +5,7 @@ import {
   type FetchExpiringRequestSchema,
   type FetchTitleInfoRequestSchema,
   type FetchTitleListRequestSchema,
+  IdentifyResponseSchema,
   TitleListResponseSchema
 } from '@/schemas/lambda.dto.ts'
 import { TitleInfoSchema } from '@/schemas/providers/common.dto.ts'
@@ -67,6 +68,8 @@ export function createFetchClient(env: FetchClientEnv) {
     fetchTitleList: (body: z.infer<typeof FetchTitleListRequestSchema>) =>
       post(aws, getBaseUrl(env, body.provider), '/title_list', body, TitleListResponseSchema),
     fetchTitleInfo: (body: z.infer<typeof FetchTitleInfoRequestSchema>) =>
-      post(aws, getBaseUrl(env, body.provider), '/title_info', body, TitleInfoSchema)
+      post(aws, getBaseUrl(env, body.provider), '/title_info', body, TitleInfoSchema),
+    identifyTitles: (body: { titles: string[] }) =>
+      post(aws, env.LAMBDA_FUNCTION_URL, '/identify', body, IdentifyResponseSchema)
   }
 }

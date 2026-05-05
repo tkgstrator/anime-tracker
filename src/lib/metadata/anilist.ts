@@ -1,6 +1,7 @@
 import jaconv from 'jaconv'
 import type { z } from 'zod'
 import { MetadataMediaSchema, MetadataResponseSchema, type TitleMetadata } from '../../schemas/providers/metadata.dto'
+import type { FetchClient } from '../lambda'
 import { getAppLogger } from '../logger'
 import { MetadataAdapter } from './base'
 
@@ -250,8 +251,13 @@ export class AniListAdapter extends MetadataAdapter {
 
   /**
    * 最大50件のタイトルをバッチ識別する。1リクエストで処理するため rate limit に優しい。
+   * lambda が渡された場合は Lambda /identify に委譲し、Workers から AniList への直接呼び出しを回避する。
    */
-  async identifyBatch(rawTitles: string[]): Promise<(TitleMetadata | undefined)[]> {
+  async identifyBatch(rawTitles: string[], lambda?: FetchClient): Promise<(TitleMetadata | undefined)[]> {
+    if (lambda) {
+      const res = await lambda.identifyTitles({ titles: rawTitles })
+      return res.results.map((r) => r ?? undefined)
+    }
     const mediaList = await identifyBatch(rawTitles)
     return mediaList.map((m) => (m ? toMetadata(m) : undefined))
   }
