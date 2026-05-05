@@ -219,7 +219,8 @@ async function identifyBatch(rawTitles: string[]): Promise<(MetadataMedia | unde
     if (!page?.media?.length) return undefined
     try {
       return MetadataMediaSchema.parse(page.media[0])
-    } catch {
+    } catch (e) {
+      logger.warn({ action: 'parse-media-failed', index: i, error: e instanceof Error ? e.message : String(e) })
       return undefined
     }
   })

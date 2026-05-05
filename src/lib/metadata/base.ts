@@ -20,6 +20,13 @@ export abstract class MetadataAdapter {
    * サブクラスで効率的なバッチ実装にオーバーライド可能。
    */
   async identifyBatch(titles: string[]): Promise<(TitleMetadata | undefined)[]> {
-    return Promise.all(titles.map((t) => this.identify(t).catch(() => undefined)))
+    return Promise.all(
+      titles.map((t) =>
+        this.identify(t).catch((e) => {
+          console.warn(`[${this.name}] identify failed for "${t}": ${e instanceof Error ? e.message : String(e)}`)
+          return undefined
+        })
+      )
+    )
   }
 }
