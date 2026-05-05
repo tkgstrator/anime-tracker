@@ -16,11 +16,13 @@ const readFixture = (name: string) => JSON.parse(readFileSync(resolve(fixturesDi
 describe('BrowseResponseSchema', () => {
   test('browse-new.json をパースできる', () => {
     const raw = readFixture('browse-new.json')
-    const parsed = BrowseResponseSchema.parse(raw)
-    expect(parsed.total).toBeGreaterThan(0)
-    expect(parsed.data.length).toBeGreaterThan(0)
+    const result = BrowseResponseSchema.safeParse(raw)
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    expect(result.data.total).toBeGreaterThan(0)
+    expect(result.data.data.length).toBeGreaterThan(0)
 
-    for (const item of parsed.data) {
+    for (const item of result.data.data) {
       expect(item.id).toBeTruthy()
       expect(item.title).toBeTruthy()
       expect(item.slug_title).toBeTruthy()
@@ -29,12 +31,28 @@ describe('BrowseResponseSchema', () => {
 
   test('BrowseItem → Title 変換が TitleSchema を満たす', () => {
     const raw = readFixture('browse-new.json')
-    const parsed = BrowseResponseSchema.parse(raw)
-    for (const item of parsed.data) {
+    const result = BrowseResponseSchema.safeParse(raw)
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    for (const item of result.data.data) {
       const title = browseItemToTitle(item)
-      TitleSchema.parse(title)
+      const r = TitleSchema.safeParse(title)
+      expect(r.success).toBe(true)
     }
   }, 30_000)
+
+  test('extended_maturity_rating が空オブジェクトでもパースできる', () => {
+    const raw = readFixture('browse-new.json')
+    const emptyEmr = raw.data.find(
+      (i: Record<string, unknown>) =>
+        i.series_metadata &&
+        (i.series_metadata as Record<string, unknown>).extended_maturity_rating !== undefined &&
+        Object.keys((i.series_metadata as Record<string, unknown>).extended_maturity_rating as object).length === 0
+    )
+    expect(emptyEmr).toBeTruthy()
+    const result = BrowseResponseSchema.safeParse(raw)
+    expect(result.success).toBe(true)
+  })
 })
 
 const seriesFixtures = [
@@ -45,12 +63,14 @@ const seriesFixtures = [
 describe('SeriesDetailResponseSchema', () => {
   for (const { id, label } of seriesFixtures) {
     test(`${label} (${id})`, () => {
-      const parsed = SeriesDetailResponseSchema.parse(readFixture(`series-${id}.json`))
+      const result = SeriesDetailResponseSchema.safeParse(readFixture(`series-${id}.json`))
+      expect(result.success).toBe(true)
+      if (!result.success) return
       const expected = TitleInfoSchema.parse(readFixture(`${id}.json`))
 
-      expect(parsed.data.length).toBe(1)
-      expect(parsed.data[0].id).toBe(id)
-      expect(parsed.data[0].title).toBe(expected.title)
+      expect(result.data.data.length).toBe(1)
+      expect(result.data.data[0].id).toBe(id)
+      expect(result.data.data[0].title).toBe(expected.title)
     })
   }
 })
@@ -58,12 +78,14 @@ describe('SeriesDetailResponseSchema', () => {
 describe('SeasonsResponseSchema', () => {
   for (const { id, label } of seriesFixtures) {
     test(`${label} (${id})`, () => {
-      const parsed = SeasonsResponseSchema.parse(readFixture(`seasons-${id}.json`))
+      const result = SeasonsResponseSchema.safeParse(readFixture(`seasons-${id}.json`))
+      expect(result.success).toBe(true)
+      if (!result.success) return
       const expected = TitleInfoSchema.parse(readFixture(`${id}.json`))
 
-      expect(parsed.data.length).toBeGreaterThanOrEqual(expected.seasons.length)
+      expect(result.data.data.length).toBeGreaterThanOrEqual(expected.seasons.length)
 
-      for (const season of parsed.data) {
+      for (const season of result.data.data) {
         expect(season.id).toBeTruthy()
         expect(season.series_id).toBe(id)
       }
@@ -80,12 +102,14 @@ describe('EpisodesResponseSchema', () => {
       const expectedSeason = expected.seasons[i]
 
       test(`${label} ${expectedSeason.displayName} (${seasonId})`, () => {
-        const parsed = EpisodesResponseSchema.parse(readFixture(`episodes-${seasonId}.json`))
+        const result = EpisodesResponseSchema.safeParse(readFixture(`episodes-${seasonId}.json`))
+        expect(result.success).toBe(true)
+        if (!result.success) return
 
-        expect(parsed.data.length).toBe(expectedSeason.episodes.length)
+        expect(result.data.data.length).toBe(expectedSeason.episodes.length)
         for (let j = 0; j < expectedSeason.episodes.length; j++) {
-          expect(parsed.data[j].id).toBe(expectedSeason.episodes[j].episodeId)
-          expect(parsed.data[j].title).toBe(expectedSeason.episodes[j].title)
+          expect(result.data.data[j].id).toBe(expectedSeason.episodes[j].episodeId)
+          expect(result.data.data[j].title).toBe(expectedSeason.episodes[j].title)
         }
       })
     }

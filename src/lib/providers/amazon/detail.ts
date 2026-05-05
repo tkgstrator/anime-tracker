@@ -44,7 +44,8 @@ export function extractPageData(html: string): PageData {
   let lastError: unknown
   for (const content of scripts) {
     try {
-      return DetailPageJsonSchema.parse(JSON.parse(content))
+      const parseResult = DetailPageJsonSchema.safeParse(JSON.parse(content))
+      if (parseResult.success) return parseResult.data
     } catch (e) {
       lastError = e
     }
@@ -76,7 +77,9 @@ async function fetchEpisodesByToken(titleID: string, token: string): Promise<Epi
     headers: { ...FETCH_HEADERS, 'x-requested-with': 'XMLHttpRequest' }
   })
   if (!res.ok) throw new Error(`getDetailWidgets HTTP ${res.status}`)
-  return WidgetResponseSchema.parse(await res.json())
+  const result = WidgetResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  return result.data
 }
 
 /**
@@ -114,8 +117,8 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
         episodes:
           episodes.length > 0
             ? episodes
-            : [
-                EpisodeSchema.parse({
+            : (() => {
+                const result = EpisodeSchema.safeParse({
                   episodeNumber: 1,
                   episodeId: contentId,
                   title: page.title,
@@ -128,7 +131,9 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
                   hasDub: page.hasDub,
                   benefitId: null
                 })
-              ]
+                if (!result.success) throw result.error
+                return [result.data]
+              })()
       }
     ]
   }

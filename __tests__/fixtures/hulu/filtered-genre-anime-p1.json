@@ -1,0 +1,421 @@
+{
+    "total_count": 2587,
+    "data": [
+        {
+            "id": 19,
+            "id_in_schema": 50011404,
+            "title": "名探偵コナン",
+            "description": "国民的探偵アニメ。毒薬を飲まされ小学一年生の姿にさせられた頭脳明晰な高校生探偵･工藤新一が、〈江戸川コナン〉を名乗り、数々の怪事件の謎を解いていく。",
+            "slug": "conan",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/4ab23e9f-2fb7-4c26-9546-0e69149edbeb.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2014/12/03 12:00:00",
+            "endAt": "2028/03/31 23:59:59",
+            "badgeText": "最速配信作品",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:50011404",
+            "categoryMetas": [
+                "アニメ",
+                "ファミリー",
+                "キッズ"
+            ],
+            "price": "",
+            "features": [
+                "少年コミック誌原作",
+                "実写化されたアニメ",
+                "メガネ男子",
+                "尊い少年漫画アニメ",
+                "推理の天才! 名探偵が大活躍!（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "© 青山剛昌／小学館・読売テレビ・TMS 1996",
+                    "badge_text": "最速配信作品",
+                    "badge_text_start_at": "2026/04/10 23:15:51",
+                    "catch_copy": {
+                        "description": "【毎週土曜 テレビ放送後に配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 1196,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 1996,
+                    "season_count": 31,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365122,
+                    "name": "名探偵コナン シーズン31 (第1187話～) 第1200話 置き配泥棒多発中",
+                    "short_name": "置き配泥棒多発中",
+                    "ref_id": "ASSET-100260080",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/ad5a12e2-8ca1-43f8-ac24-9f9b047828f4.png"
+                },
+                "id_in_schema": 50011404,
+                "id": 19,
+                "lead_episode": {
+                    "meta_id": 16238,
+                    "name": "名探偵コナン シーズン1 (第1話～) 第1話 ジェットコースター殺人事件",
+                    "short_name": "ジェットコースター殺人事件",
+                    "ref_id": "ASSET-60474603",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/3a790221-3b41-4087-8f1c-727940e41de0.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "conan",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "1996年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1278391,
+            "id_in_schema": 500022541,
+            "title": "劇場版 名探偵コナン 隻眼の残像 (フラッシュバック)",
+            "description": "大ヒットシリーズの劇場版第28作目。長野県･八ヶ岳連峰未宝岳で敢助が巻き込まれた雪崩事故の事件ファイルに、なぜか小五郎の名前があり…。",
+            "slug": "case-closed-one-eyed-flashback",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/c7522a9b-d4ac-4142-8bca-b13bb7816d2c.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/10 23:14:00",
+            "endAt": "2026/08/31 23:59:59",
+            "badgeText": "見放題最速配信",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022541",
+            "categoryMetas": [
+                "アニメ",
+                "ファミリー",
+                "キッズ"
+            ],
+            "price": "",
+            "features": [
+                "推理の天才! 名探偵が大活躍（アニメ）",
+                "尊い少年漫画アニメ",
+                "メガネ男子",
+                "家族で観たいアニメ",
+                "少年コミック誌原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "",
+                    "badge_text": "見放題最速配信",
+                    "badge_text_start_at": "2026/04/10 23:20:19",
+                    "badge_text_end_at": "2026/08/31 23:20:19",
+                    "episode_count": 2,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 0,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1314076,
+                    "name": "劇場版 名探偵コナン 隻眼の残像 (フラッシュバック)",
+                    "short_name": "劇場版 名探偵コナン 隻眼の残像 (フラッシュバック)",
+                    "ref_id": "ASSET-100253369",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/4e5c92f9-693c-408e-af33-c09f4f615d8e.png"
+                },
+                "id_in_schema": 500022541,
+                "id": 1278391,
+                "lead_episode": {
+                    "meta_id": 1314076,
+                    "name": "劇場版 名探偵コナン 隻眼の残像 (フラッシュバック)",
+                    "short_name": "劇場版 名探偵コナン 隻眼の残像 (フラッシュバック)",
+                    "ref_id": "ASSET-100253369",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/4e5c92f9-693c-408e-af33-c09f4f615d8e.png"
+                },
+                "rating_v2": "g",
+                "rating": "g",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "case-closed-one-eyed-flashback",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "2025年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 35,
+            "id_in_schema": 500001661,
+            "title": "転生したらスライムだった件",
+            "description": "シリーズ累計2,000万部超を誇る話題作のTVアニメ版。スライムに生まれ変わったサラリーマンの三上は、異世界で仲間と共に冒険をはじめるが…。",
+            "slug": "ten-sura",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/bca32ddf-6707-409d-acd6-640ecb65c89e.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2020/07/01 00:00:00",
+            "endAt": "2027/09/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500001661",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー",
+                "アドベンチャー"
+            ],
+            "price": "",
+            "features": [
+                "ピンク髪ヒロイン",
+                "金髪ヒロイン",
+                "2018年 秋アニメ",
+                "現代から異世界へGO！",
+                "もう観た!?見逃せない! なろう系!",
+                "異世界で最強すぎる!?",
+                "多彩! 2010年代ラノベ原作アニメ"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "（C）川上秦樹・伏瀬・講談社／転スラ製作委員会",
+                    "catch_copy": {
+                        "description": "【テレビ放送後の毎週土曜配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 89,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2018,
+                    "season_count": 5,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1361261,
+                    "name": "転生したらスライムだった件 第4期第1話～ 第76話 招待状",
+                    "short_name": "招待状",
+                    "ref_id": "ASSET-100259822",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/c5a08a99-be3a-4e6b-ae5b-d8edde6fe7f0.png"
+                },
+                "id_in_schema": 500001661,
+                "id": 35,
+                "lead_episode": {
+                    "meta_id": 27367,
+                    "name": "転生したらスライムだった件 第1期 第1話 暴風竜ヴェルドラ",
+                    "short_name": "暴風竜ヴェルドラ",
+                    "ref_id": "ASSET-100025814",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/f06a6358-3f5b-4b15-ae26-6b18c3552511.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "ten-sura",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "2018年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 117102,
+            "id_in_schema": 500002537,
+            "title": "Dr.STONE",
+            "description": "週刊少年ジャンプ連載漫画が原作のアドベンチャーアニメ。全人類が一瞬で石化して数千年。科学少年･千空が目覚め、仲間たちと文明を作り出していく。",
+            "slug": "dr-stone",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/f7488f46-5d07-41e9-8258-f404fe768ba9.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2019/07/11 00:00:00",
+            "endAt": "2027/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500002537",
+            "categoryMetas": [
+                "アニメ",
+                "アドベンチャー",
+                "SF"
+            ],
+            "price": "",
+            "features": [
+                "荒廃した地球が舞台",
+                "生き抜け！サバイバル系アニメ",
+                "頭脳明晰! 天才が活躍するアニメ",
+                "少年コミック誌原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©米スタジオ・Boichi／集英社・Dr.STONE製作委員会",
+                    "catch_copy": {
+                        "description": "【毎週木曜 テレビ放送後に配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 92,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2019,
+                    "season_count": 4,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1364994,
+                    "name": "Dr.STONE Dr.STONE SCIENCE FUTURE (第4期) 29. ロケットの真相",
+                    "short_name": "ロケットの真相",
+                    "ref_id": "ASSET-100260199",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/0e8803e8-5b3a-469e-bbf1-a1da0097e604.png"
+                },
+                "id_in_schema": 500002537,
+                "id": 117102,
+                "lead_episode": {
+                    "meta_id": 117159,
+                    "name": "Dr.STONE Dr.STONE (第1期) 01. STONE WORLD",
+                    "short_name": "STONE WORLD",
+                    "ref_id": "ASSET-100038160",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/5103eeb2-c3d8-4265-809d-7a4368c040a4.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "dr-stone",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "2019年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 24,
+            "id_in_schema": 50025730,
+            "title": "僕のヒーローアカデミア",
+            "description": "週刊少年ジャンプ連載の人気コミックのTVアニメ版。多くの人が超常能力を持つ世界で、敵から人々を守るヒーローになるべく奮闘する少年たちの姿を描く。",
+            "slug": "my-hero-academia",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/dfbbd9d6-bfd4-4544-a2be-469348ec91ca.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2017/03/15 00:00:00",
+            "endAt": "2027/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:50025730",
+            "categoryMetas": [
+                "アニメ",
+                "アクション",
+                "キッズ"
+            ],
+            "price": "",
+            "features": [
+                "この世に悪がいる限り、オレ達絶対滅びない最強ヒーロー",
+                "バトルは日常！？なスクールライフ",
+                "HEROになりたいあなたへ",
+                "尊い少年漫画アニメ",
+                "特殊能力で勝負だ!",
+                "少年コミック誌原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "© 堀越耕平／集英社・僕のヒーローアカデミア製作委員会",
+                    "episode_count": 186,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2016,
+                    "season_count": 8,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1364998,
+                    "name": "僕のヒーローアカデミア FINAL SEASON No.170+1 More",
+                    "short_name": "More",
+                    "ref_id": "ASSET-100260210",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/8f8a54f7-4b67-4faf-af64-b386b413247c.png"
+                },
+                "id_in_schema": 50025730,
+                "id": 24,
+                "lead_episode": {
+                    "meta_id": 104331,
+                    "name": "僕のヒーローアカデミア シーズン1 第1話 緑谷出久：オリジン",
+                    "short_name": "緑谷出久：オリジン",
+                    "ref_id": "ASSET-60844984",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/migration/95a814b5-3f4f-4fa0-af1d-8f428856a4fd.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "my-hero-academia",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "2016年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        }
+    ]
+}

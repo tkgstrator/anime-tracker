@@ -1,0 +1,379 @@
+{
+    "total_count": 1104,
+    "data": [
+        {
+            "id": 388900,
+            "id_in_schema": 500015528,
+            "title": "しまじろう3DCGエディション",
+            "description": "しまじろうが3DCGアニメで登場! 勇気、友達、家族など、お子さまが大好きなテーマのお話がいっぱい。毎回、ガオガオさんのクイズコーナーも登場します。",
+            "slug": "shimajiro-3dcg-edition",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/df83284c-b286-440c-b5db-1def7b517f68.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/05/06 00:00:00",
+            "endAt": "2026/06/05 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500015528",
+            "categoryMetas": [
+                "キッズ",
+                "アニメ",
+                "ファミリー"
+            ],
+            "price": "",
+            "features": [
+                "幼稚園以下の子供に観せたい（アニメ）",
+                "可愛い動物たちの可愛い日常",
+                "どうぶつ達が主人公のアニメ",
+                "ママ!! こんな、世界に連れてって!（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(Ｃ) Benesse corporation",
+                    "episode_count": 10,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2020,
+                    "season_count": 0,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 390945,
+                    "name": "しまじろう3DCGエディション 第20話 ゆきあそび",
+                    "short_name": "ゆきあそび",
+                    "ref_id": "ASSET-100181819",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d79c075f-8440-4e53-afac-58b064122bf7.png"
+                },
+                "id_in_schema": 500015528,
+                "id": 388900,
+                "lead_episode": {
+                    "meta_id": 390926,
+                    "name": "しまじろう3DCGエディション 第11話 おかあさんはにんきもの",
+                    "short_name": "おかあさんはにんきもの",
+                    "ref_id": "ASSET-100181810",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/ac924006-9945-43c6-b9a5-37e1ab809090.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "shimajiro-3dcg-edition",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2020年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1353373,
+            "id_in_schema": 500023154,
+            "title": "MFゴースト 3rd Season BATTLE DIGEST",
+            "description": "『MFゴースト 3rd Season』#25-37で描かれたレースバトルを中心に再編集。TVアニメ本編には使用されていないユーロビート音源も使用した…",
+            "slug": "tv-anime-mf-ghost-3rd-season-battle-digest",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/9d545d02-1a78-4eb5-9777-a0b6d5ea363d.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/05/04 00:00:00",
+            "endAt": "2026/12/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500023154",
+            "categoryMetas": [
+                "アニメ",
+                "アクション",
+                "スポーツ"
+            ],
+            "price": "",
+            "features": [
+                "ぶっ飛ばせ! 凄すぎるカーアクション（アニメ）",
+                "聖地巡礼も楽しめる",
+                "青年コミック誌原作（アニメ）",
+                "乗りこなせるか？"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©しげの秀一・講談社／MFゴースト製作委員会",
+                    "episode_count": 2,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365017,
+                    "name": "MFゴースト 3rd Season BATTLE DIGEST シーズン1 2 part2",
+                    "short_name": "part2",
+                    "ref_id": "ASSET-100259438",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/1d81663c-6aab-47fc-931e-4bf9a171e709.png"
+                },
+                "id_in_schema": 500023154,
+                "id": 1353373,
+                "lead_episode": {
+                    "meta_id": 1365011,
+                    "name": "MFゴースト 3rd Season BATTLE DIGEST シーズン1 1 part1",
+                    "short_name": "part1",
+                    "ref_id": "ASSET-100259437",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d7e35bda-d368-46f4-a3ae-1fd5280a0274.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "tv-anime-mf-ghost-3rd-season-battle-digest",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1225252,
+            "id_in_schema": 500021819,
+            "title": "ChaO",
+            "description": "人間と人魚が共存する未来社会。船舶をつくる会社で働くサラリーマンのステファンは、ある日突然、人魚の王国のお姫様･チャオに求婚される!! その前代未聞…",
+            "slug": "chao",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/1f003a4f-500a-4aa6-8ae5-b03a9bbed19c.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/05/01 00:00:00",
+            "endAt": "",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500021819",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー",
+                "恋愛"
+            ],
+            "price": "",
+            "features": [
+                "こんな未来がいつか来る？",
+                "見逃してない? サブカルアニメ",
+                "フューチャーワールドへようこそ（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C)2025 「ChaO」製作委員会",
+                    "episode_count": 2,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 0,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1225253,
+                    "name": "ChaO",
+                    "short_name": "ChaO",
+                    "ref_id": "ASSET-100246242",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/e90adbd6-f0e0-441a-9d6e-391ae52c4bfb.png"
+                },
+                "id_in_schema": 500021819,
+                "id": 1225252,
+                "lead_episode": {
+                    "meta_id": 1225253,
+                    "name": "ChaO",
+                    "short_name": "ChaO",
+                    "ref_id": "ASSET-100246242",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/e90adbd6-f0e0-441a-9d6e-391ae52c4bfb.png"
+                },
+                "rating_v2": "g",
+                "rating": "g",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "chao",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2025年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 464530,
+            "id_in_schema": 500020217,
+            "title": "強くてニューサーガ",
+            "description": "勇者が前世の記憶を武器に戦うファンタジーアクション。4年の時を遡り、滅んだはずの故郷で目覚めた魔法剣士のカイルが、世界を救うべく2周目の人生に挑む。",
+            "slug": "tsuyokute-new-saga",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/6cb5dd8e-c2e9-4a45-ab7b-c0f841f41d5f.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/05/01 00:00:00",
+            "endAt": "2027/09/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500020217",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー",
+                "アクション"
+            ],
+            "price": "",
+            "features": [
+                "駆け引きも面白いバトルアニメ",
+                "剣と魔法のファンタジー",
+                "時空を超えて（アニメ）",
+                "なろう系小説原作アニメ",
+                "多彩! 2010年代ラノベ原作アニメ"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C)2025 阿部正行・アルファポリス／強くてニューサーガ製作委員会",
+                    "episode_count": 12,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1039106,
+                    "name": "強くてニューサーガ シーズン1 第12話 そして英雄譚は続く",
+                    "short_name": "そして英雄譚は続く",
+                    "ref_id": "ASSET-100237958",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/6040a949-6588-4d43-98c8-d23ac3c81ecc.png"
+                },
+                "id_in_schema": 500020217,
+                "id": 464530,
+                "lead_episode": {
+                    "meta_id": 466352,
+                    "name": "強くてニューサーガ シーズン1 第1話 全ての終わり、そして始まり",
+                    "short_name": "全ての終わり、そして始まり",
+                    "ref_id": "ASSET-100231802",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/af11c930-ca2d-4a6a-8e89-5b923688a783.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "tsuyokute-new-saga",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2025年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 459494,
+            "id_in_schema": 500019864,
+            "title": "30歳まで童貞だと魔法使いになれるらしい 特別編集版",
+            "description": "TVアニメを再編集した劇場版。童貞のまま30歳を迎え、心を読める魔法を手に入れた安達は、同期のイケメン･黒沢が自分に恋をしていることを知ってしまう。",
+            "slug": "cherry-magic-thirty-years-of-virginity-can-make-you-a-wizard-tokubetsuhensyuuban",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/9e60786f-1715-4b0f-b2c3-757736fa600c.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/05/01 00:00:00",
+            "endAt": "2027/04/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500019864",
+            "categoryMetas": [
+                "アニメ",
+                "恋愛",
+                "コメディ"
+            ],
+            "price": "",
+            "features": [
+                "ウェブコミック原作（アニメ）",
+                "実写化されたアニメ",
+                "魅惑のボーイズラブ（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C) 豊田悠／SQUARE ENIX・アニメ「チェリまほ」製作委員会",
+                    "episode_count": 1,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2024,
+                    "season_count": 0,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 459495,
+                    "name": "30歳まで童貞だと魔法使いになれるらしい 特別編集版",
+                    "short_name": "30歳まで童貞だと魔法使いになれるらしい 特別編集版",
+                    "ref_id": "ASSET-100225541",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/c304d13a-310d-4f2c-8953-7d805ad818f3.png"
+                },
+                "id_in_schema": 500019864,
+                "id": 459494,
+                "lead_episode": {
+                    "meta_id": 459495,
+                    "name": "30歳まで童貞だと魔法使いになれるらしい 特別編集版",
+                    "short_name": "30歳まで童貞だと魔法使いになれるらしい 特別編集版",
+                    "ref_id": "ASSET-100225541",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/c304d13a-310d-4f2c-8953-7d805ad818f3.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "cherry-magic-thirty-years-of-virginity-can-make-you-a-wizard-tokubetsuhensyuuban",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2024年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        }
+    ]
+}

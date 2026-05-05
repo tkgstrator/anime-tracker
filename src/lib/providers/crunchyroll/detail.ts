@@ -52,7 +52,9 @@ async function fetchSeasons(seriesId: string): Promise<SeasonItem[]> {
     locale: 'ja-JP',
     preferred_audio_language: 'ja-JP'
   })
-  return SeasonsResponseSchema.parse(raw).data
+  const result = SeasonsResponseSchema.safeParse(raw)
+  if (!result.success) throw result.error
+  return result.data.data
 }
 
 /** シーズンのエピソード一覧を取得する */
@@ -60,7 +62,9 @@ async function fetchEpisodes(seasonId: string): Promise<EpisodeItem[]> {
   const raw = await crunchyrollGet(`/content/v2/cms/seasons/${seasonId}/episodes`, {
     locale: 'ja-JP'
   })
-  return EpisodesResponseSchema.parse(raw).data
+  const result = EpisodesResponseSchema.safeParse(raw)
+  if (!result.success) throw result.error
+  return result.data.data
 }
 
 /**
@@ -94,7 +98,9 @@ export async function fetchCrunchyrollTitleDetail(seriesId: string): Promise<Tit
     fetchSeasons(seriesId)
   ])
 
-  const seriesData = SeriesDetailResponseSchema.parse(seriesRaw).data[0]
+  const result = SeriesDetailResponseSchema.safeParse(seriesRaw)
+  if (!result.success) throw result.error
+  const seriesData = result.data.data[0]
   if (!seriesData) throw new Error(`Series not found: ${seriesId}`)
 
   const jaSeasons = filterJapaneseSeasons(allSeasons)
