@@ -1,0 +1,90 @@
+{
+    "jsonGraph": {
+        "titleSlug": {
+            "frieren-beyond-journeys-end": {
+                "$type": "ref",
+                "value": [
+                    "meta",
+                    338693
+                ],
+                "$expires": -300000
+            }
+        },
+        "meta": {
+            "338693": {
+                "id": {
+                    "$type": "atom",
+                    "value": 338693,
+                    "$expires": -3600000
+                },
+                "idInSchema": {
+                    "$type": "atom",
+                    "value": 500013150,
+                    "$expires": -3600000
+                },
+                "schemaKey": {
+                    "$type": "atom",
+                    "value": "series",
+                    "$expires": -3600000
+                },
+                "name": {
+                    "$type": "atom",
+                    "value": "\u846c\u9001\u306e\u30d5\u30ea\u30fc\u30ec\u30f3",
+                    "$expires": -3600000
+                },
+                "shortName": {
+                    "$type": "atom"
+                },
+                "type": {
+                    "$type": "atom",
+                    "value": "group_meta",
+                    "$expires": -3600000
+                },
+                "schemaId": {
+                    "$type": "atom",
+                    "value": 3,
+                    "$expires": -3600000
+                },
+                "episodeRuntime": {
+                    "$type": "atom"
+                },
+                "subscription": {
+                    "$type": "atom"
+                },
+                "rental": {
+                    "$type": "atom"
+                },
+                "thumbnailUrl": {
+                    "$type": "atom",
+                    "value": "https://images.prod.hjholdings.tv/d3urerHm/uploads/98a851b0-1d18-4e57-8e0d-2e8f8cbda304.jpg?w=331&h=447&p=t",
+                    "$expires": -3600000
+                },
+                "rating": {
+                    "$type": "atom",
+                    "value": "not_rated"
+                },
+                "deliveryStartAt": {
+                    "$type": "atom"
+                },
+                "deliveryEndAt": {
+                    "$type": "atom"
+                },
+                "description": {
+                    "$type": "atom",
+                    "value": "\u52c7\u8005\u30d2\u30f3\u30e1\u30eb\u305f\u3061\u3068\u5171\u306b\u300110\u5e74\u306b\u53ca\u3076\u5192\u967a\u306e\u672b\u306b\u9b54\u738b\u3092\u6253\u3061\u5012\u3057\u3001\u4e16\u754c\u306b\u5e73\u548c\u3092\u3082\u305f\u3089\u3057\u305f\u9b54\u6cd5\u4f7f\u3044\u30d5\u30ea\u30fc\u30ec\u30f3\u3002\u5343\u5e74\u4ee5\u4e0a\u751f\u304d\u308b\u30a8\u30eb\u30d5\u3067\u3042\u308b\u5f7c\u5973\u306f\u3001\u30d2\u30f3\u30e1\u30eb\u305f\u3061\u3068\u518d\u4f1a\u306e\u7d04\u675f\u3092\u3057\u3001\u72ec\u308a\u65c5\u306b\u51fa\u308b\u3002\u305d\u308c\u304b\u308950\u5e74\u5f8c\u3001\u30d5\u30ea\u30fc\u30ec\u30f3\u306f\u30d2\u30f3\u30e1\u30eb\u306e\u3082\u3068\u3092\u8a2a\u306d\u308b\u304c\u300150\u5e74\u524d\u3068\u5909\u308f\u3089\u306c\u5f7c\u5973\u306b\u5bfe\u3057\u3001\u30d2\u30f3\u30e1\u30eb\u306f\u8001\u3044\u3001\u4eba\u751f\u306f\u6b8b\u308a\u308f\u305a\u304b\u3060\u3063\u305f\u3002\u305d\u306e\u5f8c\u3001\u6b7b\u3092\u8fce\u3048\u305f\u30d2\u30f3\u30e1\u30eb\u3092\u76ee\u306e\u5f53\u305f\u308a\u306b\u3057\u3001\u3053\u308c\u307e\u3067\u201c\u4eba\u3092\u77e5\u308b\u201d\u3053\u3068\u3092\u3057\u3066\u3053\u306a\u304b\u3063\u305f\u81ea\u5206\u3092\u75db\u611f\u3057\u3001\u305d\u308c\u3092\u6094\u3044\u308b\u30d5\u30ea\u30fc\u30ec\u30f3\u306f\u3001\u201c\u4eba\u3092\u77e5\u308b\u305f\u3081\u201d\u306e\u65c5\u306b\u51fa\u308b\u3002\u305d\u306e\u65c5\u8def\u306b\u306f\u3001\u3055\u307e\u3056\u307e\u306a\u4eba\u3068\u306e\u51fa\u4f1a\u3044\u3001\u3055\u307e\u3056\u307e\u306a\u51fa\u6765\u4e8b\u304c\u5f85\u3063\u3066\u3044\u305f\u2015\u3002",
+                    "$expires": -3600000
+                },
+                "service": {
+                    "$type": "atom",
+                    "value": "hulu",
+                    "$expires": -3600000
+                },
+                "slug": {
+                    "$type": "atom",
+                    "value": "frieren-beyond-journeys-end",
+                    "$expires": -3600000
+                }
+            }
+        }
+    }
+}

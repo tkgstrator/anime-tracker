@@ -45,9 +45,10 @@ async function fetchHuluAnimePage(slug: string, from: number, items: VodItem[]):
   if (!res.ok) {
     throw new Error(`Hulu API error: ${res.status} ${res.statusText} (${url})`)
   }
-  const parsed = PaletteResponseSchema.parse(await res.json())
-  const accumulated = [...items, ...parsed.data]
-  if (accumulated.length >= parsed.total_count) return accumulated
+  const result = PaletteResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  const accumulated = [...items, ...result.data.data]
+  if (from + PAGE_SIZE >= result.data.total_count) return accumulated
   return fetchHuluAnimePage(slug, from + PAGE_SIZE, accumulated)
 }
 
@@ -74,9 +75,10 @@ async function fetchHuluFilteredPage(ag: string, from: number, items: VodItem[])
   if (!res.ok) {
     throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
   }
-  const parsed = PaletteResponseSchema.parse(await res.json())
-  const accumulated = [...items, ...parsed.data]
-  if (accumulated.length >= parsed.total_count) return accumulated
+  const result = PaletteResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  const accumulated = [...items, ...result.data.data]
+  if (from + PAGE_SIZE >= result.data.total_count) return accumulated
   return fetchHuluFilteredPage(ag, from + PAGE_SIZE, accumulated)
 }
 
@@ -115,9 +117,10 @@ async function fetchHuluAnimeAllPage(sort: string, from: number, items: VodItem[
   if (!res.ok) {
     throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
   }
-  const parsed = PaletteResponseSchema.parse(await res.json())
-  const accumulated = [...items, ...parsed.data]
-  if (accumulated.length >= parsed.total_count) return accumulated
+  const result = PaletteResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  const accumulated = [...items, ...result.data.data]
+  if (from + PAGE_SIZE >= result.data.total_count) return accumulated
   return fetchHuluAnimeAllPage(sort, from + PAGE_SIZE, accumulated)
 }
 
@@ -168,19 +171,19 @@ export async function fetchHuluRecentlyUpdated(thresholdDays = 30): Promise<VodI
     const url = `${HULU_FILTERED_API}?${params}`
     const res = await fetch(url)
     if (!res.ok) throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
-    const parsed = PaletteResponseSchema.parse(await res.json())
-    if (parsed.data.length === 0) break
+    const result = PaletteResponseSchema.safeParse(await res.json())
+    if (!result.success) throw result.error
+    if (result.data.data.length === 0) break
 
     let allBelowCutoff = true
-    for (const item of parsed.data) {
+    for (const item of result.data.data) {
       if (parseHuluDateStr(item.startAt).isAfter(cutoff)) {
         items.push(item)
         allBelowCutoff = false
       }
     }
-    // ページ内の全アイテムが閾値より古い → 以降は全て古いので打ち切り
     if (allBelowCutoff) break
-    if (items.length >= parsed.total_count) break
+    if (from + PAGE_SIZE >= result.data.total_count) break
     from += PAGE_SIZE
   }
   return items
@@ -209,11 +212,12 @@ export async function fetchHuluExpiring(thresholdDays = 30): Promise<VodItem[]> 
     const url = `${HULU_FILTERED_API}?${params}`
     const res = await fetch(url)
     if (!res.ok) throw new Error(`Hulu filtered API error: ${res.status} ${res.statusText} (${url})`)
-    const parsed = PaletteResponseSchema.parse(await res.json())
-    if (parsed.data.length === 0) break
+    const result = PaletteResponseSchema.safeParse(await res.json())
+    if (!result.success) throw result.error
+    if (result.data.data.length === 0) break
 
     let allBeyondCutoff = true
-    for (const item of parsed.data) {
+    for (const item of result.data.data) {
       const endAt = item.endAt
       if (!endAt) continue
       if (parseHuluDateStr(endAt).isBefore(cutoff)) {
@@ -221,9 +225,8 @@ export async function fetchHuluExpiring(thresholdDays = 30): Promise<VodItem[]> 
         allBeyondCutoff = false
       }
     }
-    // ページ内の全アイテムが閾値より先 → 以降は全て先なので打ち切り
     if (allBeyondCutoff) break
-    if (items.length >= parsed.total_count) break
+    if (from + PAGE_SIZE >= result.data.total_count) break
     from += PAGE_SIZE
   }
   return items

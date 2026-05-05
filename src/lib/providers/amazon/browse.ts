@@ -181,8 +181,9 @@ export function buildServiceToken(query: BrowseQuery, options?: BuildOptions): s
  * ```
  */
 export function buildAmazonBrowseUrl(params?: Partial<BrowseQuery>, options?: BuildOptions): string {
-  const query = BrowseQuerySchema.parse(params ?? {})
-  const token = buildServiceToken(query, options)
+  const result = BrowseQuerySchema.safeParse(params ?? {})
+  if (!result.success) throw result.error
+  const token = buildServiceToken(result.data, options)
   return `${AMAZON_BROWSE_BASE}?serviceToken=v0_${encodeURIComponent(token)}`
 }
 
@@ -197,8 +198,9 @@ export function buildAmazonBrowseUrl(params?: Partial<BrowseQuery>, options?: Bu
  * @returns `v0_` プレフィックス付きの URL-safe Base64 トークン
  */
 export function buildPaginationToken(options?: BuildOptions): string {
-  const query = BrowseQuerySchema.parse({})
-  const searchParams = buildSearchParams(query, options)
+  const result = BrowseQuerySchema.safeParse({})
+  if (!result.success) throw result.error
+  const searchParams = buildSearchParams(result.data, options)
   const cursor = JSON.stringify({ sbsin: 0, cursize: 0, presize: 0 })
 
   const nested = [

@@ -34,7 +34,9 @@ export async function getAccessToken(): Promise<string> {
     throw new Error(`Crunchyroll auth failed: ${res.status} ${res.statusText}`)
   }
 
-  const data = TokenResponseSchema.parse(await res.json())
+  const result = TokenResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  const data = result.data
   tokenCache.token = data.access_token
   // 有効期限の 60 秒前にリフレッシュ
   tokenCache.expiresAt = dayjs().add(data.expires_in - 60, 'second')

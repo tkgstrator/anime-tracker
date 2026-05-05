@@ -57,7 +57,7 @@ export const BrowseEntitySchema = z
     const badgeMsg = v.entitlementCues.titleMetadataBadge.message
     const badge: BadgeType | null =
       badgeMsg === '新エピソード' ? 'NEW_EPISODE' : badgeMsg === '新着' || badgeMsg === '新作' ? 'RECENTLY_ADDED' : null
-    return TitleSchema.parse({
+    const result = TitleSchema.safeParse({
       contentId: v.titleID,
       title: v.displayTitle,
       description: v.synopsis,
@@ -67,6 +67,8 @@ export const BrowseEntitySchema = z
       badge,
       expiring: parsed ? { remainingHours: parsed.remainingHours, season: parsed.season } : undefined
     })
+    if (!result.success) throw result.error
+    return result.data
   })
 
 const ContainersSchema = z
@@ -282,11 +284,13 @@ const DetailBodySchema = z
   })
   .transform((body): PageData => {
     const hd = body.atf.state.detail.headerDetail
-    return PageDataSchema.parse({
+    const result = PageDataSchema.safeParse({
       ...hd,
       seasons: body.atf.state.seasons,
       episodePageTokens: body.btf.state.episodeList.actions
     })
+    if (!result.success) throw result.error
+    return result.data
   })
 
 export const DetailPageJsonSchema = z

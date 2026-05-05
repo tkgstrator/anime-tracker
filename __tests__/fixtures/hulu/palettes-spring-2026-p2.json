@@ -1,0 +1,2319 @@
+{
+    "total_count": 79,
+    "data": [
+        {
+            "id": 1314095,
+            "id_in_schema": 500022784,
+            "title": "\u5de6\u304d\u304d\u306e\u30a8\u30ec\u30f3",
+            "description": "\u9ad8\u6821\u751f\u6d3b\u3082\u534a\u5206\u304c\u904e\u304e\u3001\u8ab0\u3082\u304c\u672c\u683c\u7684\u306b\u9032\u8def\u3092\u8003\u3048\u306f\u3058\u3081\u308b\u9803\u3002\u30c7\u30b6\u30a4\u30ca\u30fc\u306b\u306a\u308b\u305f\u3081\u7f8e\u5927\u3092\u76ee\u6307\u3059\u671d\u5009\u5149\u4e00\u306f\u3001\u3042\u308b\u65e5\u3001\u7f8e\u8853\u9928\u306e\u58c1\u306b\u6bb4\u308a\u63cf\u304d\u3055\u308c\u305f\u30b0\u30e9\u30d5\u30a3\u30c6\u30a3\u2026",
+            "slug": "eren-the-southpaw",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/903b6b91-df6d-4aeb-ac44-418409f8df00.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/13 00:30:00",
+            "endAt": "2027/07/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022784",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u9752\u6625",
+                "\u30d2\u30e5\u30fc\u30de\u30f3\u30c9\u30e9\u30de"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u5275\u4f5c/\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u7cfb\u30a2\u30cb\u30e1",
+                "\u30a6\u30a7\u30d6\u30b3\u30df\u30c3\u30af\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u304b\u3063\u3074\u30fc\uff0f\u30a2\u30cb\u30e1\u300c\u5de6\u304d\u304d\u306e\u30a8\u30ec\u30f3\u300d\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6708\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1364296,
+                    "name": "\u5de6\u304d\u304d\u306e\u30a8\u30ec\u30f3 \u30b7\u30fc\u30ba\u30f31 \u7b2c4\u8a71 \u6700\u9ad8\u306e\u30c1\u30fc\u30e0\u3068\u51fa\u4f1a\u3063\u305f\u6642",
+                    "short_name": "\u6700\u9ad8\u306e\u30c1\u30fc\u30e0\u3068\u51fa\u4f1a\u3063\u305f\u6642",
+                    "ref_id": "ASSET-100259976",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/07598207-bac6-4d88-ac5a-e0373bf503a2.png"
+                },
+                "id_in_schema": 500022784,
+                "id": 1314095,
+                "lead_episode": {
+                    "meta_id": 1339998,
+                    "name": "\u5de6\u304d\u304d\u306e\u30a8\u30ec\u30f3 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u6a2a\u6d5c\u306e\u30d0\u30b9\u30ad\u30a2",
+                    "short_name": "\u6a2a\u6d5c\u306e\u30d0\u30b9\u30ad\u30a2",
+                    "ref_id": "ASSET-100257263",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/6ab15da5-e920-41e2-9b67-580b93a16609.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "eren-the-southpaw",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1233268,
+            "id_in_schema": 500022235,
+            "title": "\u540d\u63a2\u5075\u30d7\u30ea\u30ad\u30e5\u30a2!",
+            "description": "\u3010\u660e\u667a\u3042\u3093\u306a\u3011\u306f\u3001\u30de\u30b3\u30c8\u30df\u30e9\u30a4\u30bf\u30a6\u30f3\u306b\u66ae\u3089\u305914\u6b73\u306e\u4e2d\u5b662\u5e74\u751f! \u8a95\u751f\u65e5\u306b\u73fe\u308c\u305f\u5996\u7cbe\u3010\u30dd\u30c1\u30bf\u30f3\u3011\u3068\u3001\u304a\u90e8\u5c4b\u306b\u3042\u3063\u305f\u30da\u30f3\u30c0\u30f3\u30c8\u306b\u5c0e\u304b\u308c\u30662027\u5e74\u304b\u3089\u2026",
+            "slug": "star-detective-precure",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/662d717a-d178-4d60-b2ea-250438ad2cf6.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/02/04 00:00:00",
+            "endAt": "2028/02/28 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022235",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30ad\u30c3\u30ba",
+                "\u30a2\u30af\u30b7\u30e7\u30f3"
+            ],
+            "price": "",
+            "features": [
+                "\u6642\u7a7a\u3092\u8d85\u3048\u3066\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u5c11\u5973\u305f\u3061\u306e\u61a7\u308c",
+                "\u5a18\u3068\u4e00\u7dd2\u306b\u89b3\u305f\u3044\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u30b3\u30c9\u30e2\u306b\u89b3\u305b\u305f\u3044\u30a2\u30cb\u30e1",
+                "\u9b54\u6cd5\u5c11\u5973\u306e\u6226\u3044",
+                "\u304a\u5b50\u69d8\u3092\u9b45\u4e86\u3059\u308b\u30d5\u30a1\u30f3\u30bf\u30b8\u30fc\u30a2\u30cb\u30e1"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C)\uff21\uff22\uff23-\uff21\u30fb\u6771\u6620\u30a2\u30cb\u30e1\u30fc\u30b7\u30e7\u30f3",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6c34\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 14,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367658,
+                    "name": "\u540d\u63a2\u5075\u30d7\u30ea\u30ad\u30e5\u30a2! \u30b7\u30fc\u30ba\u30f31 \u7b2c14\u8a71 \u30dd\u30c1\u30bf\u30f3\u3001\u306f\u3058\u3081\u3066\u306e\u304a\u3067\u304b\u3051!",
+                    "short_name": "\u30dd\u30c1\u30bf\u30f3\u3001\u306f\u3058\u3081\u3066\u306e\u304a\u3067\u304b\u3051!",
+                    "ref_id": "ASSET-100260275",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/76164b75-2061-470d-a2bf-325cd88b0292.png"
+                },
+                "id_in_schema": 500022235,
+                "id": 1233268,
+                "lead_episode": {
+                    "meta_id": 1262832,
+                    "name": "\u540d\u63a2\u5075\u30d7\u30ea\u30ad\u30e5\u30a2! \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u8a95\u751f! \u540d\u63a2\u5075\u30d7\u30ea\u30ad\u30e5\u30a2!",
+                    "short_name": "\u8a95\u751f! \u540d\u63a2\u5075\u30d7\u30ea\u30ad\u30e5\u30a2!",
+                    "ref_id": "ASSET-100252136",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/784c6f59-d110-4575-b1e5-5831b2ea6d64.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "star-detective-precure",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1314852,
+            "id_in_schema": 500022812,
+            "title": "\u611b\u3057\u3066\u308b\u30b2\u30fc\u30e0\u3092\u7d42\u308f\u3089\u305b\u305f\u3044",
+            "description": "\u540c\u3058\u9ad8\u6821\u306b\u9032\u5b66\u3057\u305f\u6d45\u8471\u512a\u5e0c\u4e5f\u3068\u685c\u307f\u304f\u306f\u3001\u201c\u4e21\u7247\u60f3\u3044\u201d\u306e\u5e7c\u306a\u3058\u307f\u3002\u81ea\u5206\u306e\u60f3\u3044\u306b\u6c17\u3065\u3044\u3066\u3044\u308b\u306e\u306b\u2026\u3002\u4eca\u306b\u3082\u300c\u597d\u304d\u300d\u304c\u3042\u3075\u308c\u305d\u3046\u306a\u306e\u306b\u2026\u3002\u2026\u3067\u3082\u3001\u7d20\u76f4\u306b\u306a\u2026",
+            "slug": "i-want-to-end-this-love-game",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/253fbe5e-35b2-4902-968c-f3b07a7024f3.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/03/19 17:00:00",
+            "endAt": "2027/07/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022812",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u604b\u611b",
+                "\u9752\u6625"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u61a7\u308c\u306e\u5b66\u5712\u751f\u6d3b! \u5b66\u5712\u30e9\u30d6\u30b3\u30e1\u30a2\u30cb\u30e1",
+                "\u30a6\u30a7\u30d6\u30b3\u30df\u30c3\u30af\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u5802\u672c\u88d5\u8cb4\uff0f\u5c0f\u5b66\u9928\uff0f\u300c\u611b\u3057\u3066\u308b\u30b2\u30fc\u30e0\u3092\u7d42\u308f\u3089\u305b\u305f\u3044\u300d\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u65e5\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1360093,
+                    "name": "\u611b\u3057\u3066\u308b\u30b2\u30fc\u30e0\u3092\u7d42\u308f\u3089\u305b\u305f\u3044 \u30b7\u30fc\u30ba\u30f31 #3 \u5e7c\u306a\u3058\u307f\u306f\u8a98\u3044\u3092\u304b\u3051\u308b",
+                    "short_name": "\u5e7c\u306a\u3058\u307f\u306f\u8a98\u3044\u3092\u304b\u3051\u308b",
+                    "ref_id": "ASSET-100258798",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a3b8f2ed-58fd-4a7b-a644-c508814cdd41.png"
+                },
+                "id_in_schema": 500022812,
+                "id": 1314852,
+                "lead_episode": {
+                    "meta_id": 1342442,
+                    "name": "\u611b\u3057\u3066\u308b\u30b2\u30fc\u30e0\u3092\u7d42\u308f\u3089\u305b\u305f\u3044 \u30b7\u30fc\u30ba\u30f31 #1 \u5e7c\u306a\u3058\u307f\u306f\u8ca0\u3051\u305f\u304f\u306a\u3044",
+                    "short_name": "\u5e7c\u306a\u3058\u307f\u306f\u8ca0\u3051\u305f\u304f\u306a\u3044",
+                    "ref_id": "ASSET-100258796",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d5497dbc-894e-4f91-8eba-3f567dcab3ed.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "i-want-to-end-this-love-game",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1313498,
+            "id_in_schema": 500022839,
+            "title": "\u795e\u306e\u96eb",
+            "description": "\"One drop changes everything.\"\u300c\u3072\u3068\u96eb\u304c\u3001\u3059\u3079\u3066\u3092\u5909\u3048\u308b\u3002\u300d",
+            "slug": "the-drops-of-god",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/c35be255-12b6-4dfe-943f-c8004e1477cc.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/03/20 20:00:00",
+            "endAt": "2028/09/30 23:59:59",
+            "badgeText": "\u5148\u884c\u914d\u4fe1\u4f5c\u54c1",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022839",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30d2\u30e5\u30fc\u30de\u30f3\u30c9\u30e9\u30de"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u30e1\u30ac\u30cd\u7537\u5b50",
+                "\u5927\u4eba\u5411\u3051\u30a2\u30cb\u30e1",
+                "\u9752\u5e74\u30b3\u30df\u30c3\u30af\u8a8c\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u4e9c\u6a39\u76f4\u30fb\u30aa\u30ad\u30e2\u30c8\u30fb\u30b7\u30e5\u30a6\u30fb\u8b1b\u8ac7\u793e\uff0fTV\u30a2\u30cb\u30e1\u300c\u795e\u306e\u96eb\u300d\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "badge_text": "\u5148\u884c\u914d\u4fe1\u4f5c\u54c1",
+                    "badge_text_start_at": "2026/04/12 11:46:06",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u571f\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 5,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1363937,
+                    "name": "\u795e\u306e\u96eb \u30b7\u30fc\u30ba\u30f31 \u7b2c4\u8a71 \u4eba\u306e\u9020\u308a\u3057\u3082\u306e",
+                    "short_name": "\u4eba\u306e\u9020\u308a\u3057\u3082\u306e",
+                    "ref_id": "ASSET-100260060",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/e0f6cb48-2a56-4bb7-8c58-29f0ef8fbfd5.png"
+                },
+                "id_in_schema": 500022839,
+                "id": 1313498,
+                "lead_episode": {
+                    "meta_id": 1340053,
+                    "name": "\u795e\u306e\u96eb \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u3059\u3079\u3066\u306e\u95d8\u3044\u306e\u306f\u3058\u307e\u308a\u306b",
+                    "short_name": "\u3059\u3079\u3066\u306e\u95d8\u3044\u306e\u306f\u3058\u307e\u308a\u306b",
+                    "ref_id": "ASSET-100258518",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/c3b07fa9-8127-49c7-a9de-a327a62b3f17.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "the-drops-of-god",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "\u5b57\u5e55\u30ac\u30a4\u30c9",
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1333027,
+            "id_in_schema": 500022923,
+            "title": "\u30dd\u30f3\u30b3\u30c4\u98a8\u7d00\u59d4\u54e1\u3068\u30b9\u30ab\u30fc\u30c8\u4e08\u304c\u4e0d\u9069\u5207\u306aJK\u306e\u8a71",
+            "description": "\u685c\u5927\u9580\u304f\u3093\u306f\u3001\u6bce\u671d\u6821\u9580\u306e\u524d\u3067\u751f\u5f92\u305f\u3061\u306e\u8eab\u3060\u3057\u306a\u307f\u3092\u30c1\u30a7\u30c3\u30af\u3057\u3066\u3044\u308b\u98a8\u7d00\u59d4\u54e1\u3002\u5fae\u7b11 (\u30dd\u30a8\u30e0) \u3061\u3083\u3093\u306f\u3001\u6bce\u671d\u30c1\u30a7\u30c3\u30af\u3067\u547c\u3073\u6b62\u3081\u3089\u308c\u308b\u30b9\u30ab\u30fc\u30c8\u4e08\u304c\u4e0d\u9069\u2026",
+            "slug": "the-klutzy-class-monitor-and-the-girl-with-the-short-skirt-project",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/a66b3d82-9b0b-42eb-96f3-aba7c27221ff.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/12 00:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022923",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u9752\u6625",
+                "\u604b\u611b"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u61a7\u308c\u306e\u5b66\u5712\u751f\u6d3b! \u5b66\u5712\u30e9\u30d6\u30b3\u30e1\u30a2\u30cb\u30e1",
+                "\u8f1d\u3051\u5b66\u751f\u751f\u6d3b\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u5c11\u5e74\u30b3\u30df\u30c3\u30af\u8a8c\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\ud83c\udd2b\u6a2a\u7530\u5353\u99ac\u30fb\u8b1b\u8ac7\u793e\uff0f\u30dd\u30f3\u30b3\u30c4\u98a8\u7d00\u59d4\u54e1\u3068\u30b9\u30ab\u30fc\u30c8\u4e08\u304c\u4e0d\u9069\u5207\u306aJK\u306e\u8a71\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u65e5\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1352996,
+                    "name": "\u30dd\u30f3\u30b3\u30c4\u98a8\u7d00\u59d4\u54e1\u3068\u30b9\u30ab\u30fc\u30c8\u4e08\u304c\u4e0d\u9069\u5207\u306aJK\u306e\u8a71 \u30b7\u30fc\u30ba\u30f31 4\u8a71 \u300e\u30dd\u30f3\u30b3\u30c4\u3068\u904e\u3054\u3059\u4f11\u65e5\u306e\u8a71\u300f\u300e\u30dd\u30f3\u30b3\u30c4\u304c\u8857\u4e2d\u3067\u30d0\u30c8\u30eb\u3092\u4ed5\u639b\u3051\u3089\u308c\u308b\u8a71\u300f",
+                    "short_name": "\u300e\u30dd\u30f3\u30b3\u30c4\u3068\u904e\u3054\u3059\u4f11\u65e5\u306e\u8a71\u300f\u300e\u30dd\u30f3\u30b3\u30c4\u304c\u8857\u4e2d\u3067\u30d0\u30c8\u30eb\u3092\u4ed5\u639b\u3051\u3089\u308c\u308b\u8a71\u300f",
+                    "ref_id": "ASSET-100257530",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/ca184abc-7c06-4862-9eaf-5b8c0f62c27f.png"
+                },
+                "id_in_schema": 500022923,
+                "id": 1333027,
+                "lead_episode": {
+                    "meta_id": 1333338,
+                    "name": "\u30dd\u30f3\u30b3\u30c4\u98a8\u7d00\u59d4\u54e1\u3068\u30b9\u30ab\u30fc\u30c8\u4e08\u304c\u4e0d\u9069\u5207\u306aJK\u306e\u8a71 \u30b7\u30fc\u30ba\u30f31 1\u8a71 \u300e\u98a8\u7d00\u59d4\u54e1\u304c\u30dd\u30f3\u30b3\u30c4\u3060\u3063\u305f\u8a71\u300f\u300eJK\u306e\u53cb\u4eba\u305f\u3061\u3068\u30dd\u30f3\u30b3\u30c4\u304c\u304b\u3089\u3080\u8a71\u300f\u300e\u30dd\u30f3\u30b3\u30c4\u98a8\u7d00\u59d4\u54e1\u3068\u4fdd\u5065\u59d4\u54e1\u306e\u8a71\u300f",
+                    "short_name": "\u300e\u98a8\u7d00\u59d4\u54e1\u304c\u30dd\u30f3\u30b3\u30c4\u3060\u3063\u305f\u8a71\u300f\u300eJK\u306e\u53cb\u4eba\u305f\u3061\u3068\u30dd\u30f3\u30b3\u30c4\u304c\u304b\u3089\u3080\u8a71\u300f\u300e\u30dd\u30f3\u30b3\u30c4\u98a8\u7d00\u59d4\u54e1\u3068\u4fdd\u5065\u59d4\u54e1\u306e\u8a71\u300f",
+                    "ref_id": "ASSET-100257527",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/9a6311f8-bd08-44aa-b4b9-f2bd80e6d2fa.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "the-klutzy-class-monitor-and-the-girl-with-the-short-skirt-project",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1311533,
+            "id_in_schema": 500022804,
+            "title": "\u9727\u5c3e\u30d5\u30a1\u30f3\u30af\u30e9\u30d6",
+            "description": "\u62dd\u5553 \u9727\u5c3e\u304f\u3093\u3001\u3042\u306a\u305f\u304c\u597d\u304d\u3067\u3059\u3002\u3067\u3082\u3001\u77e5\u308a\u307e\u305b\u3093\u3067\u3057\u305f\u3002\u4eba\u3092\u597d\u304d\u306b\u306a\u308b\u306e\u304c\u3001\u3053\u3093\u306a\u306b\u3064\u3089\u3044\u306a\u3093\u3066\u3002\u5927\u597d\u304d\u3060\u3088\u3001\u9727\u5c3e\u304f\u3093\u3002\u9727\u5c3e\u304f\u3093\u3068\u30cf\u30f3\u30d0\u30fc\u30ac\u30fc\u98df\u3079\u2026",
+            "slug": "kirio-fanclub-anime",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/bd4eb757-832e-4872-8cac-c9af25cef799.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/03/18 19:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022804",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u9752\u6625",
+                "\u30b3\u30e1\u30c7\u30a3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u61a7\u308c\u306e\u5b66\u5712\u751f\u6d3b! \u5b66\u5712\u30e9\u30d6\u30b3\u30e1\u30a2\u30cb\u30e1",
+                "\u30e1\u30ac\u30cd\u7537\u5b50",
+                "\u30a6\u30a7\u30d6\u30b3\u30df\u30c3\u30af\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u5b9f\u5199\u5316\u3055\u308c\u305f\u30a2\u30cb\u30e1",
+                "\u3053\u3093\u306a\u65e5\u5e38\u3001\u5b66\u751f\u306e\u6642\u3057\u304b\u5473\u308f\u3048\u306a\u3044\uff01",
+                "\u8f1d\u3051\u5b66\u751f\u751f\u6d3b\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u5730\u7403\u306e\u304a\u9b5a\u307d\u3093\u3061\u3083\u3093\u30fb\u5b9f\u696d\u4e4b\u65e5\u672c\u793e\uff0f\u300c\u9727\u5c3e\u30d5\u30a1\u30f3\u30af\u30e9\u30d6\u300d\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u91d1\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1361541,
+                    "name": "\u9727\u5c3e\u30d5\u30a1\u30f3\u30af\u30e9\u30d6 \u30b7\u30fc\u30ba\u30f31 #5 \u63a8\u3057\u3066\u3082\u3044\u3044\u3067\u3059\u304b?",
+                    "short_name": "\u63a8\u3057\u3066\u3082\u3044\u3044\u3067\u3059\u304b?",
+                    "ref_id": "ASSET-100257971",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/9f5805be-bbc7-4d26-8025-78e7b09c5b1a.png"
+                },
+                "id_in_schema": 500022804,
+                "id": 1311533,
+                "lead_episode": {
+                    "meta_id": 1331559,
+                    "name": "\u9727\u5c3e\u30d5\u30a1\u30f3\u30af\u30e9\u30d6 \u30b7\u30fc\u30ba\u30f31 #1 \u62dd\u5553\u3001\u9727\u5c3e\u304f\u3093",
+                    "short_name": "\u62dd\u5553\u3001\u9727\u5c3e\u304f\u3093",
+                    "ref_id": "ASSET-100257967",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/16a308b9-7eac-4fc4-a7ca-c72e34e54278.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "kirio-fanclub-anime",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1331311,
+            "id_in_schema": 500022983,
+            "title": "\u3088\u308f\u3088\u308f\u5148\u751f",
+            "description": "\u3042\u306a\u305f\u306e\u7656\u3092\u63bb\u304d\u7acb\u3066\u308b! \u7652\u3057\u7652\u3055\u308c\u3088\u308f\u3088\u308f\u30e9\u30d6\u30b3\u30e1\u30c7\u30a3!",
+            "slug": "yowayowa-sensei",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/1491b735-e8d6-440e-93fc-a4b77377c10f.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/04 00:00:00",
+            "endAt": "2027/07/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022983",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u604b\u611b",
+                "\u30b3\u30e1\u30c7\u30a3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u30d6\u30ec\u30b6\u30fc\u7537\u5b50",
+                "\u61a7\u308c\u306e\u5b66\u5712\u751f\u6d3b! \u5b66\u5712\u30e9\u30d6\u30b3\u30e1\u30a2\u30cb\u30e1",
+                "\u30d4\u30f3\u30af\u9aea\u30d2\u30ed\u30a4\u30f3",
+                "\u5c11\u5e74\u30b3\u30df\u30c3\u30af\u8a8c\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u8f1d\u3051\u5b66\u751f\u751f\u6d3b\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u798f\u5730\u30ab\u30df\u30aa\u30fb\u8b1b\u8ac7\u793e\uff0f\u300c\u3088\u308f\u3088\u308f\u5148\u751f\u300d\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6c34\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1361547,
+                    "name": "\u3088\u308f\u3088\u308f\u5148\u751f \u30b7\u30fc\u30ba\u30f31 Lesson.3 \u3082\u307f\u3082\u307f\u306e\u30b3\u30df\u30e5\u30cb\u30b1\u30fc\u30b7\u30e7\u30f3",
+                    "short_name": "\u3082\u307f\u3082\u307f\u306e\u30b3\u30df\u30e5\u30cb\u30b1\u30fc\u30b7\u30e7\u30f3",
+                    "ref_id": "ASSET-100259954",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/2271e4dd-a6e0-4320-9c22-a525199daf09.png"
+                },
+                "id_in_schema": 500022983,
+                "id": 1331311,
+                "lead_episode": {
+                    "meta_id": 1342185,
+                    "name": "\u3088\u308f\u3088\u308f\u5148\u751f \u30b7\u30fc\u30ba\u30f31 Lesson.1 \u3053\u308f\u3053\u308f\u5148\u751f",
+                    "short_name": "\u3053\u308f\u3053\u308f\u5148\u751f",
+                    "ref_id": "ASSET-100259013",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d96389f2-3bc9-4524-8abe-8aaf4585ced4.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "yowayowa-sensei",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1340111,
+            "id_in_schema": 500022976,
+            "title": "\u4e0a\u4f0a\u90a3\u307c\u305f\u3093\u3001\u9154\u3078\u308b\u59ff\u306f\u767e\u5408\u306e\u82b1",
+            "description": "\u5927\u5b66\u9032\u5b66\u3092\u6a5f\u306b\u5b66\u751f\u5bee\u306b\u5165\u5bee\u3057\u305f\u4e0a\u4f0a\u90a3\u307c\u305f\u3093\u3002\u5bee\u306e\u30e1\u30f3\u30d0\u30fc\u3068\u8a2a\u308c\u305f\u79e9\u7236\uff65\u829d\u685c\u307e\u3064\u308a\u306e\u30d9\u30f3\u30c1\u3067\u3072\u3068\u308a\u3001\u304a\u9152\u3092\u98f2\u3080\u5bee\u9577\uff65\u783a\u6ce2\u3044\u3076\u304d\u3092\u898b\u3064\u3051\u308b\u3002\u307c\u305f\u3093\u306f\u3001\u30cf\u2026",
+            "slug": "botan-kamiina-fully-blossoms-when-drunk",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/d8d401c8-84a5-4216-81aa-92f9e20b8fb6.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/14 12:00:00",
+            "endAt": "2027/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022976",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30b3\u30e1\u30c7\u30a3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u65e5\u5e38\u7cfb\u3086\u308b\u30b3\u30e1\u30c7\u30a3",
+                "\u5973\u306e\u5b50\u3060\u3051\u306e\u307b\u306e\u307c\u306e\u30b9\u30c8\u30fc\u30ea\u30fc",
+                "\u30a6\u30a7\u30d6\u30b3\u30df\u30c3\u30af\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u5840\uff08\u79cb\u7530\u66f8\u5e97\uff09\uff0f\u4e0a\u4f0a\u90a3\u307c\u305f\u3093\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u706b\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367625,
+                    "name": "\u4e0a\u4f0a\u90a3\u307c\u305f\u3093\u3001\u9154\u3078\u308b\u59ff\u306f\u767e\u5408\u306e\u82b1 \u30b7\u30fc\u30ba\u30f31 \u7b2c4\u8a71",
+                    "short_name": "\u7b2c4\u8a71",
+                    "ref_id": "ASSET-100260546",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/b5e3dcdd-f962-4027-a7fa-9e00237a0995.png"
+                },
+                "id_in_schema": 500022976,
+                "id": 1340111,
+                "lead_episode": {
+                    "meta_id": 1342140,
+                    "name": "\u4e0a\u4f0a\u90a3\u307c\u305f\u3093\u3001\u9154\u3078\u308b\u59ff\u306f\u767e\u5408\u306e\u82b1 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71",
+                    "short_name": "\u7b2c1\u8a71",
+                    "ref_id": "ASSET-100258855",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d1d1bcc4-b2b6-4003-8f24-f357775adab0.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "botan-kamiina-fully-blossoms-when-drunk",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1331639,
+            "id_in_schema": 500022999,
+            "title": "\u4e00\u7573\u9593\u307e\u3093\u304d\u3064\u66ae\u3089\u3057!",
+            "description": "\u5973\u5b50\u9ad8\u751f\u00d7\u307e\u3093\u304c\u55ab\u8336\u306e\u65e5\u5e38\u30b3\u30e1\u30c7\u30a3\u3002",
+            "slug": "ichijyoma-mankitsu-gurashi",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/d6546b7f-ae53-481e-8619-fe01186b0055.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/03 12:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022999",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30b3\u30e1\u30c7\u30a3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "4\u30b3\u30de\u6f2b\u753b\u539f\u4f5c\u30a2\u30cb\u30e1",
+                "\u65e5\u5e38\u7cfb\u3086\u308b\u30b3\u30e1\u30c7\u30a3",
+                "\u91d1\u9aea\u30d2\u30ed\u30a4\u30f3",
+                "\u5973\u306e\u5b50\u3060\u3051\u306e\u307b\u306e\u307c\u306e\u30b9\u30c8\u30fc\u30ea\u30fc"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u3072\u3055\u307e\u304f\u307e\u3053\u30fb\u82b3\u6587\u793e\uff0f\u6f2b\u753b\u55ab\u8336\u30d8\u30c3\u30b8\u30db\u30c3\u30b0",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6c34\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1362475,
+                    "name": "\u4e00\u7573\u9593\u307e\u3093\u304d\u3064\u66ae\u3089\u3057! \u30b7\u30fc\u30ba\u30f31 3 \u56e0\u7e01! \u732bVS\u30cf\u30ea\u30cd\u30ba\u30df",
+                    "short_name": "\u56e0\u7e01! \u732bVS\u30cf\u30ea\u30cd\u30ba\u30df",
+                    "ref_id": "ASSET-100259951",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/075950e7-faf5-4450-99ad-1a9f032e2ae1.png"
+                },
+                "id_in_schema": 500022999,
+                "id": 1331639,
+                "lead_episode": {
+                    "meta_id": 1342187,
+                    "name": "\u4e00\u7573\u9593\u307e\u3093\u304d\u3064\u66ae\u3089\u3057! \u30b7\u30fc\u30ba\u30f31 1 \u307e\u3055\u304b\u306e\u4e0a\u4eac! \u3069\u3046\u306a\u308b\u82bd\u8863\u5b50!?",
+                    "short_name": "\u307e\u3055\u304b\u306e\u4e0a\u4eac! \u3069\u3046\u306a\u308b\u82bd\u8863\u5b50!?",
+                    "ref_id": "ASSET-100259015",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/ce7d99ba-3023-4d56-9dce-c86e0a1cec73.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "ichijyoma-mankitsu-gurashi",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1317686,
+            "id_in_schema": 500022847,
+            "title": "\u30ec\u30d7\u30ea\u30ab\u3060\u3063\u3066\u3001\u604b\u3092\u3059\u308b\u3002",
+            "description": "\u611b\u5ddd\u7d20\u76f4\u306e\u8eab\u4ee3\u308f\u308a\u3068\u3057\u3066\u3001\u76ee\u7acb\u305f\u306a\u3044\u3088\u3046\u306b\u65e5\u5e38\u3092\u3084\u308a\u904e\u3054\u3059\u300e\u30ec\u30d7\u30ea\u30ab\u300f\u306e\u30ca\u30aa\u3002\u7d20\u76f4\u304c\u884c\u304d\u305f\u304f\u306a\u3044\u3068\u304d\u306f\u4ee3\u308f\u308a\u306b\u5b66\u6821\u306b\u884c\u304d\u3001\u52c9\u5f37\u3084\u904b\u52d5\u3092\u9811\u5f35\u308b\u306e\u3082\u3001\u3059\u2026",
+            "slug": "even-a-replica-can-fall-in-love",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/f097de15-847c-4dd6-8d54-3d5b7d84abc6.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/13 00:00:00",
+            "endAt": "2027/07/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022847",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u9752\u6625",
+                "\u604b\u611b"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u5b66\u751f\u305f\u3061\u306e\u7518\u9178\u3063\u3071\u3044\u604b\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u8056\u5730\u5de1\u793c\u3082\u697d\u3057\u3081\u308b",
+                "\u3053\u308c\u304c\u4eca\u306e\u6d41\u884c! 2020\u5e74\u4ee3\u30e9\u30ce\u30d9\u539f\u4f5c\u30a2\u30cb\u30e1"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u699b\u540d\u4e3c/KADOKAWA/\u30ec\u30d7\u30ea\u30ab\u3060\u3063\u3066\u3001\u604b\u3092\u3059\u308b\u3002",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6708\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367562,
+                    "name": "\u30ec\u30d7\u30ea\u30ab\u3060\u3063\u3066\u3001\u604b\u3092\u3059\u308b\u3002 \u30b7\u30fc\u30ba\u30f31 \u7b2c4\u8a71 \u30ec\u30d7\u30ea\u30ab\u306f\u3001\u6ce3\u3044\u3066\u3044\u308b\u3002",
+                    "short_name": "\u30ec\u30d7\u30ea\u30ab\u306f\u3001\u6ce3\u3044\u3066\u3044\u308b\u3002",
+                    "ref_id": "ASSET-100260307",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/bd7c4cf2-931e-4123-a487-87335c4a85e9.png"
+                },
+                "id_in_schema": 500022847,
+                "id": 1317686,
+                "lead_episode": {
+                    "meta_id": 1341362,
+                    "name": "\u30ec\u30d7\u30ea\u30ab\u3060\u3063\u3066\u3001\u604b\u3092\u3059\u308b\u3002 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u30ec\u30d7\u30ea\u30ab\u306f\u3001\u5922\u3092\u898b\u306a\u3044\u3002",
+                    "short_name": "\u30ec\u30d7\u30ea\u30ab\u306f\u3001\u5922\u3092\u898b\u306a\u3044\u3002",
+                    "ref_id": "ASSET-100258916",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/5e99c976-accd-4e4d-a421-ab8fe0719271.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "even-a-replica-can-fall-in-love",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1333347,
+            "id_in_schema": 500023045,
+            "title": "\u30af\u30b8\u30de\u6b4c\u3048\u3070\u5bb6\u307b\u308d\u308d",
+            "description": "\u3042\u308b\u65e5\u7a81\u7136\u3001\u5bb6\u306b\u3084\u3063\u3066\u304d\u305f\u306e\u306f\u3001\u9ce5\u3067\u3082\u4eba\u3067\u3082\u306a\u3044\u3001\u5f97\u4f53\u306e\u77e5\u308c\u306c\u201c\u30af\u30b8\u30de\u201d\u3060\u3063\u305f\u3002\u3057\u3083\u3079\u308b\u3002\u6b4c\u3046\u3002\u9cf4\u304f\u3002\u3068\u304d\u306b\u7b11\u3044\u3092\u3082\u305f\u3089\u3057\u3001\u3068\u304d\u306b\u6d99\u3092\u8a98\u3046\u2026",
+            "slug": "kujima-why-sing-when-you-can-warble",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/9e5dddd0-b54e-46be-b498-476a912bee97.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/13 12:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500023045",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30b3\u30e1\u30c7\u30a3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u3044\u308d\u3093\u306a\u5bb6\u65cf\u306e\u7269\u8a9e\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u65e5\u5e38\u7cfb\u3086\u308b\u30b3\u30e1\u30c7\u30a3",
+                "\u5c11\u5e74\u30b3\u30df\u30c3\u30af\u8a8c\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u7d3a\u91ce\u30a2\u30ad\u30e9\uff0f\u5c0f\u5b66\u9928\uff0f\u30af\u30b8\u30de\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6708\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1361451,
+                    "name": "\u30af\u30b8\u30de\u6b4c\u3048\u3070\u5bb6\u307b\u308d\u308d \u30b7\u30fc\u30ba\u30f31 #4 \u8d8a\u9ce5\u5317\u679d\u306b\u5de3\u304f\u3046",
+                    "short_name": "\u8d8a\u9ce5\u5317\u679d\u306b\u5de3\u304f\u3046",
+                    "ref_id": "ASSET-100258455",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/3b16739d-2b0b-4452-894f-8c44579ebfe5.png"
+                },
+                "id_in_schema": 500023045,
+                "id": 1333347,
+                "lead_episode": {
+                    "meta_id": 1333349,
+                    "name": "\u30af\u30b8\u30de\u6b4c\u3048\u3070\u5bb6\u307b\u308d\u308d \u30b7\u30fc\u30ba\u30f31 #1 \u521d\u3081\u3066\u306e\u30d6\u30ea\u30f3\u306f\u584a\u306b\u306a\u308b",
+                    "short_name": "\u521d\u3081\u3066\u306e\u30d6\u30ea\u30f3\u306f\u584a\u306b\u306a\u308b",
+                    "ref_id": "ASSET-100258452",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/adca4c5a-38c0-4a10-a32c-a8f0094b3d76.png"
+                },
+                "rating_v2": "g",
+                "rating": "g",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "kujima-why-sing-when-you-can-warble",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1333017,
+            "id_in_schema": 500022962,
+            "title": "\u767e\u9b3c\u591c\u884c\u6284",
+            "description": "\u5e83\u3044\u5ead\u306b\u5efa\u3064\u3001\u65e7\u3044\u65e5\u672c\u5bb6\u5c4b\u306b\u5bb6\u65cf\u3068\u66ae\u3089\u3059\u9ad8\u6821\u751f\uff65\u98ef\u5d8b\u5f8b\u3002\u5f8b\u306e\u6bcd\u89aa\uff65\u7d79\u306f\u5bb6\u3067\u8336\u9053\u6559\u5ba4\u3092\u958b\u3044\u3066\u3044\u308b\u3002\u3042\u308b\u65e5\u306e\u5348\u5f8c\u3001\u6559\u5ba4\u304c\u7d42\u308f\u308a\u751f\u5f92\u305f\u3061\u304c\u5e30\u3063\u305f\u5f8c\u3001\u5f8b\u3068\u7d79\u2026",
+            "slug": "hyakiyakosyo",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/d1cfc1f4-b1be-4bfe-9a32-472951e03921.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/07 22:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022962",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30d5\u30a1\u30f3\u30bf\u30b8\u30fc",
+                "\u30db\u30e9\u30fc"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u6642\u306b\u512a\u3057\u304f\u3001\u6642\u306b\u53b3\u3057\u304f\u3001\u5996\u602a\u3060\u3063\u3066\u5341\u4eba\u5341\u8272\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u60f9\u304d\u3053\u307e\u308c\u308b! \u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u306e\u4e16\u754c"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u24b8\u4eca\u5e02\u5b50\uff0f\u671d\u65e5\u65b0\u805e\u51fa\u7248",
+                    "badge_text": "",
+                    "badge_text_start_at": "2026/04/15 00:00:00",
+                    "badge_text_end_at": "2026/04/07 22:00:00",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u706b\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "4\u67087\u65e5 \u914d\u4fe1\u958b\u59cb",
+                    "episode_count": 7,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1342260,
+                    "name": "\u767e\u9b3c\u591c\u884c\u6284 \u30b7\u30fc\u30ba\u30f31 \u7b2c5\u8a71 \u96a0\u3055\u308c\u305f\u3082\u306e \uff5e\u76ee\u96a0\u3057\u9b3c\uff5e",
+                    "short_name": "\u96a0\u3055\u308c\u305f\u3082\u306e \uff5e\u76ee\u96a0\u3057\u9b3c\uff5e",
+                    "ref_id": "ASSET-100257696",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/7a90e193-fa79-4e85-8858-f436aa668541.png"
+                },
+                "id_in_schema": 500022962,
+                "id": 1333017,
+                "lead_episode": {
+                    "meta_id": 1333237,
+                    "name": "\u767e\u9b3c\u591c\u884c\u6284 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u685c\u306e\u5922 \uff5e\u76ee\u96a0\u3057\u9b3c\uff5e",
+                    "short_name": "\u685c\u306e\u5922 \uff5e\u76ee\u96a0\u3057\u9b3c\uff5e",
+                    "ref_id": "ASSET-100257692",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a5ff3cce-78b0-4d22-8d7e-e69b8bfe60c9.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "hyakiyakosyo",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 179919,
+            "id_in_schema": 500005893,
+            "title": "\u304a\u3057\u308a\u305f\u3093\u3066\u3044",
+            "description": "\u300c\u30d5\u30fc\u30e0\u3001\u306b\u304a\u3044\u307e\u3059\u306d\u300d\u30ec\u30c7\u30a3\u30fc\u306b\u3084\u3055\u3057\u304f\u30b9\u30a4\u30fc\u30c8\u30dd\u30c6\u30c8\u304c\u3060\u3044\u3059\u304d\u306a\u3081\u3044\u305f\u3093\u3066\u3044\uff65\u304a\u3057\u308a\u305f\u3093\u3066\u3044\u304c\u3001\u3058\u3087\u3057\u3085\u306e\u30d6\u30e9\u30a6\u30f3\u3068\u3068\u3082\u306b\u3069\u3093\u306a\u3058\u3051\u3093\u3082\u304b\u3044\u3051\u3064!",
+            "slug": "butt-detective",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/7cc2585c-95d2-4913-8b47-6586092f367a.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2021/04/05 12:00:00",
+            "endAt": "2027/11/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500005893",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30b3\u30e1\u30c7\u30a3",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "\u30b3\u30c9\u30e2\u306b\u89b3\u305b\u305f\u3044\u30a2\u30cb\u30e1",
+                "\u7d75\u672c\u306e\u4e16\u754c\u304c\u52d5\u304d\u51fa\u3059!\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u30c8\u30ed\u30eb\u30fb\u30dd\u30d7\u30e9\u793e\uff0f\u304a\u3057\u308a\u305f\u3093\u3066\u3044\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6728\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 127,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2018,
+                    "season_count": 10,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1364249,
+                    "name": "\u304a\u3057\u308a\u305f\u3093\u3066\u3044 \u7b2c10\u671f \u7b2c127\u8a71 \u30d7\u30d7\u30c3 \u3055\u3093\u306b\u3093\u306e\u3053\u3076\u305f",
+                    "short_name": "\u30d7\u30d7\u30c3 \u3055\u3093\u306b\u3093\u306e\u3053\u3076\u305f",
+                    "ref_id": "ASSET-100260074",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/f5fccfd7-e1ce-4c23-84aa-f0aebf362eb8.png"
+                },
+                "id_in_schema": 500005893,
+                "id": 179919,
+                "lead_episode": {
+                    "meta_id": 249695,
+                    "name": "\u304a\u3057\u308a\u305f\u3093\u3066\u3044 \u7b2c1\u671f \u7b2c1\u8a71 \u30d7\u30d7\u30c3\u3068\u304b\u3044\u3051\u3064! \u304a\u3057\u308a\u305f\u3093\u3066\u3044\u3068\u3046\u3058\u3087\u3046!",
+                    "short_name": "\u30d7\u30d7\u30c3\u3068\u304b\u3044\u3051\u3064! \u304a\u3057\u308a\u305f\u3093\u3066\u3044\u3068\u3046\u3058\u3087\u3046!",
+                    "ref_id": "ASSET-100114974",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/53274dfe-45d5-4e42-a271-1aad90395145.png"
+                },
+                "rating_v2": "g",
+                "rating": "g",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "butt-detective",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2018\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1316148,
+            "id_in_schema": 500022803,
+            "title": "\u30b4\u30fc\u30b9\u30c8\u30b3\u30f3\u30b5\u30fc\u30c8 : missing Songs",
+            "description": "2045\u5e74\u3001\u6b4c\u304c\u7981\u3058\u3089\u308c\u305f\u4e16\u754c\u2015\u2015\u3002\u97f3\u697d\u3092\u5275\u9020\u3057\u3001\u594f\u3067\u308b\u3053\u3068\u306f\u4eba\u9593\u306e\u4ee3\u308f\u308a\u306b\u97f3\u697d\u30a2\u30d7\u30ea\u300aMiucS\u300b\u304c\u305d\u306e\u5168\u3066\u3092\u62c5\u3063\u3066\u3044\u305f\u3002\u5c11\u5973\uff65\u76f8\u8449\u82b9\u4e9c\u306f\u53cb\u4eba\u305f\u3061\u2026",
+            "slug": "ghost-concert-missing-songs",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/3415b2c7-4e07-405d-90bf-5c64bebaff61.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/06 00:30:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022803",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "SF",
+                "\u30a2\u30af\u30b7\u30e7\u30f3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u30d5\u30e5\u30fc\u30c1\u30e3\u30fc\u30ef\u30fc\u30eb\u30c9\u3078\u3088\u3046\u3053\u305d\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u7279\u6b8a\u80fd\u529b\u3067\u52dd\u8ca0\u3060!",
+                "\u30d4\u30f3\u30af\u9aea\u30d2\u30ed\u30a4\u30f3",
+                "\u30a2\u30af\u30b7\u30e7\u30f3\u304c\u898b\u3082\u306e! \u3053\u308c\u304c\u8fd1\u672a\u6765\u3060!"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a92026 Project MiucS/\u300c\u30b4\u30fc\u30b9\u30c8\u30b3\u30f3\u30b5\u30fc\u30c8 : missing Songs\u300d\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u6708\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u3068\u540c\u6642\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1366001,
+                    "name": "\u30b4\u30fc\u30b9\u30c8\u30b3\u30f3\u30b5\u30fc\u30c8 : missing Songs \u30b7\u30fc\u30ba\u30f31 \u7b2c5\u8a71 \u51ac\u590f\u9752\u9752",
+                    "short_name": "\u51ac\u590f\u9752\u9752",
+                    "ref_id": "ASSET-100260532",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/8735b898-80d2-477c-b9aa-d58042c97f5f.png"
+                },
+                "id_in_schema": 500022803,
+                "id": 1316148,
+                "lead_episode": {
+                    "meta_id": 1333070,
+                    "name": "\u30b4\u30fc\u30b9\u30c8\u30b3\u30f3\u30b5\u30fc\u30c8 : missing Songs \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u751f\u96e2\u6b7b\u5225 [\u524d\u7de8]",
+                    "short_name": "\u751f\u96e2\u6b7b\u5225 [\u524d\u7de8]",
+                    "ref_id": "ASSET-100258506",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/542b0b51-bdac-48c5-a629-1e29b7acf3e3.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "ghost-concert-missing-songs",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1332249,
+            "id_in_schema": 500022985,
+            "title": "\u30cb\u30ef\u30c8\u30ea\uff65\u30d5\u30a1\u30a4\u30bf\u30fc",
+            "description": "\u3053\u308c\u306f\u3001\u201c\u4e00\u7fbd\u306e\u30cb\u30ef\u30c8\u30ea\u201d\u304c\u4eba\u985e\u3092\u6551\u3046\u7269\u8a9e\u3067\u3042\u308b\u3002\u7a81\u5982\u73fe\u308c\u3001\u5727\u5012\u7684\u306a\u529b\u3067\u4eba\u985e\u3078\u306e\u653b\u6483\u3092\u59cb\u3081\u305f\u201c\u9b3c\u7363 (\u304d\u3058\u3085\u3046)\u201d\u3068\u547c\u3070\u308c\u308b\u7570\u5f62\u306e\u30e2\u30ce\u3002\u8857\u304c\u7834\u58ca\u3055\u308c\u2026",
+            "slug": "rooster-fighter",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/99c799ef-6200-42b5-b2c5-fc2d8ecf2bbf.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/06 00:30:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022985",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30a2\u30af\u30b7\u30e7\u30f3"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u99c6\u3051\u5f15\u304d\u3082\u9762\u767d\u3044\u30d0\u30c8\u30eb\u30a2\u30cb\u30e1",
+                "\u3069\u3046\u3076\u3064\u9054\u304c\u4e3b\u4eba\u516c\u306e\u30a2\u30cb\u30e1",
+                "\u30a6\u30a7\u30d6\u30b3\u30df\u30c3\u30af\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9Shu Sakuratani/Kino-HERO\u2019s, VIZ Media",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u6708\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1350584,
+                    "name": "\u30cb\u30ef\u30c8\u30ea\uff65\u30d5\u30a1\u30a4\u30bf\u30fc \u30b7\u30fc\u30ba\u30f31 5\u7fbd \u7363\u805a\u9ce5\u6563",
+                    "short_name": "\u7363\u805a\u9ce5\u6563",
+                    "ref_id": "ASSET-100257953",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/5f693b5b-c597-4218-a2e3-6c87d1075e58.png"
+                },
+                "id_in_schema": 500022985,
+                "id": 1332249,
+                "lead_episode": {
+                    "meta_id": 1332259,
+                    "name": "\u30cb\u30ef\u30c8\u30ea\uff65\u30d5\u30a1\u30a4\u30bf\u30fc \u30b7\u30fc\u30ba\u30f31 1\u7fbd \u7fa4\u9d8f\u4e00\u9db4",
+                    "short_name": "\u7fa4\u9d8f\u4e00\u9db4",
+                    "ref_id": "ASSET-100257949",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/ee0ac01c-38f1-4d52-9825-2b9dd02cfb40.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "rooster-fighter",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1225019,
+            "id_in_schema": 500022053,
+            "title": "mofusand animation",
+            "description": "\u307f\u3066\u3044\u308b\u3060\u3051\u3067\u601d\u308f\u305a\u300c\u3042\u308b\u3042\u308b\u300d\u3068\u7b11\u3063\u3061\u3083\u3046!? \u307b\u3063\u3053\u308a\u3086\u308b\u3086\u308b\u7cfb\u732b\u30a2\u30cb\u30e1\u3002",
+            "slug": "mofusand-animation",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/ea5fd572-7d13-4c71-a9b6-fdee3f679273.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2025/12/22 22:22:00",
+            "endAt": "2027/12/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022053",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "\u60f9\u304d\u3053\u307e\u308c\u308b! \u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u306e\u4e16\u754c",
+                "\u52d5\u7269\u305f\u3061\u306e\u3086\u308b\u3084\u304b\u306a\u65e5\u5e38",
+                "\u30ab\u30ef\u30a4\u30a4\u52d5\u7269\u9054\u304c\u51fa\u3066\u304f\u308b\u30ad\u30e5\u30fc\u30c8\u306a\u4f5c\u54c1\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u73fe\u4ee3\u306a\u3089\u3067\u306f\u2026SNS\u304b\u3089\u59cb\u307e\u3063\u305f\u30a2\u30cb\u30e1",
+                "\u52d5\u7269\u305f\u3061\u306e\u304b\u308f\u3044\u3044\u65e5\u5e38",
+                "\u307b\u3093\u308f\u304b\u7652\u3055\u308c\u308b\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u305f\u3061"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9mofusand",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u6c34\u66dc \u65b0\u30a8\u30d4\u30bd\u30fc\u30c9\u8ffd\u52a0\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 18,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1360053,
+                    "name": "mofusand animation \u30b7\u30fc\u30ba\u30f31 17 \u6bdb\u7389\u8077\u4eba",
+                    "short_name": "\u6bdb\u7389\u8077\u4eba",
+                    "ref_id": "ASSET-100259600",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/0cc9580c-f5b0-451b-b636-884532d36ca9.png"
+                },
+                "id_in_schema": 500022053,
+                "id": 1225019,
+                "lead_episode": {
+                    "meta_id": 1230026,
+                    "name": "mofusand animation \u30b7\u30fc\u30ba\u30f31 01 \u98df\u6b32\u7206\u767a",
+                    "short_name": "\u98df\u6b32\u7206\u767a",
+                    "ref_id": "ASSET-100249788",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/35abfe27-1e19-4d1f-bea9-f8f784c140d4.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "mofusand-animation",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1316103,
+            "id_in_schema": 500022807,
+            "title": "\u6de1\u5cf6\u767e\u666f",
+            "description": "\u6de1\u5cf6 (\u3042\u308f\u3058\u307e) \u6b4c\u5287\u5b66\u6821\u306b\u306f\u3001\u821e\u53f0\u306b\u7acb\u3064\u3053\u3068\u3092\u5922\u307f\u308b\u5c11\u5973\u305f\u3061\u304c\u5168\u56fd\u304b\u3089\u96c6\u307e\u3063\u3066\u304f\u308b\u3002\u30df\u30e5\u30fc\u30b8\u30ab\u30eb\u30b9\u30bf\u30fc\u306b\u61a7\u308c\u3066\u5165\u5b66\u3057\u305f\u3001\u65b0\u5165\u751f\u306e\u82e5\u83dc\u3002\u89aa\u53cb\u306e\u601d\u3044\u2026",
+            "slug": "scenes-from-awajima",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/1d03e608-c03a-4095-b256-b29bd7aca4da.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/15 02:15:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022807",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u9752\u6625"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u5922\u306f\u53f6\u3048\u308b\u305f\u3081\u306b\u3042\u308b!\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u30a6\u30a7\u30d6\u30b3\u30df\u30c3\u30af\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u8f1d\u3051\u5b66\u751f\u751f\u6d3b\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u5fd7\u6751\u8cb4\u5b50\u30fb\u592a\u7530\u51fa\u7248\uff0f\u6de1\u5cf6\u767e\u666f\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6c34\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1362467,
+                    "name": "\u6de1\u5cf6\u767e\u666f \u30b7\u30fc\u30ba\u30f31 \u7b2c3\u8a71 \u4f0a\u5439\u6842\u5b50\u3068\u65e5\u67f3\u590f\u5b50\uff0f\u5c71\u8def\u30eb\u30ea\u5b50\u3068\u65e5\u67f3\u590f\u5b50",
+                    "short_name": "\u4f0a\u5439\u6842\u5b50\u3068\u65e5\u67f3\u590f\u5b50\uff0f\u5c71\u8def\u30eb\u30ea\u5b50\u3068\u65e5\u67f3\u590f\u5b50",
+                    "ref_id": "ASSET-100260001",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a7f2d23a-6dd7-42b8-abf5-6ef135aa27d9.png"
+                },
+                "id_in_schema": 500022807,
+                "id": 1316103,
+                "lead_episode": {
+                    "meta_id": 1342204,
+                    "name": "\u6de1\u5cf6\u767e\u666f \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u7530\u7551\u82e5\u83dc\u3068\u7af9\u539f\u738b\u5b50\uff0f\u7af9\u539f\u7d79\u679d\u3068\u4e0a\u7530\u826f\u5b50",
+                    "short_name": "\u7530\u7551\u82e5\u83dc\u3068\u7af9\u539f\u738b\u5b50\uff0f\u7af9\u539f\u7d79\u679d\u3068\u4e0a\u7530\u826f\u5b50",
+                    "ref_id": "ASSET-100258960",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/aae617b4-b23b-4fe2-a70a-176d8d7ab448.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "scenes-from-awajima",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1311514,
+            "id_in_schema": 500022802,
+            "title": "\u30b7\u30f3\u30c7\u30ec\u30e9\uff65\u30b7\u30a7\u30d5 \uff5e\u840c\u59bb\u98df\u795e\uff5e \u30b7\u30fc\u30ba\u30f33",
+            "description": "\u6642\u7a7a\u3092\u8d85\u3048\u305f\u7f8e\u98df\u30ed\u30de\u30f3\u30b9\u3001\u7b2c3\u5f3e! \u30b0\u30eb\u30e1\u96d1\u8a8c\u7de8\u96c6\u8005\uff65\u8449\u4f73\u7476 (\u30a4\u30a8\uff65\u30b8\u30a2\u30e4\u30aa) \u306f\u3001\u3042\u308b\u65e5\u7a81\u7136\u3001\u53e4\u4ee3\u3078\u3068\u30bf\u30a4\u30e0\u30b9\u30ea\u30c3\u30d7\u3002\u5353\u8d8a\u3057\u305f\u6599\u7406\u306e\u8155\u3092\u6b66\u5668\u306b\u3001\u2026",
+            "slug": "cinderella-chef-season-3",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/caa98ba4-a7fe-4c67-913b-cbd1c112772b.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/03/23 18:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022802",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u6599\u7406",
+                "\u53f2\u5287"
+            ],
+            "price": "",
+            "features": [
+                "\u5c0f\u8aac\u539f\u4f5c\u3092\u6620\u50cf\u3067\u697d\u3057\u3082\u3046\u3008\u6d77\u5916\u5c0f\u8aac\u7de8\u3009\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u30d5\u30a1\u30f3\u30bf\u30b8\u30fc\u4e16\u754c\u3067\u7d20\u6575\u306a\u604b\u611b\u3092",
+                "\u6642\u7a7a\u3092\u8d85\u3048\u3066\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u6ce8\u76ee\u5ea6\u4e0a\u6607\u4e2d\u306e\u4e2d\u97d3\u30a2\u30cb\u30e1",
+                "\u30bf\u30a4\u30e0\u30b9\u30ea\u30c3\u30d7\u3067\u6642\u7a7a\u3092\u8d85\u3048\u305f\u4e16\u754c\u3078!\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u5927\u9678\u30ed\u30de\u30f3\u6ea2\u308c\u308b\u30a2\u30b8\u30a2\u30f3\u30d5\u30a1\u30f3\u30bf\u30b8\u30fc",
+                "\u5fc3\u6e80\u305f\u3055\u308c\u308b\u3001\u7f8e\u5473\u3057\u3044\u4f5c\u54c1\u3092\u304a\u6301\u3061\u3057\u307e\u3057\u305f\uff08\u30a2\u30cb\u30e1\uff09"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u6539\u7de8\u81ea\u95b2\u6587\u96c6\u56e3\u4f5c\u5bb6\u7d2b\u4f0a281\u540c\u540d\u5c0f\u8aac\u300c\u840c\u59bb\u98df\u795e\u300d\u00a9bilibili/\u95b2\u6587\u52d5\u6f2b",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u6708\u66dc \u65b0\u30a8\u30d4\u30bd\u30fc\u30c9\u8ffd\u52a0\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 8,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2022,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367579,
+                    "name": "\u30b7\u30f3\u30c7\u30ec\u30e9\uff65\u30b7\u30a7\u30d5 \uff5e\u840c\u59bb\u98df\u795e\uff5e \u30b7\u30fc\u30ba\u30f33 \u30b7\u30fc\u30ba\u30f33 \u7b2c7\u8a71 \u30eb\u30ef\u30f3\u306e\u5bb6",
+                    "short_name": "\u30eb\u30ef\u30f3\u306e\u5bb6",
+                    "ref_id": "ASSET-100256867",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/7b512b09-d7b0-40f0-8383-43aa7d7044ba.png"
+                },
+                "id_in_schema": 500022802,
+                "id": 1311514,
+                "lead_episode": {
+                    "meta_id": 1315709,
+                    "name": "\u30b7\u30f3\u30c7\u30ec\u30e9\uff65\u30b7\u30a7\u30d5 \uff5e\u840c\u59bb\u98df\u795e\uff5e \u30b7\u30fc\u30ba\u30f33 \u30b7\u30fc\u30ba\u30f33 \u7b2c1\u8a71 \u610f\u5916\u306a\u5c55\u958b",
+                    "short_name": "\u610f\u5916\u306a\u5c55\u958b",
+                    "ref_id": "ASSET-100256861",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/22ae9ea0-6310-4380-a416-e8260453972d.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "cinderella-chef-season-3",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2022\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1318457,
+            "id_in_schema": 500022906,
+            "title": "\u30a2\u30cb\u30e1\u300c\u30ea\u30e9\u30c3\u30af\u30de\u300d(Rilakkuma)",
+            "description": "\u3069\u3093\u306a\u6bce\u65e5\u3082\u3001\u3042\u306a\u305f\u3068\u3044\u3063\u3057\u3087\u306e\u300c\u30ea\u30e9\u30c3\u30af\u30de\u300d\u304c\u4eca\u5ea6\u306f\u65e5\u5e38\u3092\u98db\u3073\u51fa\u3057\u3066\u3001\u3086\u308b\uff5e\u308a\u5e83\u304c\u308b\u30a2\u30cb\u30e1\u30fc\u30b7\u30e7\u30f3\u306e\u4e16\u754c\u3078\u3002",
+            "slug": "rilakkuma",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/3118a5c5-33cc-4380-8f76-9682be370494.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/01 00:00:00",
+            "endAt": "2028/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022906",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30d5\u30a1\u30df\u30ea\u30fc",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u3069\u3046\u3076\u3064\u9054\u304c\u4e3b\u4eba\u516c\u306e\u30a2\u30cb\u30e1",
+                "\u60f9\u304d\u3053\u307e\u308c\u308b! \u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u306e\u4e16\u754c",
+                "\u30b3\u30c9\u30e2\u306b\u89b3\u305b\u305f\u3044\u30a2\u30cb\u30e1",
+                "\u52d5\u7269\u305f\u3061\u306e\u304b\u308f\u3044\u3044\u65e5\u5e38",
+                "\u307b\u3093\u308f\u304b\u7652\u3055\u308c\u308b\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u305f\u3061"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9SAN-X / \u30c1\u30fc\u30e0\u30ea\u30e9\u30c3\u30af\u30de",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u571f\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1364302,
+                    "name": "\u30a2\u30cb\u30e1\u300c\u30ea\u30e9\u30c3\u30af\u30de\u300d(Rilakkuma) \u30b7\u30fc\u30ba\u30f31 #5",
+                    "short_name": "#5",
+                    "ref_id": "ASSET-100260220",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/0f5b6573-5896-46e7-96d3-87fd68c80058.png"
+                },
+                "id_in_schema": 500022906,
+                "id": 1318457,
+                "lead_episode": {
+                    "meta_id": 1332212,
+                    "name": "\u30a2\u30cb\u30e1\u300c\u30ea\u30e9\u30c3\u30af\u30de\u300d(Rilakkuma) \u30b7\u30fc\u30ba\u30f31 #1",
+                    "short_name": "#1",
+                    "ref_id": "ASSET-100258422",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a842a8e9-ecaa-4aec-b68b-8e521078d14e.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "rilakkuma",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1317537,
+            "id_in_schema": 500022861,
+            "title": "NEEDY GIRL OVERDOSE",
+            "description": "\u767b\u9332\u80051000\u4e07\u4eba\u3092\u8a18\u9332\u3059\u308b\u30c8\u30c3\u30d7\u914d\u4fe1\u8005\u306e\u5c11\u5973\u3001\u8d85\u7d76\u6700\u304b\u308f\u3066\u3093\u3057\u3061\u3083\u3093\u2015\u2015\u901a\u79f0\u300c\u8d85\u3066\u3093\u3061\u3083\u3093\u300d\u306e\u6d3b\u8e8d\u3092\u898b\u306a\u3044\u65e5\u306f\u306a\u3044\u3002\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u3001\u30c6\u30ec\u30d3\u3001\u30e9\u30a4\u30d6\u2026",
+            "slug": "needy-girl-overdose",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/dc912190-d9cf-416b-b0a9-8756cb39b197.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/07 12:00:00",
+            "endAt": "2027/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022861",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u9752\u6625",
+                "\u30d2\u30e5\u30fc\u30de\u30f3\u30c9\u30e9\u30de"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u30b2\u30fc\u30e0\u3067\u306f\u611f\u3058\u3089\u308c\u306a\u3044\u30b9\u30c8\u30fc\u30ea\u30fc\u304c\u3053\u3053\u306b\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u50b7\u3064\u3044\u305f\u5fc3\u3092\u62b1\u3048\u305f\u8005\u305f\u3061"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9WSS playground / NEEDY GIRL PROJECT",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u706b\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367614,
+                    "name": "NEEDY GIRL OVERDOSE \u30b7\u30fc\u30ba\u30f31 #5 Whatever",
+                    "short_name": "Whatever",
+                    "ref_id": "ASSET-100260544",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/26d4a4ec-bca4-4d49-a8c8-938d1e2e187e.png"
+                },
+                "id_in_schema": 500022861,
+                "id": 1317537,
+                "lead_episode": {
+                    "meta_id": 1333205,
+                    "name": "NEEDY GIRL OVERDOSE \u30b7\u30fc\u30ba\u30f31 #1 She's a Killer Queen",
+                    "short_name": "She's a Killer Queen",
+                    "ref_id": "ASSET-100258618",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/cbb60346-7ff0-40b9-ba5c-f8934649e1e6.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "needy-girl-overdose",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 448352,
+            "id_in_schema": 500019409,
+            "title": "\u30b3\u30a6\u30da\u30f3\u3061\u3083\u3093",
+            "description": "\u65e5\u5e38\u306e\u3055\u3055\u3044\u306a\u3053\u3068\u3092\u80af\u5b9a\u3059\u308b\u30b3\u30a6\u30c6\u30a4\u30da\u30f3\u30ae\u30f3\u306e\u8d64\u3061\u3083\u3093\u306e\u5fc3\u6e29\u307e\u308b\u7269\u8a9e\u304c\u5c55\u958b\u3055\u308c\u308b\u3002TV\u30a2\u30cb\u30e1\u5316\u3055\u308c\u3001\u3075\u308f\u3063\u3068\u3057\u305f\u7652\u3057\u3092\u63d0\u4f9b\u3002",
+            "slug": "koupenchan",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/7a2b0211-7c7e-4bd2-a14d-c5fc2d98b5d9.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2025/03/21 18:00:00",
+            "endAt": "2028/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500019409",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "2025\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u52d5\u7269\u305f\u3061\u306e\u3086\u308b\u3084\u304b\u306a\u65e5\u5e38",
+                "\u52d5\u7269\u305f\u3061\u306e\u304b\u308f\u3044\u3044\u65e5\u5e38",
+                "\u73fe\u4ee3\u306a\u3089\u3067\u306f\u2026SNS\u304b\u3089\u59cb\u307e\u3063\u305f\u30a2\u30cb\u30e1"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u308b\u308b\u3066\u3042/TV\u30a2\u30cb\u30e1\u300e\u30b3\u30a6\u30da\u30f3\u3061\u3083\u3093\u300f\u88fd\u4f5c\u59d4\u54e1\u4f1a",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u65e5\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 58,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365373,
+                    "name": "\u30b3\u30a6\u30da\u30f3\u3061\u3083\u3093 \u30b7\u30fc\u30ba\u30f31 #57 \u300c\u3053\u305f\u3064\u300d",
+                    "short_name": "\u300c\u3053\u305f\u3064\u300d",
+                    "ref_id": "ASSET-100260255",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/5f800243-5a6a-4e29-b987-ef852a984757.png"
+                },
+                "id_in_schema": 500019409,
+                "id": 448352,
+                "lead_episode": {
+                    "meta_id": 451333,
+                    "name": "\u30b3\u30a6\u30da\u30f3\u3061\u3083\u3093 \u30b7\u30fc\u30ba\u30f31 #1 \u300c\u307c\u304f\u306f\u30b3\u30a6\u30da\u30f3\u3061\u3083\u3093\u3001\u3088\u308d\u3057\u304f\u306d!\u300d",
+                    "short_name": "\u300c\u307c\u304f\u306f\u30b3\u30a6\u30da\u30f3\u3061\u3083\u3093\u3001\u3088\u308d\u3057\u304f\u306d!\u300d",
+                    "ref_id": "ASSET-100222878",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d086fd0a-c817-44ca-b13f-7032c61e43db.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "koupenchan",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2025\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1330658,
+            "id_in_schema": 500022853,
+            "title": "\u304a\u306d\u304c\u3044\u30a2\u30a4\u30d7\u30ea",
+            "description": "\u30df\u30e9\u30fc\u30d1\u30af\u30c8\u3092\u958b\u3044\u305f\u3089\u3001\u30e1\u30a4\u30af\u3068\u30b3\u30fc\u30c7\u3067\u30aa\u30b7\u30e3\u30ec\u306a\u79c1\u306b\u5927\u5909\u8eab! \u305d\u308c\u304c\u30a2\u30a4\u30c9\u30eb\u30d7\u30ea\u30f3\u30bb\u30b9\uff65\u30a2\u30a4\u30d7\u30ea! \u304a\u306d\u304c\u3044\u753a\u306b\u5f15\u3063\u8d8a\u3057\u3066\u304d\u305f\u597d\u5b9f (\u3053\u306e\u307f) \u3044\u2026",
+            "slug": "onegai-aipri",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/fe33c19f-a4c7-4138-a5fa-599fc2807867.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/07 17:00:00",
+            "endAt": "2028/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022853",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30ad\u30c3\u30ba",
+                "\u97f3\u697d\uff0f\u30e9\u30a4\u30d6"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u5c11\u5973\u305f\u3061\u306e\u61a7\u308c",
+                "\u5a18\u3068\u4e00\u7dd2\u306b\u89b3\u305f\u3044\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u30e1\u30ac\u30cd\u3063\u5a18",
+                "\u30b2\u30fc\u30e0\u3067\u306f\u611f\u3058\u3089\u308c\u306a\u3044\u30b9\u30c8\u30fc\u30ea\u30fc\u304c\u3053\u3053\u306b\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u91d1\u9aea\u30d2\u30ed\u30a4\u30f3",
+                "\u79c1\u3001\u30a2\u30a4\u30c9\u30eb\u306b\u306a\u308a\u307e\u3059!"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9T-ARTS/syn Sophia/OAP PROJECT",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u706b\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "coming_soon_text": "",
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367621,
+                    "name": "\u304a\u306d\u304c\u3044\u30a2\u30a4\u30d7\u30ea \u30b7\u30fc\u30ba\u30f31 \u7b2c5\u8a71 \u306f\u3058\u3081\u3066\u306e\u30a2\u30a4\u30d7\u30ea\u30d5\u30a7\u30b9!",
+                    "short_name": "\u306f\u3058\u3081\u3066\u306e\u30a2\u30a4\u30d7\u30ea\u30d5\u30a7\u30b9!",
+                    "ref_id": "ASSET-100259723",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/b7084d1e-63d1-493a-858e-e16c1a43dc84.png"
+                },
+                "id_in_schema": 500022853,
+                "id": 1330658,
+                "lead_episode": {
+                    "meta_id": 1333210,
+                    "name": "\u304a\u306d\u304c\u3044\u30a2\u30a4\u30d7\u30ea \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u304a\u306d\u304c\u3044! \u30a2\u30a4\u30d7\u30ea\u306b\u306a\u3063\u3066",
+                    "short_name": "\u304a\u306d\u304c\u3044! \u30a2\u30a4\u30d7\u30ea\u306b\u306a\u3063\u3066",
+                    "ref_id": "ASSET-100258575",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/8095f5e6-bdc6-474a-84ba-f868552ca64c.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "onegai-aipri",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1339297,
+            "id_in_schema": 500023064,
+            "title": "\u5c0f3\u30a2\u30b7\u30d9 QQ\u30b4\u30de\u3061\u3083\u3093",
+            "description": "\u300e\u5c11\u5e74\u30a2\u30b7\u30d9\u300f\u306e\u6700\u65b0\u30b7\u30ea\u30fc\u30ba! \u5c0f\u5b663\u5e74\u751f\u306b\u306a\u3063\u305f\u30a2\u30b7\u30d9\u3084\u30b9\u30ac\u30aa\u304f\u3093\u305f\u3061\u3002\u3061\u3087\u3063\u3068\u3060\u3051\u6210\u9577\u3057\u305f\u5f7c\u3089\u306b\u3054\u6ce8\u76ee! \u3082\u3061\u308d\u3093\u30b4\u30de\u3061\u3083\u3093\u3082\u5927\u6d3b\u8e8d!!",
+            "slug": "sho3ashibe-qqgomachan",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/d1f2be89-5578-4d4b-b709-c10069913932.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/12 07:30:00",
+            "endAt": "2029/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500023064",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30b3\u30e1\u30c7\u30a3",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "2026\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "4\u30b3\u30de\u6f2b\u753b\u539f\u4f5c\u30a2\u30cb\u30e1",
+                "\u5b50\u4f9b\u3060\u3063\u3066\u4e3b\u4eba\u516c\u3092\u306f\u308c\u308b!\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u60f9\u304d\u3053\u307e\u308c\u308b! \u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u306e\u4e16\u754c",
+                "\u9752\u5e74\u30b3\u30df\u30c3\u30af\u8a8c\u539f\u4f5c\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u307f\u3093\u306a\u304c\u4e3b\u5f79\u3001\u307f\u3093\u306a\u3067\u5bb6\u65cf",
+                "\u4eba\u3068\u52d5\u7269\u306e\u4ea4\u6d41\u3092\u63cf\u3044\u305f\u30a2\u30cb\u30e1"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9\u68ee\u4e0b\u88d5\u7f8e\u30fbOOP\uff0f\u53cc\u8449\u793e\u30fbDLE\u30fb\u30c6\u30ec\u30d3\u6771\u4eac",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u91d1\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1364299,
+                    "name": "\u5c0f3\u30a2\u30b7\u30d9 QQ\u30b4\u30de\u3061\u3083\u3093 \u30b7\u30fc\u30ba\u30f31 \u7b2c4\u8a71 \u30c0\u30df\u30f3\u3092\u3080\u3055\u307c\u308c",
+                    "short_name": "\u30c0\u30df\u30f3\u3092\u3080\u3055\u307c\u308c",
+                    "ref_id": "ASSET-100258582",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/bb75db93-d8f6-477d-a71f-45f30146902a.png"
+                },
+                "id_in_schema": 500023064,
+                "id": 1339297,
+                "lead_episode": {
+                    "meta_id": 1339299,
+                    "name": "\u5c0f3\u30a2\u30b7\u30d9 QQ\u30b4\u30de\u3061\u3083\u3093 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 3\u5e74\u751f\u306b\u306a\u3063\u305f\u3088",
+                    "short_name": "3\u5e74\u751f\u306b\u306a\u3063\u305f\u3088",
+                    "ref_id": "ASSET-100258579",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/837ad9e8-851a-4322-ad1f-e3bfdfb9d896.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "sho3ashibe-qqgomachan",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 298249,
+            "id_in_schema": 500011489,
+            "title": "\u3061\u3073\u30b4\u30b8\u30e9\u306e\u9006\u8972",
+            "description": "\u30b4\u30b8\u30e9\u306e\u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u3002\u602a\u7363\u5cf6\u306b\u66ae\u3089\u3059\u3061\u3073\u30b4\u30b8\u30e9\u306f\u3001\u6d5c\u8fba\u306b\u6253\u3061\u4e0a\u3052\u3089\u308c\u305f\u3061\u3073\u30e1\u30ab\u30b4\u30b8\u30e9\u3092\u767a\u898b\u3002\u3053\u306e\u65e5\u304b\u3089\u3001\u500b\u6027\u8c4a\u304b\u306a\u3061\u3073\u602a\u7363\u305f\u3061\u306e\u65e5\u5e38\u304c\u5e55\u3092\u958b\u3051\u308b\u3002",
+            "slug": "chibigodzilla",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/2140e69f-6f6f-48a1-b372-db6411209032.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2023/04/08 12:00:00",
+            "endAt": "2028/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500011489",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1"
+            ],
+            "price": "",
+            "features": [
+                "2023\u5e74 \u6625\u30a2\u30cb\u30e1",
+                "\u60f9\u304d\u3053\u307e\u308c\u308b!!\u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u306e\u4e16\u754c!",
+                "\u3086\u308b\u3044\u898b\u305f\u76ee\u3067\u3001\u610f\u5916\u3068\u30b7\u30e5\u30fc\u30eb!?"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9 TOHO CO., LTD.",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u6c34\u66dc \u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306b\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 109,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2023,
+                    "season_count": 0,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1362466,
+                    "name": "\u3061\u3073\u30b4\u30b8\u30e9\u306e\u9006\u8972 \u7b2c107\u8a71 \u602a\u7363\u5cf6\u30ec\u30a4\u30c7\u30a3\u30aa",
+                    "short_name": "\u602a\u7363\u5cf6\u30ec\u30a4\u30c7\u30a3\u30aa",
+                    "ref_id": "ASSET-100260009",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/30cb61c1-e4bd-46c8-b8fe-3cb32d7ad96d.png"
+                },
+                "id_in_schema": 500011489,
+                "id": 298249,
+                "lead_episode": {
+                    "meta_id": 300484,
+                    "name": "\u3061\u3073\u30b4\u30b8\u30e9\u306e\u9006\u8972 \u7b2c1\u8a71 \u300c\u602a\u7363\u5cf6\u306e\u3061\u3073\u30b4\u30b8\u30e9\u300d",
+                    "short_name": "\u300c\u602a\u7363\u5cf6\u306e\u3061\u3073\u30b4\u30b8\u30e9\u300d",
+                    "ref_id": "ASSET-100142496",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/67576c6a-3067-4444-8581-eb47af1b9c7f.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "chibigodzilla",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "\u5b57\u5e55\u30ac\u30a4\u30c9",
+                "2023\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1054481,
+            "id_in_schema": 500021189,
+            "title": "DIGIMON BEATBREAK",
+            "description": "\u4eba\u9593\u306e\u601d\u8003\u3084\u611f\u60c5\u304b\u3089\u751f\u307e\u308c\u308b\u300ce-\u30d1\u30eb\u30b9\u300d\u306f\u3001AI\u30b5\u30dd\u30fc\u30c8\u30c7\u30d0\u30a4\u30b9\u300c\u30b5\u30dd\u30bf\u30de\u300d\u306e\u30a8\u30cd\u30eb\u30ae\u30fc\u6e90\u3068\u3057\u3066\u6d3b\u7528\u3055\u308c\u3066\u3044\u305f\u3002\u76ee\u899a\u307e\u3057\u3044\u767a\u5c55\u3092\u9042\u3052\u308b\u305d\u306e\u9670\u3067\u3001\u6050\u2026",
+            "slug": "digimon-beatbreak",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/e6a1b889-e07a-4d50-863e-6a39d3b65404.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2025/10/08 00:00:00",
+            "endAt": "2027/09/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500021189",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30a2\u30c9\u30d9\u30f3\u30c1\u30e3\u30fc",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "2025\u5e74 \u79cb\u30a2\u30cb\u30e1",
+                "\u53ec\u559a! \u5fc3\u5f37\u3044\u5473\u65b9\u3068\u52dd\u8ca0\u306b\u6311\u3081!",
+                "\u3068\u3082\u3060\u3061\u306f\u4eba\u9593\u3060\u3051\u3058\u3083\u306a\u3044"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C)\u672c\u90f7\u3042\u304d\u3088\u3057\u30fb\u30d5\u30b8\u30c6\u30ec\u30d3\u30fb\u6771\u6620\u30a2\u30cb\u30e1\u30fc\u30b7\u30e7\u30f3",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6c34\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 29,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365998,
+                    "name": "DIGIMON BEATBREAK \u30b7\u30fc\u30ba\u30f31 \u7b2c29\u8a71 \u5371\u967a\u306a\u63a8\u3057\u6d3b",
+                    "short_name": "\u5371\u967a\u306a\u63a8\u3057\u6d3b",
+                    "ref_id": "ASSET-100260542",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/2c879382-817a-415a-b93e-9998efaa7308.png"
+                },
+                "id_in_schema": 500021189,
+                "id": 1054481,
+                "lead_episode": {
+                    "meta_id": 1054516,
+                    "name": "DIGIMON BEATBREAK \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u611f\u60c5\u306e\u9f13\u52d5",
+                    "short_name": "\u611f\u60c5\u306e\u9f13\u52d5",
+                    "ref_id": "ASSET-100240468",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a7cb2527-2695-4320-a292-9d5ebeecda63.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "digimon-beatbreak",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2025\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1318489,
+            "id_in_schema": 500022902,
+            "title": "The Wakey Show \uff5e\u30b6\uff65\u30a6\u30a7\u30a4\u30ad\u30fc\uff65\u30b7\u30e7\u30a6\u3010\u30b7\u30fc\u30ba\u30f32\u3011",
+            "description": "E\u30c6\u30ec\u306e\u65b0\u3057\u3044\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u304c\u8d08\u308b\u3001\u304a\u3081\u3056\u3081\u30a8\u30c7\u30e5\u30c6\u30a4\u30f3\u30e1\u30f3\u30c8\u756a\u7d44! \u30e9\u30b8\u30aa\u30ab\u30fc\u304b\u3089\u6bce\u671dWakeUp\u306a\u30b3\u30f3\u30c6\u30f3\u30c4\u3092\u653e\u9001\u3057\u3066\u3044\u308bDJ\uff65\u30a6\u30a7\u30a4\u30ad\u30fc\u3002\u30b5\u30cb\u30fc\u2026",
+            "slug": "the-wakey-show-season-2",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/a86dd3ad-9f9d-41fe-9091-3a817ac3646e.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/03 12:00:00",
+            "endAt": "2027/07/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022902",
+            "categoryMetas": [
+                "\u30ad\u30c3\u30ba",
+                "\u30d5\u30a1\u30df\u30ea\u30fc"
+            ],
+            "price": "",
+            "features": [
+                "\u5b50\u4f9b\u304c\u5b66\u3079\u308b\u6620\u50cf",
+                "\u307f\u3093\u306a\u3067\u305f\u306e\u3057\u304f\u52d5\u7269\u305f\u3061\u3068\u304a\u3079\u3093\u304d\u3087\u3046"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9NHK\uff0fNHK\u30a8\u30c7\u30e5\u30b1\u30fc\u30b7\u30e7\u30ca\u30eb\uff0f\u30bd\u30cb\u30fc\u30fb\u30df\u30e5\u30fc\u30b8\u30c3\u30af\u30a8\u30f3\u30bf\u30c6\u30a4\u30f3\u30e1\u30f3\u30c8",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u91d1\u66dc \u65b0\u30a8\u30d4\u30bd\u30fc\u30c9\u8ffd\u52a0\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365116,
+                    "name": "The Wakey Show \uff5e\u30b6\uff65\u30a6\u30a7\u30a4\u30ad\u30fc\uff65\u30b7\u30e7\u30a6\u3010\u30b7\u30fc\u30ba\u30f32\u3011 \u30b7\u30fc\u30ba\u30f32 #5 \u300c\u7ae5\u8b21\u30b8\u30e3\u30fc\u30cb\u30fc\uff1a\u30c9\u30ec\u30df\u306e\u3046\u305f\u300d\u307b\u304b",
+                    "short_name": "\u300c\u7ae5\u8b21\u30b8\u30e3\u30fc\u30cb\u30fc\uff1a\u30c9\u30ec\u30df\u306e\u3046\u305f\u300d\u307b\u304b",
+                    "ref_id": "ASSET-100260215",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/03bdbfe8-f5bc-41a4-8bd3-9e514930f8c8.png"
+                },
+                "id_in_schema": 500022902,
+                "id": 1318489,
+                "lead_episode": {
+                    "meta_id": 1332193,
+                    "name": "The Wakey Show \uff5e\u30b6\uff65\u30a6\u30a7\u30a4\u30ad\u30fc\uff65\u30b7\u30e7\u30a6\u3010\u30b7\u30fc\u30ba\u30f32\u3011 \u30b7\u30fc\u30ba\u30f32 #1 \u300cWakeyDays\u300d\u30b9\u30da\u30b7\u30e3\u30eb",
+                    "short_name": "\u300cWakeyDays\u300d\u30b9\u30da\u30b7\u30e3\u30eb",
+                    "ref_id": "ASSET-100258435",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/99d78035-6454-4ded-889e-42d69a09a7fd.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "the-wakey-show-season-2",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2025\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1314977,
+            "id_in_schema": 500022850,
+            "title": "\u304a\u306d\u304c\u3044! \u30dd\u30b3\u30bf\u6751\u9577",
+            "description": "\u3069\u3053\u304b\u61d0\u304b\u3057\u3044\u7530\u820e\u753a\u300c\u30af\u30ed\u30fc\u30d0\u30fc\u6751\u300d\u3002\u3057\u304b\u3057\u3053\u306e\u5c0f\u3055\u306a\u6751\u3067\u306f\u3001\u4e88\u671f\u305b\u306c\u4f4f\u6c11\u306e\u82e6\u60c5\u304c\u7d76\u3048\u306a\u3044\u3002\u30c8\u30e9\u30d6\u30eb\u30e1\u30fc\u30ab\u30fc\u6751\u9577\u300c\u30dd\u30b3\u30bf\u300d\u3001\u771f\u9762\u76ee\u306a\u65b0\u4eba\u300c\u30b3\u30b3\u300d\u3001\u5b9a\u2026",
+            "slug": "oy-chief-pokota",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/5103e5ba-b171-4971-9ed4-6d22a7342142.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/07 00:00:00",
+            "endAt": "2027/09/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022850",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30ad\u30c3\u30ba"
+            ],
+            "price": "",
+            "features": [
+                "\u6ce8\u76ee\u5ea6\u4e0a\u6607\u4e2d\u306e\u4e2d\u97d3\u30a2\u30cb\u30e1"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "\u00a9Treenod Inc., All rights reserved",
+                    "catch_copy": {
+                        "description": "\u3010\u6bce\u9031\u706b\u66dc \u65b0\u30a8\u30d4\u30bd\u30fc\u30c9\u8ffd\u52a0\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1367588,
+                    "name": "\u304a\u306d\u304c\u3044! \u30dd\u30b3\u30bf\u6751\u9577 \u30b7\u30fc\u30ba\u30f31 \u7b2c5\u8a71 \u82f1\u96c4\u30ce\u30fc\u30a4",
+                    "short_name": "\u82f1\u96c4\u30ce\u30fc\u30a4",
+                    "ref_id": "ASSET-100257714",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/8e14401c-86e3-4a16-978a-7323f99e64a8.png"
+                },
+                "id_in_schema": 500022850,
+                "id": 1314977,
+                "lead_episode": {
+                    "meta_id": 1333208,
+                    "name": "\u304a\u306d\u304c\u3044! \u30dd\u30b3\u30bf\u6751\u9577 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u3053\u3053\u306f\u30af\u30ed\u30fc\u30d0\u30fc\u6751",
+                    "short_name": "\u3053\u3053\u306f\u30af\u30ed\u30fc\u30d0\u30fc\u6751",
+                    "ref_id": "ASSET-100257710",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/ecae685c-f5e6-4aee-a912-a88c9c317f42.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "oy-chief-pokota",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1303156,
+            "id_in_schema": 500022785,
+            "title": "\u30ad\u30e3\u30f3\u30c7\u30a3\u30fc\u30ab\u30ea\u30a8\u30b9",
+            "description": "\u7518\u3044\u3082\u306e\u304c\u5927\u597d\u304d\u306a\u5b50\u3069\u3082\uff65\u30a2\u30e1\u3002\u53e3\u306e\u4e2d\u306b\u306f\u866b\u6b6f\u306e\u300e\u30ab\u30ea\u30a8\u30b9\u300f\u304c\u66ae\u3089\u3057\u3066\u3044\u305f! \u30a2\u30e1\u306e\u3053\u3068\u3092\u300c\u30de\u30de\u300d\u3068\u547c\u3073\u3001\u6b6f\u3092\u5bb6\u5177\u306b\u3057\u305f\u308a\u8eab\u4f53\u3092\u4e57\u3063\u53d6\u3063\u305f\u308a\u3068\u81ea\u7531\u5954\u2026",
+            "slug": "candy-caries",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/4076b0e9-3f52-4572-9229-09b4d221ebbc.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/03/14 00:00:00",
+            "endAt": "2027/03/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022785",
+            "categoryMetas": [
+                "\u30a2\u30cb\u30e1",
+                "\u30b3\u30e1\u30c7\u30a3",
+                "\u30d5\u30a1\u30df\u30ea\u30fc"
+            ],
+            "price": "",
+            "features": [
+                "\u5b50\u4f9b\u3060\u3063\u3066\u4e3b\u4eba\u516c\u3092\u306f\u308c\u308b!\uff08\u30a2\u30cb\u30e1\uff09",
+                "\u60f9\u304d\u3053\u307e\u308c\u308b! \u30b7\u30e7\u30fc\u30c8\u30a2\u30cb\u30e1\u306e\u4e16\u754c"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C)Tomoki Misato/WIT STUDIO/\u30c8\u30a5\u30fc\u30b9\u30d5\u30a7\u30a2\u30ea\u30fc\u30ba\u77ed\u7e2e\uff1a(C)TM/WIT/TF",
+                    "catch_copy": {
+                        "description": "\u3010\u30c6\u30ec\u30d3\u653e\u9001\u5f8c\u306e\u6bce\u9031\u6728\u66dc\u914d\u4fe1\u3011",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 4,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1330565,
+                    "name": "\u30ad\u30e3\u30f3\u30c7\u30a3\u30fc\u30ab\u30ea\u30a8\u30b9 \u30b7\u30fc\u30ba\u30f31 \u7b2c3\u8a71 \u30c6\u30ec\u30d3\u80b2\u6210\u8a08\u753b",
+                    "short_name": "\u30c6\u30ec\u30d3\u80b2\u6210\u8a08\u753b",
+                    "ref_id": "ASSET-100256393",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/987f7f34-400f-4ed5-8d4c-48ed12ef3839.png"
+                },
+                "id_in_schema": 500022785,
+                "id": 1303156,
+                "lead_episode": {
+                    "meta_id": 1330563,
+                    "name": "\u30ad\u30e3\u30f3\u30c7\u30a3\u30fc\u30ab\u30ea\u30a8\u30b9 \u30b7\u30fc\u30ba\u30f31 \u7b2c1\u8a71 \u72c2\u4eba\u6b6f\u533b\u8005\u306b\u6c17\u3092\u3064\u3051\u308d",
+                    "short_name": "\u72c2\u4eba\u6b6f\u533b\u8005\u306b\u6c17\u3092\u3064\u3051\u308d",
+                    "ref_id": "ASSET-100256391",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/4112ef19-e75f-43da-aa24-fdc632978c5e.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "candy-caries",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026\u5e74\u516c\u958b"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 28988,
+            "id_in_schema": 0,
+            "title": "\u3010\u30b3\u30df\u30c3\u30af\u30112026\u5e74\u6625\u30a2\u30cb\u30e1\u4f5c\u54c1",
+            "imageUrl": "https://images.prod.hjholdings.tv/files/1/j/j/b/0/b8045b69-4c93-4242-b996-e0714c6b8154.jpg?w=331&h=447&q=80",
+            "url": "happyonapp://comic/features/2c7d31b3-539c-4260-9b5a-a4d606601993"
+        }
+    ]
+}

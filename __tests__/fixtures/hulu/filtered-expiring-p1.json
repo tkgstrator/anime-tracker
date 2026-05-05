@@ -1,0 +1,390 @@
+{
+    "total_count": 2587,
+    "data": [
+        {
+            "id": 448700,
+            "id_in_schema": 500019424,
+            "title": "GUILTY GEAR STRIVE: DUAL RULERS",
+            "description": "人気アクションゲームシリーズ初のTVアニメ。禁断の生体兵器･ギアと人との間に生まれ、ギアの血を継ぐ宿命の子シン＝キスクが、ギアを憎む謎の少女と出会う。",
+            "slug": "guilty-gear-strive-dual-rulers",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/dd8457a7-b531-4c77-929d-086fe7272403.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2025/04/07 23:00:00",
+            "endAt": "2026/05/31 23:59:59",
+            "badgeText": "05/31まで",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500019424",
+            "categoryMetas": [
+                "アニメ",
+                "アクション",
+                "SF"
+            ],
+            "price": "",
+            "features": [
+                "2025年 春アニメ",
+                "アクションが見もの! これが近未来だ!",
+                "ゲームでは感じられないストーリーがここに（アニメ）",
+                "格闘ゲーム原作アニメ"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "(C) ASW/Project ギルティギア ストライヴ DR",
+                    "badge_text": "05/31まで",
+                    "episode_count": 8,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 461021,
+                    "name": "GUILTY GEAR STRIVE: DUAL RULERS シーズン1 #08 自分のカタチ -What Makes You, You-",
+                    "short_name": "自分のカタチ -What Makes You, You-",
+                    "ref_id": "ASSET-100227830",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/138b06c9-d699-4ba5-a9a8-979528452796.png"
+                },
+                "id_in_schema": 500019424,
+                "id": 448700,
+                "lead_episode": {
+                    "meta_id": 451552,
+                    "name": "GUILTY GEAR STRIVE: DUAL RULERS シーズン1 #01 式典 -Ceremony-",
+                    "short_name": "式典 -Ceremony-",
+                    "ref_id": "ASSET-100223173",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/074603ef-676c-4bbf-98bd-68dfce47ed7b.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "guilty-gear-strive-dual-rulers",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2025年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 385085,
+            "id_in_schema": 500015323,
+            "title": "パパのいうことを聞きなさい!",
+            "description": "松智洋のライトノベルをアニメ化したラブコメディ。大学生の瀬川祐太が、姉夫婦に代わって3人の姪っ子の保護者となり、六畳一間のアパートで同居生活を送る。",
+            "slug": "listen-to-me-girls-i-am-your-father",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/70b0d4f1-74aa-4cd9-afe6-658ffa6a3c71.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2024/05/29 00:00:00",
+            "endAt": "2026/05/31 23:59:59",
+            "badgeText": "05/31まで",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500015323",
+            "categoryMetas": [
+                "アニメ",
+                "恋愛",
+                "コメディ"
+            ],
+            "price": "",
+            "features": [
+                "1つ屋根の下で繰り広げられる恋物語（アニメ）",
+                "多彩! 2010年代ラノベ原作アニメ"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "ⓒ松智洋・なかじまゆか／集英社・PPP",
+                    "badge_text": "05/31まで",
+                    "coming_soon_text": "",
+                    "episode_count": 13,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2012,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 385092,
+                    "name": "パパのいうことを聞きなさい! シーズン1 第13話 ぽっかぽか",
+                    "short_name": "ぽっかぽか",
+                    "ref_id": "ASSET-100180877",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/7bcfb34a-9a90-4e12-95c8-181d4a688592.png"
+                },
+                "id_in_schema": 500015323,
+                "id": 385085,
+                "lead_episode": {
+                    "meta_id": 385093,
+                    "name": "パパのいうことを聞きなさい! シーズン1 第1話 パパと呼ばないで",
+                    "short_name": "パパと呼ばないで",
+                    "ref_id": "ASSET-100180865",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/98d83578-6c29-45fc-a066-23237f8f53f8.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "listen-to-me-girls-i-am-your-father",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2012年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 380426,
+            "id_in_schema": 500015283,
+            "title": "HARELUYA II BØY",
+            "description": "世界征服の野望を持つ、私立楽園高校1年･日々野晴矢。クラスメイトで画家志望の岡本清志朗。でこぼこコンビが巻き起こす、痛快無比な毎日を描いた名作!!",
+            "slug": "hareluya-2-boy",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/3d8d3306-a959-4927-a177-8a3c05d88f55.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2024/05/22 00:00:00",
+            "endAt": "2026/05/31 23:59:59",
+            "badgeText": "05/31まで",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500015283",
+            "categoryMetas": [
+                "アニメ",
+                "青春",
+                "コメディ"
+            ],
+            "price": "",
+            "features": [
+                "俺たちは、喧嘩で頂点を取る!!（アニメ）",
+                "魂を燃やせ! 熱いキャラクターたち",
+                "熱い青春アニメ",
+                "少年コミック誌原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©S・E／集英社・BØY製作委員会・テレビ東京",
+                    "badge_text": "05/31まで",
+                    "coming_soon_text": "",
+                    "episode_count": 25,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 1997,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 382650,
+                    "name": "HARELUYA II BØY シーズン1 第25話 日々野晴矢",
+                    "short_name": "日々野晴矢",
+                    "ref_id": "ASSET-100180424",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/196333b8-52f6-4fa5-993a-52a1e202f5a4.png"
+                },
+                "id_in_schema": 500015283,
+                "id": 380426,
+                "lead_episode": {
+                    "meta_id": 382631,
+                    "name": "HARELUYA II BØY シーズン1 第1話 岡本清志朗",
+                    "short_name": "岡本清志朗",
+                    "ref_id": "ASSET-100180400",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/8d33d3d0-ee12-4c32-9f71-adeaeebef4c3.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "hareluya-2-boy",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "1997年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 380104,
+            "id_in_schema": 500015251,
+            "title": "仙界伝 封神演義",
+            "description": "紀元前11世紀の中国、殷王朝の時代――――。はるか天空に浮かぶ仙人界･崑崙山脈の教主･元始天尊は、人間界が妲己の魔手により荒廃していくことを憂慮し、…",
+            "slug": "soul-hunter",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/bc7219c2-7f05-4746-b38a-2e639d868e04.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2024/05/15 00:00:00",
+            "endAt": "2026/05/31 23:59:59",
+            "badgeText": "05/31まで",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500015251",
+            "categoryMetas": [
+                "アニメ",
+                "アドベンチャー",
+                "ファンタジー"
+            ],
+            "price": "",
+            "features": [
+                "大陸ロマン溢れるアジアンファンタジー",
+                "駆け引きも面白いバトルアニメ！！",
+                "少年コミック誌原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©安能務・藤崎竜／集英社・テレビ東京・封神プロジェクト1999",
+                    "badge_text": "05/31まで",
+                    "episode_count": 26,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 1999,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 384009,
+                    "name": "仙界伝 封神演義 シーズン1 第二十六回 「太公望、道を示す事」",
+                    "short_name": "「太公望、道を示す事」",
+                    "ref_id": "ASSET-100180115",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/b7282fe3-68d3-45b8-9039-83babef558de.png"
+                },
+                "id_in_schema": 500015251,
+                "id": 380104,
+                "lead_episode": {
+                    "meta_id": 383994,
+                    "name": "仙界伝 封神演義 シーズン1 第一回 「太公望、封神計画を授かる」",
+                    "short_name": "「太公望、封神計画を授かる」",
+                    "ref_id": "ASSET-100180090",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/cd8d8d41-1626-4b70-9070-d56d9e4e3e64.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "soul-hunter",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "1999年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 305178,
+            "id_in_schema": 500011503,
+            "title": "爆丸レジェンズ",
+            "description": "玩具･爆丸を原案にしたアニメシリーズの第5期。地球とヴェストロイアが分断され、人間と爆丸が離れ離れになった挙げ句、最悪の爆丸･ハノージまで復活して…。",
+            "slug": "bakugan-legends",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/66e65dc4-0b1a-428e-aaa7-5059f12514f0.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2023/06/01 00:00:00",
+            "endAt": "2026/05/31 23:59:59",
+            "badgeText": "05/31まで",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500011503",
+            "categoryMetas": [
+                "アニメ",
+                "アクション",
+                "キッズ"
+            ],
+            "price": "",
+            "features": [
+                "2023年 春アニメ",
+                "夢が広がる! おもちゃをモチーフにしたアニメ",
+                "一風変わったバトルを楽しもう",
+                "子供だって主人公をはれる!"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©S/T/N/BL PROJECT",
+                    "badge_text": "05/31まで",
+                    "coming_soon_text": "",
+                    "episode_count": 13,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2023,
+                    "season_count": 0,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 306690,
+                    "name": "爆丸レジェンズ 第13話 アルティメットハノージ／未来への爆丸ブロー",
+                    "short_name": "アルティメットハノージ／未来への爆丸ブロー",
+                    "ref_id": "ASSET-100141411",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/4475d66d-6fdd-4f5b-b17e-7ff95f8b7288.png"
+                },
+                "id_in_schema": 500011503,
+                "id": 305178,
+                "lead_episode": {
+                    "meta_id": 306678,
+                    "name": "爆丸レジェンズ 第1話 新たなる危機／ノヴァの力",
+                    "short_name": "新たなる危機／ノヴァの力",
+                    "ref_id": "ASSET-100141399",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a9d459cc-2a04-4a39-8810-0ccdcffdffc3.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "bakugan-legends",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2023年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        }
+    ]
+}

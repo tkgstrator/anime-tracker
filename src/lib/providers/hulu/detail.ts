@@ -59,7 +59,9 @@ export async function fetchSeriesMeta(slug: string): Promise<FalcorMeta> {
   if (!res.ok) {
     throw new Error(`Not Found Exception: ${slug}`)
   }
-  return FalcorMetaResponseSchema.parse(await res.json()).jsonGraph.meta
+  const result = FalcorMetaResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  return result.data.jsonGraph.meta
   // const data = (await res.json()) as {
   //   jsonGraph: {
   //     meta: Record<string, Record<string, { value?: unknown }>>
@@ -101,7 +103,9 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
  */
 export function parseEpisodesFromHtml(html: string): HuluEpisode[] {
   const raw = extractMetasArray(html)
-  return EpisodesSchema.parse(raw)
+  const result = EpisodesSchema.safeParse(raw)
+  if (!result.success) throw result.error
+  return result.data
 }
 
 /**
