@@ -9,6 +9,10 @@ import { AniListAdapter, cleanTitle } from './metadata/anilist'
 
 const adapter = new AniListAdapter()
 
+function isUniqueConstraintError(e: unknown): boolean {
+  return e instanceof Error && 'code' in e && (e as { code: string }).code === 'P2002'
+}
+
 /** D1 の SQL 変数上限 (999) を超えないよう IN 句をチャンク分割して findMany する */
 const D1_VARIABLE_LIMIT = 500
 
@@ -93,15 +97,20 @@ export class SyncService {
       const existingEpisodes = existingSeasons.get(season.seasonNumber)
 
       if (!existingEpisodes) {
-        await this.createSeason(animeId, season)
-        syncLogger.info({
-          action: 'create-season',
-          provider,
-          contentId,
-          seasonNumber: season.seasonNumber,
-          displayName: season.displayName,
-          episodeCount: season.episodes.length
-        })
+        try {
+          await this.createSeason(animeId, season)
+          syncLogger.info({
+            action: 'create-season',
+            provider,
+            contentId,
+            seasonNumber: season.seasonNumber,
+            displayName: season.displayName,
+            episodeCount: season.episodes.length
+          })
+        } catch (e) {
+          if (!isUniqueConstraintError(e)) throw e
+          syncLogger.warn({ action: 'create-season-duplicate', provider, contentId, seasonId: season.seasonId })
+        }
         continue
       }
 
@@ -119,7 +128,12 @@ export class SyncService {
         })
       }
       for (const episode of newEpisodes) {
-        await this.createEpisode(dbSeason.id, episode)
+        try {
+          await this.createEpisode(dbSeason.id, episode)
+        } catch (e) {
+          if (!isUniqueConstraintError(e)) throw e
+          syncLogger.warn({ action: 'create-episode-duplicate', provider, contentId, episodeNumber: episode.episodeNumber })
+        }
       }
     }
   }
