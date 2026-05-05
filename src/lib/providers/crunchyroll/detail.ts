@@ -20,10 +20,11 @@ function parseMaturityRating(ratings: string[]): number | null {
   return null
 }
 
-/** EpisodeItem → Episode */
-function mapEpisode(ep: EpisodeItem, index: number): Episode {
+/** EpisodeItem → Episode（非整数エピソード番号の特別編はスキップ） */
+function mapEpisode(ep: EpisodeItem): Episode | null {
   const raw = ep.episode_number ?? Number(ep.episode)
-  const episodeNumber = Number.isInteger(raw) && raw >= 0 ? raw : index + 1
+  if (!Number.isInteger(raw) || raw < 0) return null
+  const episodeNumber = raw
   const releaseDate = ep.premium_available_date ?? ep.episode_air_date ?? ep.upload_date ?? ''
   const thumbnailUrl = ep.images ? getBestThumbnailUrl(ep.images) : null
   const hasJaSub = ep.subtitle_locales.includes('ja-JP')
@@ -113,7 +114,7 @@ export async function fetchCrunchyrollTitleDetail(seriesId: string): Promise<Tit
     seasonId: s.id,
     displayName: s.title,
     seasonNumber: s.season_number || i + 1,
-    episodes: seasonEpisodes[i].map((ep, j) => mapEpisode(ep, j))
+    episodes: seasonEpisodes[i].map((ep) => mapEpisode(ep)).filter((ep): ep is Episode => ep !== null)
   }))
 
   return {
