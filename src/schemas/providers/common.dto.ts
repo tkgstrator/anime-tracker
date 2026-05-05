@@ -17,8 +17,8 @@ export const TitleSchema = z.object({
   entityType: EntityType,
   imageUrl: z.url().transform(stripQueryParams),
   maturityRating: z.number().int().positive().nullable(),
-  nextEpisodeDate: z.string().nullable().optional(),
-  badge: BadgeType.nullable().optional(),
+  nextEpisodeDate: z.string().nonempty().optional(),
+  badge: BadgeType.optional(),
   expiring: z
     .object({
       remainingHours: z.number().int().positive(),

@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const NagisaSeasonSchema = z.object({
   season_number: z.number().int(),
-  episodes: z.array(z.number().int()).nullable().optional()
+  episodes: z.array(z.number().int()).nullable()
 })
 
 const NagisaJobProgressSchema = z.object({
@@ -14,13 +14,13 @@ export const NagisaJobSchema = z.object({
   job_id: z.string().nonempty(),
   provider: z.string().nonempty(),
   content_id: z.string().nonempty(),
-  title: z.string().nonempty().nullable().optional(),
+  title: z.string().nonempty().nullable(),
   seasons: z.array(NagisaSeasonSchema).nullable(),
   timestamp: z.number(),
-  processedOn: z.number().nullable().optional(),
-  finishedOn: z.number().nullable().optional(),
-  progress: NagisaJobProgressSchema.nullable().optional(),
-  failedReason: z.string().nonempty().nullable().optional()
+  processedOn: z.number().nullable(),
+  finishedOn: z.number().nullable(),
+  progress: NagisaJobProgressSchema.nullable(),
+  failedReason: z.string().nonempty().nullable()
 })
 
 export type NagisaJob = z.infer<typeof NagisaJobSchema>
