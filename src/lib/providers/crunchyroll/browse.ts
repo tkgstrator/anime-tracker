@@ -47,8 +47,8 @@ export function browseItemToTitle(item: BrowseItem, badge?: Title['badge']): Tit
     entityType: item.type === 'movie_listing' ? 'movie' : 'tv',
     imageUrl: getBestImageUrl(item.images) ?? 'https://www.crunchyroll.com/build/assets/img/default-poster.png',
     maturityRating: meta ? parseMaturityRating(meta.maturity_ratings) : null,
-    nextEpisodeDate: null,
-    badge: badge ?? (item.new ? 'RECENTLY_ADDED' : null)
+    nextEpisodeDate: undefined,
+    badge: badge ?? (item.new ? 'RECENTLY_ADDED' : undefined)
   }
 }
 

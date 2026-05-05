@@ -97,7 +97,7 @@ export const EpisodeItemSchema = z.object({
   slug_title: z.string().optional(),
   description: z.string().default(''),
   episode: z.string().default('0'),
-  episode_number: z.number().nonnegative().nullable().optional(),
+  episode_number: z.number().nonnegative().nullable(),
   episode_air_date: z.string().optional(),
   premium_available_date: z.string().optional(),
   upload_date: z.string().optional(),

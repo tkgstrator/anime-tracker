@@ -30,8 +30,8 @@ const CardInfo = z
 
 const BrowseAdditionalInfo = z.object({
   card_info: CardInfo,
-  edge_episode: EpisodeInfo.nullable().optional(),
-  lead_episode: EpisodeInfo.nullable().optional(),
+  edge_episode: EpisodeInfo.nullable(),
+  lead_episode: EpisodeInfo.nullable(),
   id_in_schema: z.number(),
   id: z.number(),
   schema_id: z.number(),
