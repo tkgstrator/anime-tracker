@@ -64,7 +64,7 @@ export const NagisaEpisodePreviewSchema = z.object({
   number: z.number().int(),
   title: z.string(),
   content_id: z.string(),
-  duration: z.number().int().nullable()
+  duration: z.number().nonnegative().nullable()
 })
 
 export const NagisaPreviewSchema = z.object({
