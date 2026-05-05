@@ -1,0 +1,426 @@
+{
+  "total_count": 79,
+  "data": [
+    {
+      "id": 1333020,
+      "id_in_schema": 500022924,
+      "title": "クラスで2番目に可愛い女の子と友だちになった",
+      "description": "クラスでぼっちな前原真樹に、初めてできた友だち･朝凪海。いつも輪の中心にいて、他の男子からは『クラスで2番目に可愛い』なんて陰で噂されている。ぼっち…",
+      "slug": "i-made-friends-with-the-second-prettiest-girl-in-my-class",
+      "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/51b4d893-ef44-4f6b-ba27-ccf24f05c878.png?w=331&h=447&q=80",
+      "rental": false,
+      "startAt": "2026/04/12 00:00:00",
+      "endAt": "2027/06/30 23:59:59",
+      "isLogin": false,
+      "schema_key": "series",
+      "model_id": "series:500022924",
+      "categoryMetas": [
+        "アニメ",
+        "恋愛",
+        "コメディ"
+      ],
+      "price": "",
+      "features": [
+        "2026年 春アニメ",
+        "憧れの学園生活! 学園ラブコメアニメ",
+        "輝け学生生活（アニメ）",
+        "これが今の流行! 2020年代ラノベ原作アニメ"
+      ],
+      "additionalInfo": {
+        "card_info": {
+          "artwork_copyright": "© たかた・KADOKAWA／クラにか製作委員会",
+          "catch_copy": {
+            "description": "【テレビ放送後の毎週日曜配信】",
+            "publish_device_rule": null,
+            "publish_user_status_rule": null,
+            "publish_app_rule": null,
+            "links": []
+          },
+          "episode_count": 6,
+          "has_closed_caption": false,
+          "has_en_caption": false,
+          "is_mature": false,
+          "language_support_types": [],
+          "premiere_year": 2026,
+          "season_count": 1,
+          "show_cs_asset_added_at": false
+        },
+        "edge_episode": {
+          "meta_id": 1362478,
+          "name": "クラスで2番目に可愛い女の子と友だちになった シーズン1 #4 ふたりの文化祭",
+          "short_name": "ふたりの文化祭",
+          "ref_id": "ASSET-100260012",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/0cd2ad51-e4c7-4634-84e0-63708138c704.png"
+        },
+        "id_in_schema": 500022924,
+        "id": 1333020,
+        "lead_episode": {
+          "meta_id": 1339255,
+          "name": "クラスで2番目に可愛い女の子と友だちになった シーズン1 #1 朝凪海という女の子",
+          "short_name": "朝凪海という女の子",
+          "ref_id": "ASSET-100257540",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/f70521d9-ecd6-4095-8c77-3e4cbe78bc0c.png"
+        },
+        "rating_v2": "not_rated",
+        "rating": "not_rated",
+        "schema_id": 3,
+        "schema_key": "series",
+        "service": "hulu",
+        "slug": "i-made-friends-with-the-second-prettiest-girl-in-my-class",
+        "type": "group_meta",
+        "viewing_period_undisplay_flag": true
+      },
+      "bottomMetas": [
+        "2026年公開"
+      ],
+      "progress": 0,
+      "playTime": "",
+      "isPublishEnded": false,
+      "isTvodLive": false,
+      "showBagIcon": false
+    },
+    {
+      "id": 1311528,
+      "id_in_schema": 500022799,
+      "title": "氷の城壁",
+      "description": "不器用で、じれったくて、それでも愛おしい。青春のすれ違いが織りなす群像劇が今、幕を開ける。",
+      "slug": "the-ramparts-of-ice",
+      "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/64dcaa4d-417e-4b99-a2e8-90d910e010ca.jpg?w=331&h=447&q=80",
+      "rental": false,
+      "startAt": "2026/03/27 00:00:00",
+      "endAt": "2027/12/31 23:59:59",
+      "isLogin": false,
+      "schema_key": "series",
+      "model_id": "series:500022799",
+      "categoryMetas": [
+        "アニメ",
+        "青春"
+      ],
+      "price": "",
+      "features": [
+        "2026年 春アニメ",
+        "友情も恋も青春も!（アニメ）",
+        "ブレザー男子",
+        "ブレザーを着た女の子",
+        "ウェブコミック原作（アニメ）",
+        "今を楽しめ! 仲間と過ごした青春（アニメ）",
+        "輝け学生生活（アニメ）"
+      ],
+      "additionalInfo": {
+        "card_info": {
+          "artwork_copyright": "©阿賀沢紅茶／集英社・TVアニメ「氷の城壁」製作委員会",
+          "catch_copy": {
+            "description": "【テレビ放送後の翌週金曜配信】",
+            "publish_device_rule": null,
+            "publish_user_status_rule": null,
+            "publish_app_rule": null,
+            "links": []
+          },
+          "episode_count": 5,
+          "has_closed_caption": false,
+          "has_en_caption": false,
+          "is_mature": false,
+          "language_support_types": [],
+          "premiere_year": 2026,
+          "season_count": 1,
+          "show_cs_asset_added_at": false
+        },
+        "edge_episode": {
+          "meta_id": 1362468,
+          "name": "氷の城壁 シーズン1 4 不可侵",
+          "short_name": "不可侵",
+          "ref_id": "ASSET-100260014",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/e1fcf3ba-ecf1-4783-a316-806de63bdcc1.png"
+        },
+        "id_in_schema": 500022799,
+        "id": 1311528,
+        "lead_episode": {
+          "meta_id": 1333262,
+          "name": "氷の城壁 シーズン1 1 線と壁",
+          "short_name": "線と壁",
+          "ref_id": "ASSET-100258607",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/a4100474-3c95-49e1-9975-5dedbb7d1bf9.png"
+        },
+        "rating_v2": "not_rated",
+        "rating": "not_rated",
+        "schema_id": 3,
+        "schema_key": "series",
+        "service": "hulu",
+        "slug": "the-ramparts-of-ice",
+        "type": "group_meta",
+        "viewing_period_undisplay_flag": true
+      },
+      "bottomMetas": [
+        "2026年公開"
+      ],
+      "progress": 0,
+      "playTime": "",
+      "isPublishEnded": false,
+      "isTvodLive": false,
+      "showBagIcon": false
+    },
+    {
+      "id": 1315556,
+      "id_in_schema": 500022838,
+      "title": "リィンカーネーションの花弁",
+      "description": "自らの首を切ることで前世の才能を得ることができる“輪廻の枝”。優秀な兄と比べられて育ち、自分が無才であることに劣等感を持っている主人公の扇寺 東耶 …",
+      "slug": "petals-of-reincarnation",
+      "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/a8e9716a-01be-41b0-b23d-5b75796b4b0c.png?w=331&h=447&q=80",
+      "rental": false,
+      "startAt": "2026/03/26 18:00:00",
+      "endAt": "",
+      "isLogin": false,
+      "schema_key": "series",
+      "model_id": "series:500022838",
+      "categoryMetas": [
+        "アニメ",
+        "アクション"
+      ],
+      "price": "",
+      "features": [
+        "2026年 春アニメ",
+        "メガネ男子",
+        "特殊能力で勝負だ!",
+        "アニメファン向けコミック原作"
+      ],
+      "additionalInfo": {
+        "card_info": {
+          "artwork_copyright": "Ⓒ小西幹久／マッグガーデン・「リィンカーネーションの花弁」製作委員会",
+          "catch_copy": {
+            "description": "【テレビ放送後の毎週水曜配信】",
+            "publish_device_rule": null,
+            "publish_user_status_rule": null,
+            "publish_app_rule": null,
+            "links": []
+          },
+          "episode_count": 6,
+          "has_closed_caption": true,
+          "has_en_caption": false,
+          "is_mature": false,
+          "language_support_types": [],
+          "premiere_year": 2026,
+          "season_count": 1,
+          "show_cs_asset_added_at": false
+        },
+        "edge_episode": {
+          "meta_id": 1359908,
+          "name": "リィンカーネーションの花弁 シーズン1 第四輪 全知と腐敗",
+          "short_name": "全知と腐敗",
+          "ref_id": "ASSET-100259451",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/dba7d481-4458-4975-b70e-98cce4c76e6e.png"
+        },
+        "id_in_schema": 500022838,
+        "id": 1315556,
+        "lead_episode": {
+          "meta_id": 1333278,
+          "name": "リィンカーネーションの花弁 シーズン1 第一輪 花弁を散らす者達",
+          "short_name": "花弁を散らす者達",
+          "ref_id": "ASSET-100257777",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/b36ccffc-c418-4a67-a9ca-249bd6ae2cbf.png"
+        },
+        "rating_v2": "not_rated",
+        "rating": "not_rated",
+        "schema_id": 3,
+        "schema_key": "series",
+        "service": "hulu",
+        "slug": "petals-of-reincarnation",
+        "type": "group_meta",
+        "viewing_period_undisplay_flag": true
+      },
+      "bottomMetas": [
+        "字幕ガイド",
+        "2026年公開"
+      ],
+      "progress": 0,
+      "playTime": "",
+      "isPublishEnded": false,
+      "isTvodLive": false,
+      "showBagIcon": false
+    },
+    {
+      "id": 1314095,
+      "id_in_schema": 500022784,
+      "title": "左ききのエレン",
+      "description": "高校生活も半分が過ぎ、誰もが本格的に進路を考えはじめる頃。デザイナーになるため美大を目指す朝倉光一は、ある日、美術館の壁に殴り描きされたグラフィティ…",
+      "slug": "eren-the-southpaw",
+      "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/903b6b91-df6d-4aeb-ac44-418409f8df00.png?w=331&h=447&q=80",
+      "rental": false,
+      "startAt": "2026/04/13 00:30:00",
+      "endAt": "2027/07/31 23:59:59",
+      "isLogin": false,
+      "schema_key": "series",
+      "model_id": "series:500022784",
+      "categoryMetas": [
+        "アニメ",
+        "青春",
+        "ヒューマンドラマ"
+      ],
+      "price": "",
+      "features": [
+        "2026年 春アニメ",
+        "創作/クリエイター系アニメ",
+        "ウェブコミック原作（アニメ）"
+      ],
+      "additionalInfo": {
+        "card_info": {
+          "artwork_copyright": "©かっぴー／アニメ「左ききのエレン」製作委員会",
+          "catch_copy": {
+            "description": "【テレビ放送後の毎週月曜配信】",
+            "publish_device_rule": null,
+            "publish_user_status_rule": null,
+            "publish_app_rule": null,
+            "links": []
+          },
+          "episode_count": 5,
+          "has_closed_caption": false,
+          "has_en_caption": false,
+          "is_mature": false,
+          "language_support_types": [],
+          "premiere_year": 2026,
+          "season_count": 1,
+          "show_cs_asset_added_at": false
+        },
+        "edge_episode": {
+          "meta_id": 1364296,
+          "name": "左ききのエレン シーズン1 第4話 最高のチームと出会った時",
+          "short_name": "最高のチームと出会った時",
+          "ref_id": "ASSET-100259976",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/07598207-bac6-4d88-ac5a-e0373bf503a2.png"
+        },
+        "id_in_schema": 500022784,
+        "id": 1314095,
+        "lead_episode": {
+          "meta_id": 1339998,
+          "name": "左ききのエレン シーズン1 第1話 横浜のバスキア",
+          "short_name": "横浜のバスキア",
+          "ref_id": "ASSET-100257263",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/6ab15da5-e920-41e2-9b67-580b93a16609.png"
+        },
+        "rating_v2": "not_rated",
+        "rating": "not_rated",
+        "schema_id": 3,
+        "schema_key": "series",
+        "service": "hulu",
+        "slug": "eren-the-southpaw",
+        "type": "group_meta",
+        "viewing_period_undisplay_flag": true
+      },
+      "bottomMetas": [
+        "2026年公開"
+      ],
+      "progress": 0,
+      "playTime": "",
+      "isPublishEnded": false,
+      "isTvodLive": false,
+      "showBagIcon": false
+    },
+    {
+      "id": 1233268,
+      "id_in_schema": 500022235,
+      "title": "名探偵プリキュア!",
+      "description": "【明智あんな】は、マコトミライタウンに暮らす14歳の中学2年生! 誕生日に現れた妖精【ポチタン】と、お部屋にあったペンダントに導かれて2027年から…",
+      "slug": "star-detective-precure",
+      "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/662d717a-d178-4d60-b2ea-250438ad2cf6.png?w=331&h=447&q=80",
+      "rental": false,
+      "startAt": "2026/02/04 00:00:00",
+      "endAt": "2028/02/28 23:59:59",
+      "isLogin": false,
+      "schema_key": "series",
+      "model_id": "series:500022235",
+      "categoryMetas": [
+        "アニメ",
+        "キッズ",
+        "アクション"
+      ],
+      "price": "",
+      "features": [
+        "時空を超えて（アニメ）",
+        "少女たちの憧れ",
+        "娘と一緒に観たい（アニメ）",
+        "コドモに観せたいアニメ",
+        "魔法少女の戦い",
+        "お子様を魅了するファンタジーアニメ"
+      ],
+      "additionalInfo": {
+        "card_info": {
+          "artwork_copyright": "(C)ＡＢＣ-Ａ・東映アニメーション",
+          "catch_copy": {
+            "description": "【テレビ放送後の毎週水曜配信】",
+            "publish_device_rule": null,
+            "publish_user_status_rule": null,
+            "publish_app_rule": null,
+            "links": []
+          },
+          "coming_soon_text": "",
+          "episode_count": 14,
+          "has_closed_caption": false,
+          "has_en_caption": false,
+          "is_mature": false,
+          "language_support_types": [],
+          "premiere_year": 2026,
+          "season_count": 1,
+          "show_cs_asset_added_at": false
+        },
+        "edge_episode": {
+          "meta_id": 1367658,
+          "name": "名探偵プリキュア! シーズン1 第14話 ポチタン、はじめてのおでかけ!",
+          "short_name": "ポチタン、はじめてのおでかけ!",
+          "ref_id": "ASSET-100260275",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/76164b75-2061-470d-a2bf-325cd88b0292.png"
+        },
+        "id_in_schema": 500022235,
+        "id": 1233268,
+        "lead_episode": {
+          "meta_id": 1262832,
+          "name": "名探偵プリキュア! シーズン1 第1話 誕生! 名探偵プリキュア!",
+          "short_name": "誕生! 名探偵プリキュア!",
+          "ref_id": "ASSET-100252136",
+          "type": "media_meta",
+          "schema_id": 1,
+          "thumbnail": "https://s3.happyon.jp/uploads/784c6f59-d110-4575-b1e5-5831b2ea6d64.png"
+        },
+        "rating_v2": "not_rated",
+        "rating": "not_rated",
+        "schema_id": 3,
+        "schema_key": "series",
+        "service": "hulu",
+        "slug": "star-detective-precure",
+        "type": "group_meta",
+        "viewing_period_undisplay_flag": true
+      },
+      "bottomMetas": [
+        "2026年公開"
+      ],
+      "progress": 0,
+      "playTime": "",
+      "isPublishEnded": false,
+      "isTvodLive": false,
+      "showBagIcon": false
+    },
+    {
+      "id": 28988,
+      "id_in_schema": 0,
+      "title": "【コミック】2026年春アニメ作品",
+      "imageUrl": "https://images.prod.hjholdings.tv/files/1/j/j/b/0/b8045b69-4c93-4242-b996-e0714c6b8154.jpg?w=331&h=447&q=80",
+      "url": "happyonapp://comic/features/2c7d31b3-539c-4260-9b5a-a4d606601993"
+    }
+  ]
+}

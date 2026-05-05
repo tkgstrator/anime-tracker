@@ -72,12 +72,12 @@ async function fetchBrowsePage(
     sort_by: sortBy,
     type: 'series'
   })
-  const parsed = BrowseResponseSchema.parse(raw)
-  // 最初のページの total を信頼する (最終ページで 0 が返ることがある)
-  const resolvedTotal = start === 0 ? parsed.total : total
-  const accumulated = [...items, ...parsed.data]
+  const result = BrowseResponseSchema.safeParse(raw)
+  if (!result.success) throw result.error
+  const resolvedTotal = start === 0 ? result.data.total : total
+  const accumulated = [...items, ...result.data.data]
 
-  if (parsed.data.length === 0) return accumulated
+  if (result.data.data.length === 0) return accumulated
   if (accumulated.length >= resolvedTotal) return accumulated
   if (maxItems > 0 && accumulated.length >= maxItems) return accumulated
   return fetchBrowsePage(sortBy, start + PAGE_SIZE, resolvedTotal, maxItems, accumulated)

@@ -173,8 +173,9 @@ async function identifyAniList(rawTitle: string): Promise<MetadataMedia> {
     throw new Error(`AniList API error: ${res.status} ${res.statusText}`)
   }
 
-  const parsed = MetadataResponseSchema.parse(await res.json())
-  return parsed.data.Page.media[0]
+  const result = MetadataResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  return result.data.data.Page.media[0]
 }
 
 const MONTH_TO_QUARTER = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3] as const
@@ -218,7 +219,8 @@ async function identifyBatch(rawTitles: string[]): Promise<(MetadataMedia | unde
     const page = data.data[`q${i}`]
     if (!page?.media?.length) return undefined
     try {
-      return MetadataMediaSchema.parse(page.media[0])
+      const mediaResult = MetadataMediaSchema.safeParse(page.media[0])
+      return mediaResult.success ? mediaResult.data : undefined
     } catch (e) {
       logger.warn({ action: 'parse-media-failed', index: i, error: e instanceof Error ? e.message : String(e) })
       return undefined

@@ -48,7 +48,9 @@ async function post<T>(aws: AwsClient, baseUrl: string, path: string, body: unkn
 
   const data = await response.json()
   logger.info({ action: 'lambda-success', path })
-  return schema.parse(data)
+  const result = schema.safeParse(data)
+  if (!result.success) throw result.error
+  return result.data
 }
 
 /**

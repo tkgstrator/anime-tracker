@@ -35,16 +35,14 @@ const SeriesMetadataSchema = z.object({
   season_count: z.number().int().nonnegative().optional(),
   series_launch_year: z.number().int().optional(),
   tenant_categories: z.array(z.string()).default([]),
-  extended_maturity_rating: z.preprocess(
-    (v) => (typeof v === 'object' && v !== null && Object.keys(v).length === 0 ? undefined : v),
-    z
-      .object({
-        level: z.string(),
-        rating: z.string(),
-        system: z.string()
-      })
-      .optional()
-  )
+  extended_maturity_rating: z
+    .object({
+      level: z.string(),
+      rating: z.string(),
+      system: z.string()
+    })
+    .optional()
+    .catch(undefined)
 })
 
 export const BrowseItemSchema = z.object({
@@ -135,16 +133,14 @@ export const SeriesDetailSchema = z.object({
   images: ImagesSchema,
   season_tags: z.array(z.string()).default([]),
   keywords: z.array(z.string()).default([]),
-  extended_maturity_rating: z.preprocess(
-    (v) => (typeof v === 'object' && v !== null && Object.keys(v).length === 0 ? undefined : v),
-    z
-      .object({
-        level: z.string(),
-        rating: z.string(),
-        system: z.string()
-      })
-      .optional()
-  ),
+  extended_maturity_rating: z
+    .object({
+      level: z.string(),
+      rating: z.string(),
+      system: z.string()
+    })
+    .optional()
+    .catch(undefined),
   maturity_ratings: z.array(z.string()).default([]),
   is_subbed: z.boolean().default(false),
   is_dubbed: z.boolean().default(false),

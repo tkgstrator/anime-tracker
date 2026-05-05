@@ -75,7 +75,9 @@ async function paginateCollection(
     }
   })
   if (!res.ok) throw new Error(`paginateCollection error: ${res.status} ${res.statusText}`)
-  return PaginateResponseSchema.parse(await res.json())
+  const result = PaginateResponseSchema.safeParse(await res.json())
+  if (!result.success) throw result.error
+  return result.data
 }
 
 /**
@@ -104,7 +106,9 @@ export class AmazonProvider extends Provider {
       const cached = await this.cache?.get('browse:expiring:latest')
       if (cached) {
         const envelope = JSON.parse(cached)
-        const titles = TitleSchema.array().parse(envelope.titles)
+        const result = TitleSchema.array().safeParse(envelope.titles)
+        if (!result.success) throw result.error
+        const titles = result.data
         logger.info({ action: 'fetch-title-list-cached', mode, fetchedAt: envelope.fetchedAt, count: titles.length })
         return titles
       }

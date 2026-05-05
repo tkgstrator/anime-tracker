@@ -1,0 +1,416 @@
+{
+    "total_count": 907,
+    "data": [
+        {
+            "id": 1329379,
+            "id_in_schema": 500022863,
+            "title": "最強の職業は勇者でも賢者でもなく鑑定士 (仮) らしいですよ?",
+            "description": "普通の男子高校生･真名部響生は、ある日突然、魔物も潜む異世界の広大な草原に転移してしまった。見たこともないファンタジー世界を、あてもなく彷徨っていた…",
+            "slug": "the-strongest-job-is-apparently-not-a-hero-or-a-sage-but-an-appraiser-provisional",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/bcbd9558-400e-4c20-afa0-c62d88c8ccb9.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/04 22:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022863",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー"
+            ],
+            "price": "",
+            "features": [
+                "2026年 春アニメ",
+                "異世界での過ごし方は色々",
+                "これが今の流行! 2020年代ラノベ原作アニメ",
+                "異世界転生アニメ"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©2026あてきち・アルファポリス/鑑定士（仮）製作委員会",
+                    "catch_copy": {
+                        "description": "【毎週土曜 テレビ放送と同時配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365620,
+                    "name": "最強の職業は勇者でも賢者でもなく鑑定士 (仮) らしいですよ? シーズン1 第5話 異常に似合ってます",
+                    "short_name": "異常に似合ってます",
+                    "ref_id": "ASSET-100257351",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/a384fe31-71f6-4506-9f60-64617b59fadd.png"
+                },
+                "id_in_schema": 500022863,
+                "id": 1329379,
+                "lead_episode": {
+                    "meta_id": 1332908,
+                    "name": "最強の職業は勇者でも賢者でもなく鑑定士 (仮) らしいですよ? シーズン1 第1話 チュートリアルは既に行使されています",
+                    "short_name": "チュートリアルは既に行使されています",
+                    "ref_id": "ASSET-100257347",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/d7f2cb8f-45fe-4817-9583-e5f803438b01.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "the-strongest-job-is-apparently-not-a-hero-or-a-sage-but-an-appraiser-provisional",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1317678,
+            "id_in_schema": 500022848,
+            "title": "神の庭付き楠木邸",
+            "description": "神様たちとのもふもふスローライフ、開幕！田舎の一軒家の管理人を任された楠木湊。そこは悪霊がはびこる物件……のはずが、とてつもない祓いの力で、知らぬ間…",
+            "slug": "kusunokis-garden-of-gods",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/79a1d05a-e27c-4596-99eb-7725da626da4.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/10 02:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022848",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー"
+            ],
+            "price": "",
+            "features": [
+                "2026年 春アニメ",
+                "日常系ゆるコメディ",
+                "日本の神をめぐる物語",
+                "人間世界で暮らす魅力的なキャラクターたち"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©2025 えんじゅ/KADOKAWA/「神の庭付き楠木邸」製作委員会",
+                    "catch_copy": {
+                        "description": "【テレビ放送後の毎週金曜配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365115,
+                    "name": "神の庭付き楠木邸 シーズン1 第4話 異界の悪霊祓いへ、いざ出陣",
+                    "short_name": "異界の悪霊祓いへ、いざ出陣",
+                    "ref_id": "ASSET-100260217",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/6c4e9a0c-f7b8-4bb8-a548-433a86d2f476.png"
+                },
+                "id_in_schema": 500022848,
+                "id": 1317678,
+                "lead_episode": {
+                    "meta_id": 1340060,
+                    "name": "神の庭付き楠木邸 シーズン1 第1話 神の庭に山の神、来たる",
+                    "short_name": "神の庭に山の神、来たる",
+                    "ref_id": "ASSET-100258809",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/e57253bf-b5ce-4ca7-b658-13464f65896e.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "kusunokis-garden-of-gods",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1318451,
+            "id_in_schema": 500022860,
+            "title": "黄泉のツガイ",
+            "description": "山奥の小さな村で暮らす、狩人の少年･ユル。彼は、野鳥を狩り、双子の妹･アサや村人たちと共に慎ましく日々を過ごしていた。しかし、そんな平穏な日常を切り…",
+            "slug": "daemons-of-the-shadow-realm",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/54d97c8e-d9bc-43be-a455-2a274822e2c8.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/05 00:00:00",
+            "endAt": "2027/09/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022860",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー",
+                "アクション"
+            ],
+            "price": "",
+            "features": [
+                "2026年 春アニメ",
+                "ダークファンタジーアニメ",
+                "特殊能力で勝負だ!",
+                "コンビならなにも怖くない（アニメ）",
+                "少年コミック誌原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©Hiromu Arakawa/SQUARE ENIX, Project TSUGAI",
+                    "catch_copy": {
+                        "description": "【毎週日曜 テレビ放送後に配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 6,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365654,
+                    "name": "黄泉のツガイ シーズン1 第五話 兎と亀",
+                    "short_name": "兎と亀",
+                    "ref_id": "ASSET-100260423",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/2f9801ec-3446-4784-8062-b8e67cf887af.png"
+                },
+                "id_in_schema": 500022860,
+                "id": 1318451,
+                "lead_episode": {
+                    "meta_id": 1332924,
+                    "name": "黄泉のツガイ シーズン1 第一話 アサとユル",
+                    "short_name": "アサとユル",
+                    "ref_id": "ASSET-100258491",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/97bcfeb9-2a79-4925-aa7b-76a548f596c9.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "daemons-of-the-shadow-realm",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "2026年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 447613,
+            "id_in_schema": 500019331,
+            "title": "最強の王様、二度目の人生は何をする?",
+            "description": "冷酷無情な王が無力な赤子･アーサーとして魔法世界に転生し、前世とは異なる喜びを覚えていくアーサー。そんな時、旅の途中で家族が盗賊に襲われてしまい…。",
+            "slug": "the-beginning-after-the-end",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/268b27bf-670c-44e4-8dae-0915acff857c.jpg?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2025/03/18 00:00:00",
+            "endAt": "2027/06/30 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500019331",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー",
+                "アドベンチャー"
+            ],
+            "price": "",
+            "features": [
+                "2025年 春アニメ",
+                "剣と魔法のファンタジー",
+                "ウェブコミック原作（アニメ）"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©「最強の王様」製作委員会",
+                    "catch_copy": {
+                        "description": "【テレビ放送後の毎週日曜配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 19,
+                    "has_closed_caption": true,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2025,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1362529,
+                    "name": "最強の王様、二度目の人生は何をする? シーズン1 #17 王様、奮闘する。",
+                    "short_name": "王様、奮闘する。",
+                    "ref_id": "ASSET-100260010",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/138b6aa1-0d3d-44c4-a902-d618b967053b.png"
+                },
+                "id_in_schema": 500019331,
+                "id": 447613,
+                "lead_episode": {
+                    "meta_id": 451062,
+                    "name": "最強の王様、二度目の人生は何をする? シーズン1 #01 王様、生まれ変わる。",
+                    "short_name": "王様、生まれ変わる。",
+                    "ref_id": "ASSET-100222796",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/146f8de6-fe59-4183-a9b9-9b6ceb068e1a.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "the-beginning-after-the-end",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "字幕ガイド",
+                "2025年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        },
+        {
+            "id": 1314156,
+            "id_in_schema": 500022806,
+            "title": "Re:ゼロから始める異世界生活 4th season",
+            "description": "水門都市プリステラの死闘で辛くも勝利を収めたスバルたちだったが、その代償はあまりに大きかった。“暴食”の権能によって眠り続けるレム、記憶を奪われたク…",
+            "slug": "re-zero-starting-life-in-anotherworld",
+            "imageUrl": "https://images.prod.hjholdings.tv/d3urerHm/uploads/e33bf295-6cf5-4dfe-b568-07f80a8665d1.png?w=331&h=447&q=80",
+            "rental": false,
+            "startAt": "2026/04/11 22:30:00",
+            "endAt": "2027/10/31 23:59:59",
+            "isLogin": false,
+            "schema_key": "series",
+            "model_id": "series:500022806",
+            "categoryMetas": [
+                "アニメ",
+                "ファンタジー"
+            ],
+            "price": "",
+            "features": [
+                "時空を超えて（アニメ）",
+                "なろう系小説原作アニメ",
+                "2026年 春アニメ",
+                "タイムループから抜け出せ!（アニメ）",
+                "多彩! 2010年代ラノベ原作アニメ",
+                "異世界転生アニメ"
+            ],
+            "additionalInfo": {
+                "card_info": {
+                    "artwork_copyright": "©長月達平・株式会社KADOKAWA刊／Re:ゼロから始める異世界生活4製作委員会",
+                    "catch_copy": {
+                        "description": "【テレビ放送後の毎週土曜配信】",
+                        "publish_device_rule": null,
+                        "publish_user_status_rule": null,
+                        "publish_app_rule": null,
+                        "links": []
+                    },
+                    "episode_count": 5,
+                    "has_closed_caption": false,
+                    "has_en_caption": false,
+                    "is_mature": false,
+                    "language_support_types": [],
+                    "premiere_year": 2026,
+                    "season_count": 1,
+                    "show_cs_asset_added_at": false
+                },
+                "edge_episode": {
+                    "meta_id": 1365611,
+                    "name": "Re:ゼロから始める異世界生活 4th season 4th season 第70話 白い星空のアステリズム",
+                    "short_name": "白い星空のアステリズム",
+                    "ref_id": "ASSET-100260460",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/4d96a7f2-50c5-41f5-a0da-e55a0f0da84f.png"
+                },
+                "id_in_schema": 500022806,
+                "id": 1314156,
+                "lead_episode": {
+                    "meta_id": 1340748,
+                    "name": "Re:ゼロから始める異世界生活 4th season 4th season 第67話 君を連れ出す理由／ゴージャス･タイガー･リローデッド",
+                    "short_name": "君を連れ出す理由／ゴージャス･タイガー･リローデッド",
+                    "ref_id": "ASSET-100258215",
+                    "type": "media_meta",
+                    "schema_id": 1,
+                    "thumbnail": "https://s3.happyon.jp/uploads/7b6959bd-3935-463d-af3b-7157375bdb51.png"
+                },
+                "rating_v2": "not_rated",
+                "rating": "not_rated",
+                "schema_id": 3,
+                "schema_key": "series",
+                "service": "hulu",
+                "slug": "re-zero-starting-life-in-anotherworld",
+                "type": "group_meta",
+                "viewing_period_undisplay_flag": true
+            },
+            "bottomMetas": [
+                "2026年公開"
+            ],
+            "progress": 0,
+            "playTime": "",
+            "isPublishEnded": false,
+            "isTvodLive": false,
+            "showBagIcon": false
+        }
+    ]
+}
