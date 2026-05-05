@@ -90,6 +90,30 @@
       "group": "test"
     },
     {
+      "label": "Fetch New Episode (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh crunchyroll new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Coming Soon (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh crunchyroll coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Expiring (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh crunchyroll expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Fetch New Episode (Amazon)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/queue/remote/send.sh amazon new_episode",
@@ -133,6 +157,30 @@
       "label": "Fetch Expiring (Hulu)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/queue/remote/send.sh hulu expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch New Episode (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh crunchyroll new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Coming Soon (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh crunchyroll coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Expiring (Crunchyroll)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh crunchyroll expiring",
       "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
       "problemMatcher": [],
       "group": "test"
