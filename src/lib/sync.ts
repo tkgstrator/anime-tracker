@@ -132,7 +132,12 @@ export class SyncService {
           await this.createEpisode(dbSeason.id, episode)
         } catch (e) {
           if (!isUniqueConstraintError(e)) throw e
-          syncLogger.warn({ action: 'create-episode-duplicate', provider, contentId, episodeNumber: episode.episodeNumber })
+          syncLogger.warn({
+            action: 'create-episode-duplicate',
+            provider,
+            contentId,
+            episodeNumber: episode.episodeNumber
+          })
         }
       }
     }

@@ -8,8 +8,8 @@ function combineRscChunks(html: string): string {
   for (const m of html.matchAll(/self\.__next_f\.push\(\[1,"(.*?)"\]\)/gs)) {
     try {
       chunks.push(JSON.parse(`"${m[1]}"`))
-    } catch {
-      // skip broken chunks
+    } catch (e) {
+      console.warn(`[rsc-parser] broken chunk skipped: ${e instanceof Error ? e.message : String(e)}`)
     }
   }
   return chunks.join('')

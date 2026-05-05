@@ -8,10 +8,13 @@ import {
   FalcorMetaResponseSchema,
   type Episode as HuluEpisode
 } from '../../../schemas/providers/hulu.dto'
+import { getAppLogger } from '../../logger'
 import { extractMetasArray } from './rsc-parser'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
+
+const logger = getAppLogger('hulu-detail')
 
 const HULU_BASE = 'https://www.hulu.jp'
 const HULU_FALCOR_API = `${HULU_BASE}/anon/ja/webp/path`
@@ -114,7 +117,8 @@ async function fetchEpisodesFromRsc(slug: string): Promise<{ episodes: HuluEpiso
     const episodes = parseEpisodesFromHtml(html)
     if (episodes.length === 0) return null
     return { episodes, seasons: groupIntoSeasons(slug, episodes) }
-  } catch {
+  } catch (e) {
+    logger.warn({ action: 'parse-rsc-failed', slug, error: e instanceof Error ? e.message : String(e) })
     return null
   }
 }

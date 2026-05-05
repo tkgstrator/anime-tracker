@@ -1,5 +1,8 @@
 import dayjs from 'dayjs'
 import { PaletteResponseSchema, type VodItem } from '../../../schemas/providers/hulu.dto'
+import { getAppLogger } from '../../logger'
+
+const logger = getAppLogger('hulu-browse')
 
 const HULU_BASE = 'https://www.hulu.jp'
 const HULU_API_BASE = `${HULU_BASE}/api/v2/palettes`
@@ -256,7 +259,14 @@ export function currentSeasonSlugs(now = dayjs()): string[] {
  */
 export async function fetchCurrentSeasonAnime(): Promise<VodItem[]> {
   const slugs = currentSeasonSlugs()
-  const results = await Promise.all(slugs.map((slug) => fetchHuluAnimePage(slug, 0, []).catch(() => [] as VodItem[])))
+  const results = await Promise.all(
+    slugs.map((slug) =>
+      fetchHuluAnimePage(slug, 0, []).catch((e) => {
+        logger.error({ action: 'fetch-season-palette-failed', slug, error: e instanceof Error ? e.message : String(e) })
+        return [] as VodItem[]
+      })
+    )
+  )
   const seen = new Set<string>()
   const items: VodItem[] = []
   for (const item of results.flat()) {

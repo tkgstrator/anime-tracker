@@ -10,7 +10,7 @@ const ChangelogPage = () => {
     fetch('/commits.json')
       .then((res) => res.json() as Promise<CommitEntry[]>)
       .then(setCommits)
-      .catch(() => {})
+      .catch((e) => console.warn('[changelog] fetch failed:', e))
   }, [])
 
   const grouped = commits.reduce<Record<string, CommitEntry[]>>((acc, c) => {
