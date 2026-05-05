@@ -54,7 +54,10 @@ export const VodItemSchema = z.object({
   imageUrl: z.string().transform(stripQueryParams),
   rental: z.boolean(),
   startAt: z.string().nonempty(),
-  endAt: z.preprocess((v: string) => (v.length === 0 ? null : v), z.string().nonempty().nullable()),
+  endAt: z.preprocess(
+    (v: unknown) => (typeof v === 'string' && v.length > 0 ? v : null),
+    z.string().nonempty().nullable()
+  ),
   isLogin: z.boolean(),
   schema_key: z.string(),
   model_id: z.string(),
@@ -70,9 +73,13 @@ export const VodItemSchema = z.object({
 })
 export type VodItem = z.infer<typeof VodItemSchema>
 
+/** slug と additionalInfo を持たない宣伝エントリを除外してからパースする */
 export const PaletteResponseSchema = z.object({
   total_count: z.number().int(),
-  data: z.array(VodItemSchema)
+  data: z.preprocess(
+    (v) => (Array.isArray(v) ? v.filter((i: Record<string, unknown>) => i?.slug && i?.additionalInfo) : v),
+    z.array(VodItemSchema)
+  )
 })
 // --- Episode Detail schemas (RSC payload) ---
 
@@ -123,7 +130,10 @@ const EpisodeSchema = z.object({
   imageUrl: z.url().transform(stripQueryParams),
   rental: z.boolean(),
   startAt: z.string().nonempty(),
-  endAt: z.preprocess((v: string) => (v.length === 0 ? null : v), z.string().nonempty().nullable()),
+  endAt: z.preprocess(
+    (v: unknown) => (typeof v === 'string' && v.length > 0 ? v : null),
+    z.string().nonempty().nullable()
+  ),
   isLogin: z.boolean(),
   schema_key: SchemaKeyTypeEnum,
   model_id: z.string().nonempty(),
