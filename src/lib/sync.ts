@@ -261,7 +261,10 @@ export class SyncService {
         batchSize: batch.length,
         titles: batch.map((t) => t.title)
       })
-      const results = await adapter.identifyBatch(batch.map((t) => t.title))
+      const results = await adapter.identifyBatch(
+        batch.map((t) => t.title),
+        this.lambda
+      )
 
       for (let j = 0; j < batch.length; j++) {
         const meta = results[j]

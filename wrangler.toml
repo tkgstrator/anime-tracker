@@ -20,10 +20,6 @@ not_found_handling = "single-page-application"
 binding = "ASSETS"
 run_worker_first = ["/api/*", "/__scheduled", "/anime/*"]
 
-[[r2_buckets]]
-binding = "IMAGES"
-bucket_name = "nagisa-images"
-
 [[kv_namespaces]]
 binding = "KV"
 id = "0b06ce4894a344b4b041751dfa0b22ba"
@@ -66,10 +62,6 @@ BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
 LAMBDA_FUNCTION_URL = "https://esxey6x7zbx2c3fdm6kkla4v4q0ftaol.lambda-url.ap-northeast-1.on.aws/"
 LAMBDA_FUNCTION_URL_US = "https://ytyebcratcyemkikzh3427i7eu0lasjk.lambda-url.us-east-1.on.aws/"
 
-[[env.staging.r2_buckets]]
-binding = "IMAGES"
-bucket_name = "nagisa-images"
-
 [[env.staging.kv_namespaces]]
 binding = "KV"
 id = "0b06ce4894a344b4b041751dfa0b22ba"
@@ -93,10 +85,6 @@ max_retries = 3
 
 [env.production]
 name = "anime-tracker-production"
-
-[[env.production.r2_buckets]]
-binding = "IMAGES"
-bucket_name = "nagisa-images"
 
 [[env.production.d1_databases]]
 binding = "DB"

@@ -16,7 +16,6 @@ import { MessageSchema } from './schemas/message.dto'
 
 type Bindings = {
   DB: D1Database
-  IMAGES: R2Bucket
   ASSETS: Fetcher
   TMDB_API_KEY: string
   SYNC_QUEUE: Queue
