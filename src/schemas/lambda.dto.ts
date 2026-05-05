@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BadgeType } from './providers/common.dto'
+import { BadgeType, TitleStatusTypeEnum } from './providers/common.dto'
 
 // ---- リクエスト ----
 
@@ -50,4 +50,20 @@ export type TitleListResponse = z.infer<typeof TitleListResponseSchema>
 export const FetchTitleInfoRequestSchema = z.object({
   provider: z.string(),
   contentId: z.string()
+})
+
+// ---- identify ----
+
+export const IdentifyResultSchema = z
+  .object({
+    aniListId: z.number().int().optional(),
+    title: z.string(),
+    status: TitleStatusTypeEnum,
+    year: z.number().int(),
+    quarter: z.number().int()
+  })
+  .nullable()
+
+export const IdentifyResponseSchema = z.object({
+  results: z.array(IdentifyResultSchema)
 })
