@@ -1,4 +1,5 @@
 import { createPrismaClient } from './lib/db'
+import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
 import { SyncService } from './lib/sync'
@@ -16,6 +17,7 @@ interface Env {
   AWS_SECRET_ACCESS_KEY: string
   LAMBDA_FUNCTION_URL: string
   LAMBDA_FUNCTION_URL_US: string
+  DISCORD_WEBHOOK_URL: string
 }
 
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
@@ -59,12 +61,24 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         }
         message.ack()
       } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : String(e)
         logger.error({
           action: 'process-error',
           type: message.body.type,
           body: message.body.message,
-          error: e instanceof Error ? e.message : String(e)
+          error: errorMessage
         })
+        if (message.attempts >= 3) {
+          await notifyError(env.DISCORD_WEBHOOK_URL, {
+            title: 'Queue: 最終リトライ失敗',
+            description: errorMessage,
+            fields: [
+              { name: 'Type', value: message.body.type, inline: true },
+              { name: 'Detail', value: JSON.stringify(message.body.message), inline: true },
+              { name: 'Attempts', value: String(message.attempts), inline: true }
+            ]
+          })
+        }
         message.retry()
       }
     }
