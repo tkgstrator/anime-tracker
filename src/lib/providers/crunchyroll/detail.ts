@@ -22,7 +22,8 @@ function parseMaturityRating(ratings: string[]): number | null {
 
 /** EpisodeItem → Episode */
 function mapEpisode(ep: EpisodeItem, index: number): Episode {
-  const episodeNumber = ep.episode_number ?? (Number(ep.episode) || index + 1)
+  const raw = ep.episode_number ?? Number(ep.episode)
+  const episodeNumber = Number.isInteger(raw) && raw >= 0 ? raw : index + 1
   const releaseDate = ep.premium_available_date ?? ep.episode_air_date ?? ep.upload_date ?? ''
   const thumbnailUrl = ep.images ? getBestThumbnailUrl(ep.images) : null
   const hasJaSub = ep.subtitle_locales.includes('ja-JP')
