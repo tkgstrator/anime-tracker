@@ -238,7 +238,8 @@ async function collectPaginated(
 function safeParseObject(json: string): Record<string, unknown> | null {
   try {
     return JSON.parse(json) as Record<string, unknown>
-  } catch {
+  } catch (e) {
+    logger.warn({ action: 'json-parse-failed', error: e instanceof Error ? e.message : String(e) })
     return null
   }
 }
@@ -247,7 +248,8 @@ function safeParseObject(json: string): Record<string, unknown> | null {
 async function fetchOrNull(url: string, init?: RequestInit): Promise<Response | null> {
   try {
     return await fetch(url, init)
-  } catch {
+  } catch (e) {
+    logger.warn({ action: 'fetch-failed', url, error: e instanceof Error ? e.message : String(e) })
     return null
   }
 }

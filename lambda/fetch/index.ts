@@ -222,9 +222,13 @@ async function identifyTitles(rawTitles: string[]) {
     let media: ReturnType<typeof MetadataMediaSchema.safeParse>['data']
     try {
       const parsed = MetadataMediaSchema.safeParse(page.media[0])
-      if (!parsed.success) return null
+      if (!parsed.success) {
+        console.warn(`[identify] schema validation failed for index ${i}:`, parsed.error.message)
+        return null
+      }
       media = parsed.data
-    } catch {
+    } catch (e) {
+      console.warn(`[identify] unexpected error for index ${i}:`, e instanceof Error ? e.message : String(e))
       return null
     }
     if (!media) return null
