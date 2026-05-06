@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const ProviderEnum = z.enum(['amazon', 'hulu'])
+const ProviderEnum = z.enum(['amazon', 'crunchyroll', 'hulu'])
 const LanguageEnum = z.enum(['sub', 'dub'])
 const MarketplaceEnum = z.enum(['jp', 'us'])
 const ContentTypeEnum = z.enum(['movie', 'series'])
@@ -59,24 +59,37 @@ const NagisaJobProgressSchema = z.object({
   total: z.number().int()
 })
 
-export const NagisaActiveJobSchema = z.object({
+const NagisaStatusJobSeasonSchema = z.object({
+  season_number: z.number().int(),
+  episodes: z.array(z.number().int())
+})
+
+export const NagisaStatusJobSchema = z.object({
   job_id: z.string().nonempty(),
   provider: ProviderEnum,
   content_id: z.string().nonempty(),
-  title: z.string().nonempty(),
-  seasons: z.array(z.number().int()).nullable(),
+  title: z.string().nullable(),
+  seasons: z.array(NagisaStatusJobSeasonSchema),
+  marketplace: MarketplaceEnum.nullable(),
   progress: NagisaJobProgressSchema.nullable(),
   timestamp: z.number(),
-  processedOn: z.number()
+  processedOn: z.number(),
+  finishedOn: z.number().nullable(),
+  failedReason: z.string().nullable()
 })
-export type NagisaActiveJob = z.infer<typeof NagisaActiveJobSchema>
+export type NagisaStatusJob = z.infer<typeof NagisaStatusJobSchema>
 
-const NagisaQueueCountsSchema = z.object({
-  wait: z.number().int(),
-  active: z.number().int(),
-  completed: z.number().int(),
-  failed: z.number().int(),
-  delayed: z.number().int()
+const NagisaQueueCategorySchema = z.object({
+  count: z.number().int(),
+  jobs: z.array(NagisaStatusJobSchema)
+})
+
+const NagisaQueueSchema = z.object({
+  wait: NagisaQueueCategorySchema,
+  active: NagisaQueueCategorySchema,
+  completed: NagisaQueueCategorySchema,
+  failed: NagisaQueueCategorySchema,
+  delayed: NagisaQueueCategorySchema
 })
 
 export const NagisaRedisSchema = z.object({
@@ -94,8 +107,7 @@ export const NagisaSystemSchema = z.object({
 export const NagisaStatusSchema = z.object({
   version: z.string().nonempty(),
   uptime: z.number().int(),
-  queue: NagisaQueueCountsSchema.nullable(),
-  active_jobs: z.array(NagisaActiveJobSchema),
+  queue: NagisaQueueSchema.nullable(),
   redis: NagisaRedisSchema.nullable(),
   system: NagisaSystemSchema.nullable()
 })
