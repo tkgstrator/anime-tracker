@@ -15,6 +15,7 @@ const NagisaSeasonFilterSchema = z.object({
 export const NagisaEpisodePreviewSchema = z.object({
   number: z.number().int(),
   title: z.string().nonempty(),
+  title_en: z.string().nonempty().optional(),
   content_id: z.string().nonempty(),
   duration: z.number().nonnegative().nullable()
 })
@@ -22,6 +23,7 @@ export const NagisaEpisodePreviewSchema = z.object({
 export const NagisaPreviewSchema = z.object({
   content_type: ContentTypeEnum,
   title: z.string().nonempty(),
+  title_en: z.string().nonempty().optional(),
   marketplace: MarketplaceEnum,
   total_episodes: z.number().int(),
   selected_episodes: z.number().int(),
