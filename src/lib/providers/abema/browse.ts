@@ -57,20 +57,30 @@ export function moduleItemToTitle(item: ModuleItem, badge?: Title['badge'] | nul
 }
 
 export async function fetchModules(): Promise<ModuleItem[]> {
-  const raw = await abemaGet(MODULES_URL, {
-    spotId: SPOT_ID,
-    spotVersion: '1',
-    limit: '20',
-    qos: 'PC',
-    qpl: 'web'
-  })
+  const allItems: ModuleItem[] = []
+  let next: string | undefined
 
-  const result = ModulesResponseSchema.safeParse(raw)
-  if (!result.success) throw result.error
+  do {
+    const params: Record<string, string> = {
+      spotId: SPOT_ID,
+      spotVersion: '1',
+      limit: '20',
+      qos: 'PC',
+      qpl: 'web'
+    }
+    if (next) params.next = next
 
-  const seriesModules = result.data.modules.filter(
-    (m) => m.itemUiType === 'ITEM_UI_TYPE_SERIES_FEATURE' || m.itemUiType === 'ITEM_UI_TYPE_CONTENT_FEATURE'
-  )
+    const raw = await abemaGet(MODULES_URL, params)
+    const result = ModulesResponseSchema.safeParse(raw)
+    if (!result.success) throw result.error
 
-  return seriesModules.flatMap((m) => m.items).filter((item) => item.contentId)
+    const seriesModules = result.data.modules.filter(
+      (m) => m.itemUiType === 'ITEM_UI_TYPE_SERIES_FEATURE' || m.itemUiType === 'ITEM_UI_TYPE_CONTENT_FEATURE'
+    )
+    allItems.push(...seriesModules.flatMap((m) => m.items).filter((item) => item.contentId))
+
+    next = result.data.next
+  } while (next)
+
+  return allItems
 }

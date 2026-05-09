@@ -66,7 +66,8 @@ export const ModuleSchema = z.object({
 })
 
 export const ModulesResponseSchema = z.object({
-  modules: z.array(ModuleSchema).default([])
+  modules: z.array(ModuleSchema).default([]),
+  next: z.string().nonempty().optional()
 })
 
 // --- Series detail ---
