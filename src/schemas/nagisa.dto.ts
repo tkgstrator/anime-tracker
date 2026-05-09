@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const ProviderEnum = z.enum(['amazon', 'crunchyroll', 'hulu'])
+const ProviderEnum = z.enum(['amazon', 'crunchyroll', 'hulu', 'abema'])
 const LanguageEnum = z.enum(['sub', 'dub'])
 const MarketplaceEnum = z.enum(['jp', 'us'])
 const ContentTypeEnum = z.enum(['movie', 'series'])
