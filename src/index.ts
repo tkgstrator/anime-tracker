@@ -1,9 +1,12 @@
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { apiReference } from '@scalar/hono-api-reference'
 import { logger } from 'hono/logger'
+import { z } from 'zod'
 import { createPrismaClient } from './lib/db'
 import { createFetchClient } from './lib/lambda'
 import { setupLogger, startCapture, stopCapture } from './lib/logger'
+import { fetchAbemaTitleDetail } from './lib/providers/abema/detail'
+import { fetchHuluTitleDetail } from './lib/providers/hulu/detail'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
@@ -64,10 +67,59 @@ app.post('/api/queues', async (c) => {
       }
       return c.json({ type: 'fetch', category, contentIds, logs: stopCapture() })
     }
+    if (body.data.type === 'bulk_update') {
+      const { provider, contentIds } = body.data.message
+      for (const contentId of contentIds) {
+        await service.update({ type: 'update', message: { provider, contentId } })
+      }
+      return c.json({ type: 'bulk_update', count: contentIds.length, logs: stopCapture() })
+    }
     await service.update(body.data)
     return c.json({ type: 'update', success: true, logs: stopCapture() })
   } catch (e) {
     return c.json({ error: e instanceof Error ? e.message : String(e), logs: stopCapture() }, 500)
+  } finally {
+    await prisma.$disconnect()
+  }
+})
+
+const localDetailFetchers: Record<
+  string,
+  (contentId: string) => Promise<import('./schemas/providers/common.dto').TitleInfo>
+> = {
+  abema: fetchAbemaTitleDetail,
+  hulu: fetchHuluTitleDetail
+}
+
+// Lambda を経由せずプロバイダ API を直接叩いてエピソード詳細を同期する
+app.post('/api/sync/local', async (c) => {
+  const body = z
+    .object({
+      provider: z.enum(['abema', 'hulu']),
+      contentIds: z.array(z.string().nonempty()).nonempty()
+    })
+    .safeParse(await c.req.json())
+  if (!body.success) return c.json({ error: body.error.flatten() }, 400)
+
+  const { provider, contentIds } = body.data
+  const fetcher = localDetailFetchers[provider]
+  const prisma = createPrismaClient(c.env.DB)
+  const lambda = createFetchClient(c.env)
+  const service = new SyncService(prisma, lambda)
+  startCapture()
+
+  const results: { contentId: string; status: 'ok' | 'error'; error?: string }[] = []
+  try {
+    for (const contentId of contentIds) {
+      try {
+        const detail = await fetcher(contentId)
+        await service.applyDetail(provider, contentId, detail)
+        results.push({ contentId, status: 'ok' })
+      } catch (e) {
+        results.push({ contentId, status: 'error', error: e instanceof Error ? e.message : String(e) })
+      }
+    }
+    return c.json({ provider, total: contentIds.length, results, logs: stopCapture() })
   } finally {
     await prisma.$disconnect()
   }

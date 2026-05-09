@@ -58,6 +58,14 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
             })
             break
           }
+          case 'bulk_update': {
+            const { provider, contentIds } = message.body.message
+            for (const contentId of contentIds) {
+              await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
+            }
+            logger.info({ action: 'bulk-enqueue', provider, count: contentIds.length })
+            break
+          }
         }
         message.ack()
       } catch (e) {
