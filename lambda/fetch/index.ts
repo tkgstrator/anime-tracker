@@ -121,7 +121,7 @@ async function fetchExpiring(provider: string) {
 // ---- title_list (new_episode / coming_soon) ----
 
 async function fetchTitleList(providerName: string, category: string) {
-  if (category !== 'new_episode' && category !== 'coming_soon') {
+  if (category !== 'new_episode' && category !== 'coming_soon' && category !== 'catalog') {
     return { statusCode: 400, body: JSON.stringify({ error: `Invalid category: ${category}` }) }
   }
 
