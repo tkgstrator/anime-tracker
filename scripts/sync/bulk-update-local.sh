@@ -33,11 +33,11 @@ for ((i=0; i<TOTAL; i+=BATCH_SIZE)); do
   JSON_ARRAY=$(printf '%s\n' "${BATCH[@]}" | jq -R . | jq -s .)
 
   MESSAGE=$(jq -n --arg provider "$PROVIDER" --argjson contentIds "$JSON_ARRAY" \
-    '{provider: $provider, contentIds: $contentIds}')
+    '{type: "bulk_update", message: {provider: $provider, contentIds: $contentIds}}')
 
   echo "[$(( i / BATCH_SIZE + 1 ))/$(( (TOTAL + BATCH_SIZE - 1) / BATCH_SIZE ))] Processing ${#BATCH[@]} titles..."
 
-  RESULT=$(curl -s -X POST "${BASE}/api/sync/local" \
+  RESULT=$(curl -s -X POST "${BASE}/api/queues" \
     -H "Content-Type: application/json" \
     -d "$MESSAGE" --max-time 300)
 
