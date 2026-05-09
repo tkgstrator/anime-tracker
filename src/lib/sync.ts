@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
-import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
+import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import type { FetchClient } from './lambda'
 import { getAppLogger } from './logger'
@@ -55,27 +55,31 @@ export class SyncService {
 
     // Lambda 経由で取得（画像の R2 アップロードも Lambda 側で実行される）
     const detail = await this.lambda.fetchTitleInfo({ provider: message.provider, contentId: message.contentId })
+    await this.applyDetail(message.provider, message.contentId, detail)
+  }
 
+  /** 取得済みの TitleInfo を DB に反映する（Lambda 不要） */
+  async applyDetail(provider: string, contentId: string, detail: TitleInfo): Promise<void> {
     syncLogger.debug({
-      action: 'fetched-title-info',
-      provider: message.provider,
-      contentId: message.contentId,
+      action: 'apply-detail',
+      provider,
+      contentId,
       title: detail.title,
       seasonCount: detail.seasons.length,
       episodeCount: detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0)
     })
 
     const anime = await this.prisma.anime.update({
-      where: { provider_contentId: { provider: message.provider, contentId: message.contentId } },
+      where: { provider_contentId: { provider, contentId } },
       data: { description: detail.description }
     })
 
-    await this.syncSeasons(anime.id, message.provider, message.contentId, detail.seasons)
+    await this.syncSeasons(anime.id, provider, contentId, detail.seasons)
 
     syncLogger.info({
       action: 'update',
-      provider: message.provider,
-      contentId: message.contentId
+      provider,
+      contentId
     })
   }
 
