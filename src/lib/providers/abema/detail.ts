@@ -49,7 +49,10 @@ function mapProgram(program: Program): Episode | null {
     releaseDate,
     duration: program.info?.duration ?? 0,
     maturityRating: null,
-    imageUrl: buildProgramImageUrl(program.id, program.providedInfo?.sceneThumbImgs?.[0] ?? program.providedInfo?.thumbImg),
+    imageUrl: buildProgramImageUrl(
+      program.id,
+      program.providedInfo?.sceneThumbImgs?.[0] ?? program.providedInfo?.thumbImg
+    ),
     hasSubtitles: false,
     hasDub: false,
     benefitId: null
