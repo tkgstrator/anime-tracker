@@ -3,7 +3,7 @@ import type { CacheManager } from '../cache'
 
 export interface FetchTitleListOptions {
   /** 取得カテゴリ。未指定時は全タイトル */
-  category?: 'new_episode' | 'coming_soon' | 'expiring'
+  category?: 'new_episode' | 'coming_soon' | 'expiring' | 'catalog'
 }
 
 /**

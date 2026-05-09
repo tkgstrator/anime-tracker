@@ -41,7 +41,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
                 ? await lambda.fetchExpiring({ provider })
                 : await lambda.fetchTitleList({ provider, category })
             const contentIds = await service.fetch(message.body, result)
-            if (category !== 'expiring' && category !== 'coming_soon') {
+            if (category !== 'expiring' && category !== 'coming_soon' && category !== 'catalog') {
               for (const contentId of contentIds) {
                 await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
               }
