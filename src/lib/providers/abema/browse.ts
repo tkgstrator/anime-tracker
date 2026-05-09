@@ -24,7 +24,7 @@ export async function abemaGet(url: string, params: Record<string, string>): Pro
 }
 
 export function cardToTitle(card: GenreCard): Title {
-  const thumb = card.thumbPortraitComponent ?? card.thumbComponent
+  const thumb = card.thumbComponent ?? card.thumbPortraitComponent
   const imageUrl = thumb ? buildImageUrl(thumb) : 'https://abema.tv/favicon.ico'
 
   return {

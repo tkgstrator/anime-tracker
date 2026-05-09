@@ -110,10 +110,13 @@ export async function fetchCrunchyrollTitleDetail(seriesId: string): Promise<Tit
   // 各シーズンのエピソードを並列取得
   const seasonEpisodes = await Promise.all(jaSeasons.map((s) => fetchEpisodes(s.id)))
 
+  const titleImageUrl = getBestImageUrl(seriesData.images) ?? 'https://www.crunchyroll.com/build/assets/img/default-poster.png'
+
   const seasons: Season[] = jaSeasons.map((s, i) => ({
     seasonId: s.id,
     displayName: s.title,
     seasonNumber: s.season_number || i + 1,
+    imageUrl: titleImageUrl,
     episodes: seasonEpisodes[i].map((ep) => mapEpisode(ep)).filter((ep): ep is Episode => ep !== null)
   }))
 
@@ -122,7 +125,7 @@ export async function fetchCrunchyrollTitleDetail(seriesId: string): Promise<Tit
     description: seriesData.description || seriesData.title,
     entityType: 'tv',
     maturityRating: parseMaturityRating(seriesData.maturity_ratings),
-    imageUrl: getBestImageUrl(seriesData.images) ?? 'https://www.crunchyroll.com/build/assets/img/default-poster.png',
+    imageUrl: titleImageUrl,
     seasons
   }
 }

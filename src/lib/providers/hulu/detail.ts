@@ -81,7 +81,7 @@ export async function fetchSeriesMeta(slug: string): Promise<FalcorMeta> {
 /**
  * エピソード群をシーズンごとにグループ化する。
  */
-function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
+function groupIntoSeasons(slug: string, episodes: HuluEpisode[], imageUrl: string): Season[] {
   const seasonMap = new Map<string, HuluEpisode[]>()
   for (const ep of episodes) {
     const seasonName = ep.additionalInfo.card_info.season_number_title ?? 'シーズン1'
@@ -94,6 +94,7 @@ function groupIntoSeasons(slug: string, episodes: HuluEpisode[]): Season[] {
     seasonId: `hulu-${slug}-s${i + 1}`,
     displayName: seasonName,
     seasonNumber: i + 1,
+    imageUrl,
     episodes: eps.map((episode, i) => mapToEpisode(episode, i))
   }))
 }
@@ -112,7 +113,7 @@ export function parseEpisodesFromHtml(html: string): HuluEpisode[] {
  * RSC ペイロードからエピソード・シーズン情報を取得する。
  * エピソードが存在しない場合は null を返す。
  */
-async function fetchEpisodesFromRsc(slug: string): Promise<{ episodes: HuluEpisode[]; seasons: Season[] } | null> {
+async function fetchEpisodesFromRsc(slug: string, imageUrl: string): Promise<{ episodes: HuluEpisode[]; seasons: Season[] } | null> {
   const url = `${HULU_BASE}/${slug}/assets?ht=episode`
   const res = await fetch(url)
   if (!res.ok) return null
@@ -120,7 +121,7 @@ async function fetchEpisodesFromRsc(slug: string): Promise<{ episodes: HuluEpiso
   try {
     const episodes = parseEpisodesFromHtml(html)
     if (episodes.length === 0) return null
-    return { episodes, seasons: groupIntoSeasons(slug, episodes) }
+    return { episodes, seasons: groupIntoSeasons(slug, episodes, imageUrl) }
   } catch (e) {
     logger.warn({ action: 'parse-rsc-failed', slug, error: e instanceof Error ? e.message : String(e) })
     return null
@@ -134,7 +135,8 @@ async function fetchEpisodesFromRsc(slug: string): Promise<{ episodes: HuluEpiso
  * 並列で取得しマージして返す。タイトルメタは Falcor を正とする。
  */
 export async function fetchHuluTitleDetail(slug: string): Promise<TitleInfo> {
-  const [rsc, meta] = await Promise.all([fetchEpisodesFromRsc(slug), fetchSeriesMeta(slug)])
+  const meta = await fetchSeriesMeta(slug)
+  const rsc = await fetchEpisodesFromRsc(slug, meta.imageUrl)
 
   return {
     title: meta.name,
