@@ -3,13 +3,13 @@ import { BadgeType, TitleStatusTypeEnum } from './providers/common.dto'
 
 // ---- リクエスト ----
 
-export const ProviderSchema = z.enum(['amazon', 'hulu', 'crunchyroll'])
+export const ProviderSchema = z.enum(['amazon', 'hulu', 'crunchyroll', 'abema'])
 
 export const FetchExpiringRequestSchema = z.object({
   provider: ProviderSchema
 })
 
-export const TitleListCategorySchema = z.enum(['new_episode', 'coming_soon'])
+export const TitleListCategorySchema = z.enum(['new_episode', 'coming_soon', 'catalog'])
 
 export const FetchTitleListRequestSchema = z.object({
   provider: ProviderSchema,

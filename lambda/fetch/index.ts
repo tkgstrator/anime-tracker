@@ -14,6 +14,7 @@ import utc from 'dayjs/plugin/utc'
 import { MetadataMediaSchema } from '../../src/schemas/providers/metadata.dto'
 import { cleanTitle } from '../../src/lib/metadata/anilist'
 import { setupLogger } from '../../src/lib/logger'
+import { AbemaProvider } from '../../src/lib/providers/abema'
 import { AmazonProvider } from '../../src/lib/providers/amazon'
 import type { Provider } from '../../src/lib/providers/base'
 import { CrunchyrollProvider } from '../../src/lib/providers/crunchyroll'
@@ -25,6 +26,7 @@ setupLogger()
 function getProvider(name: string): Provider {
   if (name === 'hulu') return new HuluProvider()
   if (name === 'crunchyroll') return new CrunchyrollProvider()
+  if (name === 'abema') return new AbemaProvider()
   return new AmazonProvider()
 }
 
@@ -119,7 +121,7 @@ async function fetchExpiring(provider: string) {
 // ---- title_list (new_episode / coming_soon) ----
 
 async function fetchTitleList(providerName: string, category: string) {
-  if (category !== 'new_episode' && category !== 'coming_soon') {
+  if (category !== 'new_episode' && category !== 'coming_soon' && category !== 'catalog') {
     return { statusCode: 400, body: JSON.stringify({ error: `Invalid category: ${category}` }) }
   }
 
