@@ -13,7 +13,7 @@ CATEGORY="${3:-}"
 
 # プロバイダーに応じて関数名・リージョンを決定
 case "$PROVIDER" in
-  amazon|hulu)
+  amazon|hulu|abema)
     FUNCTION_NAME="anime-tracker-fetch"
     REGION="ap-northeast-1"
     ;;
@@ -22,7 +22,7 @@ case "$PROVIDER" in
     REGION="us-east-1"
     ;;
   *)
-    echo "Error: Unknown provider '$PROVIDER' (amazon|hulu|crunchyroll)"
+    echo "Error: Unknown provider '$PROVIDER' (amazon|hulu|crunchyroll|abema)"
     exit 1
     ;;
 esac
