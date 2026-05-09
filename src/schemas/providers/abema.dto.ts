@@ -33,7 +33,7 @@ const ViewingTypeContentLabelSchema = z.object({
   viewingTypeContentLabel: z
     .object({
       name: z.string(),
-      viewingType: z.string()
+      viewingType: z.union([z.string(), z.number()])
     })
     .optional()
 })
@@ -68,6 +68,28 @@ export const ModuleSchema = z.object({
 export const ModulesResponseSchema = z.object({
   modules: z.array(ModuleSchema).default([]),
   next: z.string().nonempty().optional()
+})
+
+// --- Genre cards (catalog) ---
+
+export const GenreCardSchema = z.object({
+  seriesId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  label: LabelSchema.optional(),
+  thumbComponent: ThumbComponentSchema.optional().catch(undefined),
+  thumbPortraitComponent: ThumbComponentSchema.optional().catch(undefined),
+  onDemandTypes: z.array(z.number().int()).default([]),
+  contentLabels: z.array(ViewingTypeContentLabelSchema).default([])
+})
+export type GenreCard = z.infer<typeof GenreCardSchema>
+
+export const GenreCardsResponseSchema = z.object({
+  cards: z.array(GenreCardSchema).default([]),
+  paging: z
+    .object({
+      next: z.string().nonempty().optional()
+    })
+    .optional()
 })
 
 // --- Series detail ---

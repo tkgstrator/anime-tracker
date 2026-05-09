@@ -1,8 +1,15 @@
-import { buildImageUrl, type ModuleItem, ModulesResponseSchema } from '../../../schemas/providers/abema.dto'
+import {
+  buildImageUrl,
+  type GenreCard,
+  GenreCardsResponseSchema,
+  type ModuleItem,
+  ModulesResponseSchema
+} from '../../../schemas/providers/abema.dto'
 import type { Title } from '../../../schemas/providers/common.dto'
 import { getAccessToken } from './auth'
 
 const MODULES_URL = 'https://user-content-api.p-c3-e.abema-tv.com/v1/modules'
+const CARDS_URL = 'https://api.p-c3-e.abema-tv.com/v1/video/featureGenres/animation/cards'
 const SPOT_ID = 'Y7VprEEWs8'
 
 export async function abemaGet(url: string, params: Record<string, string>): Promise<unknown> {
@@ -54,6 +61,41 @@ export function moduleItemToTitle(item: ModuleItem, badge?: Title['badge'] | nul
     nextEpisodeDate: undefined,
     badge: badge === null ? undefined : (badge ?? (isNewest ? 'NEW_EPISODE' : 'RECENTLY_ADDED'))
   }
+}
+
+export function cardToTitle(card: GenreCard): Title {
+  const thumb = card.thumbPortraitComponent ?? card.thumbComponent
+  const imageUrl = thumb ? buildImageUrl(thumb) : 'https://abema.tv/favicon.ico'
+
+  return {
+    contentId: card.seriesId,
+    title: card.title,
+    description: card.title,
+    entityType: 'tv',
+    imageUrl,
+    maturityRating: null,
+    nextEpisodeDate: undefined,
+    badge: undefined
+  }
+}
+
+export async function fetchCards(): Promise<GenreCard[]> {
+  const allCards: GenreCard[] = []
+  let next: string | undefined
+
+  do {
+    const params: Record<string, string> = { limit: '20', onlyFree: 'false' }
+    if (next) params.next = next
+
+    const raw = await abemaGet(CARDS_URL, params)
+    const result = GenreCardsResponseSchema.safeParse(raw)
+    if (!result.success) throw result.error
+
+    allCards.push(...result.data.cards)
+    next = result.data.paging?.next
+  } while (next)
+
+  return allCards
 }
 
 export async function fetchModules(): Promise<ModuleItem[]> {
