@@ -4,6 +4,8 @@ import { logger } from 'hono/logger'
 import { createPrismaClient } from './lib/db'
 import { createFetchClient } from './lib/lambda'
 import { setupLogger, startCapture, stopCapture } from './lib/logger'
+import { fetchAbemaTitleDetail } from './lib/providers/abema/detail'
+import { fetchHuluTitleDetail } from './lib/providers/hulu/detail'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
@@ -64,6 +66,25 @@ app.post('/api/queues', async (c) => {
       }
       return c.json({ type: 'fetch', category, contentIds, logs: stopCapture() })
     }
+    if (body.data.type === 'bulk_update') {
+      const { provider, contentIds } = body.data.message
+      const fetcher = localDetailFetchers[provider]
+      const results: { contentId: string; status: 'ok' | 'error'; error?: string }[] = []
+      for (const contentId of contentIds) {
+        try {
+          if (fetcher) {
+            const detail = await fetcher(contentId)
+            await service.applyDetail(provider, contentId, detail)
+          } else {
+            await service.update({ type: 'update', message: { provider, contentId } })
+          }
+          results.push({ contentId, status: 'ok' })
+        } catch (e) {
+          results.push({ contentId, status: 'error', error: e instanceof Error ? e.message : String(e) })
+        }
+      }
+      return c.json({ type: 'bulk_update', count: contentIds.length, results, logs: stopCapture() })
+    }
     await service.update(body.data)
     return c.json({ type: 'update', success: true, logs: stopCapture() })
   } catch (e) {
@@ -72,6 +93,14 @@ app.post('/api/queues', async (c) => {
     await prisma.$disconnect()
   }
 })
+
+const localDetailFetchers: Record<
+  string,
+  (contentId: string) => Promise<import('./schemas/providers/common.dto').TitleInfo>
+> = {
+  abema: fetchAbemaTitleDetail,
+  hulu: fetchHuluTitleDetail
+}
 
 // デバッグ用: Falcor API / AniList のレスポンスを直接確認する
 app.get('/api/debug/falcor/:slug', async (c) => {

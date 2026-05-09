@@ -66,6 +66,7 @@ function HomePage() {
     amazon: 'Prime Video',
     hulu: 'Hulu',
     crunchyroll: 'Crunchyroll',
+    abema: 'ABEMA',
     netflix: 'Netflix'
   }
 
