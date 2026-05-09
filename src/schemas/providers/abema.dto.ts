@@ -17,8 +17,7 @@ export const ThumbComponentSchema = z.object({
 })
 
 export function buildImageUrl(thumb: z.infer<typeof ThumbComponentSchema>): string {
-  const base = `${thumb.urlPrefix}/${thumb.filename}`
-  return thumb.query ? `${base}?${thumb.query}` : base
+  return `${thumb.urlPrefix}/${thumb.filename}`
 }
 
 // --- Module item (browse) ---
