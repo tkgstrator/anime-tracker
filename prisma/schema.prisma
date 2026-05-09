@@ -46,6 +46,7 @@ model Season {
   seasonId     String    @map("season_id")
   displayName  String    @map("display_name")
   seasonNumber Int       @map("season_number")
+  imageUrl     String    @map("image_url")
   createdAt    DateTime  @default(now()) @map("created_at")
   anime        Anime     @relation(fields: [animeId], references: [id], onDelete: Cascade)
   episodes     Episode[]
