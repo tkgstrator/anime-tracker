@@ -30,7 +30,7 @@ async function fetchPrograms(seriesId: string, seasonId: string): Promise<Progra
 
 function buildProgramImageUrl(programId: string, thumbImg?: string): string {
   if (!thumbImg) return 'https://abema.tv/favicon.ico'
-  return `https://image.p-c2-x.abema-tv.com/image/programs/${programId}/${thumbImg}`
+  return `https://image.p-c2-x.abema-tv.com/image/programs/${programId}/${thumbImg}.png`
 }
 
 function mapProgram(program: Program): Episode | null {
