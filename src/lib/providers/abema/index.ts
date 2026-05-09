@@ -1,7 +1,7 @@
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { getAppLogger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
-import { cardToTitle, fetchCards, fetchModules, moduleItemToTitle } from './browse'
+import { cardToTitle, fetchCards } from './browse'
 import { fetchAbemaTitleDetail } from './detail'
 
 const logger = getAppLogger('abema')
@@ -21,29 +21,17 @@ export class AbemaProvider extends Provider {
 
   private async fetchNewEpisodes(): Promise<Title[]> {
     logger.info({ action: 'fetch-title-list-start', mode: 'new_episode' })
-
-    const [modules, cards] = await Promise.all([fetchModules(), fetchCards()])
-
-    const badgeMap = new Map<string, Title['badge']>()
-    for (const item of modules) {
-      const title = moduleItemToTitle(item)
-      if (title.contentId && !badgeMap.has(title.contentId)) {
-        badgeMap.set(title.contentId, title.badge)
-      }
-    }
-
+    const cards = await fetchCards()
     const seen = new Set<string>()
     const titles: Title[] = []
 
     for (const card of cards) {
+      if (!card.label?.newest) continue
       if (seen.has(card.seriesId)) continue
       seen.add(card.seriesId)
 
       const title = cardToTitle(card)
-      const badge = badgeMap.get(card.seriesId)
-      if (badge) title.badge = badge
-      else if (card.label?.newest) title.badge = 'NEW_EPISODE'
-
+      title.badge = 'NEW_EPISODE'
       titles.push(title)
     }
 

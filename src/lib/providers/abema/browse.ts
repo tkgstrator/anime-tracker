@@ -1,16 +1,8 @@
-import {
-  buildImageUrl,
-  type GenreCard,
-  GenreCardsResponseSchema,
-  type ModuleItem,
-  ModulesResponseSchema
-} from '../../../schemas/providers/abema.dto'
+import { buildImageUrl, type GenreCard, GenreCardsResponseSchema } from '../../../schemas/providers/abema.dto'
 import type { Title } from '../../../schemas/providers/common.dto'
 import { getAccessToken } from './auth'
 
-const MODULES_URL = 'https://user-content-api.p-c3-e.abema-tv.com/v1/modules'
 const CARDS_URL = 'https://api.p-c3-e.abema-tv.com/v1/video/featureGenres/animation/cards'
-const SPOT_ID = 'Y7VprEEWs8'
 
 export async function abemaGet(url: string, params: Record<string, string>): Promise<unknown> {
   const token = await getAccessToken()
@@ -29,38 +21,6 @@ export async function abemaGet(url: string, params: Record<string, string>): Pro
     throw new Error(`ABEMA API error: ${res.status} ${res.statusText} (${u.pathname})`)
   }
   return res.json()
-}
-
-function extractSeriesId(rawId: string): string {
-  return rawId.replace(/_s\d+.*$/, '')
-}
-
-function getSeriesId(item: ModuleItem): string | undefined {
-  if (item.contentGroupId) return item.contentGroupId
-  if (!item.contentId) return undefined
-  return extractSeriesId(item.contentId)
-}
-
-function getImageUrl(item: ModuleItem): string {
-  const thumb = item.thumbPortrait ?? item.thumb
-  return thumb ? buildImageUrl(thumb) : 'https://abema.tv/favicon.ico'
-}
-
-export function moduleItemToTitle(item: ModuleItem, badge?: Title['badge'] | null): Title {
-  const seriesId = getSeriesId(item) ?? ''
-  const title = item.contentGroupTitle ?? item.contentTitle ?? item.title
-  const isNewest = item.label?.newest === true
-
-  return {
-    contentId: seriesId,
-    title,
-    description: item.contentDescription || title,
-    entityType: 'tv',
-    imageUrl: getImageUrl(item),
-    maturityRating: null,
-    nextEpisodeDate: undefined,
-    badge: badge === null ? undefined : (badge ?? (isNewest ? 'NEW_EPISODE' : 'RECENTLY_ADDED'))
-  }
 }
 
 export function cardToTitle(card: GenreCard): Title {
@@ -96,38 +56,4 @@ export async function fetchCards(): Promise<GenreCard[]> {
   } while (next)
 
   return allCards
-}
-
-export async function fetchModules(): Promise<ModuleItem[]> {
-  const allItems: ModuleItem[] = []
-  let next: string | undefined
-
-  do {
-    const params: Record<string, string> = {
-      spotId: SPOT_ID,
-      spotVersion: '1',
-      limit: '20',
-      qos: 'PC',
-      qpl: 'web'
-    }
-    if (next) params.next = next
-
-    const raw = await abemaGet(MODULES_URL, params)
-    const result = ModulesResponseSchema.safeParse(raw)
-    if (!result.success) throw result.error
-
-    const targetTypes = new Set([
-      'ITEM_UI_TYPE_SERIES_FEATURE',
-      'ITEM_UI_TYPE_CONTENT_FEATURE',
-      'ITEM_UI_TYPE_EPISODE_FEATURE',
-      'ITEM_UI_TYPE_RANKING',
-      'ITEM_UI_TYPE_BILLBOARD'
-    ])
-    const matched = result.data.modules.filter((m) => targetTypes.has(m.itemUiType))
-    allItems.push(...matched.flatMap((m) => m.items).filter((item) => item.contentId))
-
-    next = result.data.next
-  } while (next)
-
-  return allItems
 }
