@@ -13,6 +13,11 @@ const UpdateMessageBodySchema = z.object({
   provider: ProviderTypeEnum
 })
 
+const BulkUpdateMessageBodySchema = z.object({
+  contentIds: z.array(z.string().nonempty()).nonempty(),
+  provider: ProviderTypeEnum
+})
+
 export const FetchMessageSchema = z.object({
   type: z.literal('fetch'),
   message: FetchMessageBodySchema
@@ -25,5 +30,15 @@ export const UpdateMessageSchema = z.object({
 })
 export type UpdateMessage = z.infer<typeof UpdateMessageSchema>
 
-export const MessageSchema = z.discriminatedUnion('type', [FetchMessageSchema, UpdateMessageSchema])
+export const BulkUpdateMessageSchema = z.object({
+  type: z.literal('bulk_update'),
+  message: BulkUpdateMessageBodySchema
+})
+export type BulkUpdateMessage = z.infer<typeof BulkUpdateMessageSchema>
+
+export const MessageSchema = z.discriminatedUnion('type', [
+  FetchMessageSchema,
+  UpdateMessageSchema,
+  BulkUpdateMessageSchema
+])
 export type Message = z.infer<typeof MessageSchema>
