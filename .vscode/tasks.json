@@ -130,6 +130,14 @@
       "group": "test"
     },
     {
+      "label": "Fetch Catalog (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh abema catalog",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Fetch Expiring (ABEMA)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/queue/local.sh abema expiring",
@@ -226,6 +234,14 @@
       "group": "test"
     },
     {
+      "label": "Fetch Catalog (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh abema catalog",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Fetch Expiring (ABEMA)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/queue/remote/send.sh abema expiring",
@@ -317,6 +333,14 @@
       "label": "Title List (ABEMA, coming_soon)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list abema coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (ABEMA, catalog)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list abema catalog",
       "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
       "problemMatcher": [],
       "group": "test"
