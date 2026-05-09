@@ -12,17 +12,15 @@ export class AbemaProvider extends Provider {
   async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
     const category = options?.category
 
-    if (category === 'expiring') {
-      logger.info({ action: 'fetch-title-list-skip', mode: 'expiring' })
-      return []
+    if (category === 'new_episode') {
+      return this.fetchNewEpisodes()
     }
 
-    if (category === 'coming_soon') {
-      logger.info({ action: 'fetch-title-list-skip', mode: 'coming_soon' })
-      return []
+    if (category === 'coming_soon' || category === 'expiring') {
+      return this.fetchAll()
     }
 
-    return this.fetchNewEpisodes()
+    return this.fetchAll()
   }
 
   private async fetchNewEpisodes(): Promise<Title[]> {
@@ -41,6 +39,24 @@ export class AbemaProvider extends Provider {
     }
 
     logger.info({ action: 'fetch-title-list-done', mode: 'new_episode', count: titles.length })
+    return titles
+  }
+
+  private async fetchAll(): Promise<Title[]> {
+    logger.info({ action: 'fetch-title-list-start', mode: 'all' })
+    const items = await fetchModules()
+    const seen = new Set<string>()
+    const titles: Title[] = []
+
+    for (const item of items) {
+      const title = moduleItemToTitle(item, null)
+
+      if (!title.contentId || seen.has(title.contentId)) continue
+      seen.add(title.contentId)
+      titles.push(title)
+    }
+
+    logger.info({ action: 'fetch-title-list-done', mode: 'all', count: titles.length })
     return titles
   }
 
