@@ -73,7 +73,6 @@ export async function fetchAbemaTitleDetail(seriesId: string): Promise<TitleInfo
     seasonId: s.id,
     displayName: s.name || `Season ${s.sequence}`,
     seasonNumber: s.sequence || i + 1,
-    imageUrl: s.thumbComponent ? buildImageUrl(s.thumbComponent) : imageUrl,
     episodes: seasonPrograms[i].map((p) => mapProgram(p)).filter((ep): ep is Episode => ep !== null)
   }))
 
