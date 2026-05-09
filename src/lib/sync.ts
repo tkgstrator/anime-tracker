@@ -89,13 +89,16 @@ export class SyncService {
       where: { provider_contentId: { provider, contentId } },
       include: {
         seasons: {
-          include: { episodes: { select: { episodeNumber: true } } }
+          include: { episodes: { select: { id: true, episodeNumber: true, imageUrl: true } } }
         }
       }
     })
 
     const existingSeasons = new Map(
-      anime.seasons.map((s) => [s.seasonNumber, new Set(s.episodes.map((e) => e.episodeNumber))])
+      anime.seasons.map((s) => [
+        s.seasonNumber,
+        new Map(s.episodes.map((e) => [e.episodeNumber, { id: e.id, imageUrl: e.imageUrl }]))
+      ])
     )
 
     for (const season of seasons) {
@@ -121,27 +124,25 @@ export class SyncService {
 
       const dbSeason = anime.seasons.find((s) => s.seasonNumber === season.seasonNumber)
       if (!dbSeason) continue
-      const newEpisodes = season.episodes.filter((ep) => !existingEpisodes.has(ep.episodeNumber))
-      if (newEpisodes.length > 0) {
-        syncLogger.info({
-          action: 'add-episodes',
-          provider,
-          contentId,
-          seasonNumber: season.seasonNumber,
-          count: newEpisodes.length,
-          episodes: newEpisodes.map((ep) => ep.episodeNumber)
-        })
-      }
-      for (const episode of newEpisodes) {
-        try {
-          await this.createEpisode(dbSeason.id, episode)
-        } catch (e) {
-          if (!isUniqueConstraintError(e)) throw e
-          syncLogger.warn({
-            action: 'create-episode-duplicate',
-            provider,
-            contentId,
-            episodeNumber: episode.episodeNumber
+
+      for (const episode of season.episodes) {
+        const existing = existingEpisodes.get(episode.episodeNumber)
+        if (!existing) {
+          try {
+            await this.createEpisode(dbSeason.id, episode)
+          } catch (e) {
+            if (!isUniqueConstraintError(e)) throw e
+          }
+          continue
+        }
+        if (existing.imageUrl !== episode.imageUrl) {
+          await this.prisma.episode.update({
+            where: { id: existing.id },
+            data: {
+              imageUrl: episode.imageUrl,
+              description: episode.description,
+              duration: episode.duration
+            }
           })
         }
       }
