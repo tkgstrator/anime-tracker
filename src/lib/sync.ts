@@ -151,7 +151,6 @@ export class SyncService {
         seasonId: season.seasonId,
         displayName: season.displayName,
         seasonNumber: season.seasonNumber,
-        imageUrl: season.imageUrl,
         episodes: {
           create: season.episodes.map((episode) => ({
             episodeNumber: episode.episodeNumber,

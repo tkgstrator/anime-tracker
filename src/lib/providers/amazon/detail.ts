@@ -114,7 +114,6 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
         seasonId: contentId,
         displayName: '本編',
         seasonNumber: 1,
-        imageUrl: page.imageUrl,
         episodes:
           episodes.length > 0
             ? episodes
@@ -146,7 +145,7 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
           ? page.episodePageTokens
           : extractPageData(await fetchHtml(`${AMAZON_DETAIL_BASE}/${rs.seasonId}`)).episodePageTokens
       const episodes = await fetchAllEpisodes(rs.seasonId, tokens)
-      return { ...rs, imageUrl: page.imageUrl, episodes }
+      return { ...rs, episodes }
     })
   )
 }
