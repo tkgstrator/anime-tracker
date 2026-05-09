@@ -39,7 +39,7 @@ function getImageUrl(item: ModuleItem): string {
   return thumb ? buildImageUrl(thumb) : 'https://abema.tv/favicon.ico'
 }
 
-export function moduleItemToTitle(item: ModuleItem, badge?: Title['badge']): Title {
+export function moduleItemToTitle(item: ModuleItem, badge?: Title['badge'] | null): Title {
   const seriesId = getSeriesId(item) ?? ''
   const title = item.contentGroupTitle ?? item.contentTitle ?? item.title
   const isNewest = item.label?.newest === true
@@ -52,7 +52,7 @@ export function moduleItemToTitle(item: ModuleItem, badge?: Title['badge']): Tit
     imageUrl: getImageUrl(item),
     maturityRating: null,
     nextEpisodeDate: undefined,
-    badge: badge ?? (isNewest ? 'NEW_EPISODE' : 'RECENTLY_ADDED')
+    badge: badge === null ? undefined : (badge ?? (isNewest ? 'NEW_EPISODE' : 'RECENTLY_ADDED'))
   }
 }
 
