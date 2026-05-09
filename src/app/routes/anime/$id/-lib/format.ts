@@ -21,6 +21,8 @@ export function getWatchUrl(provider: string, episodeId: string): string | null 
       return `https://www.hulu.jp/watch/${episodeId}`
     case 'crunchyroll':
       return `https://www.crunchyroll.com/watch/${episodeId}`
+    case 'abema':
+      return `https://abema.tv/video/episode/${episodeId}`
     default:
       return null
   }

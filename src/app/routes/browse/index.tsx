@@ -101,6 +101,7 @@ function AnimeListPage() {
             { value: 'amazon', label: 'Prime Video' },
             { value: 'hulu', label: 'Hulu' },
             { value: 'crunchyroll', label: 'Crunchyroll' },
+            { value: 'abema', label: 'ABEMA' },
             { value: 'netflix', label: 'Netflix' }
           ]}
           onSelect={setFilter('provider')}
