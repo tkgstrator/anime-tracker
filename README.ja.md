@@ -31,16 +31,17 @@
 |---------|------|------|
 | Amazon Prime Video | 対応済み | サブスクリプションチャンネル (dアニメストア, アニメタイムズ, 東映アニメチャンネル) 含む |
 | Hulu | 対応済み | Hulu Japan |
+| ABEMA | 対応済み (閲覧のみ) | カタログ閲覧・エピソードデータ取得可能、録画は未対応 |
 | Netflix | 対応予定 | [docs/features/netflix-provider.md](docs/features/netflix-provider.md) 参照 |
 
 > [!NOTE]
-> 録画機能を利用するには [Nagisa Backend](https://github.com/qtmleap/nagisa) と各配信サービスの有効なサブスクリプションが必要です。
+> 録画機能を利用するには [Nagisa Backend](https://github.com/qtmleap/nagisa) と各配信サービスの有効なサブスクリプションが必要です。ABEMA は Nagisa Backend が未対応のため、現在は閲覧のみとなります。
 
 ## 機能
 
 ### データ収集 (バックエンド自動同期)
 
-- **プロバイダスクレイピング** — Amazon Prime Video / Hulu のアニメカタログを毎時自動取得
+- **プロバイダスクレイピング** — Amazon Prime Video / Hulu / ABEMA のアニメカタログを毎時自動取得
 - **AniList 識別** — 取得したタイトルを AniList GraphQL API で照合し、アニメ作品として識別 (50件バッチ処理)
 - **メタデータ補完** — AniList から放送ステータス・放送年・クールなどのメタデータを付与
 - **差分同期** — 既存データと比較し、新規シーズン・エピソードのみを追加 (重複なし)
@@ -88,7 +89,7 @@ graph TD
     Cron["Scheduled<br/>(毎時 cron)"] -->|enqueue| Queue["Cloudflare Queues"]
     Queue -->|consume| Sync["SyncService"]
 
-    Sync -->|カタログ取得| Providers["Providers<br/>Amazon / Hulu"]
+    Sync -->|カタログ取得| Providers["Providers<br/>Amazon / Hulu / ABEMA"]
     Sync -->|メタデータ補完| Metadata["Metadata<br/>AniList"]
 
     Providers --> DB["Cloudflare D1<br/>(Prisma)"]
@@ -109,9 +110,9 @@ graph TD
 
 ### データ同期フロー
 
-1. **Scheduled** — 毎時 Cron で `hulu` / `amazon` の fetch メッセージを Queue に enqueue
+1. **Scheduled** — 毎時 Cron で `hulu` / `amazon` / `abema` の fetch メッセージを Queue に enqueue
 2. **Queue Consumer** — バッチでメッセージを消費し SyncService に委譲
-3. **Provider** — Amazon / Hulu のカタログ・詳細ページをスクレイピング
+3. **Provider** — Amazon / Hulu / ABEMA のカタログ・詳細ページをスクレイピング
 4. **Metadata** — AniList GraphQL でメタデータを補完
 5. **Upsert** — Prisma 経由で D1 に Anime / Season / Episode を upsert
 
@@ -319,10 +320,15 @@ src/
 │       │   ├── detail.ts
 │       │   ├── protobuf.ts
 │       │   └── index.ts
-│       └── hulu/               # Hulu
+│       ├── hulu/               # Hulu
+│       │   ├── browse.ts
+│       │   ├── detail.ts
+│       │   ├── rsc-parser.ts
+│       │   └── index.ts
+│       └── abema/              # ABEMA
+│           ├── auth.ts
 │           ├── browse.ts
 │           ├── detail.ts
-│           ├── rsc-parser.ts
 │           └── index.ts
 ├── routes/                     # Backend API ルート
 │   ├── anime.ts                # /api/anime
@@ -335,6 +341,7 @@ src/
 │       ├── common.dto.ts
 │       ├── amazon.dto.ts
 │       ├── hulu.dto.ts
+│       ├── abema.dto.ts
 │       └── metadata.dto.ts
 └── app/                        # Frontend (React)
     ├── main.tsx
