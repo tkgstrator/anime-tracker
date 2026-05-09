@@ -114,6 +114,30 @@
       "group": "test"
     },
     {
+      "label": "Fetch New Episode (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh abema new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Coming Soon (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh abema coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Expiring (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/local.sh abema expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Fetch New Episode (Amazon)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/queue/remote/send.sh amazon new_episode",
@@ -186,6 +210,30 @@
       "group": "test"
     },
     {
+      "label": "Fetch New Episode (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh abema new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Coming Soon (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh abema coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Fetch Expiring (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/queue/remote/send.sh abema expiring",
+      "options": { "cwd": "${workspaceFolder}/scripts/queue/remote" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Title List (Amazon, new_episode)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list amazon new_episode",
@@ -253,6 +301,30 @@
       "label": "Expiring (Crunchyroll)",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/lambda/invoke.sh expiring crunchyroll",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (ABEMA, new_episode)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list abema new_episode",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Title List (ABEMA, coming_soon)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh title_list abema coming_soon",
+      "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Expiring (ABEMA)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lambda/invoke.sh expiring abema",
       "options": { "cwd": "${workspaceFolder}/scripts/lambda" },
       "problemMatcher": [],
       "group": "test"
