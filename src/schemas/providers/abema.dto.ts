@@ -112,6 +112,7 @@ export type OrderedSeason = z.infer<typeof OrderedSeasonSchema>
 export const SeriesDetailSchema = z.object({
   id: z.string().nonempty(),
   title: z.string().nonempty(),
+  content: z.string().nonempty(),
   orderedSeasons: z.array(OrderedSeasonSchema).default([]),
   onDemandTypes: z.array(z.unknown()).default([]),
   freeBenefitTag: z.string().optional(),

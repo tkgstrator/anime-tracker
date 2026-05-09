@@ -65,8 +65,9 @@ export class SyncService {
       episodeCount: detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0)
     })
 
-    const anime = await this.prisma.anime.findUniqueOrThrow({
-      where: { provider_contentId: { provider: message.provider, contentId: message.contentId } }
+    const anime = await this.prisma.anime.update({
+      where: { provider_contentId: { provider: message.provider, contentId: message.contentId } },
+      data: { description: detail.description }
     })
 
     await this.syncSeasons(anime.id, message.provider, message.contentId, detail.seasons)
