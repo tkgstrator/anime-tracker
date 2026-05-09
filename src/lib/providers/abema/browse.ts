@@ -74,10 +74,15 @@ export async function fetchModules(): Promise<ModuleItem[]> {
     const result = ModulesResponseSchema.safeParse(raw)
     if (!result.success) throw result.error
 
-    const seriesModules = result.data.modules.filter(
-      (m) => m.itemUiType === 'ITEM_UI_TYPE_SERIES_FEATURE' || m.itemUiType === 'ITEM_UI_TYPE_CONTENT_FEATURE'
-    )
-    allItems.push(...seriesModules.flatMap((m) => m.items).filter((item) => item.contentId))
+    const targetTypes = new Set([
+      'ITEM_UI_TYPE_SERIES_FEATURE',
+      'ITEM_UI_TYPE_CONTENT_FEATURE',
+      'ITEM_UI_TYPE_EPISODE_FEATURE',
+      'ITEM_UI_TYPE_RANKING',
+      'ITEM_UI_TYPE_BILLBOARD'
+    ])
+    const matched = result.data.modules.filter((m) => targetTypes.has(m.itemUiType))
+    allItems.push(...matched.flatMap((m) => m.items).filter((item) => item.contentId))
 
     next = result.data.next
   } while (next)
