@@ -78,7 +78,7 @@ export async function fetchAbemaTitleDetail(seriesId: string): Promise<TitleInfo
 
   return {
     title: series.title,
-    description: series.title,
+    description: series.content,
     entityType: 'tv',
     maturityRating: null,
     imageUrl,
