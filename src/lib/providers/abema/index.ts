@@ -1,7 +1,7 @@
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { getAppLogger } from '../../logger'
 import { type FetchTitleListOptions, Provider } from '../base'
-import { fetchModules, moduleItemToTitle } from './browse'
+import { cardToTitle, fetchCards, fetchModules, moduleItemToTitle } from './browse'
 import { fetchAbemaTitleDetail } from './detail'
 
 const logger = getAppLogger('abema')
@@ -16,25 +16,34 @@ export class AbemaProvider extends Provider {
       return this.fetchNewEpisodes()
     }
 
-    if (category === 'coming_soon' || category === 'expiring') {
-      return this.fetchAll()
-    }
-
     return this.fetchAll()
   }
 
   private async fetchNewEpisodes(): Promise<Title[]> {
     logger.info({ action: 'fetch-title-list-start', mode: 'new_episode' })
-    const items = await fetchModules()
+
+    const [modules, cards] = await Promise.all([fetchModules(), fetchCards()])
+
+    const badgeMap = new Map<string, Title['badge']>()
+    for (const item of modules) {
+      const title = moduleItemToTitle(item)
+      if (title.contentId && !badgeMap.has(title.contentId)) {
+        badgeMap.set(title.contentId, title.badge)
+      }
+    }
+
     const seen = new Set<string>()
     const titles: Title[] = []
 
-    for (const item of items) {
-      const badge = item.label?.newest === true ? 'NEW_EPISODE' : 'RECENTLY_ADDED'
-      const title = moduleItemToTitle(item, badge)
+    for (const card of cards) {
+      if (seen.has(card.seriesId)) continue
+      seen.add(card.seriesId)
 
-      if (!title.contentId || seen.has(title.contentId)) continue
-      seen.add(title.contentId)
+      const title = cardToTitle(card)
+      const badge = badgeMap.get(card.seriesId)
+      if (badge) title.badge = badge
+      else if (card.label?.newest) title.badge = 'NEW_EPISODE'
+
       titles.push(title)
     }
 
@@ -44,16 +53,14 @@ export class AbemaProvider extends Provider {
 
   private async fetchAll(): Promise<Title[]> {
     logger.info({ action: 'fetch-title-list-start', mode: 'all' })
-    const items = await fetchModules()
+    const cards = await fetchCards()
     const seen = new Set<string>()
     const titles: Title[] = []
 
-    for (const item of items) {
-      const title = moduleItemToTitle(item, null)
-
-      if (!title.contentId || seen.has(title.contentId)) continue
-      seen.add(title.contentId)
-      titles.push(title)
+    for (const card of cards) {
+      if (seen.has(card.seriesId)) continue
+      seen.add(card.seriesId)
+      titles.push(cardToTitle(card))
     }
 
     logger.info({ action: 'fetch-title-list-done', mode: 'all', count: titles.length })
