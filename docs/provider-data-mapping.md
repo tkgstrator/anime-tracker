@@ -7,7 +7,7 @@
 
 ## 共通スキーマ: TitleDetail
 
-全プロバイダが最終的に返す統一スキーマ（`src/schemas/provider.dto.ts`）。
+全プロバイダが最終的に返す統一スキーマ（`src/schemas/providers/common.dto.ts`）。
 
 | フィールド | 型 | 説明 |
 |---|---|---|
@@ -117,9 +117,9 @@ type OfferType = 'svod' | 'tvod' | 'subscription'
 
 ```typescript
 import { buildServiceToken } from '../src/lib/providers/amazon'
-import { AmazonBrowseQuery } from '../src/schemas/amazon.dto'
+import { BrowseQuerySchema } from '../src/schemas/providers/amazon.dto'
 
-const query = AmazonBrowseQuery.parse({})
+const query = BrowseQuerySchema.parse({})
 
 // SVOD（デフォルト） — sort あり
 const svodSorted = `v0_${buildServiceToken(query)}`
@@ -166,8 +166,8 @@ dアニメストアのブラウズページではジャンル別（SF/ファン�
 
 スクリプト使用例:
 ```sh
-bun scripts/amazon_browse_all.ts --benefit danime
-bun scripts/amazon_browse_all.ts --benefit animetimesjp
+bun scripts/fetch/amazon/browse.ts --benefit danime
+bun scripts/fetch/amazon/browse.ts --benefit animetimesjp
 ```
 
 #### 共通の検索パラメータ
@@ -274,8 +274,8 @@ dynamicFeatures: `integration`, `CLIENT_DECORATION_ENABLE_DAAPI`, `ENABLE_DRAPER
 
 ##### 実装
 
-- スクリプト: `scripts/amazon_browse_all.ts`
-- 使い方: `bun scripts/amazon_browse_all.ts --token 'v0_...' [--cookie '...'] [--out <file>] [--page-size <n>] [--delay <ms>]`
+- スクリプト: `scripts/fetch/amazon/browse.ts`
+- 使い方: `bun scripts/fetch/amazon/browse.ts --token 'v0_...' [--cookie '...'] [--out <file>] [--page-size <n>] [--delay <ms>]`
 
 ### タイトル詳細 → TitleDetail マッピング
 
@@ -316,8 +316,8 @@ dynamicFeatures: `integration`, `CLIENT_DECORATION_ENABLE_DAAPI`, `ENABLE_DRAPER
 
 ### 実装
 
-- スキーマ: `src/schemas/amazon.dto.ts`
-- プロバイダ: `src/lib/providers/amazon.ts`
+- スキーマ: `src/schemas/providers/amazon.dto.ts`
+- プロバイダ: `src/lib/providers/amazon/` (`index.ts` + `browse.ts` + `channel.ts` + `detail.ts` + `protobuf.ts`)
 - 公開関数: `fetchAmazonTitleDetail(titleID)`, `buildAmazonBrowseUrl(params?)`
 
 ---
@@ -394,8 +394,8 @@ RSCペイロードは `self.__next_f.push([1,"..."])` パターンから JSON �
 
 ### 実装
 
-- スキーマ: `src/schemas/hulu.dto.ts`
-- プロバイダ: `src/lib/providers/hulu.ts`
+- スキーマ: `src/schemas/providers/hulu.dto.ts`
+- プロバイダ: `src/lib/providers/hulu/` (`index.ts` + `browse.ts` + `detail.ts`)
 - 公開関数: `fetchHuluTitleDetail(slug)`, `fetchHuluAnime(season, year)`
 
 ---

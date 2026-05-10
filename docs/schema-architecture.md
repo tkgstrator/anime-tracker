@@ -75,11 +75,16 @@ src/schemas/
 ├── anime.dto.ts                  # DB/APIレイヤーのスキーマ
 ├── recording.dto.ts              # 録画状態更新のスキーマ
 ├── message.dto.ts                # キューメッセージのスキーマ
+├── lambda.dto.ts                 # Lambda fetch API のリクエスト/レスポンス
+├── webhook.dto.ts                # Nagisa からの webhook
+├── nagisa.dto.ts                 # Nagisa サーバー状態取得
 └── providers/
-    ├── common.dto.ts             # 全プロバイダ共通の型
+    ├── common.dto.ts             # 全プロバイダ共通の型 (TitleSchema 等)
     ├── metadata.dto.ts           # AniList/TMDB メタデータ
     ├── amazon.dto.ts             # Amazon Prime Video 固有
-    └── hulu.dto.ts               # Hulu 固有
+    ├── hulu.dto.ts               # Hulu 固有
+    ├── abema.dto.ts              # ABEMA 固有
+    └── crunchyroll.dto.ts        # Crunchyroll 固有
 ```
 
 ## レイヤー別の役割
