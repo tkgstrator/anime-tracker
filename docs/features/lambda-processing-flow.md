@@ -55,12 +55,15 @@ const TitleListResponseSchema = z.object({
 const EntityType = z.enum(['tv', 'movie'])
 const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
 
+// 画像 URL は z.url().transform(stripQueryParams) で正規化
+const ImageUrlSchema = z.url().transform(stripQueryParams)
+
 const TitleSchema = z.object({
   contentId: z.string().nonempty(),
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   entityType: EntityType,
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   maturityRating: z.number().int().positive().nullable(),
   nextEpisodeDate: z.iso.datetime().optional(),
   badge: BadgeType.optional(),
@@ -86,7 +89,7 @@ const EpisodeSchema = z.object({
   releaseDate: z.iso.datetime(),
   duration: z.number().int().nonnegative(),
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
   benefitId: z.string().nullable()
@@ -104,7 +107,7 @@ const TitleInfoSchema = z.object({
   description: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   seasons: z.array(SeasonSchema)
 })
 ```
