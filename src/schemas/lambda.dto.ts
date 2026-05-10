@@ -58,3 +58,7 @@ export const IdentifyResultSchema = z
 export const IdentifyResponseSchema = z.object({
   results: z.array(IdentifyResultSchema)
 })
+
+export const IdentifyRequestSchema = z.object({
+  titles: z.array(z.string().nonempty()).max(50)
+})

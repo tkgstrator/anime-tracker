@@ -11,14 +11,22 @@
 
 `event.rawPath` / `event.path` で振り分ける 4 エンドポイント。
 
-| Path | 用途 | リクエスト body | レスポンス body |
+| Path | 用途 | リクエスト schema | レスポンス schema |
 | --- | --- | --- | --- |
-| `POST /expiring` | 配信終了間近タイトル一覧 | `{ provider }` | `ExpiringResponseSchema` |
-| `POST /title_list` | 新着 / 配信予定 / カタログ一覧 | `{ provider, category }` | `TitleListResponseSchema` |
-| `POST /title_info` | タイトル詳細（シーズン + エピソード） | `{ provider, contentId }` | `TitleInfoSchema` |
-| `POST /identify` | AniList へのバッチ照合（≤ 50 件） | `{ titles: string[] }` | `IdentifyResponseSchema` |
+| `POST /expiring` | 配信終了間近タイトル一覧 | `FetchExpiringRequestSchema` | `ExpiringResponseSchema` |
+| `POST /title_list` | 新着 / 配信予定 / カタログ一覧 | `FetchTitleListRequestSchema` | `TitleListResponseSchema` |
+| `POST /title_info` | タイトル詳細（シーズン + エピソード） | `FetchTitleInfoRequestSchema` | `TitleInfoSchema` |
+| `POST /identify` | AniList へのバッチ照合（≤ 50 件） | `IdentifyRequestSchema` | `IdentifyResponseSchema` |
 
-エラー時は `400` (バリデーション) / `404` (未知 path) / `500` (例外) / `502` (AniList 失敗) を返す。
+ステータスコード:
+
+| Code | 条件 | body |
+| --- | --- | --- |
+| `200` | 成功（entries が 0 件でも 200 + 空配列） | レスポンス schema 準拠の JSON |
+| `400` | リクエスト Zod parse 失敗 | `{ error: 'Invalid request', issues: ZodIssue[] }` |
+| `404` | 未知 path | `{ error: 'Unknown path: ...' }` |
+| `500` | レスポンス Zod parse 失敗 / 内部例外 | `{ error: 'Invalid response', issues: ZodIssue[] }` または `{ error: <message> }` |
+| `502` | AniList API エラー | `{ error: 'AniList API error: <status>' }` |
 
 ### Zod スキーマ定義
 
@@ -112,9 +120,13 @@ const TitleInfoSchema = z.object({
 })
 ```
 
-`IdentifyResponseSchema` (`src/schemas/lambda.dto.ts`):
+`IdentifyRequestSchema` / `IdentifyResponseSchema` (`src/schemas/lambda.dto.ts`):
 
 ```ts
+const IdentifyRequestSchema = z.object({
+  titles: z.array(z.string().nonempty()).max(50)
+})
+
 const TitleStatusTypeEnum = z.enum([
   'FINISHED',
   'RELEASING',
@@ -194,21 +206,19 @@ flowchart LR
   A([provider]) --> B[provider.fetchTitleList<br/>category=expiring]
   B --> C[expiring を持つタイトルだけ残す]
   C --> D[now + remainingHours を<br/>JST 0:00 に丸めて ISO 化]
-  D --> E{entries 0 件?}
-  E -- Yes --> Err[500]
-  E -- No --> Ok[200]
+  D --> Ok[200 entries は 0 件でも返す]
 ```
 
 ### 3.2 `/title_list`
 
 ```mermaid
 flowchart LR
-  A([provider, category]) --> V{category ∈<br/>new_episode / coming_soon / catalog?}
-  V -- No --> Err[400]
-  V -- Yes --> F[provider.fetchTitleList]
+  A([provider, category]) --> F[provider.fetchTitleList]
   F --> M[8 フィールドに整形]
   M --> Ok[200]
 ```
+
+`category` は `FetchTitleListRequestSchema` でリクエスト段階でバリデート（enum 外なら 400 + ZodError）。
 
 ### 3.3 `/title_info`
 
@@ -220,13 +230,13 @@ flowchart LR
 
 ### 3.4 `/identify` (AniList バッチ照合)
 
+リクエスト段階の長さチェック（`titles ≤ 50`、各要素 nonempty）は `IdentifyRequestSchema` が担う。0 件 / 51 件以上 / 配列以外 はすべて 400 + ZodError。
+
 ```mermaid
 flowchart TD
-  S([titles: string]) --> L{0 件?}
+  S([titles: string n≤50]) --> L{0 件?}
   L -- Yes --> Empty[200 results: empty]
-  L -- No --> N{50 件超?}
-  N -- Yes --> Over[400]
-  N -- No --> Clean[各タイトルを cleanTitle で正規化]
+  L -- No --> Clean[各タイトルを cleanTitle で正規化]
   Clean --> Q[q0..qN の Page クエリを合成<br/>1 リクエストで全件問い合わせ]
   Q --> Req[POST graphql.anilist.co]
 
