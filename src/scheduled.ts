@@ -1,3 +1,4 @@
+import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { getAppLogger } from './lib/logger'
 import type { Message } from './schemas/message.dto'
@@ -5,8 +6,28 @@ import type { Message } from './schemas/message.dto'
 const logger = getAppLogger('scheduled')
 
 interface Env {
+  DB: D1Database
   SYNC_QUEUE: Queue<Message>
   DISCORD_WEBHOOK_URL: string
+}
+
+async function enqueueAbemaArchive(env: Env): Promise<number> {
+  const prisma = createPrismaClient(env.DB)
+  try {
+    const animes = await prisma.anime.findMany({
+      where: {
+        provider: 'abema',
+        seasons: { some: { episodes: { some: { abemaKey: null } } } }
+      },
+      select: { id: true }
+    })
+    for (const anime of animes) {
+      await env.SYNC_QUEUE.send({ type: 'abema_archive', message: { animeId: anime.id } })
+    }
+    return animes.length
+  } finally {
+    await prisma.$disconnect()
+  }
 }
 
 export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> {
@@ -30,6 +51,11 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
           logger.info({ action: 'enqueue', provider, category: 'expiring' })
         }
         break
+      case '0 4 * * *': {
+        const count = await enqueueAbemaArchive(env)
+        logger.info({ action: 'enqueue-abema-archive', count })
+        break
+      }
       default:
         logger.warn({ action: 'unknown-cron', cron: event.cron })
         break

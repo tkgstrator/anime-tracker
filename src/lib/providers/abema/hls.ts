@@ -13,7 +13,7 @@
  * Python 実装と完全に同等になるよう書いている (`nagisa/providers/abema/hls.py`)。
  */
 
-import { getAccessToken } from './auth'
+import { getGuestSession } from './auth'
 
 // =====================================================================
 // 定数 — Python (nagisa/providers/abema/hls.py:52, constants.py) と同期必須
@@ -27,6 +27,7 @@ import { getAccessToken } from './auth'
 const HMAC_KEY_HEX = '3AF0298C219469522A313570E8583005A642E73EDD58E3EA2FB7339D3DF1597E'
 
 const HLS_LICENSE_URL = 'https://license.p-c3-e.abema-tv.com/abematv-hls'
+const MEDIA_TOKEN_URL = 'https://api.p-c3-e.abema-tv.com/v1/media/token'
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -71,7 +72,7 @@ export interface KeysArchive {
   variantResolution: string
   variantBandwidth: number
   segmentUrls: string[]
-  archivedAt: Date
+  createdAt: Date
 }
 
 // =====================================================================
@@ -320,6 +321,34 @@ export async function requestLicense(
   return body as LicenseResponse
 }
 
+/**
+ * `GET /v1/media/token` で manifest 用の short-lived token を取得する。
+ * master playlist URL に `?t={mediaToken}` で付与する必要がある。
+ */
+export async function fetchMediaToken(opts: { bearer: string }): Promise<string> {
+  const url = new URL(MEDIA_TOKEN_URL)
+  url.searchParams.set('osName', 'pc')
+  url.searchParams.set('osVersion', '1.0.0')
+  url.searchParams.set('osLang', 'ja_JP')
+  url.searchParams.set('osTimezone', 'Asia/Tokyo')
+  url.searchParams.set('appId', 'tv.abema')
+  url.searchParams.set('appVersion', '0.0.1')
+  const resp = await fetch(url.toString(), {
+    headers: {
+      Authorization: `bearer ${opts.bearer}`,
+      Accept: 'application/json',
+      Origin: 'https://abema.tv',
+      Referer: 'https://abema.tv/'
+    }
+  })
+  if (!resp.ok) {
+    throw new Error(`Abema media token HTTP ${resp.status}`)
+  }
+  const body = (await resp.json()) as { token?: string }
+  if (!body.token) throw new Error(`Abema media token: missing token in ${JSON.stringify(body)}`)
+  return body.token
+}
+
 // =====================================================================
 // 高レベル: 1 episode 分の KeysArchive を作る
 // =====================================================================
@@ -386,11 +415,10 @@ export async function buildKeysArchive(
     throw new Error(`unexpected IV length ${variant.keys[0].iv.length}`)
   }
 
-  // license POST は guest token を取って Bearer に付ける (任意だが標準動線に揃える)
-  const bearer = await getAccessToken()
+  const session = await getGuestSession()
   const lic = await requestLicense(variant.keys[0].licenseTicket, {
     mediaToken: input.mediaToken,
-    bearer
+    bearer: session.token
   })
   const contentKey = await unwrapContentKey(lic.k, lic.cid, input.deviceId)
 
@@ -403,6 +431,6 @@ export async function buildKeysArchive(
     variantResolution: chosen.resolution,
     variantBandwidth: chosen.bandwidth,
     segmentUrls: variant.segmentUrls,
-    archivedAt: new Date()
+    createdAt: new Date()
   }
 }
