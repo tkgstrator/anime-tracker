@@ -5,15 +5,16 @@ const LOGIN_URL = 'https://abema.tv/api/auth/login/guest'
 const HMAC_SECRET =
   'v+Gjs=25Aw5erR!J8ZuvRrCx*rGswhB&qdHd_SYerEWdU&a?3DzN9BRbp5KwY4hEmcj5#fykMjJ=AuWz5GSMY-d@H7DMEh3M@9n2G552Us$$k9cD=3TxwWe86!x#Zyhe'
 
-const sessionCache: { token: string | null; deviceId: string | null; expiresAt: dayjs.Dayjs } = {
-  token: null,
-  deviceId: null,
-  expiresAt: dayjs(0)
-}
+/**
+ * ABEMA の device_id は guest token 取得時と KEK 派生時で同じ値であれば認証/復号が
+ * 通る。値そのものはサーバーで fingerprint 検証されないため、固定ダミー値を使い回
+ * してプロセスを跨いだ KEK 再現性を担保する。
+ */
+export const ABEMA_DEVICE_ID = '00000000-0000-0000-0000-000000000000'
 
-export interface AbemaGuestSession {
-  token: string
-  deviceId: string
+const tokenCache: { token: string | null; expiresAt: dayjs.Dayjs } = {
+  token: null,
+  expiresAt: dayjs(0)
 }
 
 function toBase64Url(buf: Uint8Array): string {
@@ -62,14 +63,11 @@ function getKeyDate(): Date {
   return d
 }
 
-export async function getGuestSession(): Promise<AbemaGuestSession> {
-  if (sessionCache.token && sessionCache.deviceId && dayjs().isBefore(sessionCache.expiresAt)) {
-    return { token: sessionCache.token, deviceId: sessionCache.deviceId }
-  }
+export async function getAccessToken(): Promise<string> {
+  if (tokenCache.token && dayjs().isBefore(tokenCache.expiresAt)) return tokenCache.token
 
-  const deviceId = crypto.randomUUID()
   const keyDate = getKeyDate()
-  const applicationKeySecret = await generateApplicationKeySecret(deviceId, keyDate)
+  const applicationKeySecret = await generateApplicationKeySecret(ABEMA_DEVICE_ID, keyDate)
 
   const res = await fetch(LOGIN_URL, {
     method: 'POST',
@@ -79,7 +77,7 @@ export async function getGuestSession(): Promise<AbemaGuestSession> {
       Referer: 'https://abema.tv/'
     },
     body: JSON.stringify({
-      device_id: deviceId,
+      device_id: ABEMA_DEVICE_ID,
       application_key_secret: applicationKeySecret,
       device_type: 3,
       previous_user_id: ''
@@ -93,13 +91,7 @@ export async function getGuestSession(): Promise<AbemaGuestSession> {
   const result = AbemaTokenResponseSchema.safeParse(await res.json())
   if (!result.success) throw result.error
 
-  sessionCache.token = result.data.access_token
-  sessionCache.deviceId = deviceId
-  sessionCache.expiresAt = dayjs().add(2, 'hour')
-  return { token: sessionCache.token, deviceId }
-}
-
-export async function getAccessToken(): Promise<string> {
-  const { token } = await getGuestSession()
-  return token
+  tokenCache.token = result.data.access_token
+  tokenCache.expiresAt = dayjs().add(2, 'hour')
+  return tokenCache.token
 }

@@ -34,6 +34,13 @@ bunx biome check src/        # lint + format チェック
 - API通信には **Zodios** を使用する
 - Zodスキーマは `schemas/*.dto.ts` にパスカルケースで定義する
 
+### Backend ルート (Hono)
+
+- バックエンドのルートは **Zod Hono OpenAPI** (`OpenAPIHono` + `createRoute`) で定義する
+- リクエストの body / query / params は `createRoute({ request: { body, query, params } })` で **Zod スキーマを宣言** し、ハンドラ内では `c.req.valid('json' | 'query' | 'param')` で受け取る
+  - `await c.req.json()` を直接呼んで `XxxSchema.safeParse(...)` する書き方は禁止 (型推論が効かず OpenAPI ドキュメントにも出ない)
+  - 素の `app.post(...)` ではなく `app.openapi(createRoute({...}), handler)` を使う
+
 ## Frontend Routing
 
 - ルーティングは **TanStack Router** のファイルベースルーティングを使用する
