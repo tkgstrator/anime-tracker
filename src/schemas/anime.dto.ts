@@ -47,7 +47,7 @@ export const AnimeInfoSchema = AnimeSchema.extend({
           imageUrl: z.string().nonempty(),
           hasSubtitles: z.coerce.boolean(),
           hasDub: z.coerce.boolean(),
-          benefitId: z.string().nonempty().nullable(),
+          benefitId: z.string().nonempty(),
           recorded: z.coerce.boolean()
         })
       )

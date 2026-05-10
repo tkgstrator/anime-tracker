@@ -43,7 +43,7 @@ export const EpisodeSchema = z.object({
   imageUrl: ImageUrlSchema,
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
-  benefitId: z.string().nonempty().nullable()
+  benefitId: z.string().nonempty()
 })
 export type Episode = z.infer<typeof EpisodeSchema>
 
