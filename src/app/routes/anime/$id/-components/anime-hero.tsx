@@ -4,6 +4,7 @@ import { Circle, CircleCheck, Clock, Film, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
+import { Button } from '@/app/components/ui/button'
 import { browseFiltersAtom, defaultBrowseFilters } from '@/app/lib/atoms'
 import { type AnimeInfoSchema, QuarterLabel } from '@/schemas/anime.dto'
 import { formatDuration } from '../-lib/format'
@@ -38,7 +39,7 @@ export function AnimeHero({
             <Link
               to='/browse'
               onClick={() => setFilters({ ...defaultBrowseFilters, aniListId: anime.aniListId })}
-              className='transition-colors hover:text-indigo-600'
+              className='transition-colors hover:text-primary'
             >
               {anime.title}
             </Link>
@@ -65,33 +66,34 @@ export function AnimeHero({
           </div>
         </div>
 
-        <div className='flex items-center gap-2 pt-1'>
-          <button
+        <div className='flex flex-wrap items-center gap-2 pt-1'>
+          <Button
             type='button'
+            size='lg'
+            variant={anime.scheduled ? 'default' : 'secondary'}
             onClick={onToggleScheduled}
             disabled={updating}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
-              anime.scheduled
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
+            aria-pressed={anime.scheduled}
           >
-            {anime.scheduled ? <CircleCheck className='h-3.5 w-3.5' /> : <Circle className='h-3.5 w-3.5' />}
+            {anime.scheduled ? <CircleCheck /> : <Circle />}
             {anime.scheduled ? '予約済み' : '録画予約'}
-          </button>
-          <button
+          </Button>
+          <Button
             type='button'
+            size='lg'
+            variant={anime.recorded ? 'default' : 'secondary'}
             onClick={onToggleRecorded}
             disabled={updating}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+            aria-pressed={anime.recorded}
+            className={
               anime.recorded
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
+                ? 'bg-success text-success-foreground hover:bg-success/85 [a]:hover:bg-success/85'
+                : undefined
+            }
           >
-            {anime.recorded ? <CircleCheck className='h-3.5 w-3.5' /> : <Circle className='h-3.5 w-3.5' />}
+            {anime.recorded ? <CircleCheck /> : <Circle />}
             {anime.recorded ? '録画済み' : '録画する'}
-          </button>
+          </Button>
         </div>
 
         {anime.description && <p className='text-sm leading-relaxed text-muted-foreground'>{anime.description}</p>}
