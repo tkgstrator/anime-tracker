@@ -10,7 +10,7 @@ CREATE TABLE "abema_key_archives" (
     "variant_resolution" TEXT NOT NULL,
     "variant_bandwidth" INTEGER NOT NULL,
     "segment_urls" TEXT NOT NULL,
-    "archived_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "abema_key_archives_episode_id_fkey" FOREIGN KEY ("episode_id") REFERENCES "episodes" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 

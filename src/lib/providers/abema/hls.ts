@@ -13,7 +13,7 @@
  * Python 実装と完全に同等になるよう書いている (`nagisa/providers/abema/hls.py`)。
  */
 
-import { getAccessToken } from './auth'
+import { getGuestSession } from './auth'
 
 // =====================================================================
 // 定数 — Python (nagisa/providers/abema/hls.py:52, constants.py) と同期必須
@@ -27,6 +27,7 @@ import { getAccessToken } from './auth'
 const HMAC_KEY_HEX = '3AF0298C219469522A313570E8583005A642E73EDD58E3EA2FB7339D3DF1597E'
 
 const HLS_LICENSE_URL = 'https://license.p-c3-e.abema-tv.com/abematv-hls'
+const MEDIA_TOKEN_URL = 'https://api.p-c3-e.abema-tv.com/v1/media/token'
 
 const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -71,14 +72,14 @@ export interface KeysArchive {
   variantResolution: string
   variantBandwidth: number
   segmentUrls: string[]
-  archivedAt: Date
+  createdAt: Date
 }
 
 // =====================================================================
 // 純関数: hex / base58 / playlist パース
 // =====================================================================
 
-function hexToBytes(hex: string): Uint8Array {
+function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
   if (hex.length % 2 !== 0) throw new Error(`hex length must be even, got ${hex.length}`)
   const out = new Uint8Array(hex.length / 2)
   for (let i = 0; i < out.length; i++) {
@@ -95,7 +96,7 @@ function bytesToHex(b: Uint8Array): string {
  * ABEMA で使われる base58 文字列 (16 バイト固定) を Uint8Array に decode。
  * encrypted content key の取り出し用。
  */
-export function base58Decode16(s: string): Uint8Array {
+export function base58Decode16(s: string): Uint8Array<ArrayBuffer> {
   // BigInt で累積乗算 (16 bytes → 128 bit、JS の Number だと精度不足)
   let n = 0n
   for (const c of s) {
@@ -190,7 +191,7 @@ export function parseVariantPlaylist(text: string, baseUrl: string): HlsVariant 
  * KEK = HMAC-SHA256(HMAC_KEY, cid + device_id) — 32 bytes。
  * Python 実装 (`nagisa/providers/abema/hls.py:derive_kek`) と完全等価。
  */
-export async function deriveKek(cid: string, deviceId: string): Promise<Uint8Array> {
+export async function deriveKek(cid: string, deviceId: string): Promise<Uint8Array<ArrayBuffer>> {
   const enc = new TextEncoder()
   const keyBytes = hexToBytes(HMAC_KEY_HEX)
   const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
@@ -207,7 +208,11 @@ export async function deriveKek(cid: string, deviceId: string): Promise<Uint8Arr
  * pycryptodome の `AES.new(kek, MODE_ECB).decrypt(encrypted)` と完全に同じ
  * 結果を返す。
  */
-export async function unwrapContentKey(encryptedKeyB58: string, cid: string, deviceId: string): Promise<Uint8Array> {
+export async function unwrapContentKey(
+  encryptedKeyB58: string,
+  cid: string,
+  deviceId: string
+): Promise<Uint8Array<ArrayBuffer>> {
   const encrypted = base58Decode16(encryptedKeyB58)
   if (encrypted.length !== 16) throw new Error(`encrypted key must be 16 bytes, got ${encrypted.length}`)
   const kek = await deriveKek(cid, deviceId)
@@ -251,7 +256,10 @@ export async function unwrapContentKey(encryptedKeyB58: string, cid: string, dev
  * WebCrypto には ECB が無いので、IV=0 の AES-CBC で 1 ブロック暗号化と等価。
  * (pkcs7 padding が付くため出力は 32 bytes、先頭 16B が真の暗号文)
  */
-async function aesEcbEncryptBlock(key: Uint8Array, block: Uint8Array): Promise<Uint8Array> {
+async function aesEcbEncryptBlock(
+  key: Uint8Array<ArrayBuffer>,
+  block: Uint8Array<ArrayBuffer>
+): Promise<Uint8Array<ArrayBuffer>> {
   if (block.length !== 16) throw new Error('aesEcbEncryptBlock requires exactly 16 bytes input')
   const cryptoKey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC', length: key.length * 8 }, false, [
     'encrypt'
@@ -320,20 +328,48 @@ export async function requestLicense(
   return body as LicenseResponse
 }
 
+/**
+ * `GET /v1/media/token` で manifest 用の short-lived token を取得する。
+ * master playlist URL に `?t={mediaToken}` で付与する必要がある。
+ */
+export async function fetchMediaToken(opts: { bearer: string }): Promise<string> {
+  const url = new URL(MEDIA_TOKEN_URL)
+  url.searchParams.set('osName', 'pc')
+  url.searchParams.set('osVersion', '1.0.0')
+  url.searchParams.set('osLang', 'ja_JP')
+  url.searchParams.set('osTimezone', 'Asia/Tokyo')
+  url.searchParams.set('appId', 'tv.abema')
+  url.searchParams.set('appVersion', '0.0.1')
+  const resp = await fetch(url.toString(), {
+    headers: {
+      Authorization: `bearer ${opts.bearer}`,
+      Accept: 'application/json',
+      Origin: 'https://abema.tv',
+      Referer: 'https://abema.tv/'
+    }
+  })
+  if (!resp.ok) {
+    throw new Error(`Abema media token HTTP ${resp.status}`)
+  }
+  const body = (await resp.json()) as { token?: string }
+  if (!body.token) throw new Error(`Abema media token: missing token in ${JSON.stringify(body)}`)
+  return body.token
+}
+
 // =====================================================================
 // 高レベル: 1 episode 分の KeysArchive を作る
 // =====================================================================
 
 export interface BuildKeysArchiveInput {
   programId: string
-  /** UUID 形式の device_id (guest token と同じものを使う必要がある) */
-  deviceId: string
   /** /v1/media/token で取得した manifest ticket */
   mediaToken: string
   /** master playlist URL (= https://vod-abematv.akamaized.net/program/{programId}/playlist.m3u8) */
   masterUrl?: string
   /** 選択する解像度の上限 (例: 180 / 720 / 1080)。0 で最高画質 */
   targetHeight?: number
+  /** KEK 派生に使う device_id。getGuestSession() の deviceId と必ず同じ値を渡す */
+  deviceId?: string
 }
 
 export interface BuildKeysArchiveDeps {
@@ -386,13 +422,12 @@ export async function buildKeysArchive(
     throw new Error(`unexpected IV length ${variant.keys[0].iv.length}`)
   }
 
-  // license POST は guest token を取って Bearer に付ける (任意だが標準動線に揃える)
-  const bearer = await getAccessToken()
+  const session = await getGuestSession()
   const lic = await requestLicense(variant.keys[0].licenseTicket, {
     mediaToken: input.mediaToken,
-    bearer
+    bearer: session.token
   })
-  const contentKey = await unwrapContentKey(lic.k, lic.cid, input.deviceId)
+  const contentKey = await unwrapContentKey(lic.k, lic.cid, input.deviceId ?? session.deviceId)
 
   return {
     programId: input.programId,
@@ -403,6 +438,6 @@ export async function buildKeysArchive(
     variantResolution: chosen.resolution,
     variantBandwidth: chosen.bandwidth,
     segmentUrls: variant.segmentUrls,
-    archivedAt: new Date()
+    createdAt: new Date()
   }
 }

@@ -36,9 +36,20 @@ export const BulkUpdateMessageSchema = z.object({
 })
 export type BulkUpdateMessage = z.infer<typeof BulkUpdateMessageSchema>
 
+const AbemaArchiveBodySchema = z.object({
+  animeId: z.string().nonempty()
+})
+
+export const AbemaArchiveMessageSchema = z.object({
+  type: z.literal('abema_archive'),
+  message: AbemaArchiveBodySchema
+})
+export type AbemaArchiveMessage = z.infer<typeof AbemaArchiveMessageSchema>
+
 export const MessageSchema = z.discriminatedUnion('type', [
   FetchMessageSchema,
   UpdateMessageSchema,
-  BulkUpdateMessageSchema
+  BulkUpdateMessageSchema,
+  AbemaArchiveMessageSchema
 ])
 export type Message = z.infer<typeof MessageSchema>

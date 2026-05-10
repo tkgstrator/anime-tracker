@@ -92,7 +92,7 @@ model AbemaKeyArchive {
   variantResolution String   @map("variant_resolution") // 例: "1920x1080"
   variantBandwidth  Int      @map("variant_bandwidth") // bps
   segmentUrls       String   @map("segment_urls") // JSON 配列文字列 (D1/SQLite は配列ネイティブ非対応)
-  archivedAt        DateTime @default(now()) @map("archived_at")
+  createdAt         DateTime @default(now()) @map("created_at")
   episode           Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
 
   @@index([programId])
