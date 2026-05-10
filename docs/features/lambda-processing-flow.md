@@ -49,7 +49,7 @@ const TitleListEntrySchema = z.object({
   description: z.string().nonempty(),
   entityType: EntityType,
   imageUrl: z.string().nonempty(),
-  maturityRating: z.number().nullable(),
+  maturityRating: z.number().int().positive().nullable(),
   nextEpisodeDate: z.string().nonempty().optional(),
   badge: BadgeType.optional()
 })
