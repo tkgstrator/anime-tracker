@@ -20,12 +20,12 @@ export const FetchTitleListRequestSchema = z.object({
 
 export const ExpiringEntrySchema = z.object({
   contentId: z.string().nonempty(),
-  expiredAt: z.string().nonempty(),
+  expiredAt: z.iso.datetime(),
   expiringSeason: z.number().nullable()
 })
 
 export const ExpiringResponseSchema = z.object({
-  fetchedAt: z.string().nonempty(),
+  fetchedAt: z.iso.datetime(),
   entries: z.array(ExpiringEntrySchema)
 })
 export type ExpiringResponse = z.infer<typeof ExpiringResponseSchema>
@@ -33,7 +33,7 @@ export type ExpiringResponse = z.infer<typeof ExpiringResponseSchema>
 export const TitleListEntrySchema = TitleSchema.omit({ expiring: true })
 
 export const TitleListResponseSchema = z.object({
-  fetchedAt: z.string().nonempty(),
+  fetchedAt: z.iso.datetime(),
   entries: z.array(TitleListEntrySchema)
 })
 export type TitleListResponse = z.infer<typeof TitleListResponseSchema>

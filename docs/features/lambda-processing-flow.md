@@ -27,12 +27,12 @@
 ```ts
 const ExpiringEntrySchema = z.object({
   contentId: z.string().nonempty(),
-  expiredAt: z.string().nonempty(),
+  expiredAt: z.iso.datetime(),
   expiringSeason: z.number().nullable()
 })
 
 const ExpiringResponseSchema = z.object({
-  fetchedAt: z.string().nonempty(),
+  fetchedAt: z.iso.datetime(),
   entries: z.array(ExpiringEntrySchema)
 })
 ```
@@ -44,7 +44,7 @@ const ExpiringResponseSchema = z.object({
 const TitleListEntrySchema = TitleSchema.omit({ expiring: true })
 
 const TitleListResponseSchema = z.object({
-  fetchedAt: z.string().nonempty(),
+  fetchedAt: z.iso.datetime(),
   entries: z.array(TitleListEntrySchema)
 })
 ```
@@ -62,7 +62,7 @@ const TitleSchema = z.object({
   entityType: EntityType,
   imageUrl: z.url().transform(stripQueryParams),
   maturityRating: z.number().int().positive().nullable(),
-  nextEpisodeDate: z.string().nonempty().optional(),
+  nextEpisodeDate: z.iso.datetime().optional(),
   badge: BadgeType.optional(),
   expiring: z
     .object({
