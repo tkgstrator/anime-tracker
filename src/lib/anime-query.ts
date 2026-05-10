@@ -1,7 +1,6 @@
 import type { AnimeListQuerySchema } from '../schemas/anime.dto'
 
-const EXCLUSIVE_SUBQUERY =
-  'SELECT anilist_id FROM anime WHERE is_identified = 1 GROUP BY anilist_id HAVING COUNT(DISTINCT provider) > 1'
+const EXCLUSIVE_SUBQUERY = 'SELECT anilist_id FROM anime GROUP BY anilist_id HAVING COUNT(DISTINCT provider) > 1'
 
 const SELECT_COLUMNS = [
   'id',
@@ -14,7 +13,6 @@ const SELECT_COLUMNS = [
   'image_url AS imageUrl',
   'year',
   'quarter',
-  'is_identified AS isIdentified',
   'status',
   'anilist_id AS aniListId',
   'badge',
@@ -66,7 +64,7 @@ export function buildExclusiveQuery(params: ExclusiveFilterParams) {
     limit
   } = params
 
-  const conditions: string[] = ['is_identified = 1']
+  const conditions: string[] = []
   const binds: (string | number)[] = []
 
   if (provider) {
