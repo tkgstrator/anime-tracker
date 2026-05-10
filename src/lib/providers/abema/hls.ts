@@ -13,7 +13,7 @@
  * Python 実装と完全に同等になるよう書いている (`nagisa/providers/abema/hls.py`)。
  */
 
-import { ABEMA_DEVICE_ID, getAccessToken } from './auth'
+import { getGuestSession } from './auth'
 
 // =====================================================================
 // 定数 — Python (nagisa/providers/abema/hls.py:52, constants.py) と同期必須
@@ -361,6 +361,8 @@ export interface BuildKeysArchiveInput {
   masterUrl?: string
   /** 選択する解像度の上限 (例: 180 / 720 / 1080)。0 で最高画質 */
   targetHeight?: number
+  /** KEK 派生に使う device_id。getGuestSession() の deviceId と必ず同じ値を渡す */
+  deviceId?: string
 }
 
 export interface BuildKeysArchiveDeps {
@@ -413,12 +415,12 @@ export async function buildKeysArchive(
     throw new Error(`unexpected IV length ${variant.keys[0].iv.length}`)
   }
 
-  const bearer = await getAccessToken()
+  const session = await getGuestSession()
   const lic = await requestLicense(variant.keys[0].licenseTicket, {
     mediaToken: input.mediaToken,
-    bearer
+    bearer: session.token
   })
-  const contentKey = await unwrapContentKey(lic.k, lic.cid, ABEMA_DEVICE_ID)
+  const contentKey = await unwrapContentKey(lic.k, lic.cid, input.deviceId ?? session.deviceId)
 
   return {
     programId: input.programId,
