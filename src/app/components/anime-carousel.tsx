@@ -96,7 +96,10 @@ function CarouselCard({
           </div>
         )}
         {badgeType && badgeDate && (
-          <Badge variant='secondary' className='absolute bottom-1 left-1 bg-black/70 text-[10px] text-white'>
+          <Badge
+            variant='secondary'
+            className='absolute bottom-1 left-1 bg-overlay text-[10px] text-overlay-foreground'
+          >
             {formatDateBadge(badgeDate, badgeType)}
           </Badge>
         )}

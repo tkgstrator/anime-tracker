@@ -38,7 +38,7 @@ function RecordingsPage() {
       {anime.length === 0 ? (
         <div className='py-20 text-center'>
           <p className='text-muted-foreground'>録画予約されたタイトルはありません</p>
-          <Link to='/' className='mt-2 inline-block text-sm text-blue-500 hover:underline'>
+          <Link to='/' className='mt-2 inline-block text-sm text-primary hover:underline'>
             アニメ一覧から予約する
           </Link>
         </div>
@@ -70,7 +70,7 @@ function RecordingsPage() {
                     </span>
                   )}
                   {item.recorded && (
-                    <Badge variant='secondary' className='bg-emerald-500/15 text-emerald-700'>
+                    <Badge variant='secondary' className='bg-success/15 text-success'>
                       録画済み
                     </Badge>
                   )}

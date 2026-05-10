@@ -7,6 +7,7 @@ import { useCallback, useMemo } from 'react'
 import { z } from 'zod'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { SmartPagination } from '@/app/components/smart-pagination'
+import { Button } from '@/app/components/ui/button'
 import { type BrowseFilters, browseFiltersAtom, defaultBrowseFilters } from '@/app/lib/atoms'
 import { animeListQueryOptions } from '@/app/lib/query-options'
 import { ProviderTypeEnum } from '@/schemas/message.dto'
@@ -20,6 +21,8 @@ export const Route = createFileRoute('/browse/')({
   validateSearch: z.object({
     provider: ProviderTypeEnum.optional()
   }),
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(animeListQueryOptions({ page: 1, limit: PAGE_SIZE, sort: 'title', order: 'asc' })),
   pendingComponent: LoadingSpinner,
   component: AnimeListPage
 })
@@ -168,23 +171,22 @@ function AnimeListPage() {
           ]}
           onSelect={setFilter('sort')}
         />
-        <button
+        <Button
           type='button'
+          size='lg'
+          variant='ghost'
           onClick={() => setFilters((prev) => ({ ...prev, order: prev.order === 'asc' ? 'desc' : 'asc' }))}
-          className='inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted'
+          aria-label={filters.order === 'asc' ? '昇順' : '降順'}
           title={filters.order === 'asc' ? '昇順' : '降順'}
+          className='text-muted-foreground'
         >
-          {filters.order === 'asc' ? <ArrowDownAZ className='h-4 w-4' /> : <ArrowUpAZ className='h-4 w-4' />}
-        </button>
+          {filters.order === 'asc' ? <ArrowDownAZ /> : <ArrowUpAZ />}
+        </Button>
         {hasFilters && (
-          <button
-            type='button'
-            onClick={resetFilters}
-            className='inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted'
-          >
-            <X className='h-3.5 w-3.5' />
+          <Button type='button' size='lg' variant='ghost' onClick={resetFilters} className='text-muted-foreground'>
+            <X />
             リセット
-          </button>
+          </Button>
         )}
       </div>
 
