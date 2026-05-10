@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useSetAtom } from 'jotai'
-import { Circle, CircleCheck, Clock, ExternalLink, Film, Tv } from 'lucide-react'
+import { Circle, CircleCheck, Clock, ExternalLink, Film, RefreshCw, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
@@ -15,15 +15,19 @@ export function AnimeHero({
   totalEpisodes,
   totalDuration,
   updating,
+  refreshing,
   onToggleScheduled,
-  onToggleRecorded
+  onToggleRecorded,
+  onRefresh
 }: {
   anime: AnimeInfoSchema
   totalEpisodes: number
   totalDuration: number
   updating: boolean
+  refreshing: boolean
   onToggleScheduled: () => void
   onToggleRecorded: () => void
+  onRefresh: () => void
 }) {
   const setFilters = useSetAtom(browseFiltersAtom)
   const titleUrl = getProviderTitleUrl(anime.provider, anime.contentId)
@@ -109,6 +113,19 @@ export function AnimeHero({
                 }
               />
             )}
+            <Button
+              type='button'
+              size='lg'
+              variant='ghost'
+              onClick={onRefresh}
+              disabled={updating}
+              aria-label='タイトル情報を再取得'
+              title='タイトル情報を再取得'
+              className='text-muted-foreground'
+            >
+              <RefreshCw className={refreshing ? 'animate-spin' : undefined} />
+              <span className='hidden sm:inline'>更新</span>
+            </Button>
           </div>
           <p className='text-xs text-muted-foreground'>
             予約 = 新規エピソードを自動録画 / 今すぐ録画 = 公開済みエピソードを一括録画
