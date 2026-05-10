@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Film } from 'lucide-react'
 import { ProviderBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
@@ -96,8 +96,9 @@ function CarouselCard({
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (
-          <div className='flex h-full items-center justify-center p-2 text-center text-xs text-muted-foreground'>
-            {anime.title}
+          <div className='flex h-full flex-col items-center justify-center gap-1.5 p-2 text-center text-xs text-muted-foreground'>
+            <Film className='size-5 opacity-60' aria-hidden='true' />
+            <span className='line-clamp-2'>{anime.title}</span>
           </div>
         )}
         {badgeType && badgeDate && (
