@@ -26,13 +26,13 @@
 
 ```ts
 const ExpiringEntrySchema = z.object({
-  contentId: z.string(),
-  expiredAt: z.string(),
+  contentId: z.string().nonempty(),
+  expiredAt: z.string().nonempty(),
   expiringSeason: z.number().nullable()
 })
 
 const ExpiringResponseSchema = z.object({
-  fetchedAt: z.string(),
+  fetchedAt: z.string().nonempty(),
   entries: z.array(ExpiringEntrySchema)
 })
 ```
@@ -43,18 +43,18 @@ const ExpiringResponseSchema = z.object({
 const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
 
 const TitleListEntrySchema = z.object({
-  contentId: z.string(),
-  title: z.string(),
-  description: z.string(),
-  entityType: z.string(),
-  imageUrl: z.string().nullable(),
+  contentId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  entityType: z.string().nonempty(),
+  imageUrl: z.string().nonempty(),
   maturityRating: z.number().nullable(),
-  nextEpisodeDate: z.string().nullable(),
-  badge: BadgeType.nullable()
+  nextEpisodeDate: z.string().nonempty().optional(),
+  badge: BadgeType.optional()
 })
 
 const TitleListResponseSchema = z.object({
-  fetchedAt: z.string(),
+  fetchedAt: z.string().nonempty(),
   entries: z.array(TitleListEntrySchema)
 })
 ```
@@ -110,7 +110,7 @@ const TitleStatusTypeEnum = z.enum([
 const IdentifyResultSchema = z
   .object({
     aniListId: z.number().int().optional(),
-    title: z.string(),
+    title: z.string().nonempty(),
     status: TitleStatusTypeEnum,
     year: z.number().int(),
     quarter: z.number().int()
@@ -261,3 +261,17 @@ Workers 側は受け取った JSON を Zod でパースしてから返す:
 - `/identify` → `IdentifyResponseSchema`
 
 `lambda/fetch/index.ts` 内部でも `MetadataMediaSchema.safeParse` で AniList レスポンスを検証している。
+
+### ローカル実行
+
+handler は普通の async 関数なので AWS にデプロイしなくても直接呼べる。`scripts/lambda/local.ts` を経由する:
+
+```sh
+bun scripts/lambda/local.ts /title_list '{"provider":"amazon","category":"new_episode"}'
+bun scripts/lambda/local.ts /expiring   '{"provider":"hulu"}'
+bun scripts/lambda/local.ts /title_info '{"provider":"abema","contentId":"..."}'
+bun scripts/lambda/local.ts /identify   '{"titles":["呪術廻戦"]}'
+```
+
+- Crunchyroll は VPN 必須なのでローカル実行不可
+- AWS への `scripts/lambda/invoke.sh` 経由のデプロイ済関数呼び出しと使い分け
