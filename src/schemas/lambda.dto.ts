@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BadgeType, TitleStatusTypeEnum } from './providers/common.dto'
+import { BadgeType, EntityType, TitleStatusTypeEnum } from './providers/common.dto'
 
 // ---- リクエスト ----
 
@@ -34,7 +34,7 @@ export const TitleListEntrySchema = z.object({
   contentId: z.string().nonempty(),
   title: z.string().nonempty(),
   description: z.string().nonempty(),
-  entityType: z.string().nonempty(),
+  entityType: EntityType,
   imageUrl: z.string().nonempty(),
   maturityRating: z.number().nullable(),
   nextEpisodeDate: z.string().nonempty().optional(),
