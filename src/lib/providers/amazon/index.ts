@@ -4,9 +4,9 @@ import {
   type PaginateResponse,
   PaginateResponseSchema
 } from '../../../schemas/providers/amazon.dto'
-import { type Title, type TitleInfo, TitleSchema } from '../../../schemas/providers/common.dto'
+import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { getAppLogger } from '../../logger'
-import { type FetchTitleListOptions, Provider } from '../base'
+import { Provider } from '../base'
 import { buildPaginationToken } from './browse'
 
 export { buildServiceToken } from './browse'
@@ -89,65 +89,36 @@ async function paginateCollection(
 export class AmazonProvider extends Provider {
   readonly name = 'amazon'
 
-  /**
-   * Prime Video のアニメタイトル一覧を取得する。
-   *
-   * - `expiring`: 「配信終了間近」カテゴリのみ取得
-   * - `new_episode`: 新着アニメ (NEW_EPISODE + RECENTLY_ADDED)
-   * - 未指定: 全タイトル取得
-   * @returns アニメタイトル一覧
-   */
-  async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const category = options?.category
-    const mode = category ?? 'all'
-    logger.info({ action: 'fetch-title-list-start', mode })
+  protected async fetchNewEpisode(): Promise<Title[]> {
+    logger.info({ action: 'fetch-title-list-start', mode: 'new_episode' })
+    const [svodRaw, channelTitles] = await Promise.all([
+      this.fetchPages({ newAnime: true as const }, 'new_episode'),
+      fetchAllChannelNewArrivals()
+    ])
+    const svod = svodRaw.filter((t) => t.badge === 'NEW_EPISODE' || t.badge === 'RECENTLY_ADDED')
+    const titles = this.dedupeBy([...svod, ...channelTitles], (t) => t.contentId)
+    logger.info({
+      action: 'fetch-title-list-done',
+      mode: 'new_episode',
+      svod: svod.length,
+      channels: channelTitles.length,
+      union: titles.length
+    })
+    return titles
+  }
 
-    if (category === 'expiring') {
-      const cached = await this.cache?.get('browse:expiring:latest')
-      if (cached) {
-        const envelope = JSON.parse(cached)
-        const result = TitleSchema.array().safeParse(envelope.titles)
-        if (!result.success) throw result.error
-        const titles = result.data
-        logger.info({ action: 'fetch-title-list-cached', mode, fetchedAt: envelope.fetchedAt, count: titles.length })
-        return titles
-      }
-    }
+  protected async fetchExpiring(): Promise<Title[]> {
+    logger.info({ action: 'fetch-title-list-start', mode: 'expiring' })
+    const titles = await this.fetchPages({ expiring: true as const }, 'expiring')
+    logger.info({ action: 'fetch-title-list-done', mode: 'expiring', count: titles.length })
+    return titles
+  }
 
-    // new_episode: svod (NEW_EPISODE + RECENTLY_ADDED) ∪ channel 新着 carousels
-    if (category === 'new_episode') {
-      const [svodRaw, channelTitles] = await Promise.all([
-        this.fetchPages({ newAnime: true as const }, 'new_episode'),
-        fetchAllChannelNewArrivals()
-      ])
-      const svod = svodRaw.filter((t) => t.badge === 'NEW_EPISODE' || t.badge === 'RECENTLY_ADDED')
-      const seen = new Set<string>()
-      const result: Title[] = []
-      for (const t of [...svod, ...channelTitles]) {
-        if (seen.has(t.contentId)) continue
-        seen.add(t.contentId)
-        result.push(t)
-      }
-      logger.info({
-        action: 'fetch-title-list-done',
-        mode: 'new_episode',
-        svod: svod.length,
-        channels: channelTitles.length,
-        union: result.length
-      })
-      return result
-    }
-
-    const buildOptions = category === 'expiring' ? { expiring: true as const } : undefined
-    const allTitles = await this.fetchPages(buildOptions, mode)
-    if (category === 'coming_soon') {
-      // Amazon にはもうすぐ配信のバッジがないため空を返す
-      logger.info({ action: 'fetch-title-list-done', mode, count: 0 })
-      return []
-    }
-
-    logger.info({ action: 'fetch-title-list-done', mode, count: allTitles.length })
-    return allTitles
+  protected async fetchCatalog(): Promise<Title[]> {
+    logger.info({ action: 'fetch-title-list-start', mode: 'catalog' })
+    const titles = await this.fetchPages(undefined, 'catalog')
+    logger.info({ action: 'fetch-title-list-done', mode: 'catalog', count: titles.length })
+    return titles
   }
 
   /**
