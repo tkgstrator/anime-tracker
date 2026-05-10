@@ -129,7 +129,7 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
                   imageUrl: page.imageUrl,
                   hasSubtitles: page.hasSubtitles,
                   hasDub: page.hasDub,
-                  benefitId: null
+                  benefitId: 'amazon'
                 })
                 if (!result.success) throw result.error
                 return [result.data]

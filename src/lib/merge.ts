@@ -23,7 +23,7 @@ export interface MergedEpisode {
     string,
     {
       episodeId: string
-      benefitId: string | null
+      benefitId: string
       hasSubtitles: boolean
       hasDub: boolean
       maturityRating: number | null
