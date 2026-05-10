@@ -35,7 +35,7 @@ enabled = true
 head_sampling_rate = 1
 
 [triggers]
-crons = ["0 */1 * * *", "0 0 * * *"]
+crons = ["0 */1 * * *", "0 0 * * *", "0 4 * * *"]
 
 [[queues.producers]]
 binding = "SYNC_QUEUE"

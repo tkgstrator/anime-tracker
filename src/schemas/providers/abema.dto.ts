@@ -166,3 +166,12 @@ export const ProgramsResponseSchema = z.object({
   programs: z.array(ProgramSchema).default([]),
   version: z.unknown().optional()
 })
+
+// --- Single program (broadcast info) ---
+
+export const ProgramBroadcastResponseSchema = z.object({
+  data: z.object({
+    programId: z.string().nonempty(),
+    broadcastDate: z.number().int().positive().optional()
+  })
+})

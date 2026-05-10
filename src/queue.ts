@@ -2,6 +2,8 @@ import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
+import { getGuestSession } from './lib/providers/abema/auth'
+import { buildKeysArchive, fetchMediaToken } from './lib/providers/abema/hls'
 import { SyncService } from './lib/sync'
 
 import type { Message } from './schemas/message.dto'
@@ -64,6 +66,53 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
               await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
             }
             logger.info({ action: 'bulk-enqueue', provider, count: contentIds.length })
+            break
+          }
+          case 'abema_archive': {
+            const { animeId } = message.body.message
+            const eps = await prisma.episode.findMany({
+              where: { season: { animeId }, abemaKey: null },
+              select: { id: true, episodeId: true }
+            })
+            if (eps.length === 0) {
+              logger.info({ action: 'abema-archive-skip', animeId, reason: 'all keys present' })
+              break
+            }
+            const session = await getGuestSession()
+            const mediaToken = await fetchMediaToken({ bearer: session.token })
+            const stats = { ok: 0, fail: 0 }
+            for (const ep of eps) {
+              try {
+                const archive = await buildKeysArchive({
+                  programId: ep.episodeId,
+                  deviceId: session.deviceId,
+                  mediaToken
+                })
+                await prisma.abemaKeyArchive.create({
+                  data: {
+                    episodeId: ep.id,
+                    programId: archive.programId,
+                    cid: archive.cid,
+                    contentKeyHex: archive.contentKeyHex,
+                    ivHex: archive.ivHex,
+                    variantUrl: archive.variantUrl,
+                    variantResolution: archive.variantResolution,
+                    variantBandwidth: archive.variantBandwidth,
+                    segmentUrls: JSON.stringify(archive.segmentUrls)
+                  }
+                })
+                stats.ok += 1
+              } catch (e) {
+                stats.fail += 1
+                logger.warn({
+                  action: 'abema-archive-episode-failed',
+                  animeId,
+                  episodeId: ep.episodeId,
+                  reason: e instanceof Error ? e.message : String(e)
+                })
+              }
+            }
+            logger.info({ action: 'abema-archive-done', animeId, total: eps.length, ...stats })
             break
           }
         }

@@ -5,7 +5,20 @@ const LOGIN_URL = 'https://abema.tv/api/auth/login/guest'
 const HMAC_SECRET =
   'v+Gjs=25Aw5erR!J8ZuvRrCx*rGswhB&qdHd_SYerEWdU&a?3DzN9BRbp5KwY4hEmcj5#fykMjJ=AuWz5GSMY-d@H7DMEh3M@9n2G552Us$$k9cD=3TxwWe86!x#Zyhe'
 
-const tokenCache = { token: null as string | null, expiresAt: dayjs(0) }
+export interface AbemaGuestSession {
+  token: string
+  deviceId: string
+}
+
+/**
+ * ABEMA は同じ device_id での再ログインを 409 Conflict で弾くため、isolate 内で
+ * セッションを使い回す必要がある。一方で KEK 派生は token 取得時の device_id と
+ * 同じ値を使う必要があるので、token と device_id をペアでキャッシュする。
+ */
+const sessionCache: { session: AbemaGuestSession | null; expiresAt: dayjs.Dayjs } = {
+  session: null,
+  expiresAt: dayjs(0)
+}
 
 function toBase64Url(buf: Uint8Array): string {
   return btoa(String.fromCharCode(...buf))
@@ -53,8 +66,8 @@ function getKeyDate(): Date {
   return d
 }
 
-export async function getAccessToken(): Promise<string> {
-  if (tokenCache.token && dayjs().isBefore(tokenCache.expiresAt)) return tokenCache.token
+export async function getGuestSession(): Promise<AbemaGuestSession> {
+  if (sessionCache.session && dayjs().isBefore(sessionCache.expiresAt)) return sessionCache.session
 
   const deviceId = crypto.randomUUID()
   const keyDate = getKeyDate()
@@ -82,7 +95,13 @@ export async function getAccessToken(): Promise<string> {
   const result = AbemaTokenResponseSchema.safeParse(await res.json())
   if (!result.success) throw result.error
 
-  tokenCache.token = result.data.access_token
-  tokenCache.expiresAt = dayjs().add(2, 'hour')
-  return tokenCache.token
+  const session: AbemaGuestSession = { token: result.data.access_token, deviceId }
+  sessionCache.session = session
+  sessionCache.expiresAt = dayjs().add(2, 'hour')
+  return session
+}
+
+export async function getAccessToken(): Promise<string> {
+  const { token } = await getGuestSession()
+  return token
 }

@@ -3,6 +3,7 @@ import {
   buildImageUrl,
   type OrderedSeason,
   type Program,
+  ProgramBroadcastResponseSchema,
   ProgramsResponseSchema,
   SeriesDetailSchema
 } from '../../../schemas/providers/abema.dto'
@@ -28,18 +29,30 @@ async function fetchPrograms(seriesId: string, seasonId: string): Promise<Progra
   return result.data.programs
 }
 
+async function fetchBroadcastDate(programId: string): Promise<number | null> {
+  const raw = await abemaGet(`${API_BASE}/v1/video/b/programs/${programId}`, {}).catch(() => null)
+  if (!raw) return null
+  const result = ProgramBroadcastResponseSchema.safeParse(raw)
+  if (!result.success) return null
+  return result.data.data.broadcastDate ?? null
+}
+
 function buildProgramImageUrl(programId: string, thumbImg?: string): string {
   if (!thumbImg) return 'https://abema.tv/favicon.ico'
   return `https://image.p-c2-x.abema-tv.com/image/programs/${programId}/${thumbImg}.png`
 }
 
-function mapProgram(program: Program): Episode | null {
+function mapProgram(program: Program, broadcastDate: number | null): Episode | null {
   const ep = program.episode
   if (!ep) return null
   if (!Number.isInteger(ep.number) || ep.number < 0) return null
 
   const released = program.credit?.released
-  const releaseDate = released ? dayjs(`${released}-01-01`).toISOString() : dayjs().toISOString()
+  const releaseDate = broadcastDate
+    ? dayjs.unix(broadcastDate).toISOString()
+    : released
+      ? dayjs(`${released}-01-01`).toISOString()
+      : dayjs().toISOString()
 
   return {
     episodeNumber: ep.number,
@@ -72,11 +85,17 @@ export async function fetchAbemaTitleDetail(seriesId: string): Promise<TitleInfo
     return first ? buildImageUrl(first) : 'https://abema.tv/favicon.ico'
   })()
 
+  const broadcastDates = await Promise.all(
+    seasonPrograms.map((programs) => Promise.all(programs.map((p) => fetchBroadcastDate(p.id))))
+  )
+
   const seasons: Season[] = targetSeasons.map((s: OrderedSeason, i: number) => ({
     seasonId: s.id,
     displayName: s.name || `Season ${s.sequence}`,
     seasonNumber: s.sequence || i + 1,
-    episodes: seasonPrograms[i].map((p) => mapProgram(p)).filter((ep): ep is Episode => ep !== null)
+    episodes: seasonPrograms[i]
+      .map((p, j) => mapProgram(p, broadcastDates[i][j]))
+      .filter((ep): ep is Episode => ep !== null)
   }))
 
   return {
