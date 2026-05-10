@@ -5,12 +5,13 @@
  * Abema slice. Other providers are untouched.
  */
 import { Database } from 'bun:sqlite'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, statSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const LOCAL_DB = '.wrangler/state/v3/d1/miniflare-D1DatabaseObject/c289ae8601b8c4b5b07e7123fe2ec79ba670a1ad0ce6f48c80d8b0b231d2555f.sqlite'
 const REMOTE_DB = 'anime-tracker-staging'
-const CHUNK = 200
+const CHUNK = 50
+const MAX_FILE_BYTES = 4 * 1024 * 1024
 
 const db = new Database(LOCAL_DB, { readonly: true })
 
@@ -69,32 +70,54 @@ console.log(`  episodes: ${episodes.length}`)
 const keys = db.prepare('SELECT * FROM abema_key_archives').all() as Row[]
 console.log(`  keys: ${keys.length}`)
 
-console.log('[2/5] Building SQL...')
-const stmts: string[] = []
-stmts.push('PRAGMA defer_foreign_keys = ON;')
-stmts.push("DELETE FROM anime WHERE provider = 'abema';")
-stmts.push(...buildInserts('anime', animes))
-stmts.push(...buildInserts('seasons', seasons))
-stmts.push(...buildInserts('episodes', episodes))
-stmts.push(...buildInserts('abema_key_archives', keys))
-
+console.log('[2/5] Building SQL files (chunked under file-size limit)...')
 mkdirSync('.cache', { recursive: true })
 const ts = Math.floor(Date.now() / 1000)
-const outFile = `.cache/abema-to-remote-${ts}.sql`
-writeFileSync(outFile, stmts.join('\n'))
-const sizeMb = (Buffer.byteLength(stmts.join('\n')) / 1024 / 1024).toFixed(1)
-console.log(`  wrote ${outFile} (${sizeMb} MB, ${stmts.length} statements)`)
+const dir = `.cache/abema-to-remote-${ts}`
+mkdirSync(dir, { recursive: true })
+
+function writeChunkedFiles(prefix: string, statements: string[]): string[] {
+  const files: string[] = []
+  let buf = ''
+  let idx = 0
+  const flush = () => {
+    if (!buf) return
+    const file = `${dir}/${prefix}-${String(idx).padStart(3, '0')}.sql`
+    writeFileSync(file, buf)
+    files.push(file)
+    buf = ''
+    idx += 1
+  }
+  for (const stmt of statements) {
+    if (buf && Buffer.byteLength(buf) + Buffer.byteLength(stmt) + 1 > MAX_FILE_BYTES) flush()
+    buf = buf ? `${buf}\n${stmt}` : stmt
+  }
+  flush()
+  return files
+}
+
+const allFiles: string[] = [
+  ...writeChunkedFiles('00-delete', ["DELETE FROM anime WHERE provider = 'abema';"]),
+  ...writeChunkedFiles('01-anime', buildInserts('anime', animes)),
+  ...writeChunkedFiles('02-seasons', buildInserts('seasons', seasons)),
+  ...writeChunkedFiles('03-episodes', buildInserts('episodes', episodes)),
+  ...writeChunkedFiles('04-keys', buildInserts('abema_key_archives', keys))
+]
+console.log(`  wrote ${allFiles.length} files in ${dir}`)
 
 console.log('[3/5] Applying to remote D1 (this may take a while)...')
 const env = { ...process.env }
-const result = spawnSync(
-  'bunx',
-  ['wrangler', 'd1', 'execute', REMOTE_DB, '--remote', '--file', outFile, '-y'],
-  { stdio: 'inherit', env }
-)
-if (result.status !== 0) {
-  console.error(`wrangler d1 execute failed: status=${result.status}`)
-  process.exit(result.status ?? 1)
+for (const file of allFiles) {
+  console.log(`  applying ${file} (${(statSync(file).size / 1024) | 0} KB)`)
+  const result = spawnSync(
+    'bunx',
+    ['wrangler', 'd1', 'execute', REMOTE_DB, '--remote', '--file', file, '-y'],
+    { stdio: 'inherit', env }
+  )
+  if (result.status !== 0) {
+    console.error(`wrangler d1 execute failed for ${file}: status=${result.status}`)
+    process.exit(result.status ?? 1)
+  }
 }
 
 console.log('[4/5] Verifying remote counts...')
