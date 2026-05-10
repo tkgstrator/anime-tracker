@@ -51,6 +51,12 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
           logger.info({ action: 'enqueue', provider, category: 'expiring' })
         }
         break
+      case '0 3 * * *':
+        for (const provider of providers) {
+          await env.SYNC_QUEUE.send({ type: 'fetch', message: { provider, category: 'catalog' } })
+          logger.info({ action: 'enqueue', provider, category: 'catalog' })
+        }
+        break
       case '0 4 * * *': {
         const count = await enqueueAbemaArchive(env)
         logger.info({ action: 'enqueue-abema-archive', count })
