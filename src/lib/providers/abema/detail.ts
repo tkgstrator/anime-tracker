@@ -68,7 +68,7 @@ function mapProgram(program: Program, broadcastDate: number | null): Episode | n
     ),
     hasSubtitles: false,
     hasDub: false,
-    benefitId: null
+    benefitId: 'abema'
   }
 }
 
