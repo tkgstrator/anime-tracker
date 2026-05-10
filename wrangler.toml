@@ -55,6 +55,7 @@ local_protocol = "http"
 
 [env.staging]
 name = "anime-tracker-staging"
+routes = [{ pattern = "nagisa-staging.tkgstrator.work", custom_domain = true }]
 
 [env.staging.vars]
 CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
