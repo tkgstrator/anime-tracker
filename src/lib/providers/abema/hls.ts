@@ -79,7 +79,7 @@ export interface KeysArchive {
 // 純関数: hex / base58 / playlist パース
 // =====================================================================
 
-function hexToBytes(hex: string): Uint8Array {
+function hexToBytes(hex: string): Uint8Array<ArrayBuffer> {
   if (hex.length % 2 !== 0) throw new Error(`hex length must be even, got ${hex.length}`)
   const out = new Uint8Array(hex.length / 2)
   for (let i = 0; i < out.length; i++) {
@@ -96,7 +96,7 @@ function bytesToHex(b: Uint8Array): string {
  * ABEMA で使われる base58 文字列 (16 バイト固定) を Uint8Array に decode。
  * encrypted content key の取り出し用。
  */
-export function base58Decode16(s: string): Uint8Array {
+export function base58Decode16(s: string): Uint8Array<ArrayBuffer> {
   // BigInt で累積乗算 (16 bytes → 128 bit、JS の Number だと精度不足)
   let n = 0n
   for (const c of s) {
@@ -191,7 +191,7 @@ export function parseVariantPlaylist(text: string, baseUrl: string): HlsVariant 
  * KEK = HMAC-SHA256(HMAC_KEY, cid + device_id) — 32 bytes。
  * Python 実装 (`nagisa/providers/abema/hls.py:derive_kek`) と完全等価。
  */
-export async function deriveKek(cid: string, deviceId: string): Promise<Uint8Array> {
+export async function deriveKek(cid: string, deviceId: string): Promise<Uint8Array<ArrayBuffer>> {
   const enc = new TextEncoder()
   const keyBytes = hexToBytes(HMAC_KEY_HEX)
   const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
@@ -208,7 +208,11 @@ export async function deriveKek(cid: string, deviceId: string): Promise<Uint8Arr
  * pycryptodome の `AES.new(kek, MODE_ECB).decrypt(encrypted)` と完全に同じ
  * 結果を返す。
  */
-export async function unwrapContentKey(encryptedKeyB58: string, cid: string, deviceId: string): Promise<Uint8Array> {
+export async function unwrapContentKey(
+  encryptedKeyB58: string,
+  cid: string,
+  deviceId: string
+): Promise<Uint8Array<ArrayBuffer>> {
   const encrypted = base58Decode16(encryptedKeyB58)
   if (encrypted.length !== 16) throw new Error(`encrypted key must be 16 bytes, got ${encrypted.length}`)
   const kek = await deriveKek(cid, deviceId)
@@ -252,7 +256,10 @@ export async function unwrapContentKey(encryptedKeyB58: string, cid: string, dev
  * WebCrypto には ECB が無いので、IV=0 の AES-CBC で 1 ブロック暗号化と等価。
  * (pkcs7 padding が付くため出力は 32 bytes、先頭 16B が真の暗号文)
  */
-async function aesEcbEncryptBlock(key: Uint8Array, block: Uint8Array): Promise<Uint8Array> {
+async function aesEcbEncryptBlock(
+  key: Uint8Array<ArrayBuffer>,
+  block: Uint8Array<ArrayBuffer>
+): Promise<Uint8Array<ArrayBuffer>> {
   if (block.length !== 16) throw new Error('aesEcbEncryptBlock requires exactly 16 bytes input')
   const cryptoKey = await crypto.subtle.importKey('raw', key, { name: 'AES-CBC', length: key.length * 8 }, false, [
     'encrypt'
