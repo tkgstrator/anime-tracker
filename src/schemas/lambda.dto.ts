@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BadgeType, EntityType, TitleStatusTypeEnum } from './providers/common.dto'
+import { TitleSchema, TitleStatusTypeEnum } from './providers/common.dto'
 
 // ---- リクエスト ----
 
@@ -30,16 +30,7 @@ export const ExpiringResponseSchema = z.object({
 })
 export type ExpiringResponse = z.infer<typeof ExpiringResponseSchema>
 
-export const TitleListEntrySchema = z.object({
-  contentId: z.string().nonempty(),
-  title: z.string().nonempty(),
-  description: z.string().nonempty(),
-  entityType: EntityType,
-  imageUrl: z.string().nonempty(),
-  maturityRating: z.number().int().positive().nullable(),
-  nextEpisodeDate: z.string().nonempty().optional(),
-  badge: BadgeType.optional()
-})
+export const TitleListEntrySchema = TitleSchema.omit({ expiring: true })
 
 export const TitleListResponseSchema = z.object({
   fetchedAt: z.string().nonempty(),
