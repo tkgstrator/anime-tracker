@@ -7,7 +7,7 @@ import {
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import { getAppLogger } from '../../logger'
 import { Provider } from '../base'
-import { buildPaginationToken } from './browse'
+import { type BuildOptions, buildPaginationToken } from './browse'
 
 export { buildServiceToken } from './browse'
 
@@ -38,6 +38,48 @@ const DYNAMIC_FEATURES = [
 
 /** 新着系として打ち切り判定に使うバッジ */
 const NEW_BADGES = new Set(['新エピソード', '新着', '新作'])
+
+/**
+ * catalog 全件列挙用のソート値。
+ * 同じカタログでもソートを変えると返るタイトルセットが変わるため、複数を merge する。
+ *
+ * - featured-rank は他と完全重複するので除外。
+ * - pv-public-release-date-asc-rank は Amazon が browse ページにページネーショントークンを
+ *   埋め込まず結果が返らないため除外。
+ */
+const CATALOG_SORT_VALUES = [
+  'titlerank',
+  'review-rank',
+  'relevancerank',
+  'price-desc-rank',
+  'price-asc-rank',
+  'date-desc-rank',
+  'date-asc-rank',
+  'pv-public-release-date-desc-rank'
+] as const
+
+/** catalog の base pass。各 base pass を全 sort 値で叩く */
+const CATALOG_BASE_PASSES: { label: string; opts: Omit<BuildOptions, 'sort' | 'sortValue'> }[] = [
+  { label: 'svod', opts: { offer: 'svod' } },
+  { label: 'svod-genre-bin', opts: { offer: 'svod', genreBin: true } },
+  { label: 'tvod', opts: { offer: 'tvod' } },
+  { label: 'tvod-genre-bin', opts: { offer: 'tvod', genreBin: true } },
+  { label: 'subscription', opts: { offer: 'subscription' } },
+  { label: 'subscription-genre-bin', opts: { offer: 'subscription', genreBin: true } },
+  { label: 'danime', opts: { offer: 'subscription', subscriptionId: 'danime', benefit: 'danime' } },
+  {
+    label: 'animetimesjp',
+    opts: { offer: 'subscription', subscriptionId: 'animetimesjp', benefit: 'animetimesjp', node: '2351649051' }
+  }
+]
+
+/** 全 catalog パス (base × sort 値) */
+const CATALOG_PASSES: { label: string; opts: BuildOptions }[] = CATALOG_BASE_PASSES.flatMap(({ label, opts }) =>
+  CATALOG_SORT_VALUES.map((sv) => ({
+    label: `${label}/${sv}`,
+    opts: { ...opts, sort: true, sortValue: sv }
+  }))
+)
 
 /**
  * paginateCollection API を呼び出してタイトル一覧の続きを取得する。
@@ -115,10 +157,37 @@ export class AmazonProvider extends Provider {
   }
 
   protected async fetchCatalog(): Promise<Title[]> {
-    logger.info({ action: 'fetch-title-list-start', mode: 'catalog' })
-    const titles = await this.fetchPages(undefined, 'catalog')
+    logger.info({ action: 'fetch-title-list-start', mode: 'catalog', passes: CATALOG_PASSES.length })
+    const cookie = await this.fetchCookie('catalog')
+    const merged = new Map<string, Title>()
+    for (const pass of CATALOG_PASSES) {
+      const passTitles = await this.paginateAll(cookie, pass.opts, `catalog/${pass.label}`)
+      for (const t of passTitles) {
+        if (!merged.has(t.contentId)) merged.set(t.contentId, t)
+      }
+      logger.info({
+        action: 'catalog-pass-done',
+        label: pass.label,
+        pass: passTitles.length,
+        merged: merged.size
+      })
+    }
+    const titles = [...merged.values()]
     logger.info({ action: 'fetch-title-list-done', mode: 'catalog', count: titles.length })
     return titles
+  }
+
+  private async fetchCookie(label: string): Promise<string> {
+    const res = await fetch('https://www.amazon.co.jp/gp/video/', {
+      headers: FETCH_HEADERS,
+      redirect: 'manual'
+    })
+    const cookie = res.headers
+      .getSetCookie()
+      .map((c) => c.split(';')[0])
+      .join('; ')
+    logger.debug({ action: 'fetch-cookie', label, hasCookie: cookie.length > 0 })
+    return cookie
   }
 
   /**
@@ -128,22 +197,18 @@ export class AmazonProvider extends Provider {
    * newAnime モードでは新着系バッジが連続で出なくなったら早期に打ち切る。
    */
   private async fetchPages(buildOptions: Parameters<typeof buildPaginationToken>[0], label: string): Promise<Title[]> {
-    // 1. 軽量ページから Cookie を取得
-    const cookieRes = await fetch('https://www.amazon.co.jp/gp/video/', {
-      headers: FETCH_HEADERS,
-      redirect: 'manual'
-    })
-    const cookie = cookieRes.headers
-      .getSetCookie()
-      .map((c) => c.split(';')[0])
-      .join('; ')
-    logger.debug({ action: 'fetch-cookie', label, hasCookie: cookie.length > 0 })
+    const cookie = await this.fetchCookie(label)
+    return this.paginateAll(cookie, buildOptions, label)
+  }
 
-    // 2. ページネーショントークンを自前生成
+  private async paginateAll(
+    cookie: string,
+    buildOptions: Parameters<typeof buildPaginationToken>[0],
+    label: string
+  ): Promise<Title[]> {
     const serviceToken = buildPaginationToken(buildOptions)
     const params: PaginateParams = { paginationTargetId: 'default', serviceToken }
 
-    // 3. 順次取得（newAnime は早期打ち切りあり）
     const earlyStop = !!buildOptions?.newAnime
     const MAX_EMPTY_PAGES = 2
 
