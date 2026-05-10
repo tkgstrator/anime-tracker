@@ -14,7 +14,6 @@ export const AnimeSchema = z.object({
   imageUrl: z.url(),
   year: z.number().int(),
   quarter: z.number().int().min(0).max(3),
-  isIdentified: z.coerce.boolean(),
   status: z.string(),
   aniListId: z.number().int(),
   badge: z.string().nullable(),

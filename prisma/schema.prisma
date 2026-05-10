@@ -19,7 +19,6 @@ model Anime {
   imageUrl        String    @map("image_url")
   year            Int
   quarter         Int // 0=冬 1=春 2=夏 3=秋
-  isIdentified    Boolean   @default(false) @map("is_identified")
   status          String    @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
   aniListId       Int       @map("anilist_id")
   badge           String?   // NEW_EPISODE | RECENTLY_ADDED | COMING_SOON
@@ -97,4 +96,21 @@ model AbemaKeyArchive {
 
   @@index([programId])
   @@map("abema_key_archives")
+}
+
+/// AniList 識別に失敗したタイトルの記録。
+/// catalog 同期等で毎回 AniList を叩き直さないよう、未識別タイトルの
+/// contentId と最終試行時刻を保存する。再識別したくなったら updatedAt を
+/// 見て古いものから cron で叩き直す運用を想定。
+model UnidentifiedAnime {
+  id        String   @id @default(uuid())
+  provider  String
+  contentId String   @map("content_id")
+  title     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([provider, contentId])
+  @@index([provider])
+  @@map("unidentified_anime")
 }

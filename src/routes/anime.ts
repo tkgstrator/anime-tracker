@@ -68,7 +68,6 @@ anime.openapi(
     } = c.req.valid('query')
 
     const where = {
-      isIdentified: true,
       ...(provider ? { provider } : {}),
       ...(year ? { year } : {}),
       ...(quarter != null ? { quarter } : {}),
@@ -141,7 +140,7 @@ anime.openapi(
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
     const rows = await prisma.anime.findMany({
-      where: { isIdentified: true, badge: { not: null } },
+      where: { badge: { not: null } },
       orderBy: { title: 'asc' }
     })
     const result = {
