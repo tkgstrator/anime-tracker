@@ -55,8 +55,12 @@ export const BrowseEntitySchema = z
     const hvm = v.entitlementCues.highValueMessage?.message
     const parsed = hvm ? parseExpiringMessage(hvm) : undefined
     const badgeMsg = v.entitlementCues.titleMetadataBadge.message
-    const badge: BadgeType | null =
-      badgeMsg === '新エピソード' ? 'NEW_EPISODE' : badgeMsg === '新着' || badgeMsg === '新作' ? 'RECENTLY_ADDED' : null
+    const badge: BadgeType | undefined =
+      badgeMsg === '新エピソード'
+        ? 'NEW_EPISODE'
+        : badgeMsg === '新着' || badgeMsg === '新作'
+          ? 'RECENTLY_ADDED'
+          : undefined
     const result = TitleSchema.safeParse({
       contentId: v.titleID,
       title: v.displayTitle,
