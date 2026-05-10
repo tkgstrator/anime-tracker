@@ -12,7 +12,7 @@ model Anime {
   id              String    @id @default(uuid())
   title           String
   description     String    @default("")
-  provider        String // 'amazon' | 'hulu' | 'netflix'
+  provider        String // 'amazon' | 'hulu' | 'crunchyroll' | 'abema' | 'netflix'
   contentId       String    @map("content_id")
   entityType      String    @default("tv") @map("entity_type") // 'tv' | 'movie'
   maturityRating  Int?      @map("maturity_rating")
