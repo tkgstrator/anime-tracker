@@ -15,10 +15,11 @@ Queue から `SyncService.fetch()` が `provider × category` 単位で呼ばれ
 | crunchyroll | NEW_EPISODE / RECENTLY_ADDED (`item.new` で判定) | - | - | 全件 |
 | hulu        | NEW_EPISODE / RECENTLY_ADDED (assetInfo / palette) | COMING_SOON (`coming_soon_text`) | EXPIRING (publish_end_at asc) | 全件 |
 
-cron は `src/scheduled.ts:39-58` のとおり。
+cron は `src/scheduled.ts` のとおり。
 
 - `0 */1 * * *` … 4 provider × {new_episode, coming_soon} を毎時 enqueue
 - `0 0 * * *` … 4 provider × expiring を毎日 enqueue
+- `0 3 * * *` … 4 provider × catalog を毎日 enqueue（amazon が 64 passes で ~10 分かかるため日次）
 - `0 4 * * *` … abema_archive
 
 ## スナップショット (2026-05-10)
@@ -27,11 +28,16 @@ cron は `src/scheduled.ts:39-58` のとおり。
 
 `bun scripts/lambda/local.ts` で AWS を介さずローカル実行。Crunchyroll は VPN 必須なので未計測。
 
-| provider | new_episode (内訳) | coming_soon | expiring |
-|---|---:|---:|---:|
-| amazon | **188** (NEW_EPISODE 169 / RECENTLY_ADDED 19) | 0 | **30** |
-| hulu   | **88** (RECENTLY_ADDED 88) | **2** (COMING_SOON 2) | **17** |
-| abema  | **89** (NEW_EPISODE 89) | 0 | 0 |
+| provider | new_episode (内訳) | coming_soon | expiring | catalog | 所要時間 (catalog) |
+|---|---:|---:|---:|---:|---:|
+| amazon | **188** (NEW_EPISODE 169 / RECENTLY_ADDED 19) | 0 | **30** | **~7,500** (64 passes) | ~10 分 |
+| hulu   | **88** (RECENTLY_ADDED 88) | **2** | **17** | **2,581** | ~30 秒 |
+| abema  | **89** (NEW_EPISODE 89) | 0 | 0 | **986** | ~1 秒 |
+
+メモ:
+- amazon catalog は offer (svod/tvod/subscription) × sort 値 × benefit (danime/animetimesjp) を 64 通り組み合わせて全件列挙する。1 パスだと 800 件しか取れない（Amazon の検索 API は top N しか返さない仕様）
+- 該当ソート値 `pv-public-release-date-asc-rank` は Amazon が browse ページに token を埋め込まないため SORT_VALUES から除外済み (元 72 → 64)
+- amazon catalog は ~10 分かかるので Lambda timeout を 900s に引き上げ済み (`infra/lambda.tf`)
 
 ### ローカル D1（upsert 後）
 
