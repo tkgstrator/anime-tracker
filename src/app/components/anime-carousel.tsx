@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
+import { ChevronRight } from 'lucide-react'
 import { ProviderBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
@@ -24,8 +25,12 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvid
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold tracking-tight'>{title}</h2>
         {viewAllLink && (
-          <Link to={viewAllLink} className='text-sm text-muted-foreground transition-colors hover:text-foreground'>
+          <Link
+            to={viewAllLink}
+            className='inline-flex items-center gap-0.5 text-sm text-muted-foreground transition-colors hover:text-foreground'
+          >
             すべて見る
+            <ChevronRight className='size-4' />
           </Link>
         )}
       </div>
