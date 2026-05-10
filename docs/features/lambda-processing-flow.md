@@ -1,134 +1,161 @@
 # Lambda fetch ハンドラ 処理フロー
 
-`lambda/fetch/index.ts` の処理を Mermaid でまとめたもの。
+`lambda/fetch/index.ts` (307 行 / 全機能を 1 ファイルに集約) の役割と呼び出し経路をまとめる。
 
-- 役割: 日本 IP (ap-northeast-1) が必要な Provider 取得と AniList 照合の代行
-- 副作用: KV / DB は触らない（fetch → 整形 → JSON 返却のみ）
-- 呼び出し元: Workers 側の `src/lib/lambda.ts` (`createFetchClient`) が SigV4 署名付き POST で叩く
-- Provider 振り分け: 既定は JP Lambda、`crunchyroll` のみ US Lambda
+- 役割: 日本 IP が必要な Provider 取得と AniList 照合を Workers の代わりに実行
+- リージョン: `ap-northeast-1` (JP) / Crunchyroll のみ US Lambda
+- 副作用なし: KV/D1 は触らない。fetch → 整形 → JSON 返却のみ
+- 認証: Lambda Function URL に対して Workers 側の `src/lib/lambda.ts` が SigV4 署名で POST
 
-## 1. エントリーポイント (handler)
+## 1. エントリーポイント一覧
 
-```mermaid
-flowchart TD
-  Start([event 受信]) --> Parse[path = event.rawPath ?? event.path<br/>body = JSON.parse event.body]
-  Parse --> Route{path}
+`event.rawPath` / `event.path` で振り分ける 4 エンドポイント。
 
-  Route -->|/expiring| ExA{provider あり?}
-  ExA -->|No| E400a[400 Missing provider]
-  ExA -->|Yes| ExFlow[/fetchExpiring/]
+| Path | 用途 | リクエスト body | レスポンス body |
+| --- | --- | --- | --- |
+| `POST /expiring` | 配信終了間近タイトル一覧 | `{ provider }` | `{ fetchedAt, entries: [{ contentId, expiredAt, expiringSeason }] }` |
+| `POST /title_list` | 新着 / 配信予定 / カタログ一覧 | `{ provider, category }` | `{ fetchedAt, entries: [{ contentId, title, description, entityType, imageUrl, maturityRating, nextEpisodeDate, badge }] }` |
+| `POST /title_info` | タイトル詳細（シーズン + エピソード） | `{ provider, contentId }` | `TitleInfoSchema` (seasons[] とその episodes[]) |
+| `POST /identify` | AniList へのバッチ照合（≤ 50 件） | `{ titles: string[] }` | `{ results: ({ aniListId, title, status, year, quarter } \| null)[] }` |
 
-  Route -->|/title_list| TlA{provider あり?}
-  TlA -->|No| E400b[400 Missing provider]
-  TlA -->|Yes| TlFlow[/fetchTitleList/]
+エラー時は `400` (バリデーション) / `404` (未知 path) / `500` (例外) / `502` (AniList 失敗) を返す。
 
-  Route -->|/title_info| TiA{provider と contentId あり?}
-  TiA -->|No| E400c[400 Missing provider or contentId]
-  TiA -->|Yes| TiFlow[/fetchTitleInfo/]
-
-  Route -->|/identify| IdA{titles 配列?}
-  IdA -->|No| E400d[400 Missing titles array]
-  IdA -->|Yes| IdFlow[/identifyTitles/]
-
-  Route -->|その他| E404[404 Unknown path]
-
-  ExFlow --> Resp[statusCode + JSON body]
-  TlFlow --> Resp
-  TiFlow --> Resp
-  IdFlow --> Resp
-  E400a --> Resp
-  E400b --> Resp
-  E400c --> Resp
-  E400d --> Resp
-  E404 --> Resp
-
-  Resp --> End([return])
-
-  Parse -.例外.-> Catch[500 message+stack を console.error]
-  Catch --> End
-```
-
-`getProvider(name)` は `hulu | crunchyroll | abema | amazon` のいずれかを返す（既定は Amazon）。
-
-## 2. POST /expiring  (配信終了間近)
-
-```mermaid
-flowchart TD
-  S([fetchExpiring provider]) --> P[provider.fetchTitleList<br/>category=expiring]
-  P --> F[expiring を持つタイトルのみ抽出]
-  F --> M[remainingHours を now に加算<br/>JST 0:00 へ丸めて ISO 化]
-  M --> N{entries.length === 0?}
-  N -->|Yes| Err[500 No expiring entries found]
-  N -->|No| Ok[200 fetchedAt + entries<br/>contentId / expiredAt / expiringSeason]
-```
-
-## 3. POST /title_list  (new_episode / coming_soon / catalog)
-
-```mermaid
-flowchart TD
-  S([fetchTitleList provider, category]) --> V{category は<br/>new_episode | coming_soon | catalog?}
-  V -->|No| Err[400 Invalid category]
-  V -->|Yes| Fetch[provider.fetchTitleList category]
-  Fetch --> Map[各タイトルを整形<br/>contentId, title, description,<br/>entityType, imageUrl,<br/>maturityRating, nextEpisodeDate, badge]
-  Map --> Ok[200 fetchedAt + entries]
-```
-
-## 4. POST /title_info  (タイトル詳細)
-
-```mermaid
-flowchart TD
-  S([fetchTitleInfo provider, contentId]) --> F[provider.fetchTitleInfo contentId]
-  F --> Log[seasons.length をログ出力]
-  Log --> Ok[200 detail そのまま<br/>TitleInfoSchema 準拠]
-```
-
-## 5. POST /identify  (AniList 照合)
-
-```mermaid
-flowchart TD
-  S([identifyTitles rawTitles]) --> E{length === 0?}
-  E -->|Yes| Empty[200 results: empty]
-  E -->|No| L{length > 50?}
-  L -->|Yes| Over[400 titles must be 50 or fewer]
-  L -->|No| Clean[各タイトルを cleanTitle で正規化]
-  Clean --> Q[buildBatchQuery で<br/>q0..qN の Page クエリを合成]
-  Q --> Req[fetchWithRetry POST graphql.anilist.co]
-
-  Req --> R429{status === 429?}
-  R429 -->|Yes| Wait[Retry-After 最大 5s 待機して再試行]
-  R429 -->|No| OkCheck{res.ok?}
-  Wait --> OkCheck
-  OkCheck -->|No| Bad[502 AniList API error]
-  OkCheck -->|Yes| Parse[各 qi.media 0 を MetadataMediaSchema.safeParse]
-
-  Parse --> Loop{安全に取れた?}
-  Loop -->|No| Null[結果 null]
-  Loop -->|Yes| YQ[year = seasonYear ?? startDate.year<br/>quarter = season → SEASON_TO_QUARTER<br/>            or month → MONTH_TO_QUARTER]
-  YQ --> YQv{year か quarter が null?}
-  YQv -->|Yes| Null
-  YQv -->|No| Hit[aniListId, title, status, year, quarter]
-
-  Null --> Out[results 配列に詰めて 200]
-  Hit --> Out
-```
-
-補足:
-
-- `MEDIA_FIELDS` は `id / title.native / countryOfOrigin / status / season / seasonYear / startDate{year,month,day}` を取得
-- `SEASON_TO_QUARTER`: WINTER=0 / SPRING=1 / SUMMER=2 / FALL=3
-- `MONTH_TO_QUARTER`: 1-3月=0, 4-6月=1, 7-9月=2, 10-12月=3
-- `fetchWithRetry` は 429 のときだけ 1 回だけ再試行（Retry-After は 5 秒で頭打ち）
-
-## 6. 上流から見た呼び出し関係
+## 2. トリガーと呼び出し経路
 
 ```mermaid
 flowchart LR
-  W[Workers<br/>src/lib/lambda.ts<br/>createFetchClient] -->|aws4fetch SigV4| FU[Lambda Function URL]
-  FU --> H[handler index.ts]
-  H -->|provider=crunchyroll| US[(US Lambda)]
-  H -->|それ以外| JP[(JP Lambda<br/>ap-northeast-1)]
-  H --> AL[(AniList GraphQL)]
-  H --> PR[(各 Provider:<br/>Abema / Amazon / Hulu / Crunchyroll)]
+  subgraph CF[Cloudflare Workers]
+    direction TB
+    Cron1[Cron 0 */1 * * *<br/>毎時0分]
+    Cron2[Cron 0 0 * * *<br/>日次 00:00 UTC]
+    API[POST /api/queues<br/>管理画面の手動トリガー<br/>routes/queues.ts]
+    Sched[scheduled.ts]
+    Cron1 --> Sched
+    Cron2 --> Sched
+
+    Sched -- type=fetch<br/>4 provider × {new_episode, coming_soon} --> Q[(SYNC_QUEUE)]
+    Sched -- type=fetch<br/>4 provider × expiring --> Q
+    API -- type=fetch --> Q
+
+    Q --> QC[queue.ts<br/>consumer]
+    QC -- type=fetch & category=expiring --> EP1[[POST /expiring]]
+    QC -- type=fetch & category∈new_episode/coming_soon/catalog --> EP2[[POST /title_list]]
+    QC -- type=update --> Svc[SyncService.update]
+    Svc --> EP3[[POST /title_info]]
+
+    Svc -. 識別が必要なタイトル発見時 .-> Ali[AniListAdapter.identifyBatch]
+    Ali --> EP4[[POST /identify]]
+  end
+
+  EP1 & EP2 & EP3 & EP4 -.SigV4.-> Lambda[(Lambda<br/>lambda/fetch/index.ts)]
 ```
 
-呼び出し側のクライアントは `src/lib/lambda.ts:61` を参照。レスポンスは `src/schemas/lambda.dto.ts` の各 Schema (`ExpiringResponseSchema` / `TitleListResponseSchema` / `TitleInfoSchema` / `IdentifyResponseSchema`) で `safeParse` 検証している。
+要点:
+
+- **Lambda は自分から動かない。** すべて Workers の Cron / Queue consumer / 管理画面 API がトリガー
+- `POST /title_list` → 結果の `contentIds` を受け取った queue.ts が、新着系については **個別に `type=update` を再 enqueue** し、後段で `/title_info` を叩く 2 段構え
+- `POST /identify` は `SyncService` が AniList 照合が必要なタイトルをまとめて投げる経路（Workers から直接 AniList を叩くのを避ける目的）
+- `0 4 * * *` の Cron は `abema_archive` 専用で Lambda は呼ばない
+
+### 呼び出し元の対応表
+
+| Lambda endpoint | 直接呼ぶ Workers 関数 | 元のトリガー |
+| --- | --- | --- |
+| `/expiring` | `lambda.fetchExpiring()` in `queue.ts:43` / `routes/queues.ts:99` | Cron `0 0 * * *` |
+| `/title_list` | `lambda.fetchTitleList()` in `queue.ts:44` / `routes/queues.ts:100` | Cron `0 */1 * * *` |
+| `/title_info` | `lambda.fetchTitleInfo()` in `lib/sync.ts:79` | Queue `type=update`（前段で `/title_list` 結果から enqueue） |
+| `/identify` | `lambda.identifyTitles()` in `lib/metadata/anilist.ts:261` | `SyncService` 内のメタデータ照合 |
+
+## 3. 各エンドポイントの内部処理
+
+### 3.1 `/expiring`
+
+```mermaid
+flowchart LR
+  A([provider]) --> B[provider.fetchTitleList<br/>category=expiring]
+  B --> C[expiring を持つタイトルだけ残す]
+  C --> D[now + remainingHours を<br/>JST 0:00 に丸めて ISO 化]
+  D --> E{entries 0 件?}
+  E -- Yes --> Err[500]
+  E -- No --> Ok[200]
+```
+
+### 3.2 `/title_list`
+
+```mermaid
+flowchart LR
+  A([provider, category]) --> V{category ∈<br/>new_episode / coming_soon / catalog?}
+  V -- No --> Err[400]
+  V -- Yes --> F[provider.fetchTitleList]
+  F --> M[8 フィールドに整形]
+  M --> Ok[200]
+```
+
+### 3.3 `/title_info`
+
+```mermaid
+flowchart LR
+  A([provider, contentId]) --> F[provider.fetchTitleInfo]
+  F --> Ok[200 detail<br/>TitleInfoSchema]
+```
+
+### 3.4 `/identify` (AniList バッチ照合)
+
+```mermaid
+flowchart TD
+  S([titles: string]) --> L{0 件?}
+  L -- Yes --> Empty[200 results: empty]
+  L -- No --> N{50 件超?}
+  N -- Yes --> Over[400]
+  N -- No --> Clean[各タイトルを cleanTitle で正規化]
+  Clean --> Q[q0..qN の Page クエリを合成<br/>1 リクエストで全件問い合わせ]
+  Q --> Req[POST graphql.anilist.co]
+
+  Req --> R{429?}
+  R -- Yes --> Wait[Retry-After 最大 5s 待機 → 1 回だけ再試行]
+  R -- No --> Ok{res.ok?}
+  Wait --> Ok
+  Ok -- No --> Bad[502]
+  Ok -- Yes --> Parse[各 qi.media 0 を<br/>MetadataMediaSchema.safeParse]
+
+  Parse --> YQ[year = seasonYear ?? startDate.year<br/>quarter = SEASON_TO_QUARTER or<br/>          MONTH_TO_QUARTER startDate.month]
+  YQ --> R200[200 results = aniListId/title/status/year/quarter または null]
+```
+
+定数:
+
+- `SEASON_TO_QUARTER`: `WINTER=0` / `SPRING=1` / `SUMMER=2` / `FALL=3`
+- `MONTH_TO_QUARTER`: 1–3月=0, 4–6月=1, 7–9月=2, 10–12月=3
+
+## 4. 補足
+
+### Provider の振り分け
+
+`getProvider(name)` で `hulu` / `crunchyroll` / `abema` / `amazon` を分岐（既定は Amazon）。Provider 実装本体は **Workers と共有**:
+
+- `src/lib/providers/{abema,amazon,crunchyroll,hulu}`
+- `src/schemas/providers/*`
+- `src/lib/metadata/anilist` (`cleanTitle`)
+- `src/lib/logger`
+
+つまり Lambda は薄いラッパーで、Provider のスクレイピング/API ロジックは Workers と同じコードを走らせている。
+
+### US / JP の Function URL
+
+Workers 側 `src/lib/lambda.ts:24` の `getBaseUrl()` が決める:
+
+| provider | 呼ぶ Lambda |
+| --- | --- |
+| `crunchyroll` | `LAMBDA_FUNCTION_URL_US`（あれば） |
+| その他 | `LAMBDA_FUNCTION_URL` (JP) |
+
+### レスポンス検証
+
+Workers 側は受け取った JSON を Zod でパースしてから返す:
+
+- `/expiring` → `ExpiringResponseSchema`
+- `/title_list` → `TitleListResponseSchema`
+- `/title_info` → `TitleInfoSchema`
+- `/identify` → `IdentifyResponseSchema`
+
+`lambda/fetch/index.ts` 内部でも `MetadataMediaSchema.safeParse` で AniList レスポンスを検証している。
