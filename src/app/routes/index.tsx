@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { useMemo } from 'react'
 import { AnimeCarousel } from '@/app/components/anime-carousel'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
+import { providerLabel } from '@/app/lib/constants'
 import { animeListQueryOptions, badgedAnimeQueryOptions } from '@/app/lib/query-options'
 import type { AnimeSchema } from '@/schemas/anime.dto'
 
@@ -62,14 +63,6 @@ function HomePage() {
   const currentQuarter = getCurrentQuarter()
   const quarterLabel = ['冬', '春', '夏', '秋'][currentQuarter]
 
-  const providerLabels: Record<string, string> = {
-    amazon: 'Prime Video',
-    hulu: 'Hulu',
-    crunchyroll: 'Crunchyroll',
-    abema: 'ABEMA',
-    netflix: 'Netflix'
-  }
-
   return (
     <div className='space-y-10'>
       <AnimeCarousel
@@ -91,7 +84,7 @@ function HomePage() {
       {Object.entries(byProvider).map(([provider, anime]) => (
         <AnimeCarousel
           key={provider}
-          title={providerLabels[provider] ?? provider}
+          title={providerLabel[provider] ?? provider}
           anime={anime}
           viewAllLink={`/browse?provider=${provider}`}
           showProvider={false}

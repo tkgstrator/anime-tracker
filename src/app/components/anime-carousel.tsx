@@ -25,7 +25,7 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvid
         <h2 className='text-lg font-semibold tracking-tight'>{title}</h2>
         {viewAllLink && (
           <Link to={viewAllLink} className='text-sm text-muted-foreground transition-colors hover:text-foreground'>
-            すべて
+            すべて見る
           </Link>
         )}
       </div>

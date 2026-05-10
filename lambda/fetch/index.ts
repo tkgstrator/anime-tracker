@@ -265,36 +265,43 @@ export async function handler(event: any): Promise<{ statusCode: number; body: s
 
   console.log(`${path}`)
 
-  switch (path) {
-    case '/expiring': {
-      const { provider } = body
-      if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-      console.log(`provider=${provider}`)
-      return fetchExpiring(provider)
-    }
-    case '/title_list': {
-      const { provider, category } = body
-      if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-      console.log(`provider=${provider}`)
-      return fetchTitleList(provider, category)
-    }
-    case '/title_info': {
-      const { provider, contentId } = body
-      if (!provider || !contentId) {
-        return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider or contentId' }) }
+  try {
+    switch (path) {
+      case '/expiring': {
+        const { provider } = body
+        if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
+        console.log(`provider=${provider}`)
+        return await fetchExpiring(provider)
       }
-      console.log(`provider=${provider} contentId=${contentId}`)
-      return fetchTitleInfo(provider, contentId)
-    }
-    case '/identify': {
-      const { titles } = body
-      if (!Array.isArray(titles)) {
-        return { statusCode: 400, body: JSON.stringify({ error: 'Missing titles array' }) }
+      case '/title_list': {
+        const { provider, category } = body
+        if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
+        console.log(`provider=${provider}`)
+        return await fetchTitleList(provider, category)
       }
-      console.log(`titles count=${titles.length}`)
-      return identifyTitles(titles)
+      case '/title_info': {
+        const { provider, contentId } = body
+        if (!provider || !contentId) {
+          return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider or contentId' }) }
+        }
+        console.log(`provider=${provider} contentId=${contentId}`)
+        return await fetchTitleInfo(provider, contentId)
+      }
+      case '/identify': {
+        const { titles } = body
+        if (!Array.isArray(titles)) {
+          return { statusCode: 400, body: JSON.stringify({ error: 'Missing titles array' }) }
+        }
+        console.log(`titles count=${titles.length}`)
+        return await identifyTitles(titles)
+      }
+      default:
+        return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
     }
-    default:
-      return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e)
+    const stack = e instanceof Error ? e.stack : undefined
+    console.error(`Unhandled error on ${path}:`, message, stack)
+    return { statusCode: 500, body: JSON.stringify({ error: message }) }
   }
 }
