@@ -7,5 +7,6 @@ export const queryKeys = {
   },
   nagisa: {
     status: ['nagisa', 'status'] as const
-  }
+  },
+  changelog: ['changelog'] as const
 }
