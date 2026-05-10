@@ -13,12 +13,114 @@
 
 | Path | 用途 | リクエスト body | レスポンス body |
 | --- | --- | --- | --- |
-| `POST /expiring` | 配信終了間近タイトル一覧 | `{ provider }` | `{ fetchedAt, entries: [{ contentId, expiredAt, expiringSeason }] }` |
-| `POST /title_list` | 新着 / 配信予定 / カタログ一覧 | `{ provider, category }` | `{ fetchedAt, entries: [{ contentId, title, description, entityType, imageUrl, maturityRating, nextEpisodeDate, badge }] }` |
-| `POST /title_info` | タイトル詳細（シーズン + エピソード） | `{ provider, contentId }` | `TitleInfoSchema` (seasons[] とその episodes[]) |
-| `POST /identify` | AniList へのバッチ照合（≤ 50 件） | `{ titles: string[] }` | `{ results: ({ aniListId, title, status, year, quarter } \| null)[] }` |
+| `POST /expiring` | 配信終了間近タイトル一覧 | `{ provider }` | `ExpiringResponseSchema` |
+| `POST /title_list` | 新着 / 配信予定 / カタログ一覧 | `{ provider, category }` | `TitleListResponseSchema` |
+| `POST /title_info` | タイトル詳細（シーズン + エピソード） | `{ provider, contentId }` | `TitleInfoSchema` |
+| `POST /identify` | AniList へのバッチ照合（≤ 50 件） | `{ titles: string[] }` | `IdentifyResponseSchema` |
 
 エラー時は `400` (バリデーション) / `404` (未知 path) / `500` (例外) / `502` (AniList 失敗) を返す。
+
+### Zod スキーマ定義
+
+`ExpiringResponseSchema` (`src/schemas/lambda.dto.ts`):
+
+```ts
+const ExpiringEntrySchema = z.object({
+  contentId: z.string(),
+  expiredAt: z.string(),
+  expiringSeason: z.number().nullable()
+})
+
+const ExpiringResponseSchema = z.object({
+  fetchedAt: z.string(),
+  entries: z.array(ExpiringEntrySchema)
+})
+```
+
+`TitleListResponseSchema` (`src/schemas/lambda.dto.ts`):
+
+```ts
+const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
+
+const TitleListEntrySchema = z.object({
+  contentId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  entityType: z.string(),
+  imageUrl: z.string().nullable(),
+  maturityRating: z.number().nullable(),
+  nextEpisodeDate: z.string().nullable(),
+  badge: BadgeType.nullable()
+})
+
+const TitleListResponseSchema = z.object({
+  fetchedAt: z.string(),
+  entries: z.array(TitleListEntrySchema)
+})
+```
+
+`TitleInfoSchema` (`src/schemas/providers/common.dto.ts`):
+
+```ts
+const EntityType = z.enum(['tv', 'movie'])
+
+const EpisodeSchema = z.object({
+  episodeNumber: z.number().int().nonnegative(),
+  episodeId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  releaseDate: z.iso.datetime(),
+  duration: z.number().int().nonnegative(),
+  maturityRating: z.number().int().positive().nullable(),
+  imageUrl: z.url().transform(stripQueryParams),
+  hasSubtitles: z.boolean(),
+  hasDub: z.boolean(),
+  benefitId: z.string().nullable()
+})
+
+const SeasonSchema = z.object({
+  seasonId: z.string().nonempty(),
+  displayName: z.string().nonempty(),
+  seasonNumber: z.number().int().positive(),
+  episodes: z.array(EpisodeSchema)
+})
+
+const TitleInfoSchema = z.object({
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  entityType: EntityType,
+  maturityRating: z.number().int().positive().nullable(),
+  imageUrl: z.url().transform(stripQueryParams),
+  seasons: z.array(SeasonSchema)
+})
+```
+
+`IdentifyResponseSchema` (`src/schemas/lambda.dto.ts`):
+
+```ts
+const TitleStatusTypeEnum = z.enum([
+  'FINISHED',
+  'RELEASING',
+  'NOT_YET_RELEASED',
+  'CANCELLED',
+  'HIATUS',
+  'UNKNOWN'
+])
+
+const IdentifyResultSchema = z
+  .object({
+    aniListId: z.number().int().optional(),
+    title: z.string(),
+    status: TitleStatusTypeEnum,
+    year: z.number().int(),
+    quarter: z.number().int()
+  })
+  .nullable()
+
+const IdentifyResponseSchema = z.object({
+  results: z.array(IdentifyResultSchema)
+})
+```
 
 ## 2. トリガーと呼び出し経路
 
