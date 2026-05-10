@@ -36,13 +36,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         switch (message.body.type) {
           case 'fetch': {
             const { provider, category } = message.body.message
-
-            // Lambda (日本IP) で fetch し、結果を直接渡す
-            const result =
-              category === 'expiring'
-                ? await lambda.fetchExpiring({ provider })
-                : await lambda.fetchTitleList({ provider, category })
-            const contentIds = await service.fetch(message.body, result)
+            const contentIds = await service.fetch(message.body)
             if (category !== 'expiring' && category !== 'coming_soon') {
               for (const contentId of contentIds) {
                 await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
