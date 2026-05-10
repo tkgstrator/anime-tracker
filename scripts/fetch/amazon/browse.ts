@@ -7,7 +7,11 @@ import type { BuildOptions } from '../../../src/lib/providers/amazon/browse'
 import type { Title } from '../../../src/schemas/providers/common.dto'
 
 const PAGINATE_BASE = 'https://www.amazon.co.jp/gp/video/api/paginateCollection'
-/** featured-rank は他のソートと完全重複するため除外 */
+/**
+ * 利用可能なソート値。
+ * - featured-rank は他と完全重複するため除外。
+ * - pv-public-release-date-asc-rank は Amazon が browse HTML にトークンを埋め込まず取得不能のため除外。
+ */
 const SORT_VALUES = [
   'titlerank',
   'review-rank',
@@ -17,7 +21,6 @@ const SORT_VALUES = [
   'date-desc-rank',
   'date-asc-rank',
   'pv-public-release-date-desc-rank',
-  'pv-public-release-date-asc-rank',
 ]
 
 const DYNAMIC_FEATURES = [
