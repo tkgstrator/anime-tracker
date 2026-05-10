@@ -3,6 +3,9 @@ import { z } from 'zod'
 /** URL からクエリパラメータを除去する */
 export const stripQueryParams = (url: string) => new URL(url).origin + new URL(url).pathname
 
+/** 画像 URL: URL バリデーション + クエリ除去で正規化 */
+export const ImageUrlSchema = z.url().transform(stripQueryParams)
+
 export const EntityType = z.enum(['tv', 'movie'])
 export type EntityType = z.infer<typeof EntityType>
 
@@ -15,7 +18,7 @@ export const TitleSchema = z.object({
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   entityType: EntityType,
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   maturityRating: z.number().int().positive().nullable(),
   nextEpisodeDate: z.iso.datetime().optional(),
   badge: BadgeType.optional(),
@@ -37,7 +40,7 @@ export const EpisodeSchema = z.object({
   releaseDate: z.iso.datetime(),
   duration: z.number().int().nonnegative(),
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
   benefitId: z.string().nullable()
@@ -57,7 +60,7 @@ export const TitleInfoSchema = z.object({
   description: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   seasons: z.array(SeasonSchema)
 })
 export type TitleInfo = z.infer<typeof TitleInfoSchema>
