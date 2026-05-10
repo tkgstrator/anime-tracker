@@ -19,37 +19,37 @@ export const FetchTitleListRequestSchema = z.object({
 // ---- レスポンス ----
 
 export const ExpiringEntrySchema = z.object({
-  contentId: z.string(),
-  expiredAt: z.string(),
+  contentId: z.string().nonempty(),
+  expiredAt: z.string().nonempty(),
   expiringSeason: z.number().nullable()
 })
 
 export const ExpiringResponseSchema = z.object({
-  fetchedAt: z.string(),
+  fetchedAt: z.string().nonempty(),
   entries: z.array(ExpiringEntrySchema)
 })
 export type ExpiringResponse = z.infer<typeof ExpiringResponseSchema>
 
 export const TitleListEntrySchema = z.object({
-  contentId: z.string(),
-  title: z.string(),
-  description: z.string(),
-  entityType: z.string(),
-  imageUrl: z.string().nullable(),
+  contentId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  entityType: z.string().nonempty(),
+  imageUrl: z.string().nonempty(),
   maturityRating: z.number().nullable(),
-  nextEpisodeDate: z.string().nullable(),
-  badge: BadgeType.nullable()
+  nextEpisodeDate: z.string().nonempty().optional(),
+  badge: BadgeType.optional()
 })
 
 export const TitleListResponseSchema = z.object({
-  fetchedAt: z.string(),
+  fetchedAt: z.string().nonempty(),
   entries: z.array(TitleListEntrySchema)
 })
 export type TitleListResponse = z.infer<typeof TitleListResponseSchema>
 
 export const FetchTitleInfoRequestSchema = z.object({
-  provider: z.string(),
-  contentId: z.string()
+  provider: z.string().nonempty(),
+  contentId: z.string().nonempty()
 })
 
 // ---- identify ----
@@ -57,7 +57,7 @@ export const FetchTitleInfoRequestSchema = z.object({
 export const IdentifyResultSchema = z
   .object({
     aniListId: z.number().int().optional(),
-    title: z.string(),
+    title: z.string().nonempty(),
     status: TitleStatusTypeEnum,
     year: z.number().int(),
     quarter: z.number().int()
