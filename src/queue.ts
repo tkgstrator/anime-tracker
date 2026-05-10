@@ -80,8 +80,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
             }
             const session = await getGuestSession()
             const mediaToken = await fetchMediaToken({ bearer: session.token })
-            const stats = { ok: 0, fail: 0 }
-            for (const ep of eps) {
+            const archiveOne = async (ep: (typeof eps)[number]) => {
               try {
                 const archive = await buildKeysArchive({
                   programId: ep.episodeId,
@@ -101,18 +100,24 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
                     segmentUrls: JSON.stringify(archive.segmentUrls)
                   }
                 })
-                stats.ok += 1
+                return 'ok' as const
               } catch (e) {
-                stats.fail += 1
                 logger.warn({
                   action: 'abema-archive-episode-failed',
                   animeId,
                   episodeId: ep.episodeId,
                   reason: e instanceof Error ? e.message : String(e)
                 })
+                return 'fail' as const
               }
             }
-            logger.info({ action: 'abema-archive-done', animeId, total: eps.length, ...stats })
+            const CONCURRENCY = 5
+            const results: ('ok' | 'fail')[] = []
+            for (let i = 0; i < eps.length; i += CONCURRENCY) {
+              results.push(...(await Promise.all(eps.slice(i, i + CONCURRENCY).map(archiveOne))))
+            }
+            const ok = results.filter((r) => r === 'ok').length
+            logger.info({ action: 'abema-archive-done', animeId, total: eps.length, ok, fail: eps.length - ok })
             break
           }
         }
