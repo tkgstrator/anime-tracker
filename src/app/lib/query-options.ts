@@ -13,3 +13,16 @@ export const animeDetailQueryOptions = (id: string) =>
 
 export const nagisaStatusQueryOptions = () =>
   queryOptions({ queryKey: queryKeys.nagisa.status, queryFn: () => api.getNagisaStatus(), refetchInterval: 15_000 })
+
+export type ChangelogEntry = { hash: string; date: string; message: string }
+
+export const changelogQueryOptions = () =>
+  queryOptions({
+    queryKey: queryKeys.changelog,
+    queryFn: async (): Promise<ChangelogEntry[]> => {
+      const res = await fetch('/commits.json')
+      if (!res.ok) throw new Error(`Failed to load changelog: ${res.status}`)
+      return res.json()
+    },
+    staleTime: 5 * 60 * 1000
+  })
