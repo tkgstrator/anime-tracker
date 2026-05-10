@@ -49,7 +49,16 @@ function AnimeDetailPage() {
     onError: () => toast.error('録画リクエストに失敗しました')
   })
 
-  const updating = updateAnimeMutation.isPending || recordAnimeMutation.isPending
+  const refreshAnimeMutation = useMutation({
+    mutationFn: () => api.refreshAnime(undefined, { params: { id } }),
+    onSuccess: () => {
+      toast.success('タイトル情報を更新しました')
+      invalidateRelated()
+    },
+    onError: () => toast.error('情報の更新に失敗しました')
+  })
+
+  const updating = updateAnimeMutation.isPending || recordAnimeMutation.isPending || refreshAnimeMutation.isPending
 
   const toggleScheduled = () => {
     updateAnimeMutation.mutate({ scheduled: !anime.scheduled })
@@ -79,8 +88,10 @@ function AnimeDetailPage() {
         totalEpisodes={totalEpisodes}
         totalDuration={totalDuration}
         updating={updating}
+        refreshing={refreshAnimeMutation.isPending}
         onToggleScheduled={toggleScheduled}
         onToggleRecorded={toggleRecorded}
+        onRefresh={() => refreshAnimeMutation.mutate()}
       />
 
       <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
