@@ -135,8 +135,8 @@ async function fetchTitleList(providerName: string, category: string) {
     entityType: t.entityType,
     imageUrl: t.imageUrl,
     maturityRating: t.maturityRating,
-    nextEpisodeDate: t.nextEpisodeDate ?? null,
-    badge: t.badge ?? null
+    nextEpisodeDate: t.nextEpisodeDate,
+    badge: t.badge
   }))
 
   console.log(`Fetched ${entries.length} ${category} entries for ${providerName}`)
