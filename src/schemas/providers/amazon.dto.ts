@@ -127,11 +127,11 @@ const JapaneseDateSchema = z
     return dayjs.tz(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`, 'Asia/Tokyo').toISOString()
   })
 
-/** エピソードの action オブジェクトから benefitId を抽出する */
-function extractBenefitId(action: unknown): string | null {
+/** エピソードの action オブジェクトから benefitId を抽出する。見つからなければ "amazon" を返す */
+function extractBenefitId(action: unknown): string {
   const json = JSON.stringify(action ?? {})
   const m = json.match(/"benefitId"\s*:\s*"([^"]+)"/)
-  return m?.[1]?.toLowerCase() ?? null
+  return m?.[1]?.toLowerCase() ?? 'amazon'
 }
 
 const EpisodeDetailSchema = z.object({
