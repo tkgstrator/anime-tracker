@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
+import { Button } from '@/app/components/ui/button'
 
 export function NotFoundPage() {
   return (
@@ -40,12 +41,9 @@ export function NotFoundPage() {
           transition={{ duration: 0.3, delay: 0.35 }}
           className='pt-2'
         >
-          <Link
-            to='/'
-            className='rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-80'
-          >
+          <Button size='lg' render={<Link to='/' />}>
             ホームに戻る
-          </Link>
+          </Button>
         </motion.div>
       </div>
     </motion.div>

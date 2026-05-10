@@ -1,29 +1,37 @@
 import { Link } from '@tanstack/react-router'
+import dayjs from 'dayjs'
 import { useSetAtom } from 'jotai'
-import { Circle, CircleCheck, Clock, Film, Tv } from 'lucide-react'
+import { Circle, CircleCheck, Clock, ExternalLink, Film, RefreshCw, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
+import { Button } from '@/app/components/ui/button'
 import { browseFiltersAtom, defaultBrowseFilters } from '@/app/lib/atoms'
+import { providerLabel } from '@/app/lib/constants'
 import { type AnimeInfoSchema, QuarterLabel } from '@/schemas/anime.dto'
-import { formatDuration } from '../-lib/format'
+import { formatDuration, getProviderTitleUrl } from '../-lib/format'
 
 export function AnimeHero({
   anime,
   totalEpisodes,
   totalDuration,
   updating,
+  refreshing,
   onToggleScheduled,
-  onToggleRecorded
+  onToggleRecorded,
+  onRefresh
 }: {
   anime: AnimeInfoSchema
   totalEpisodes: number
   totalDuration: number
   updating: boolean
+  refreshing: boolean
   onToggleScheduled: () => void
   onToggleRecorded: () => void
+  onRefresh: () => void
 }) {
   const setFilters = useSetAtom(browseFiltersAtom)
+  const titleUrl = getProviderTitleUrl(anime.provider, anime.contentId)
 
   return (
     <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6'>
@@ -38,7 +46,7 @@ export function AnimeHero({
             <Link
               to='/browse'
               onClick={() => setFilters({ ...defaultBrowseFilters, aniListId: anime.aniListId })}
-              className='transition-colors hover:text-indigo-600'
+              className='transition-colors hover:text-primary'
             >
               {anime.title}
             </Link>
@@ -65,33 +73,65 @@ export function AnimeHero({
           </div>
         </div>
 
-        <div className='flex items-center gap-2 pt-1'>
-          <button
-            type='button'
-            onClick={onToggleScheduled}
-            disabled={updating}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
-              anime.scheduled
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            {anime.scheduled ? <CircleCheck className='h-3.5 w-3.5' /> : <Circle className='h-3.5 w-3.5' />}
-            {anime.scheduled ? '予約済み' : '録画予約'}
-          </button>
-          <button
-            type='button'
-            onClick={onToggleRecorded}
-            disabled={updating}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
-              anime.recorded
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            {anime.recorded ? <CircleCheck className='h-3.5 w-3.5' /> : <Circle className='h-3.5 w-3.5' />}
-            {anime.recorded ? '録画済み' : '録画する'}
-          </button>
+        <div className='space-y-1.5'>
+          <div className='flex flex-wrap items-center gap-2 pt-1'>
+            <Button
+              type='button'
+              size='lg'
+              variant={anime.scheduled ? 'default' : 'secondary'}
+              onClick={onToggleScheduled}
+              disabled={updating}
+              aria-pressed={anime.scheduled}
+            >
+              {anime.scheduled ? <CircleCheck /> : <Circle />}
+              {anime.scheduled ? '自動予約済み' : '自動録画を予約'}
+            </Button>
+            <Button
+              type='button'
+              size='lg'
+              variant={anime.recorded ? 'default' : 'secondary'}
+              onClick={onToggleRecorded}
+              disabled={updating}
+              aria-pressed={anime.recorded}
+              className={
+                anime.recorded
+                  ? 'bg-success text-success-foreground hover:bg-success/85 [a]:hover:bg-success/85'
+                  : undefined
+              }
+            >
+              {anime.recorded ? <CircleCheck /> : <Circle />}
+              {anime.recorded ? '録画済み' : '今すぐ録画'}
+            </Button>
+            {titleUrl && (
+              <Button
+                size='lg'
+                variant='outline'
+                render={
+                  <a href={titleUrl} target='_blank' rel='noopener noreferrer'>
+                    <span>{providerLabel[anime.provider] ?? anime.provider}で見る</span>
+                    <ExternalLink data-icon='inline-end' />
+                  </a>
+                }
+              />
+            )}
+            <Button
+              type='button'
+              size='lg'
+              variant='outline'
+              onClick={onRefresh}
+              disabled={updating}
+              aria-label='タイトル情報を再取得'
+              title='タイトル情報を再取得'
+            >
+              <RefreshCw className={refreshing ? 'animate-spin' : undefined} />
+              <span className='hidden sm:inline'>更新</span>
+            </Button>
+          </div>
+          {anime.updatedAt && (
+            <p className='text-xs text-muted-foreground'>
+              最終更新: {dayjs(anime.updatedAt).format('YYYY/MM/DD HH:mm')}
+            </p>
+          )}
         </div>
 
         {anime.description && <p className='text-sm leading-relaxed text-muted-foreground'>{anime.description}</p>}

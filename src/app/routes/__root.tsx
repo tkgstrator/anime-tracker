@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import dayjs from 'dayjs'
 import { Toaster } from 'sonner'
 import { ErrorPage } from '@/app/components/error-page'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
@@ -44,21 +45,10 @@ const RootComponent = () => {
       </main>
       <footer className='py-4 text-center text-xs text-muted-foreground'>
         <Link to='/changelog' className='transition-colors hover:text-foreground'>
-          v{__APP_VERSION__} ({__GIT_HASH__}){' '}
-          {new Date(__GIT_DATE__)
-            .toLocaleString('ja-JP', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-              hour12: false
-            })
-            .replace(/\//g, '/')}
+          v{__APP_VERSION__} ({__GIT_HASH__}) {dayjs(__GIT_DATE__).format('YYYY/MM/DD HH:mm:ss')}
         </Link>
         <p className='mt-0.5 flex items-center justify-center gap-2'>
-          <span>&copy; {new Date().getFullYear()} Nagisa</span>
+          <span>&copy; {dayjs().year()} Nagisa</span>
           <a
             href='https://github.com/tkgstrator/nagisa-webui'
             target='_blank'
