@@ -29,6 +29,28 @@ async function findExistingContentIds(prisma: PrismaClient, contentIds: string[]
   return new Set(results)
 }
 
+/** AniList 識別済みかどうかに関わらず、過去に sync 試行済みの contentId を返す */
+async function findKnownContentIds(prisma: PrismaClient, provider: string, contentIds: string[]): Promise<Set<string>> {
+  const identified: string[] = []
+  const unidentified: string[] = []
+  for (let i = 0; i < contentIds.length; i += D1_VARIABLE_LIMIT) {
+    const chunk = contentIds.slice(i, i + D1_VARIABLE_LIMIT)
+    const [identifiedRows, unidentifiedRows] = await Promise.all([
+      prisma.anime.findMany({
+        where: { provider, contentId: { in: chunk } },
+        select: { contentId: true }
+      }),
+      prisma.unidentifiedAnime.findMany({
+        where: { provider, contentId: { in: chunk } },
+        select: { contentId: true }
+      })
+    ])
+    identified.push(...identifiedRows.map((r) => r.contentId))
+    unidentified.push(...unidentifiedRows.map((r) => r.contentId))
+  }
+  return new Set([...identified, ...unidentified])
+}
+
 /** ISO 8601 文字列を Date に変換し、過去なら null を返す */
 function parseFutureDate(dateStr: string | null | undefined): Date | null {
   if (!dateStr) return null
@@ -259,12 +281,18 @@ export class SyncService {
       this.prisma,
       titles.map((t) => t.contentId)
     )
-    const newTitles = titles.filter((t) => !existingIds.has(t.contentId))
+    const knownIds = await findKnownContentIds(
+      this.prisma,
+      providerName,
+      titles.map((t) => t.contentId)
+    )
+    const newTitles = titles.filter((t) => !knownIds.has(t.contentId))
     fetchLogger.info({
       action: 'check-titles',
       provider: providerName,
       total: titles.length,
       existing: existingIds.size,
+      unidentified: knownIds.size - existingIds.size,
       new: newTitles.length
     })
 
@@ -322,8 +350,8 @@ export class SyncService {
 
       for (let j = 0; j < batch.length; j++) {
         const meta = results[j]
+        const t = batch[j]
         if (meta) {
-          const t = batch[j]
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
           await this.prisma.anime.create({
             data: {
@@ -338,7 +366,6 @@ export class SyncService {
               status: meta.status,
               year: meta.year,
               quarter: meta.quarter,
-              isIdentified: true,
               badge: t.badge,
               nextEpisodeDate
             }
@@ -354,12 +381,17 @@ export class SyncService {
           })
           identifiedContentIds.push(t.contentId)
         } else {
+          await this.prisma.unidentifiedAnime.upsert({
+            where: { provider_contentId: { provider: providerName, contentId: t.contentId } },
+            create: { provider: providerName, contentId: t.contentId, title: t.title },
+            update: { title: t.title }
+          })
           syncLogger.warn({
             action: 'unidentified',
             provider: providerName,
-            title: batch[j].title,
-            search: cleanTitle(batch[j].title),
-            contentId: batch[j].contentId
+            title: t.title,
+            search: cleanTitle(t.title),
+            contentId: t.contentId
           })
         }
       }
