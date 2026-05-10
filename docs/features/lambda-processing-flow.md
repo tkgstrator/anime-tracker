@@ -40,23 +40,36 @@ const ExpiringResponseSchema = z.object({
 `TitleListResponseSchema` (`src/schemas/lambda.dto.ts`):
 
 ```ts
-const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
-const EntityType = z.enum(['tv', 'movie'])
-
-const TitleListEntrySchema = z.object({
-  contentId: z.string().nonempty(),
-  title: z.string().nonempty(),
-  description: z.string().nonempty(),
-  entityType: EntityType,
-  imageUrl: z.string().nonempty(),
-  maturityRating: z.number().int().positive().nullable(),
-  nextEpisodeDate: z.string().nonempty().optional(),
-  badge: BadgeType.optional()
-})
+// Provider 内部の TitleSchema を再利用 (expiring フィールドだけ除外)
+const TitleListEntrySchema = TitleSchema.omit({ expiring: true })
 
 const TitleListResponseSchema = z.object({
   fetchedAt: z.string().nonempty(),
   entries: z.array(TitleListEntrySchema)
+})
+```
+
+参照される `TitleSchema` の定義は `src/schemas/providers/common.dto.ts`:
+
+```ts
+const EntityType = z.enum(['tv', 'movie'])
+const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
+
+const TitleSchema = z.object({
+  contentId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  entityType: EntityType,
+  imageUrl: z.url().transform(stripQueryParams),
+  maturityRating: z.number().int().positive().nullable(),
+  nextEpisodeDate: z.string().nonempty().optional(),
+  badge: BadgeType.optional(),
+  expiring: z
+    .object({
+      remainingHours: z.number().int().positive(),
+      season: z.number().int().positive().nullable()
+    })
+    .optional()
 })
 ```
 
