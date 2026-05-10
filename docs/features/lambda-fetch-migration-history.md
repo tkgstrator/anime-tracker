@@ -1,4 +1,7 @@
-# データ取得の AWS Lambda 移行
+# データ取得の AWS Lambda 移行（履歴）
+
+このドキュメントは Phase 1〜3 の移行計画書。現状の処理フローは
+[`lambda-processing-flow.md`](./lambda-processing-flow.md) を参照のこと。
 
 ## 背景
 
@@ -141,7 +144,7 @@ Cloudflare R2 (S3 互換):
 
 | 項目 | 内容 |
 |------|------|
-| Lambda ハンドラ | `lambda/fetch-expiring/index.ts` — `AmazonProvider.fetchTitleList({ expiringOnly: true })` |
+| Lambda ハンドラ | `lambda/fetch/index.ts` — `AmazonProvider.fetchTitleList({ category: 'expiring' })` |
 | Terraform | `infra/*.tf` — Lambda + IAM + Function URL |
 | Workers 変更 | Queue Consumer で Lambda 呼び出し → KV 保存の統合 |
 | 依存追加 | `aws4fetch` |
@@ -179,7 +182,7 @@ infra/
   variables.tf         # 変数定義
   lambda.tf            # Lambda + IAM + Function URL
 lambda/
-  fetch-expiring/
+  fetch/
     index.ts           # ハンドラ（fetch → Title[] を返すだけ）
     build.ts           # bun build スクリプト
     dist/              # ビルド成果物 (git 管理外)
