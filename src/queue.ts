@@ -2,7 +2,7 @@ import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
-import { getGuestSession } from './lib/providers/abema/auth'
+import { getAccessToken } from './lib/providers/abema/auth'
 import { buildKeysArchive, fetchMediaToken } from './lib/providers/abema/hls'
 import { SyncService } from './lib/sync'
 
@@ -78,14 +78,13 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
               logger.info({ action: 'abema-archive-skip', animeId, reason: 'all keys present' })
               break
             }
-            const session = await getGuestSession()
-            const mediaToken = await fetchMediaToken({ bearer: session.token })
+            const bearer = await getAccessToken()
+            const mediaToken = await fetchMediaToken({ bearer })
             const stats = { ok: 0, fail: 0 }
             for (const ep of eps) {
               try {
                 const archive = await buildKeysArchive({
                   programId: ep.episodeId,
-                  deviceId: session.deviceId,
                   mediaToken
                 })
                 await prisma.abemaKeyArchive.create({
