@@ -13,7 +13,7 @@
  * Python 実装と完全に同等になるよう書いている (`nagisa/providers/abema/hls.py`)。
  */
 
-import { getGuestSession } from './auth'
+import { ABEMA_DEVICE_ID, getAccessToken } from './auth'
 
 // =====================================================================
 // 定数 — Python (nagisa/providers/abema/hls.py:52, constants.py) と同期必須
@@ -355,8 +355,6 @@ export async function fetchMediaToken(opts: { bearer: string }): Promise<string>
 
 export interface BuildKeysArchiveInput {
   programId: string
-  /** UUID 形式の device_id (guest token と同じものを使う必要がある) */
-  deviceId: string
   /** /v1/media/token で取得した manifest ticket */
   mediaToken: string
   /** master playlist URL (= https://vod-abematv.akamaized.net/program/{programId}/playlist.m3u8) */
@@ -415,12 +413,12 @@ export async function buildKeysArchive(
     throw new Error(`unexpected IV length ${variant.keys[0].iv.length}`)
   }
 
-  const session = await getGuestSession()
+  const bearer = await getAccessToken()
   const lic = await requestLicense(variant.keys[0].licenseTicket, {
     mediaToken: input.mediaToken,
-    bearer: session.token
+    bearer
   })
-  const contentKey = await unwrapContentKey(lic.k, lic.cid, input.deviceId)
+  const contentKey = await unwrapContentKey(lic.k, lic.cid, ABEMA_DEVICE_ID)
 
   return {
     programId: input.programId,
