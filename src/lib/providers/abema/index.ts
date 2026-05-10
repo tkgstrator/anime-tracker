@@ -16,6 +16,12 @@ export class AbemaProvider extends Provider {
       return this.fetchNewEpisodes()
     }
 
+    if (category === 'coming_soon') {
+      // ABEMA にはもうすぐ配信のバッジがないため空を返す
+      logger.info({ action: 'fetch-title-list-done', mode: 'coming_soon', count: 0 })
+      return []
+    }
+
     return this.fetchAll()
   }
 
