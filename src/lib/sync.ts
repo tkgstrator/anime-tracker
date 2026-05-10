@@ -89,7 +89,11 @@ export class SyncService {
       where: { provider_contentId: { provider, contentId } },
       include: {
         seasons: {
-          include: { episodes: { select: { id: true, episodeNumber: true, imageUrl: true } } }
+          include: {
+            episodes: {
+              select: { id: true, episodeNumber: true, imageUrl: true, description: true, duration: true }
+            }
+          }
         }
       }
     })
@@ -97,7 +101,12 @@ export class SyncService {
     const existingSeasons = new Map(
       anime.seasons.map((s) => [
         s.seasonNumber,
-        new Map(s.episodes.map((e) => [e.episodeNumber, { id: e.id, imageUrl: e.imageUrl }]))
+        new Map(
+          s.episodes.map((e) => [
+            e.episodeNumber,
+            { id: e.id, imageUrl: e.imageUrl, description: e.description, duration: e.duration }
+          ])
+        )
       ])
     )
 
@@ -135,7 +144,11 @@ export class SyncService {
           }
           continue
         }
-        if (existing.imageUrl !== episode.imageUrl) {
+        if (
+          existing.imageUrl !== episode.imageUrl ||
+          existing.description !== episode.description ||
+          existing.duration !== episode.duration
+        ) {
           await this.prisma.episode.update({
             where: { id: existing.id },
             data: {
