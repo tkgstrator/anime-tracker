@@ -21,7 +21,7 @@ fi
 
 IFS=',' read -ra IDS <<< "$CONTENT_IDS"
 
-BATCH_SIZE=20
+BATCH_SIZE="${BATCH_SIZE:-25}"
 TOTAL=${#IDS[@]}
 echo "Syncing ${TOTAL} titles for provider=${PROVIDER} (batch size: ${BATCH_SIZE})"
 

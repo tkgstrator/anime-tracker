@@ -16,12 +16,9 @@
       "TaskUpdate"
     ],
     "deny": [],
-    "bypassPermissionsMode": "allow",
-    "defaultMode": "bypassPermissions"
+    "defaultMode": "bypassPermissions",
+    "bypassPermissionsMode": "allow"
   },
-  "model": "claude-opus-4-6",
-  "effortLevel": "high",
-  "alwaysThinkingEnabled": true,
   "enabledMcpjsonServers": [
     "docker",
     "github",
@@ -29,5 +26,7 @@
     "shadcn",
     "prisma",
     "zod"
-  ]
+  ],
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high"
 }
