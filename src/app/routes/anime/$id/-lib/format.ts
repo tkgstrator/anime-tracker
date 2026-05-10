@@ -27,3 +27,21 @@ export function getWatchUrl(provider: string, episodeId: string): string | null 
       return null
   }
 }
+
+export function getProviderTitleUrl(provider: string, contentId: string): string | null {
+  if (!contentId) return null
+  switch (provider) {
+    case 'amazon':
+      return `https://www.amazon.co.jp/gp/video/detail/${contentId}`
+    case 'hulu':
+      return `https://www.hulu.jp/${contentId}`
+    case 'crunchyroll':
+      return `https://www.crunchyroll.com/series/${contentId}`
+    case 'abema':
+      return `https://abema.tv/video/title/${contentId}`
+    case 'netflix':
+      return `https://www.netflix.com/title/${contentId}`
+    default:
+      return null
+  }
+}

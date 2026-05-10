@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
+import { Button } from '@/app/components/ui/button'
 import api from '@/app/lib/api'
 import { queryKeys } from '@/app/lib/query-keys'
 import { animeDetailQueryOptions } from '@/app/lib/query-options'
@@ -17,7 +19,13 @@ export const Route = createFileRoute('/anime/$id/')({
 function AnimeDetailPage() {
   const { id } = Route.useParams()
   const queryClient = useQueryClient()
+  const router = useRouter()
   const { data: anime } = useSuspenseQuery(animeDetailQueryOptions(id))
+
+  const goBack = () => {
+    if (window.history.length > 1) router.history.back()
+    else router.navigate({ to: '/' })
+  }
 
   const invalidateRelated = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.anime.detail(id) })
@@ -60,9 +68,10 @@ function AnimeDetailPage() {
   return (
     <div className='space-y-8'>
       <div>
-        <Link to='/' className='text-sm text-muted-foreground hover:text-foreground'>
-          ← 一覧に戻る
-        </Link>
+        <Button type='button' size='sm' variant='ghost' onClick={goBack} className='-ml-2 text-muted-foreground'>
+          <ChevronLeft />
+          戻る
+        </Button>
       </div>
 
       <AnimeHero
