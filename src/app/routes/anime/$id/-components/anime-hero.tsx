@@ -116,12 +116,11 @@ export function AnimeHero({
             <Button
               type='button'
               size='lg'
-              variant='ghost'
+              variant='outline'
               onClick={onRefresh}
               disabled={updating}
               aria-label='タイトル情報を再取得'
               title='タイトル情報を再取得'
-              className='text-muted-foreground'
             >
               <RefreshCw className={refreshing ? 'animate-spin' : undefined} />
               <span className='hidden sm:inline'>更新</span>
