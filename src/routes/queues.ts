@@ -94,11 +94,7 @@ queues.openapi(
     try {
       if (body.type === 'fetch') {
         const { provider, category } = body.message
-        const result =
-          category === 'expiring'
-            ? await lambda.fetchExpiring({ provider })
-            : await lambda.fetchTitleList({ provider, category })
-        const contentIds = await service.fetch(body, result)
+        const contentIds = await service.fetch(body)
         if (category !== 'expiring' && category !== 'coming_soon') {
           for (const contentId of contentIds) {
             await service.update({ type: 'update', message: { provider, contentId } })

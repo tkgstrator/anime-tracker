@@ -248,16 +248,21 @@ export class SyncService {
   }
 
   /** プロバイダからタイトル一覧を取得し、更新対象のコンテンツIDを返す */
-  async fetch({ message }: FetchMessage, result: ExpiringResponse | TitleListResponse): Promise<string[]> {
+  async fetch({ message }: FetchMessage): Promise<string[]> {
     fetchLogger.info({
       action: 'fetch-start',
       provider: message.provider,
       category: message.category
     })
     if (message.category === 'expiring') {
-      return this.fetchExpiring(message.provider, result as ExpiringResponse)
+      const result = await this.lambda.fetchExpiring({ provider: message.provider })
+      return this.fetchExpiring(message.provider, result)
     }
-    return this.fetchTitleList(message.provider, message.category, result as TitleListResponse)
+    const result = await this.lambda.fetchTitleList({
+      provider: message.provider,
+      category: message.category
+    })
+    return this.fetchTitleList(message.provider, message.category, result)
   }
 
   /** 新着エピソード / 最近更新取得: Lambda レスポンス → AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
