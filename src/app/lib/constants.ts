@@ -7,11 +7,11 @@ export const providerLabel: Record<string, string> = {
 }
 
 export const providerColor: Record<string, string> = {
-  amazon: 'bg-sky-500/30 text-sky-300',
-  hulu: 'bg-emerald-500/30 text-emerald-300',
-  crunchyroll: 'bg-orange-500/30 text-orange-300',
-  abema: 'bg-lime-500/30 text-lime-300',
-  netflix: 'bg-red-500/30 text-red-300'
+  amazon: 'bg-brand-amazon text-brand-amazon-foreground',
+  hulu: 'bg-brand-hulu text-brand-hulu-foreground',
+  crunchyroll: 'bg-brand-crunchyroll text-brand-crunchyroll-foreground',
+  abema: 'bg-brand-abema text-brand-abema-foreground',
+  netflix: 'bg-brand-netflix text-brand-netflix-foreground'
 }
 
 export const statusLabel: Record<string, string> = {
@@ -23,9 +23,9 @@ export const statusLabel: Record<string, string> = {
 }
 
 export const statusColor: Record<string, string> = {
-  FINISHED: 'bg-gray-500/30 text-gray-300',
-  RELEASING: 'bg-green-500/30 text-green-300',
-  NOT_YET_RELEASED: 'bg-amber-500/30 text-amber-300',
-  CANCELLED: 'bg-red-500/30 text-red-300',
-  HIATUS: 'bg-orange-500/30 text-orange-300'
+  FINISHED: 'bg-status-finished text-status-finished-foreground',
+  RELEASING: 'bg-status-releasing text-status-releasing-foreground',
+  NOT_YET_RELEASED: 'bg-status-not-yet text-status-not-yet-foreground',
+  CANCELLED: 'bg-status-cancelled text-status-cancelled-foreground',
+  HIATUS: 'bg-status-hiatus text-status-hiatus-foreground'
 }

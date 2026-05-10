@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import dayjs from 'dayjs'
+import { ChevronRight, Film } from 'lucide-react'
 import { ProviderBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
@@ -24,8 +25,12 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvid
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold tracking-tight'>{title}</h2>
         {viewAllLink && (
-          <Link to={viewAllLink} className='text-sm text-muted-foreground transition-colors hover:text-foreground'>
+          <Link
+            to={viewAllLink}
+            className='inline-flex items-center gap-0.5 text-sm text-muted-foreground transition-colors hover:text-foreground'
+          >
             すべて見る
+            <ChevronRight className='size-4' />
           </Link>
         )}
       </div>
@@ -91,12 +96,16 @@ function CarouselCard({
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (
-          <div className='flex h-full items-center justify-center p-2 text-center text-xs text-muted-foreground'>
-            {anime.title}
+          <div className='flex h-full flex-col items-center justify-center gap-1.5 p-2 text-center text-xs text-muted-foreground'>
+            <Film className='size-5 opacity-60' aria-hidden='true' />
+            <span className='line-clamp-2'>{anime.title}</span>
           </div>
         )}
         {badgeType && badgeDate && (
-          <Badge variant='secondary' className='absolute bottom-1 left-1 bg-black/70 text-[10px] text-white'>
+          <Badge
+            variant='secondary'
+            className='absolute bottom-1 left-1 bg-overlay text-[10px] text-overlay-foreground'
+          >
             {formatDateBadge(badgeDate, badgeType)}
           </Badge>
         )}

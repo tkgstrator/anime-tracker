@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Film } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
@@ -32,8 +33,9 @@ export function AnimeCard({
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (
-          <div className='flex h-full items-center justify-center p-4 text-center text-sm text-muted-foreground'>
-            {anime.title}
+          <div className='flex h-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
+            <Film className='size-6 opacity-60' aria-hidden='true' />
+            <span className='line-clamp-2'>{anime.title}</span>
           </div>
         )}
       </div>

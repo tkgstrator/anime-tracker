@@ -1,5 +1,7 @@
 import { Link, useRouter } from '@tanstack/react-router'
+import { AlertCircle } from 'lucide-react'
 import { motion } from 'motion/react'
+import { Button } from '@/app/components/ui/button'
 
 function getStatusCode(error: Error): number | undefined {
   if ('status' in error && typeof (error as Record<string, unknown>).status === 'number') {
@@ -36,7 +38,6 @@ export function ErrorPage({ error }: { error: Error }) {
       transition={{ duration: 0.25, ease: 'easeOut' }}
     >
       <div className='flex flex-col items-center gap-8 text-center'>
-        {/* Status code or icon */}
         <motion.div
           className='flex flex-col items-center gap-2'
           initial={{ scale: 0.8, opacity: 0 }}
@@ -53,23 +54,7 @@ export function ErrorPage({ error }: { error: Error }) {
           ) : (
             <div className='relative flex h-24 w-24 items-center justify-center'>
               <div className='absolute inset-0 rounded-full bg-destructive/10' />
-              <svg
-                width='40'
-                height='40'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='1.5'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                className='text-destructive'
-                role='img'
-              >
-                <title>エラー</title>
-                <circle cx='12' cy='12' r='10' />
-                <line x1='12' y1='8' x2='12' y2='12' />
-                <line x1='12' y1='16' x2='12.01' y2='16' />
-              </svg>
+              <AlertCircle className='size-10 text-destructive' aria-label='エラー' />
             </div>
           )}
         </motion.div>
@@ -92,19 +77,12 @@ export function ErrorPage({ error }: { error: Error }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.35 }}
         >
-          <button
-            type='button'
-            onClick={() => router.invalidate()}
-            className='rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-80'
-          >
+          <Button type='button' size='lg' onClick={() => router.invalidate()}>
             再読み込み
-          </button>
-          <Link
-            to='/'
-            className='rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground'
-          >
+          </Button>
+          <Button size='lg' variant='outline' render={<Link to='/' />}>
             ホームに戻る
-          </Link>
+          </Button>
         </motion.div>
       </div>
     </motion.div>

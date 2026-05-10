@@ -20,8 +20,7 @@ const homeQueries = () => {
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
   return [
-    animeListQueryOptions({ year: currentYear, quarter: currentQuarter, limit: 100, sort: 'title', order: 'asc' }),
-    animeListQueryOptions({ scheduled: true, limit: 100, sort: 'title', order: 'asc' })
+    animeListQueryOptions({ year: currentYear, quarter: currentQuarter, limit: 100, sort: 'title', order: 'asc' })
   ] as const
 }
 
@@ -37,27 +36,29 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   const { data: badged } = useSuspenseQuery(badgedAnimeQueryOptions())
-  const [currentSeasonQ, scheduledQ] = useSuspenseQueries({
+  const [currentSeasonQ] = useSuspenseQueries({
     queries: [...homeQueries()]
   })
 
   const currentSeason = currentSeasonQ.data.data
-  const scheduled = scheduledQ.data.data
 
   const byProvider = useMemo(() => {
-    const map: Record<string, AnimeSchema[]> = {}
+    const grouped = new Map<string, AnimeSchema[]>()
     for (const anime of currentSeason) {
-      const list = map[anime.provider] ?? []
-      list.push(anime)
-      map[anime.provider] = list
+      const existing = grouped.get(anime.provider)
+      if (existing) {
+        existing.push(anime)
+      } else {
+        grouped.set(anime.provider, [anime])
+      }
     }
-    for (const list of Object.values(map)) {
-      for (let i = list.length - 1; i > 0; i--) {
+    for (const list of grouped.values()) {
+      for (const i of Array.from({ length: list.length - 1 }, (_, k) => list.length - 1 - k)) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[list[i], list[j]] = [list[j], list[i]]
       }
     }
-    return map
+    return grouped
   }, [currentSeason])
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
@@ -68,28 +69,41 @@ function HomePage() {
       <AnimeCarousel
         title='新着エピソード'
         anime={badged.NEW_EPISODE}
-        viewAllLink='/browse'
+        viewAllLink='/browse?badge=NEW_EPISODE'
         badgeType='nextEpisodeDate'
       />
-      <AnimeCarousel title='最近追加されたアニメ' anime={badged.RECENTLY_ADDED} viewAllLink='/browse' />
+      <AnimeCarousel
+        title='最近追加されたアニメ'
+        anime={badged.RECENTLY_ADDED}
+        viewAllLink='/browse?badge=RECENTLY_ADDED'
+      />
       <AnimeCarousel
         title='もうすぐ配信'
         anime={badged.COMING_SOON}
-        viewAllLink='/browse'
+        viewAllLink='/browse?badge=COMING_SOON'
         badgeType='nextEpisodeDate'
       />
-      <AnimeCarousel title='もうすぐ配信終了' anime={badged.EXPIRING} viewAllLink='/browse' badgeType='expiredAt' />
+      <AnimeCarousel
+        title='もうすぐ配信終了'
+        anime={badged.EXPIRING}
+        viewAllLink='/browse?badge=EXPIRING'
+        badgeType='expiredAt'
+      />
       <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
-      <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
-      {Object.entries(byProvider).map(([provider, anime]) => (
-        <AnimeCarousel
-          key={provider}
-          title={providerLabel[provider] ?? provider}
-          anime={anime}
-          viewAllLink={`/browse?provider=${provider}`}
-          showProvider={false}
-        />
-      ))}
+      {byProvider.size > 0 && (
+        <section className='space-y-6'>
+          <h2 className='text-xl font-bold tracking-tight'>配信元から探す</h2>
+          {Array.from(byProvider.entries()).map(([provider, anime]) => (
+            <AnimeCarousel
+              key={provider}
+              title={providerLabel[provider] ?? provider}
+              anime={anime}
+              viewAllLink={`/browse?provider=${provider}`}
+              showProvider={false}
+            />
+          ))}
+        </section>
+      )}
     </div>
   )
 }
