@@ -5,7 +5,16 @@ const LOGIN_URL = 'https://abema.tv/api/auth/login/guest'
 const HMAC_SECRET =
   'v+Gjs=25Aw5erR!J8ZuvRrCx*rGswhB&qdHd_SYerEWdU&a?3DzN9BRbp5KwY4hEmcj5#fykMjJ=AuWz5GSMY-d@H7DMEh3M@9n2G552Us$$k9cD=3TxwWe86!x#Zyhe'
 
-const tokenCache = { token: null as string | null, expiresAt: dayjs(0) }
+const sessionCache: { token: string | null; deviceId: string | null; expiresAt: dayjs.Dayjs } = {
+  token: null,
+  deviceId: null,
+  expiresAt: dayjs(0)
+}
+
+export interface AbemaGuestSession {
+  token: string
+  deviceId: string
+}
 
 function toBase64Url(buf: Uint8Array): string {
   return btoa(String.fromCharCode(...buf))
@@ -53,8 +62,10 @@ function getKeyDate(): Date {
   return d
 }
 
-export async function getAccessToken(): Promise<string> {
-  if (tokenCache.token && dayjs().isBefore(tokenCache.expiresAt)) return tokenCache.token
+export async function getGuestSession(): Promise<AbemaGuestSession> {
+  if (sessionCache.token && sessionCache.deviceId && dayjs().isBefore(sessionCache.expiresAt)) {
+    return { token: sessionCache.token, deviceId: sessionCache.deviceId }
+  }
 
   const deviceId = crypto.randomUUID()
   const keyDate = getKeyDate()
@@ -82,7 +93,13 @@ export async function getAccessToken(): Promise<string> {
   const result = AbemaTokenResponseSchema.safeParse(await res.json())
   if (!result.success) throw result.error
 
-  tokenCache.token = result.data.access_token
-  tokenCache.expiresAt = dayjs().add(2, 'hour')
-  return tokenCache.token
+  sessionCache.token = result.data.access_token
+  sessionCache.deviceId = deviceId
+  sessionCache.expiresAt = dayjs().add(2, 'hour')
+  return { token: sessionCache.token, deviceId }
+}
+
+export async function getAccessToken(): Promise<string> {
+  const { token } = await getGuestSession()
+  return token
 }

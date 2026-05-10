@@ -7,6 +7,7 @@ import { localDetailFetchers } from './lib/local-detail-fetchers'
 import { setupLogger, startCapture, stopCapture } from './lib/logger'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
+import adminRoutes from './routes/admin'
 import animeRoutes from './routes/anime'
 import imgRoutes from './routes/img'
 import nagisaRoutes from './routes/nagisa'
@@ -34,6 +35,7 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>()
 // app.use(honoLogger({ category: ['app', 'hono'] }))
 app.use(logger())
 
+app.route('/api/admin', adminRoutes)
 app.route('/api/anime', animeRoutes)
 app.route('/api/img', imgRoutes)
 app.route('/api/nagisa', nagisaRoutes)
@@ -83,6 +85,15 @@ app.post('/api/queues', async (c) => {
         }
       }
       return c.json({ type: 'bulk_update', count: contentIds.length, results, logs: stopCapture() })
+    }
+    if (body.data.type === 'abema_archive') {
+      return c.json(
+        {
+          error: 'abema_archive is not executable via /api/queues, use /api/admin/abema/enqueue-archive',
+          logs: stopCapture()
+        },
+        400
+      )
     }
     await service.update(body.data)
     return c.json({ type: 'update', success: true, logs: stopCapture() })
