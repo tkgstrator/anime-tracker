@@ -1,13 +1,15 @@
 import dayjs from 'dayjs'
 import type { BadgeType, Title, TitleInfo } from '../../../schemas/providers/common.dto'
 import type { VodItem } from '../../../schemas/providers/hulu.dto'
-import { getAppLogger } from '../../logger'
-import { type FetchTitleListOptions, Provider } from '../base'
-import { fetchCurrentSeasonAnime, fetchHuluAnimeAll, fetchHuluExpiring, fetchRecentlyAdded } from './browse'
-
+import { Provider } from '../base'
+import {
+  currentSeasonSlugs,
+  fetchHuluExpiringPage,
+  fetchHuluFilteredPage,
+  fetchHuluPalettePage,
+  fetchRecentlyAddedPage
+} from './browse'
 import { fetchHuluTitleDetail, parseHuluDate } from './detail'
-
-const logger = getAppLogger('hulu')
 
 /**
  * coming_soon_text (例: "4月13日 配信開始") から配信開始日を ISO 文字列で返す。
@@ -47,47 +49,19 @@ function vodItemToTitle(item: VodItem, badge?: BadgeType | null, comingSoonDate?
 export class HuluProvider extends Provider {
   readonly name = 'hulu'
 
-  /**
-   * Hulu のアニメタイトル一覧を取得する。
-   *
-   * - `new_episode`: Palette API (recentlyadded-anime + seasonal)
-   *   → asset があるシリーズは NEW_EPISODE、それ以外は RECENTLY_ADDED
-   * - `coming_soon`: Palette API → COMING_SOON のみ
-   * - `expiring`: Filtered API (publish_end_at 昇順) で配信終了間近のタイトル
-   * - 未指定: Filtered API (g:8) で全アニメ (TV + 映画)
-   * @returns アニメタイトル一覧
-   */
-  async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const category = options?.category
+  /** 共通: new_episode / coming_soon は同じソース (recentlyadded + seasonal) を読み出すので一括取得 */
+  private async fetchRecentAndSeason(category: 'new_episode' | 'coming_soon'): Promise<Title[]> {
+    this.logger.info({ action: 'fetch-title-list-start', mode: category })
+    const [recentItems, seasonItems] = await Promise.all([
+      this.paginate<VodItem, number>({
+        initial: 0,
+        fetchPage: (from) => fetchRecentlyAddedPage(from)
+      }),
+      this.fetchSeasonItems()
+    ])
+    this.logger.debug({ action: 'fetched-sources', recentCount: recentItems.length, seasonCount: seasonItems.length })
 
-    if (category === 'new_episode' || category === 'coming_soon') {
-      return this.fetchNewAndRecent(category)
-    }
-    if (category === 'expiring') {
-      return this.fetchExpiring()
-    }
-    return this.fetchAll()
-  }
-
-  /**
-   * 新着エピソード / 最近更新: Palette API (recentlyadded-anime + seasonal)
-   *
-   * Palette にはエピソード単体 (asset) とシリーズ (series) が混在する。
-   * - あるシリーズの asset が含まれている → NEW_EPISODE (新エピソード追加)
-   * - series だけで asset がない → RECENTLY_ADDED (シリーズ自体が最近追加)
-   *
-   * category で返すバッジをフィルタする。
-   */
-  private async fetchNewAndRecent(category: 'new_episode' | 'coming_soon'): Promise<Title[]> {
-    logger.info({ action: 'fetch-title-list-start', mode: category })
-    const [recentItems, seasonItems] = await Promise.all([fetchRecentlyAdded(), fetchCurrentSeasonAnime()])
-    logger.debug({
-      action: 'fetched-sources',
-      recentCount: recentItems.length,
-      seasonCount: seasonItems.length
-    })
-
-    // recentlyadded-anime の asset から、エピソード追加があるシリーズの series_id を集める
+    // recentlyadded-anime の asset → エピソード追加があるシリーズの series_id を抽出
     const seriesWithAsset = new Set<number>()
     for (const item of recentItems) {
       if (item.additionalInfo.schema_key === 'asset' && item.additionalInfo.series_id) {
@@ -97,41 +71,66 @@ export class HuluProvider extends Provider {
 
     const targetBadges: Set<BadgeType> =
       category === 'new_episode' ? new Set(['NEW_EPISODE', 'RECENTLY_ADDED']) : new Set(['COMING_SOON'])
-    const allItems = [...recentItems, ...seasonItems]
-    const seen = new Set<string>()
-    const titles: Title[] = []
 
-    for (const item of allItems) {
-      if (item.additionalInfo.schema_key !== 'series') continue
-      if (seen.has(item.slug)) continue
-      seen.add(item.slug)
+    const seriesOnly = [...recentItems, ...seasonItems].filter((i) => i.additionalInfo.schema_key === 'series')
+    const titles = this.dedupeBy(seriesOnly, (i) => i.slug)
+      .map((item) => {
+        const comingSoonText = item.additionalInfo.card_info.coming_soon_text
+        const badge: BadgeType = comingSoonText
+          ? 'COMING_SOON'
+          : seriesWithAsset.has(item.id_in_schema)
+            ? 'NEW_EPISODE'
+            : 'RECENTLY_ADDED'
+        const comingSoonDate = comingSoonText ? parseComingSoonDate(comingSoonText) : null
+        return targetBadges.has(badge) ? vodItemToTitle(item, badge, comingSoonDate) : null
+      })
+      .filter((t): t is Title => t !== null)
 
-      const comingSoonText = item.additionalInfo.card_info.coming_soon_text
-      const badge: BadgeType = comingSoonText
-        ? 'COMING_SOON'
-        : seriesWithAsset.has(item.id_in_schema)
-          ? 'NEW_EPISODE'
-          : 'RECENTLY_ADDED'
-      if (!targetBadges.has(badge)) continue
-
-      const comingSoonDate = comingSoonText ? parseComingSoonDate(comingSoonText) : null
-      titles.push(vodItemToTitle(item, badge, comingSoonDate))
-    }
-
-    logger.info({ action: 'fetch-title-list-done', mode: category, count: titles.length })
+    this.logger.info({ action: 'fetch-title-list-done', mode: category, count: titles.length })
     return titles
   }
 
+  /** 今期 (＋最終月なら来期も) のシーズン slug を Promise.all で取得して重複排除 */
+  private async fetchSeasonItems(): Promise<VodItem[]> {
+    const slugs = currentSeasonSlugs()
+    const all = await Promise.all(
+      slugs.map((slug) =>
+        this.paginate<VodItem, number>({
+          initial: 0,
+          fetchPage: (from) => fetchHuluPalettePage(slug, from)
+        }).catch((e) => {
+          this.logger.error({
+            action: 'fetch-season-palette-failed',
+            slug,
+            error: e instanceof Error ? e.message : String(e)
+          })
+          return [] as VodItem[]
+        })
+      )
+    )
+    return this.dedupeBy(all.flat(), (i) => i.slug)
+  }
+
+  protected fetchNewEpisode(): Promise<Title[]> {
+    return this.fetchRecentAndSeason('new_episode')
+  }
+
+  protected fetchComingSoon(): Promise<Title[]> {
+    return this.fetchRecentAndSeason('coming_soon')
+  }
+
   /** 配信終了間近: Filtered API (publish_end_at 昇順、30日以内) */
-  private async fetchExpiring(): Promise<Title[]> {
-    logger.info({ action: 'fetch-title-list-start', mode: 'expiring' })
-    const items = await fetchHuluExpiring()
-    logger.debug({ action: 'fetched-expiring', count: items.length })
-    const seen = new Set<string>()
-    const titles: Title[] = []
-    for (const item of items) {
-      if (seen.has(item.slug)) continue
-      seen.add(item.slug)
+  protected async fetchExpiring(): Promise<Title[]> {
+    this.logger.info({ action: 'fetch-title-list-start', mode: 'expiring' })
+    const cutoff = dayjs().add(30, 'day')
+    const items = await this.paginate<VodItem, number>({
+      initial: 0,
+      fetchPage: async (from) => {
+        const { items, next } = await fetchHuluExpiringPage(cutoff, from)
+        return { items, next }
+      }
+    })
+    const titles = this.dedupeBy(items, (i) => i.slug).map((item) => {
       const title = vodItemToTitle(item)
       if (item.endAt) {
         title.expiring = {
@@ -139,25 +138,24 @@ export class HuluProvider extends Provider {
           season: null
         }
       }
-      titles.push(title)
-    }
-    logger.info({ action: 'fetch-title-list-done', mode: 'expiring', count: titles.length })
+      return title
+    })
+    this.logger.info({ action: 'fetch-title-list-done', mode: 'expiring', count: titles.length })
     return titles
   }
 
   /** 全タイトル: Filtered API (g:8, TV + 映画) */
-  private async fetchAll(): Promise<Title[]> {
-    logger.info({ action: 'fetch-title-list-start', mode: 'all' })
-    const results = await fetchHuluAnimeAll()
-    logger.debug({ action: 'fetched-all', count: results.length })
-    const seen = new Set<string>()
-    const titles: Title[] = []
-    for (const item of results) {
-      if (seen.has(item.slug)) continue
-      seen.add(item.slug)
-      titles.push(vodItemToTitle(item))
-    }
-    logger.info({ action: 'fetch-title-list-done', mode: 'all', count: titles.length })
+  protected async fetchCatalog(): Promise<Title[]> {
+    this.logger.info({ action: 'fetch-title-list-start', mode: 'catalog' })
+    const items = await this.paginate<VodItem, number>({
+      initial: 0,
+      fetchPage: async (from) => {
+        const { items, next } = await fetchHuluFilteredPage('[{"values.weekly_uu":"desc"}]', from)
+        return { items, next }
+      }
+    })
+    const titles = this.dedupeBy(items, (i) => i.slug).map((i) => vodItemToTitle(i))
+    this.logger.info({ action: 'fetch-title-list-done', mode: 'catalog', count: titles.length })
     return titles
   }
 
@@ -168,9 +166,9 @@ export class HuluProvider extends Provider {
    * @returns タイトル詳細情報
    */
   async fetchTitleInfo(contentId: string): Promise<TitleInfo> {
-    logger.debug({ action: 'fetch-title-info-start', contentId })
+    this.logger.debug({ action: 'fetch-title-info-start', contentId })
     const detail = await fetchHuluTitleDetail(contentId)
-    logger.debug({
+    this.logger.debug({
       action: 'fetch-title-info-done',
       contentId,
       title: detail.title,

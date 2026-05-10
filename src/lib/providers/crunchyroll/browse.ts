@@ -53,17 +53,14 @@ export function browseItemToTitle(item: BrowseItem, badge?: Title['badge']): Tit
 }
 
 /**
- * Browse API でページネーション付きの全取得を行う。
- * @param sortBy - ソート順 ("newly_added" | "alphabetical" | "popularity")
- * @param maxItems - 最大取得数 (0 = 無制限)
+ * Browse API の 1 ページを取得する。
+ * @returns 取得済みアイテムと次の start 位置 (打ち切り時は null)
  */
-async function fetchBrowsePage(
+export async function fetchBrowsePage(
   sortBy: string,
   start: number,
-  total: number,
-  maxItems: number,
-  items: BrowseItem[]
-): Promise<BrowseItem[]> {
+  maxItems: number
+): Promise<{ items: BrowseItem[]; total: number; next: number | null }> {
   const raw = await crunchyrollGet(BROWSE_PATH, {
     locale: 'ja-JP',
     preferred_audio_language: 'ja-JP',
@@ -74,16 +71,11 @@ async function fetchBrowsePage(
   })
   const result = BrowseResponseSchema.safeParse(raw)
   if (!result.success) throw result.error
-  const resolvedTotal = start === 0 ? result.data.total : total
-  const accumulated = [...items, ...result.data.data]
-
-  if (result.data.data.length === 0) return accumulated
-  if (accumulated.length >= resolvedTotal) return accumulated
-  if (maxItems > 0 && accumulated.length >= maxItems) return accumulated
-  return fetchBrowsePage(sortBy, start + PAGE_SIZE, resolvedTotal, maxItems, accumulated)
+  const total = result.data.total
+  const fetchedSoFar = start + result.data.data.length
+  const reachedEnd =
+    result.data.data.length === 0 || fetchedSoFar >= total || (maxItems > 0 && fetchedSoFar >= maxItems)
+  return { items: result.data.data, total, next: reachedEnd ? null : start + PAGE_SIZE }
 }
 
-export async function fetchBrowse(sortBy: string, maxItems = 0): Promise<BrowseItem[]> {
-  const items = await fetchBrowsePage(sortBy, 0, Number.MAX_SAFE_INTEGER, maxItems, [])
-  return maxItems > 0 ? items.slice(0, maxItems) : items
-}
+export const CRUNCHYROLL_PAGE_SIZE = PAGE_SIZE
