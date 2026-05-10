@@ -8,12 +8,9 @@ echo "[1/3] Deleting local D1 data..."
 rm -rf .wrangler/state/v3/d1
 echo "  Done."
 
-# 2. マイグレーションを全て適用
+# 2. マイグレーションを全て適用 (d1_migrations への記録込み)
 echo "[2/3] Applying migrations..."
-for dir in $(ls -d prisma/migrations/*/ | sort); do
-  echo "  Applying: $dir"
-  bunx wrangler d1 execute anime-tracker-staging --local --file "${dir}migration.sql"
-done
+bun scripts/db/migrate.ts local
 echo "  Done."
 
 # 3. シードデータの投入
