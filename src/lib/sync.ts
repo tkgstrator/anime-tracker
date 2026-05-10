@@ -91,7 +91,14 @@ export class SyncService {
         seasons: {
           include: {
             episodes: {
-              select: { id: true, episodeNumber: true, imageUrl: true, description: true, duration: true }
+              select: {
+                id: true,
+                episodeNumber: true,
+                imageUrl: true,
+                description: true,
+                duration: true,
+                releaseDate: true
+              }
             }
           }
         }
@@ -104,7 +111,13 @@ export class SyncService {
         new Map(
           s.episodes.map((e) => [
             e.episodeNumber,
-            { id: e.id, imageUrl: e.imageUrl, description: e.description, duration: e.duration }
+            {
+              id: e.id,
+              imageUrl: e.imageUrl,
+              description: e.description,
+              duration: e.duration,
+              releaseDate: e.releaseDate
+            }
           ])
         )
       ])
@@ -144,17 +157,20 @@ export class SyncService {
           }
           continue
         }
+        const nextReleaseDate = dayjs(episode.releaseDate).toDate()
         if (
           existing.imageUrl !== episode.imageUrl ||
           existing.description !== episode.description ||
-          existing.duration !== episode.duration
+          existing.duration !== episode.duration ||
+          existing.releaseDate.getTime() !== nextReleaseDate.getTime()
         ) {
           await this.prisma.episode.update({
             where: { id: existing.id },
             data: {
               imageUrl: episode.imageUrl,
               description: episode.description,
-              duration: episode.duration
+              duration: episode.duration,
+              releaseDate: nextReleaseDate
             }
           })
         }
