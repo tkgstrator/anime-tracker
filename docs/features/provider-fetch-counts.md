@@ -21,7 +21,19 @@ cron は `src/scheduled.ts:39-58` のとおり。
 - `0 0 * * *` … 4 provider × expiring を毎日 enqueue
 - `0 4 * * *` … abema_archive
 
-## スナップショット (2026-05-10, local D1)
+## スナップショット (2026-05-10)
+
+### Lambda 直叩き（素の取得件数）
+
+`bun scripts/lambda/local.ts` で AWS を介さずローカル実行。Crunchyroll は VPN 必須なので未計測。
+
+| provider | new_episode (内訳) | coming_soon | expiring |
+|---|---:|---:|---:|
+| amazon | **188** (NEW_EPISODE 169 / RECENTLY_ADDED 19) | 0 | **30** |
+| hulu   | **88** (RECENTLY_ADDED 88) | **2** (COMING_SOON 2) | **17** |
+| abema  | **89** (NEW_EPISODE 89) | 0 | 0 |
+
+### ローカル D1（upsert 後）
 
 `anime-tracker-staging` をローカル wrangler で集計。
 
@@ -32,11 +44,13 @@ cron は `src/scheduled.ts:39-58` のとおり。
 | crunchyroll | 1,684 | 21  | 168 | - | - | 1,873 |
 | hulu        | 1,593 | -   | 78  | 2 | 8 | 1,681 |
 
-メモ:
+メモ（Lambda vs D1 のギャップ）:
 
-- abema は label.newest を見ているが D1 の `badge` 列に NEW_EPISODE が反映されていない。実装側の追従漏れの可能性あり、要確認。
-- hulu の new_episode は実態として RECENTLY_ADDED に寄っており NEW_EPISODE は 0 件。`assetInfo` 由来の判定条件が厳しめ。
-- amazon EXPIRING / hulu EXPIRING は 1 桁台で推移する想定（30 日以内）。0 になっていたら expiring cron が落ちてる疑い。
+- **abema NEW_EPISODE 89 → D1 0 件**。`label.newest` 由来のバッジが D1 に反映されていない。実装側の追従漏れの可能性あり、要確認。
+- **amazon NEW_EPISODE 169 → D1 137**。差分 32 は AniList 識別失敗または next_episode_date 上書き保護でリセットされた分。
+- **hulu の new_episode は 88 件全部 RECENTLY_ADDED**。NEW_EPISODE は Lambda 段階でも 0 件で、`assetInfo` 由来の判定条件が厳しめ。
+- **amazon EXPIRING 30 → D1 6 / hulu EXPIRING 17 → D1 8**。30 日以内の絞り込みは Lambda 側で済んでいるので、差分は AniList 識別ミスのはず。
+- **amazon / abema の coming_soon は構造的に 0**（プロバイダ未対応）。hulu のみ 1〜数件で推移する想定。
 
 ## 集計方法
 
@@ -60,30 +74,45 @@ bunx wrangler d1 execute anime-tracker-staging --local \
 
 本番 D1 を見るときは `--local` を `--remote` に差し替える。
 
-### B. Lambda を直接叩いて素の件数（D1 upsert 前）
+### B. Lambda をローカル実行で素の件数（AWS 経由なし）
 
-Lambda レスポンスの `titles[]` の長さが「プロバイダから今この瞬間に取れる件数」。AniList 識別前 / D1 upsert 前なので、ズレた時の切り分けに使う。
+`scripts/lambda/local.ts` は `lambda/fetch/index.ts` の `handler` を直接呼ぶ。AWS を介さないので Crunchyroll 以外（amazon / hulu / abema）はネット越しの追加コスト無しで叩ける。レスポンスは `{ entries, fetchedAt }` 形式。
+
+ワンライナーで件数を出す:
 
 ```bash
-# title_list (new_episode / coming_soon)
-scripts/lambda/invoke.sh title_list amazon new_episode | jq '.body | fromjson | .titles | length'
-scripts/lambda/invoke.sh title_list amazon coming_soon | jq '.body | fromjson | .titles | length'
+# title_list
+for prov in amazon hulu abema; do
+  for cat in new_episode coming_soon; do
+    body=$(bun scripts/lambda/local.ts /title_list "{\"provider\":\"$prov\",\"category\":\"$cat\"}" 2>/dev/null | sed -n '/^===RESULT===$/,$p' | tail -n +2)
+    echo "$prov/$cat: $(echo "$body" | jq '.entries | length')"
+  done
+done
 
-scripts/lambda/invoke.sh title_list hulu new_episode       | jq '.body | fromjson | .titles | length'
-scripts/lambda/invoke.sh title_list hulu coming_soon       | jq '.body | fromjson | .titles | length'
-scripts/lambda/invoke.sh title_list crunchyroll new_episode | jq '.body | fromjson | .titles | length'
-scripts/lambda/invoke.sh title_list abema new_episode       | jq '.body | fromjson | .titles | length'
-
-# expiring (毎日 cron)
-scripts/lambda/invoke.sh expiring amazon | jq '.body | fromjson | .entries | length'
-scripts/lambda/invoke.sh expiring hulu   | jq '.body | fromjson | .entries | length'
+# expiring
+for prov in amazon hulu abema; do
+  body=$(bun scripts/lambda/local.ts /expiring "{\"provider\":\"$prov\"}" 2>/dev/null | sed -n '/^===RESULT===$/,$p' | tail -n +2)
+  echo "$prov/expiring: $(echo "$body" | jq '.entries | length')"
+done
 ```
 
-バッジ単位で見たい場合は `.titles | group_by(.badge)` する:
+バッジ単位:
 
 ```bash
-scripts/lambda/invoke.sh title_list amazon new_episode \
-  | jq '.body | fromjson | .titles | group_by(.badge) | map({badge: .[0].badge, count: length})'
+bun scripts/lambda/local.ts /title_list '{"provider":"amazon","category":"new_episode"}' 2>/dev/null \
+  | sed -n '/^===RESULT===$/,$p' | tail -n +2 \
+  | jq '.entries | group_by(.badge // "(none)") | map({badge: (.[0].badge // "(none)"), count: length})'
+```
+
+### C. AWS Lambda 経由で素の件数（Crunchyroll はこちら）
+
+Crunchyroll は VPN（US Lambda）が必須なのでローカル実行不可。AWS を介して叩く。
+
+```bash
+scripts/lambda/invoke.sh title_list crunchyroll new_episode \
+  | jq '.body | fromjson | .entries | length'
+scripts/lambda/invoke.sh expiring amazon \
+  | jq '.body | fromjson | .entries | length'
 ```
 
 ## 異常判定の目安
