@@ -71,7 +71,30 @@ model Episode {
   recorded       Boolean  @default(false)
   createdAt      DateTime @default(now()) @map("created_at")
   season         Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  abemaKey       AbemaKeyArchive?
 
   @@unique([seasonId, episodeNumber])
   @@map("episodes")
+}
+
+/// ABEMA HLS-AES-LEGACY 鍵アーカイブ。
+/// 無料配信中の license POST で得た AES-128 content key と segment URL を
+/// 永続化しておくと、後で license endpoint を呼ばずに再復号できる。
+/// 詳細は nagisa リポジトリ docs/providers/abema/license.md を参照。
+model AbemaKeyArchive {
+  id                String   @id @default(uuid())
+  episodeId         String   @unique @map("episode_id")
+  programId         String   @map("program_id") // 例: 25-73_s1_p5
+  cid               String   // license response の cid (= program_id と同じ)
+  contentKeyHex     String   @map("content_key_hex") // 32 chars (16 bytes hex)
+  ivHex             String   @map("iv_hex") // 32 chars (16 bytes hex)
+  variantUrl        String   @map("variant_url")
+  variantResolution String   @map("variant_resolution") // 例: "1920x1080"
+  variantBandwidth  Int      @map("variant_bandwidth") // bps
+  segmentUrls       String   @map("segment_urls") // JSON 配列文字列 (D1/SQLite は配列ネイティブ非対応)
+  archivedAt        DateTime @default(now()) @map("archived_at")
+  episode           Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@map("abema_key_archives")
 }
