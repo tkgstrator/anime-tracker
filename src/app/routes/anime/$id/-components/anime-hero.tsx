@@ -1,13 +1,14 @@
 import { Link } from '@tanstack/react-router'
 import { useSetAtom } from 'jotai'
-import { Circle, CircleCheck, Clock, Film, Tv } from 'lucide-react'
+import { Circle, CircleCheck, Clock, ExternalLink, Film, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
 import { Badge } from '@/app/components/ui/badge'
 import { Button } from '@/app/components/ui/button'
 import { browseFiltersAtom, defaultBrowseFilters } from '@/app/lib/atoms'
+import { providerLabel } from '@/app/lib/constants'
 import { type AnimeInfoSchema, QuarterLabel } from '@/schemas/anime.dto'
-import { formatDuration } from '../-lib/format'
+import { formatDuration, getProviderTitleUrl } from '../-lib/format'
 
 export function AnimeHero({
   anime,
@@ -25,6 +26,7 @@ export function AnimeHero({
   onToggleRecorded: () => void
 }) {
   const setFilters = useSetAtom(browseFiltersAtom)
+  const titleUrl = getProviderTitleUrl(anime.provider, anime.contentId)
 
   return (
     <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6'>
@@ -66,34 +68,51 @@ export function AnimeHero({
           </div>
         </div>
 
-        <div className='flex flex-wrap items-center gap-2 pt-1'>
-          <Button
-            type='button'
-            size='lg'
-            variant={anime.scheduled ? 'default' : 'secondary'}
-            onClick={onToggleScheduled}
-            disabled={updating}
-            aria-pressed={anime.scheduled}
-          >
-            {anime.scheduled ? <CircleCheck /> : <Circle />}
-            {anime.scheduled ? '予約済み' : '録画予約'}
-          </Button>
-          <Button
-            type='button'
-            size='lg'
-            variant={anime.recorded ? 'default' : 'secondary'}
-            onClick={onToggleRecorded}
-            disabled={updating}
-            aria-pressed={anime.recorded}
-            className={
-              anime.recorded
-                ? 'bg-success text-success-foreground hover:bg-success/85 [a]:hover:bg-success/85'
-                : undefined
-            }
-          >
-            {anime.recorded ? <CircleCheck /> : <Circle />}
-            {anime.recorded ? '録画済み' : '録画する'}
-          </Button>
+        <div className='space-y-1.5'>
+          <div className='flex flex-wrap items-center gap-2 pt-1'>
+            <Button
+              type='button'
+              size='lg'
+              variant={anime.scheduled ? 'default' : 'secondary'}
+              onClick={onToggleScheduled}
+              disabled={updating}
+              aria-pressed={anime.scheduled}
+            >
+              {anime.scheduled ? <CircleCheck /> : <Circle />}
+              {anime.scheduled ? '自動予約済み' : '自動録画を予約'}
+            </Button>
+            <Button
+              type='button'
+              size='lg'
+              variant={anime.recorded ? 'default' : 'secondary'}
+              onClick={onToggleRecorded}
+              disabled={updating}
+              aria-pressed={anime.recorded}
+              className={
+                anime.recorded
+                  ? 'bg-success text-success-foreground hover:bg-success/85 [a]:hover:bg-success/85'
+                  : undefined
+              }
+            >
+              {anime.recorded ? <CircleCheck /> : <Circle />}
+              {anime.recorded ? '録画済み' : '今すぐ録画'}
+            </Button>
+            {titleUrl && (
+              <Button
+                size='lg'
+                variant='outline'
+                render={
+                  <a href={titleUrl} target='_blank' rel='noopener noreferrer'>
+                    <span>{providerLabel[anime.provider] ?? anime.provider}で見る</span>
+                    <ExternalLink data-icon='inline-end' />
+                  </a>
+                }
+              />
+            )}
+          </div>
+          <p className='text-xs text-muted-foreground'>
+            予約 = 新規エピソードを自動録画 / 今すぐ録画 = 公開済みエピソードを一括録画
+          </p>
         </div>
 
         {anime.description && <p className='text-sm leading-relaxed text-muted-foreground'>{anime.description}</p>}
