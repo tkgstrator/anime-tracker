@@ -3,9 +3,8 @@ import { apiReference } from '@scalar/hono-api-reference'
 import { logger } from 'hono/logger'
 import { createPrismaClient } from './lib/db'
 import { createFetchClient } from './lib/lambda'
+import { localDetailFetchers } from './lib/local-detail-fetchers'
 import { setupLogger, startCapture, stopCapture } from './lib/logger'
-import { fetchAbemaTitleDetail } from './lib/providers/abema/detail'
-import { fetchHuluTitleDetail } from './lib/providers/hulu/detail'
 import { SyncService } from './lib/sync'
 import { queue } from './queue'
 import animeRoutes from './routes/anime'
@@ -93,14 +92,6 @@ app.post('/api/queues', async (c) => {
     await prisma.$disconnect()
   }
 })
-
-const localDetailFetchers: Record<
-  string,
-  (contentId: string) => Promise<import('./schemas/providers/common.dto').TitleInfo>
-> = {
-  abema: fetchAbemaTitleDetail,
-  hulu: fetchHuluTitleDetail
-}
 
 // デバッグ用: Falcor API / AniList のレスポンスを直接確認する
 app.get('/api/debug/falcor/:slug', async (c) => {

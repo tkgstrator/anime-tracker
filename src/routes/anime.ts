@@ -1,7 +1,10 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { buildExclusiveQuery } from '../lib/anime-query'
 import { createPrismaClient } from '../lib/db'
+import { createFetchClient } from '../lib/lambda'
+import { localDetailFetchers } from '../lib/local-detail-fetchers'
 import { getAppLogger } from '../lib/logger'
+import { SyncService } from '../lib/sync'
 import {
   AnimeInfoSchema,
   AnimeListQuerySchema,
@@ -9,6 +12,7 @@ import {
   BadgedAnimeSchema,
   PaginatedAnimeSchema
 } from '../schemas/anime.dto'
+import { ProviderTypeEnum } from '../schemas/message.dto'
 import { NagisaQueueResponseSchema } from '../schemas/nagisa.dto'
 
 const logger = getAppLogger('routes')
@@ -19,6 +23,11 @@ type Bindings = {
   BACKEND_URL: string
   CF_ACCESS_CLIENT_ID: string
   CF_ACCESS_CLIENT_SECRET: string
+  AWS_ACCESS_KEY_ID: string
+  AWS_SECRET_ACCESS_KEY: string
+  LAMBDA_FUNCTION_URL: string
+  LAMBDA_FUNCTION_URL_US: string
+  KV: KVNamespace
 }
 
 const anime = new OpenAPIHono<{ Bindings: Bindings }>()
@@ -339,6 +348,61 @@ anime.openapi(
       episodeCount: unrecordedEpisodes.length
     })
     return c.json(data as NagisaQueueResponseSchema, 200)
+  }
+)
+
+anime.openapi(
+  createRoute({
+    method: 'post',
+    path: '/{id}/refresh',
+    tags: ['Anime'],
+    summary: 'タイトル詳細とエピソード情報を再取得',
+    request: { params: z.object({ id: z.string() }) },
+    responses: {
+      200: {
+        description: '再取得成功',
+        content: { 'application/json': { schema: z.object({ contentId: z.string(), provider: z.string() }) } }
+      },
+      404: {
+        description: 'Not Found',
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
+      },
+      500: {
+        description: '再取得失敗',
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
+      }
+    }
+  }),
+  async (c) => {
+    const prisma = createPrismaClient(c.env.DB)
+    const id = c.req.param('id')
+    const row = await prisma.anime.findUnique({
+      where: { id },
+      select: { provider: true, contentId: true }
+    })
+    if (!row) return c.json({ error: 'Not found' }, 404)
+
+    const provider = ProviderTypeEnum.safeParse(row.provider)
+    if (!provider.success) return c.json({ error: `Unsupported provider: ${row.provider}` }, 500)
+
+    const lambda = createFetchClient(c.env)
+    const service = new SyncService(prisma, lambda)
+    const fetcher = localDetailFetchers[provider.data]
+
+    try {
+      if (fetcher) {
+        const detail = await fetcher(row.contentId)
+        await service.applyDetail(provider.data, row.contentId, detail)
+      } else {
+        await service.update({ type: 'update', message: { provider: provider.data, contentId: row.contentId } })
+      }
+      logger.info({ action: 'refresh-ok', id, provider: row.provider, contentId: row.contentId })
+      return c.json({ contentId: row.contentId, provider: row.provider }, 200)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      logger.error({ action: 'refresh-error', id, provider: row.provider, contentId: row.contentId, error: msg })
+      return c.json({ error: msg }, 500)
+    }
   }
 )
 

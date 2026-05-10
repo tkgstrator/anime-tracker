@@ -46,6 +46,12 @@ const api = new Zodios('/api', [
     response: NagisaQueueResponseSchema
   },
   {
+    method: 'post',
+    path: '/anime/:id/refresh',
+    alias: 'refreshAnime',
+    response: z.object({ contentId: z.string(), provider: z.string() })
+  },
+  {
     method: 'patch',
     path: '/anime/:id',
     alias: 'updateAnime',
