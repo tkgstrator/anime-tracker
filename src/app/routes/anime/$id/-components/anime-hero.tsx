@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import dayjs from 'dayjs'
 import { useSetAtom } from 'jotai'
 import { Circle, CircleCheck, Clock, ExternalLink, Film, RefreshCw, Tv } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
@@ -126,9 +127,11 @@ export function AnimeHero({
               <span className='hidden sm:inline'>更新</span>
             </Button>
           </div>
-          <p className='text-xs text-muted-foreground'>
-            予約 = 新規エピソードを自動録画 / 今すぐ録画 = 公開済みエピソードを一括録画
-          </p>
+          {anime.updatedAt && (
+            <p className='text-xs text-muted-foreground'>
+              最終更新: {dayjs(anime.updatedAt).format('YYYY/MM/DD HH:mm')}
+            </p>
+          )}
         </div>
 
         {anime.description && <p className='text-sm leading-relaxed text-muted-foreground'>{anime.description}</p>}
