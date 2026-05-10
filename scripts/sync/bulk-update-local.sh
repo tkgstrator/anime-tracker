@@ -13,8 +13,18 @@ BASE="http://localhost:${PORT}"
 
 if [ -z "$CONTENT_IDS" ]; then
   echo "Fetching all contentIds for provider=${PROVIDER}..."
-  CONTENT_IDS=$(curl -s "${BASE}/api/anime?provider=${PROVIDER}&limit=2000" \
-    | jq -r '[.data[].contentId] | join(",")')
+  PAGE=1
+  ALL_IDS=""
+  while :; do
+    PAGE_JSON=$(curl -s "${BASE}/api/anime?provider=${PROVIDER}&limit=100&page=${PAGE}")
+    PAGE_IDS=$(echo "$PAGE_JSON" | jq -r '[.data[].contentId] | join(",")')
+    [ -z "$PAGE_IDS" ] && break
+    ALL_IDS="${ALL_IDS:+${ALL_IDS},}${PAGE_IDS}"
+    TOTAL_PAGES=$(echo "$PAGE_JSON" | jq -r '.totalPages')
+    [ "$PAGE" -ge "$TOTAL_PAGES" ] && break
+    PAGE=$((PAGE + 1))
+  done
+  CONTENT_IDS="$ALL_IDS"
   COUNT=$(echo "$CONTENT_IDS" | tr ',' '\n' | wc -l | tr -d ' ')
   echo "Found ${COUNT} titles"
 fi
