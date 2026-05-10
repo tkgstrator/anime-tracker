@@ -45,19 +45,22 @@ function HomePage() {
   const scheduled = scheduledQ.data.data
 
   const byProvider = useMemo(() => {
-    const map: Record<string, AnimeSchema[]> = {}
+    const grouped = new Map<string, AnimeSchema[]>()
     for (const anime of currentSeason) {
-      const list = map[anime.provider] ?? []
-      list.push(anime)
-      map[anime.provider] = list
+      const existing = grouped.get(anime.provider)
+      if (existing) {
+        existing.push(anime)
+      } else {
+        grouped.set(anime.provider, [anime])
+      }
     }
-    for (const list of Object.values(map)) {
-      for (let i = list.length - 1; i > 0; i--) {
+    for (const list of grouped.values()) {
+      for (const i of Array.from({ length: list.length - 1 }, (_, k) => list.length - 1 - k)) {
         const j = Math.floor(Math.random() * (i + 1))
         ;[list[i], list[j]] = [list[j], list[i]]
       }
     }
-    return map
+    return grouped
   }, [currentSeason])
   const currentYear = dayjs().year()
   const currentQuarter = getCurrentQuarter()
@@ -81,7 +84,7 @@ function HomePage() {
       <AnimeCarousel title='もうすぐ配信終了' anime={badged.EXPIRING} viewAllLink='/browse' badgeType='expiredAt' />
       <AnimeCarousel title={`${currentYear}年${quarterLabel}アニメ`} anime={currentSeason} viewAllLink='/browse' />
       <AnimeCarousel title='録画予約済み' anime={scheduled} viewAllLink='/browse' />
-      {Object.entries(byProvider).map(([provider, anime]) => (
+      {Array.from(byProvider.entries()).map(([provider, anime]) => (
         <AnimeCarousel
           key={provider}
           title={providerLabel[provider] ?? provider}
