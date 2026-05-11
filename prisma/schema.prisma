@@ -114,3 +114,28 @@ model UnidentifiedAnime {
   @@index([provider])
   @@map("unidentified_anime")
 }
+
+/// AniList の anime media をローカルキャッシュしたテーブル。
+/// search backend に依存せず、正規化済みタイトルで indexed lookup する。
+/// scripts/sync/sync-anilist.ts で年単位で upsert する。
+model AnilistMedia {
+  id           Int      @id // AniList の media id
+  titleNative  String?  @map("title_native")
+  titleRomaji  String?  @map("title_romaji")
+  titleEnglish String?  @map("title_english")
+  season       String? // WINTER | SPRING | SUMMER | FALL
+  seasonYear   Int?     @map("season_year")
+  status       String   @default("UNKNOWN")
+  startYear    Int?     @map("start_year")
+  startMonth   Int?     @map("start_month")
+  /// 正規化済みタイトル (lowercase, strip whitespace/punctuation)、indexed lookup 用
+  nativeNorm   String?  @map("native_norm")
+  romajiNorm   String?  @map("romaji_norm")
+  englishNorm  String?  @map("english_norm")
+  syncedAt     DateTime @default(now()) @map("synced_at")
+
+  @@index([nativeNorm])
+  @@index([romajiNorm])
+  @@index([englishNorm])
+  @@map("anilist_media")
+}
