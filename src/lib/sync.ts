@@ -5,9 +5,8 @@ import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.
 import type { PrismaClient } from '../generated/prisma/client.ts'
 import type { FetchClient } from './lambda'
 import { getAppLogger } from './logger'
-import { AniListAdapter, cleanTitle } from './metadata/anilist'
-
-const adapter = new AniListAdapter()
+import { cleanTitle } from './metadata/anilist'
+import { identifyTitlesViaD1 } from './metadata/local-anilist'
 
 function isUniqueConstraintError(e: unknown): boolean {
   return e instanceof Error && 'code' in e && (e as { code: string }).code === 'P2002'
@@ -335,7 +334,9 @@ export class SyncService {
       }
     }
 
-    // バッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
+    // バッチで anilist_media を D1 lookup し、識別済みの新規タイトルを DB に INSERT
+    // AniList search backend 障害中なので Lambda /identify は使わず、事前 sync 済みの
+    // anilist_media テーブルを normalized title で引く。
     const BATCH_SIZE = 20
     const identifiedContentIds: string[] = []
 
@@ -348,9 +349,9 @@ export class SyncService {
         batchSize: batch.length,
         titles: batch.map((t) => t.title)
       })
-      const results = await adapter.identifyBatch(
-        batch.map((t) => t.title),
-        this.lambda
+      const results = await identifyTitlesViaD1(
+        this.prisma,
+        batch.map((t) => t.title)
       )
 
       for (let j = 0; j < batch.length; j++) {
