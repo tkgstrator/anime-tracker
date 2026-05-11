@@ -8,7 +8,7 @@ dayjs.extend(timezone)
 
 import { z } from 'zod'
 import { parseExpiringMessage } from '../../lib/providers/amazon/expiring'
-import { type BadgeType, EntityType, EpisodeSchema, stripQueryParams, TitleSchema } from './common.dto'
+import { type BadgeType, EntityType, EpisodeSchema, ImageUrlSchema, TitleSchema } from './common.dto'
 
 /** Amazon 画像 URL からディレクティブ付き装飾を除去する */
 const AmazonImageUrlSchema = z.string().transform((url) => {
@@ -55,8 +55,12 @@ export const BrowseEntitySchema = z
     const hvm = v.entitlementCues.highValueMessage?.message
     const parsed = hvm ? parseExpiringMessage(hvm) : undefined
     const badgeMsg = v.entitlementCues.titleMetadataBadge.message
-    const badge: BadgeType | null =
-      badgeMsg === '新エピソード' ? 'NEW_EPISODE' : badgeMsg === '新着' || badgeMsg === '新作' ? 'RECENTLY_ADDED' : null
+    const badge: BadgeType | undefined =
+      badgeMsg === '新エピソード'
+        ? 'NEW_EPISODE'
+        : badgeMsg === '新着' || badgeMsg === '新作'
+          ? 'RECENTLY_ADDED'
+          : undefined
     const result = TitleSchema.safeParse({
       contentId: v.titleID,
       title: v.displayTitle,
@@ -123,11 +127,11 @@ const JapaneseDateSchema = z
     return dayjs.tz(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`, 'Asia/Tokyo').toISOString()
   })
 
-/** エピソードの action オブジェクトから benefitId を抽出する */
-function extractBenefitId(action: unknown): string | null {
+/** エピソードの action オブジェクトから benefitId を抽出する。見つからなければ "amazon" を返す */
+function extractBenefitId(action: unknown): string {
   const json = JSON.stringify(action ?? {})
   const m = json.match(/"benefitId"\s*:\s*"([^"]+)"/)
-  return m?.[1]?.toLowerCase() ?? null
+  return m?.[1]?.toLowerCase() ?? 'amazon'
 }
 
 const EpisodeDetailSchema = z.object({
@@ -138,12 +142,11 @@ const EpisodeDetailSchema = z.object({
   releaseDate: JapaneseDateSchema,
   duration: z.number().nonnegative().default(0),
   runtime: z.string().optional(),
-  images: z
-    .object({
-      covershot: z.string().optional(),
-      titleshot: z.string().optional()
-    })
-    .optional(),
+  images: z.object({
+    covershot: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
+    titleshot: z.url(),
+    packshot: z.url()
+  }),
   subtitles: z.array(z.string()).default([]),
   audioTracks: z.array(z.string()).default([])
 })
@@ -170,7 +173,8 @@ const WidgetEpisodeSchema = z
       releaseDate: d.releaseDate || dayjs().toISOString(),
       duration: d.duration,
       maturityRating: ratingMatch ? Number.parseInt(ratingMatch[1], 10) : null,
-      imageUrl: d.images?.covershot || d.images?.titleshot || '',
+      // covershot がエピソード固有サムネ (新作で per-episode), 空なら show-level の titleshot
+      imageUrl: d.images.covershot ?? d.images.titleshot,
       hasSubtitles: d.subtitles.length > 0,
       hasDub: d.audioTracks.length > 1,
       benefitId: extractBenefitId(ep.action)
@@ -195,13 +199,16 @@ const HeaderSchema = z
     title: z.string().nonempty(),
     synopsis: z.string().nonempty(),
     entityType: AmazonEntityType,
+    // covershot はエピソード固有/ヘッダー画像 (新作で per-episode、古い作品では空文字)。
+    // titleshot/packshot は show-level のロゴ入りタイトルカード。
+    // imageUrl は covershot 優先、空なら titleshot に切り替え。
     images: z
       .object({
-        covershot: z.string().nonempty(),
-        titleshot: z.string().nonempty(),
-        packshot: z.string().nonempty()
+        covershot: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
+        titleshot: z.url(),
+        packshot: z.url()
       })
-      .transform((v) => v.covershot)
+      .transform((v) => v.covershot ?? v.titleshot)
       .pipe(AmazonImageUrlSchema),
     ratingBadge: z.object({ displayText: z.string().nonempty() }),
     subtitles: z.array(z.string()).default([]),
@@ -235,7 +242,7 @@ export const PageDataSchema = z.object({
   synopsis: z.string().nonempty(),
   entityType: EntityType,
   maturityRating: z.number().int().positive().nullable(),
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   hasSubtitles: z.boolean(),
   hasDub: z.boolean(),
   duration: z.number().nonnegative().optional(),

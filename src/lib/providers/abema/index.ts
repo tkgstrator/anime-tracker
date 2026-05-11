@@ -1,70 +1,36 @@
 import type { Title, TitleInfo } from '../../../schemas/providers/common.dto'
-import { getAppLogger } from '../../logger'
-import { type FetchTitleListOptions, Provider } from '../base'
+import { Provider } from '../base'
 import { cardToTitle, fetchCards } from './browse'
 import { fetchAbemaTitleDetail } from './detail'
-
-const logger = getAppLogger('abema')
 
 export class AbemaProvider extends Provider {
   readonly name = 'abema'
 
-  async fetchTitleList(options?: FetchTitleListOptions): Promise<Title[]> {
-    const category = options?.category
-
-    if (category === 'new_episode') {
-      return this.fetchNewEpisodes()
-    }
-
-    if (category === 'coming_soon') {
-      // ABEMA にはもうすぐ配信のバッジがないため空を返す
-      logger.info({ action: 'fetch-title-list-done', mode: 'coming_soon', count: 0 })
-      return []
-    }
-
-    return this.fetchAll()
-  }
-
-  private async fetchNewEpisodes(): Promise<Title[]> {
-    logger.info({ action: 'fetch-title-list-start', mode: 'new_episode' })
+  protected async fetchNewEpisode(): Promise<Title[]> {
+    this.logger.info({ action: 'fetch-title-list-start', mode: 'new_episode' })
     const cards = await fetchCards()
-    const seen = new Set<string>()
-    const titles: Title[] = []
-
-    for (const card of cards) {
-      if (!card.label?.newest) continue
-      if (seen.has(card.seriesId)) continue
-      seen.add(card.seriesId)
-
-      const title = cardToTitle(card)
-      title.badge = 'NEW_EPISODE'
-      titles.push(title)
-    }
-
-    logger.info({ action: 'fetch-title-list-done', mode: 'new_episode', count: titles.length })
+    const newest = cards.filter((c) => c.label?.newest)
+    const titles = this.dedupeBy(newest, (c) => c.seriesId).map((c) => {
+      const t = cardToTitle(c)
+      t.badge = 'NEW_EPISODE'
+      return t
+    })
+    this.logger.info({ action: 'fetch-title-list-done', mode: 'new_episode', count: titles.length })
     return titles
   }
 
-  private async fetchAll(): Promise<Title[]> {
-    logger.info({ action: 'fetch-title-list-start', mode: 'all' })
+  protected async fetchCatalog(): Promise<Title[]> {
+    this.logger.info({ action: 'fetch-title-list-start', mode: 'catalog' })
     const cards = await fetchCards()
-    const seen = new Set<string>()
-    const titles: Title[] = []
-
-    for (const card of cards) {
-      if (seen.has(card.seriesId)) continue
-      seen.add(card.seriesId)
-      titles.push(cardToTitle(card))
-    }
-
-    logger.info({ action: 'fetch-title-list-done', mode: 'all', count: titles.length })
+    const titles = this.dedupeBy(cards, (c) => c.seriesId).map((c) => cardToTitle(c))
+    this.logger.info({ action: 'fetch-title-list-done', mode: 'catalog', count: titles.length })
     return titles
   }
 
   async fetchTitleInfo(contentId: string): Promise<TitleInfo> {
-    logger.debug({ action: 'fetch-title-info-start', contentId })
+    this.logger.debug({ action: 'fetch-title-info-start', contentId })
     const detail = await fetchAbemaTitleDetail(contentId)
-    logger.debug({
+    this.logger.debug({
       action: 'fetch-title-info-done',
       contentId,
       title: detail.title,

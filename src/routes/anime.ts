@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { buildExclusiveQuery } from '../lib/anime-query'
+import { flattenAnime, QUARTER_TO_SEASON } from '../lib/anime-flatten'
 import { createPrismaClient } from '../lib/db'
 import { createFetchClient } from '../lib/lambda'
 import { localDetailFetchers } from '../lib/local-detail-fetchers'
@@ -50,75 +50,41 @@ anime.openapi(
   }),
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
-    const {
-      page,
-      limit,
-      provider,
-      year,
-      quarter,
-      status,
-      scheduled,
-      recorded,
-      badge,
-      aniListId,
-      sort,
-      order,
-      q,
-      exclusive
-    } = c.req.valid('query')
+    const { page, limit, provider, year, quarter, status, scheduled, recorded, badge, aniListId, sort, order, q } =
+      c.req.valid('query')
 
+    const anilistMediaFilter = {
+      ...(year ? { OR: [{ seasonYear: year }, { AND: [{ seasonYear: null }, { startYear: year }] }] } : {}),
+      ...(quarter != null ? { season: QUARTER_TO_SEASON[quarter] } : {}),
+      ...(status ? { status } : {})
+    }
     const where = {
-      isIdentified: true,
       ...(provider ? { provider } : {}),
-      ...(year ? { year } : {}),
-      ...(quarter != null ? { quarter } : {}),
-      ...(status ? { status } : {}),
       ...(scheduled != null ? { scheduled } : {}),
       ...(recorded != null ? { recorded } : {}),
       ...(q ? { title: { contains: q } } : {}),
       ...(badge ? { badge } : {}),
-      ...(aniListId ? { aniListId } : {})
+      ...(aniListId ? { aniListId } : {}),
+      ...(Object.keys(anilistMediaFilter).length > 0 ? { anilistMedia: anilistMediaFilter } : {})
     }
-    const orderBy = sort === 'year' ? { year: order } : sort === 'updatedAt' ? { updatedAt: order } : { title: order }
+    const orderBy =
+      sort === 'year'
+        ? { anilistMedia: { seasonYear: order } }
+        : sort === 'updatedAt'
+          ? { updatedAt: order }
+          : { title: order }
 
-    // 独占配信フィルター: Prisma $queryRawUnsafe でサブクエリを使って DB 側完結
-    if (exclusive != null) {
-      const { countSql, countBinds, dataSql, dataBinds } = buildExclusiveQuery({
-        provider,
-        year,
-        quarter,
-        status,
-        scheduled,
-        recorded,
-        q,
-        badge,
-        aniListId,
-        sort,
-        order,
-        exclusive,
-        page,
-        limit
-      })
-
-      const countResult = await prisma.$queryRawUnsafe<{ cnt: number }[]>(countSql, ...countBinds)
-      const total = countResult[0]?.cnt ?? 0
-
-      const data = await prisma.$queryRawUnsafe<z.infer<typeof AnimeSchema>[]>(dataSql, ...dataBinds)
-
-      const totalPages = Math.ceil(total / limit)
-      c.header('Cache-Control', 'no-store')
-      return c.json({ data, total, page, limit, totalPages })
-    }
-
-    const [data, total] = await Promise.all([
+    const [rows, total] = await Promise.all([
       prisma.anime.findMany({
         where,
         orderBy,
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
+        include: { anilistMedia: true }
       }),
       prisma.anime.count({ where })
     ])
+    const data = rows.map(flattenAnime)
     const totalPages = Math.ceil(total / limit)
     c.header('Cache-Control', 'no-store')
     return c.json({ data, total, page, limit, totalPages })
@@ -141,16 +107,18 @@ anime.openapi(
   async (c) => {
     const prisma = createPrismaClient(c.env.DB)
     const rows = await prisma.anime.findMany({
-      where: { isIdentified: true, badge: { not: null } },
-      orderBy: { title: 'asc' }
+      where: { badge: { not: null } },
+      orderBy: { title: 'asc' },
+      include: { anilistMedia: true }
     })
+    const flat = rows.map(flattenAnime)
     const result = {
-      NEW_EPISODE: [] as typeof rows,
-      RECENTLY_ADDED: [] as typeof rows,
-      COMING_SOON: [] as typeof rows,
-      EXPIRING: [] as typeof rows
+      NEW_EPISODE: [] as typeof flat,
+      RECENTLY_ADDED: [] as typeof flat,
+      COMING_SOON: [] as typeof flat,
+      EXPIRING: [] as typeof flat
     }
-    for (const row of rows) {
+    for (const row of flat) {
       const key = row.badge as keyof typeof result
       if (key in result) {
         result[key].push(row)
@@ -185,16 +153,31 @@ anime.openapi(
     const row = await prisma.anime.findUnique({
       where: { id },
       include: {
+        anilistMedia: true,
         seasons: {
           orderBy: { seasonNumber: 'asc' },
           include: {
-            episodes: { orderBy: { episodeNumber: 'asc' } }
+            episodes: {
+              orderBy: { episodeNumber: 'asc' },
+              include: { abemaKey: { select: { id: true } } }
+            }
           }
         }
       }
     })
     if (!row) return c.json({ error: 'Not found' }, 404)
-    return c.json(row, 200)
+    const { seasons, ...animeBase } = row
+    const flat = flattenAnime(animeBase)
+    return c.json(
+      {
+        ...flat,
+        seasons: seasons.map((s) => ({
+          ...s,
+          episodes: s.episodes.map(({ abemaKey, ...ep }) => ({ ...ep, hasLocalKey: abemaKey !== null }))
+        }))
+      },
+      200
+    )
   }
 )
 
@@ -238,9 +221,10 @@ anime.openapi(
         data: {
           ...(body.scheduled != null ? { scheduled: body.scheduled } : {}),
           ...(body.recorded != null ? { recorded: body.recorded } : {})
-        }
+        },
+        include: { anilistMedia: true }
       })
-      return c.json(result, 200)
+      return c.json(flattenAnime(result), 200)
     } catch (e) {
       logger.warn({ action: 'patch-not-found', id, error: e instanceof Error ? e.message : String(e) })
       return c.json({ error: 'Not found' }, 404)

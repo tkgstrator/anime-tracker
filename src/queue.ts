@@ -2,6 +2,7 @@ import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
+import { syncAnilistMediaYear } from './lib/metadata/anilist-sync'
 import { getGuestSession } from './lib/providers/abema/auth'
 import { buildKeysArchive, fetchMediaToken } from './lib/providers/abema/hls'
 import { SyncService } from './lib/sync'
@@ -36,13 +37,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         switch (message.body.type) {
           case 'fetch': {
             const { provider, category } = message.body.message
-
-            // Lambda (日本IP) で fetch し、結果を直接渡す
-            const result =
-              category === 'expiring'
-                ? await lambda.fetchExpiring({ provider })
-                : await lambda.fetchTitleList({ provider, category })
-            const contentIds = await service.fetch(message.body, result)
+            const contentIds = await service.fetch(message.body)
             if (category !== 'expiring' && category !== 'coming_soon') {
               for (const contentId of contentIds) {
                 await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
@@ -68,6 +63,19 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
             logger.info({ action: 'bulk-enqueue', provider, count: contentIds.length })
             break
           }
+          case 'anilist_sync': {
+            const { year, country } = message.body.message
+            const result = await syncAnilistMediaYear({ prisma, year, country })
+            logger.info({
+              action: 'anilist-sync-year-done',
+              year,
+              country,
+              fetched: result.fetched,
+              pages: result.pages,
+              elapsedMs: result.elapsedMs
+            })
+            break
+          }
           case 'abema_archive': {
             const { animeId } = message.body.message
             const eps = await prisma.episode.findMany({
@@ -80,8 +88,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
             }
             const session = await getGuestSession()
             const mediaToken = await fetchMediaToken({ bearer: session.token })
-            const stats = { ok: 0, fail: 0 }
-            for (const ep of eps) {
+            const archiveOne = async (ep: (typeof eps)[number]) => {
               try {
                 const archive = await buildKeysArchive({
                   programId: ep.episodeId,
@@ -101,18 +108,24 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
                     segmentUrls: JSON.stringify(archive.segmentUrls)
                   }
                 })
-                stats.ok += 1
+                return 'ok' as const
               } catch (e) {
-                stats.fail += 1
                 logger.warn({
                   action: 'abema-archive-episode-failed',
                   animeId,
                   episodeId: ep.episodeId,
                   reason: e instanceof Error ? e.message : String(e)
                 })
+                return 'fail' as const
               }
             }
-            logger.info({ action: 'abema-archive-done', animeId, total: eps.length, ...stats })
+            const CONCURRENCY = 5
+            const results: ('ok' | 'fail')[] = []
+            for (let i = 0; i < eps.length; i += CONCURRENCY) {
+              results.push(...(await Promise.all(eps.slice(i, i + CONCURRENCY).map(archiveOne))))
+            }
+            const ok = results.filter((r) => r === 'ok').length
+            logger.info({ action: 'abema-archive-done', animeId, total: eps.length, ok, fail: eps.length - ok })
             break
           }
         }

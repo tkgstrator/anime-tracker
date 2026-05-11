@@ -41,16 +41,12 @@ export function extractPageData(html: string): PageData {
     .filter((s) => s.includes('headerDetail'))
     .sort((a, b) => b.length - a.length)
 
-  let lastError: unknown
-  for (const content of scripts) {
-    try {
-      const parseResult = DetailPageJsonSchema.safeParse(JSON.parse(content))
-      if (parseResult.success) return parseResult.data
-    } catch (e) {
-      lastError = e
-    }
-  }
-  throw lastError ?? new Error('Parse failed: no script containing headerDetail found')
+  const results = scripts.map((c) => DetailPageJsonSchema.safeParse(JSON.parse(c)))
+  const success = results.find((r) => r.success)
+  if (success) return success.data
+  const lastError = results.at(-1)?.error
+  if (!lastError) throw new Error('Parse failed: no script containing headerDetail found')
+  throw lastError
 }
 
 /**
@@ -129,7 +125,7 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
                   imageUrl: page.imageUrl,
                   hasSubtitles: page.hasSubtitles,
                   hasDub: page.hasDub,
-                  benefitId: null
+                  benefitId: 'amazon'
                 })
                 if (!result.success) throw result.error
                 return [result.data]

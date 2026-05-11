@@ -11,6 +11,17 @@
 // import { AwsClient } from 'aws4fetch'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import type { z } from 'zod'
+import {
+  ExpiringResponseSchema,
+  FetchExpiringRequestSchema,
+  FetchTitleInfoRequestSchema,
+  FetchTitleListRequestSchema,
+  IdentifyRequestSchema,
+  IdentifyResponseSchema,
+  TitleListResponseSchema
+} from '../../src/schemas/lambda.dto'
+import { TitleInfoSchema } from '../../src/schemas/providers/common.dto'
 import { MetadataMediaSchema } from '../../src/schemas/providers/metadata.dto'
 import { cleanTitle } from '../../src/lib/metadata/anilist'
 import { setupLogger } from '../../src/lib/logger'
@@ -112,19 +123,12 @@ async function fetchExpiring(provider: string) {
     })
 
   console.log(`Fetched ${entries.length} expiring entries for ${provider}`)
-  if (entries.length === 0) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'No expiring entries found' }) }
-  }
-  return { statusCode: 200, body: JSON.stringify({ fetchedAt: now.toISOString(), entries }) }
+  return { fetchedAt: now.toISOString(), entries }
 }
 
 // ---- title_list (new_episode / coming_soon) ----
 
-async function fetchTitleList(providerName: string, category: string) {
-  if (category !== 'new_episode' && category !== 'coming_soon' && category !== 'catalog') {
-    return { statusCode: 400, body: JSON.stringify({ error: `Invalid category: ${category}` }) }
-  }
-
+async function fetchTitleList(providerName: string, category: 'new_episode' | 'coming_soon' | 'catalog') {
   const provider = getProvider(providerName)
   const titles = await provider.fetchTitleList({ category })
 
@@ -135,12 +139,12 @@ async function fetchTitleList(providerName: string, category: string) {
     entityType: t.entityType,
     imageUrl: t.imageUrl,
     maturityRating: t.maturityRating,
-    nextEpisodeDate: t.nextEpisodeDate ?? null,
-    badge: t.badge ?? null
+    nextEpisodeDate: t.nextEpisodeDate,
+    badge: t.badge
   }))
 
   console.log(`Fetched ${entries.length} ${category} entries for ${providerName}`)
-  return { statusCode: 200, body: JSON.stringify({ fetchedAt: dayjs().toISOString(), entries }) }
+  return { fetchedAt: dayjs().toISOString(), entries }
 }
 
 // ---- title_info ----
@@ -152,7 +156,7 @@ async function fetchTitleInfo(providerName: string, contentId: string) {
   console.log(
     `Fetched title_info for ${providerName}/${contentId}: ${detail.seasons.length} seasons`
   )
-  return { statusCode: 200, body: JSON.stringify(detail) }
+  return detail
 }
 
 // ---- identify ----
@@ -194,13 +198,8 @@ async function fetchWithRetry(url: string, init: RequestInit): Promise<Response>
   return fetch(url, init)
 }
 
-async function identifyTitles(rawTitles: string[]) {
-  if (rawTitles.length === 0) {
-    return { statusCode: 200, body: JSON.stringify({ results: [] }) }
-  }
-  if (rawTitles.length > 50) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'titles must be 50 or fewer' }) }
-  }
+async function identifyTitles(rawTitles: string[]): Promise<{ results: (z.infer<typeof IdentifyResponseSchema>['results'][number])[] } | { upstreamStatus: number }> {
+  if (rawTitles.length === 0) return { results: [] }
 
   const searches = rawTitles.map((t) => cleanTitle(t))
   const query = buildBatchQuery(searches)
@@ -213,7 +212,7 @@ async function identifyTitles(rawTitles: string[]) {
 
   if (!res.ok) {
     console.error(`AniList API error: ${res.status}`)
-    return { statusCode: 502, body: JSON.stringify({ error: `AniList API error: ${res.status}` }) }
+    return { upstreamStatus: res.status }
   }
 
   const data = (await res.json()) as { data: Record<string, { media: unknown[] }> }
@@ -221,19 +220,12 @@ async function identifyTitles(rawTitles: string[]) {
   const results = searches.map((_, i) => {
     const page = data.data[`q${i}`]
     if (!page?.media?.length) return null
-    let media: ReturnType<typeof MetadataMediaSchema.safeParse>['data']
-    try {
-      const parsed = MetadataMediaSchema.safeParse(page.media[0])
-      if (!parsed.success) {
-        console.warn(`[identify] schema validation failed for index ${i}:`, parsed.error.message)
-        return null
-      }
-      media = parsed.data
-    } catch (e) {
-      console.warn(`[identify] unexpected error for index ${i}:`, e instanceof Error ? e.message : String(e))
+    const parsed = MetadataMediaSchema.safeParse(page.media[0])
+    if (!parsed.success) {
+      console.warn(`[identify] schema validation failed for index ${i}:`, parsed.error.message)
       return null
     }
-    if (!media) return null
+    const media = parsed.data
 
     const year = media.seasonYear ?? media.startDate.year
     const quarter = media.season
@@ -253,13 +245,36 @@ async function identifyTitles(rawTitles: string[]) {
   })
 
   console.log(`Identified ${results.filter(Boolean).length}/${rawTitles.length} titles`)
-  return { statusCode: 200, body: JSON.stringify({ results }) }
+  return { results }
 }
 
 // ---- handler ----
 
+type LambdaResponse = { statusCode: number; body: string }
+
+const ok = <T>(data: T): LambdaResponse => ({ statusCode: 200, body: JSON.stringify(data) })
+
+const zodFail = (status: number, label: 'request' | 'response', error: z.ZodError): LambdaResponse => ({
+  statusCode: status,
+  body: JSON.stringify({ error: `Invalid ${label}`, issues: error.issues })
+})
+
+async function handleRoute<Req, Res>(
+  body: unknown,
+  requestSchema: z.ZodType<Req>,
+  responseSchema: z.ZodType<Res>,
+  run: (input: Req) => Promise<Res>
+): Promise<LambdaResponse> {
+  const reqParsed = requestSchema.safeParse(body)
+  if (!reqParsed.success) return zodFail(400, 'request', reqParsed.error)
+  const result = await run(reqParsed.data)
+  const resParsed = responseSchema.safeParse(result)
+  if (!resParsed.success) return zodFail(500, 'response', resParsed.error)
+  return ok(resParsed.data)
+}
+
 // biome-ignore lint: Lambda event type varies by invocation method
-export async function handler(event: any): Promise<{ statusCode: number; body: string }> {
+export async function handler(event: any): Promise<LambdaResponse> {
   const path = event.rawPath ?? event.path ?? '/'
   const body = event.body ? JSON.parse(event.body) : event
 
@@ -267,33 +282,32 @@ export async function handler(event: any): Promise<{ statusCode: number; body: s
 
   try {
     switch (path) {
-      case '/expiring': {
-        const { provider } = body
-        if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-        console.log(`provider=${provider}`)
-        return await fetchExpiring(provider)
-      }
-      case '/title_list': {
-        const { provider, category } = body
-        if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-        console.log(`provider=${provider}`)
-        return await fetchTitleList(provider, category)
-      }
-      case '/title_info': {
-        const { provider, contentId } = body
-        if (!provider || !contentId) {
-          return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider or contentId' }) }
-        }
-        console.log(`provider=${provider} contentId=${contentId}`)
-        return await fetchTitleInfo(provider, contentId)
-      }
+      case '/expiring':
+        return await handleRoute(body, FetchExpiringRequestSchema, ExpiringResponseSchema, ({ provider }) => {
+          console.log(`provider=${provider}`)
+          return fetchExpiring(provider)
+        })
+      case '/title_list':
+        return await handleRoute(body, FetchTitleListRequestSchema, TitleListResponseSchema, ({ provider, category }) => {
+          console.log(`provider=${provider} category=${category}`)
+          return fetchTitleList(provider, category)
+        })
+      case '/title_info':
+        return await handleRoute(body, FetchTitleInfoRequestSchema, TitleInfoSchema, ({ provider, contentId }) => {
+          console.log(`provider=${provider} contentId=${contentId}`)
+          return fetchTitleInfo(provider, contentId)
+        })
       case '/identify': {
-        const { titles } = body
-        if (!Array.isArray(titles)) {
-          return { statusCode: 400, body: JSON.stringify({ error: 'Missing titles array' }) }
+        const reqParsed = IdentifyRequestSchema.safeParse(body)
+        if (!reqParsed.success) return zodFail(400, 'request', reqParsed.error)
+        console.log(`titles count=${reqParsed.data.titles.length}`)
+        const result = await identifyTitles(reqParsed.data.titles)
+        if ('upstreamStatus' in result) {
+          return { statusCode: 502, body: JSON.stringify({ error: `AniList API error: ${result.upstreamStatus}` }) }
         }
-        console.log(`titles count=${titles.length}`)
-        return await identifyTitles(titles)
+        const resParsed = IdentifyResponseSchema.safeParse(result)
+        if (!resParsed.success) return zodFail(500, 'response', resParsed.error)
+        return ok(resParsed.data)
       }
       default:
         return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
