@@ -11,9 +11,6 @@ export const badgedAnimeQueryOptions = () =>
 export const animeDetailQueryOptions = (id: string) =>
   queryOptions({ queryKey: queryKeys.anime.detail(id), queryFn: () => api.getAnime({ params: { id } }) })
 
-export const episodeQueryOptions = (id: string) =>
-  queryOptions({ queryKey: queryKeys.anime.episode(id), queryFn: () => api.getEpisode({ params: { id } }) })
-
 export const nagisaStatusQueryOptions = () =>
   queryOptions({ queryKey: queryKeys.nagisa.status, queryFn: () => api.getNagisaStatus(), refetchInterval: 15_000 })
 
