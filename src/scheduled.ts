@@ -64,12 +64,17 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
         break
       }
       case '0 5 * * 0': {
-        const currentYear = dayjs().year()
-        await env.SYNC_QUEUE.send({
-          type: 'anilist_sync',
-          message: { fromYear: 2000, toYear: currentYear + 1, country: 'JP' }
-        })
-        logger.info({ action: 'enqueue-anilist-sync', fromYear: 2000, toYear: currentYear + 1 })
+        const fromYear = 2000
+        const toYear = dayjs().year() + 1
+        const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i)
+        // AniList の rate limit を burst で殴らないよう、1 年あたり 30s ずらして enqueue
+        for (const [i, year] of years.entries()) {
+          await env.SYNC_QUEUE.send(
+            { type: 'anilist_sync', message: { year, country: 'JP' } },
+            { delaySeconds: i * 30 }
+          )
+        }
+        logger.info({ action: 'enqueue-anilist-sync', fromYear, toYear, count: years.length })
         break
       }
       default:
