@@ -90,9 +90,9 @@ const db = new Database(LOCAL_DB)
 const upsert = db.prepare(
   `INSERT INTO anilist_media (
      id, title_native, title_romaji, title_english,
-     season, season_year, status, start_year, start_month,
+     season, season_year, status, start_year, start_month, country_of_origin,
      native_norm, romaji_norm, english_norm, synced_at
-   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON CONFLICT(id) DO UPDATE SET
      title_native=excluded.title_native,
      title_romaji=excluded.title_romaji,
@@ -102,6 +102,7 @@ const upsert = db.prepare(
      status=excluded.status,
      start_year=excluded.start_year,
      start_month=excluded.start_month,
+     country_of_origin=excluded.country_of_origin,
      native_norm=excluded.native_norm,
      romaji_norm=excluded.romaji_norm,
      english_norm=excluded.english_norm,
@@ -121,6 +122,7 @@ const writeBatch = db.transaction((entries: AniListEntry[]) => {
       e.status ?? 'UNKNOWN',
       e.startDate.year,
       e.startDate.month,
+      country,
       normalizeTitle(e.title.native) || null,
       normalizeTitle(e.title.romaji) || null,
       normalizeTitle(e.title.english) || null,
