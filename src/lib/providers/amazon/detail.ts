@@ -46,11 +46,15 @@ export function extractPageData(html: string): PageData {
     try {
       const parseResult = DetailPageJsonSchema.safeParse(JSON.parse(content))
       if (parseResult.success) return parseResult.data
+      lastError = parseResult.error
     } catch (e) {
       lastError = e
     }
   }
-  throw lastError ?? new Error('Parse failed: no script containing headerDetail found')
+  if (scripts.length === 0) {
+    throw new Error('Parse failed: no script containing headerDetail found')
+  }
+  throw lastError ?? new Error('Parse failed: schema validation failed for all candidate scripts')
 }
 
 /**
