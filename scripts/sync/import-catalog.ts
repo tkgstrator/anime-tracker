@@ -76,9 +76,10 @@ function toMatch(row: AnilistRow): Match | undefined {
       ? MONTH_TO_QUARTER[row.start_month - 1]
       : null
   if (year == null || quarter == null) return undefined
+  if (!row.title_native) return undefined
   return {
     aniListId: row.id,
-    title: row.title_native ?? '',
+    title: row.title_native,
     status: row.status,
     year,
     quarter
