@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { ProviderBadge } from '@/app/components/anime-badges'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
+import { ProxyImage } from '@/app/components/proxy-image'
 import { SmartPagination } from '@/app/components/smart-pagination'
 import { Button } from '@/app/components/ui/button'
 import { providerLabel } from '@/app/lib/constants'
@@ -111,10 +112,19 @@ function UnidentifiedAdminPage() {
             const card = (
               <>
                 <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
-                  <div className='flex h-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
-                    <Film className='size-6 opacity-60' aria-hidden='true' />
-                    <span className='line-clamp-2'>{item.title}</span>
-                  </div>
+                  {item.imageUrl ? (
+                    <ProxyImage
+                      src={item.imageUrl}
+                      alt={item.title}
+                      width={480}
+                      className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
+                    />
+                  ) : (
+                    <div className='flex h-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
+                      <Film className='size-6 opacity-60' aria-hidden='true' />
+                      <span className='line-clamp-2'>{item.title}</span>
+                    </div>
+                  )}
                 </div>
                 <p className='mt-1.5 truncate text-sm font-medium'>{item.title}</p>
                 <div className='mt-0.5 flex items-center gap-1.5'>

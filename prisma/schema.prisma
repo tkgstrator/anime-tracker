@@ -107,6 +107,7 @@ model UnidentifiedAnime {
   provider  String
   contentId String   @map("content_id")
   title     String
+  imageUrl  String?  @map("image_url") // catalog 取得時のカバー画像。既存行は null、再同期で埋まる
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

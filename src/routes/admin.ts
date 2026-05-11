@@ -144,6 +144,7 @@ admin.openapi(
             provider: r.provider,
             contentId: r.contentId,
             title: r.title,
+            imageUrl: r.imageUrl,
             createdAt: r.createdAt.toISOString(),
             updatedAt: r.updatedAt.toISOString()
           })),

@@ -389,8 +389,8 @@ export class SyncService {
         } else {
           await this.prisma.unidentifiedAnime.upsert({
             where: { provider_contentId: { provider: providerName, contentId: t.contentId } },
-            create: { provider: providerName, contentId: t.contentId, title: t.title },
-            update: { title: t.title }
+            create: { provider: providerName, contentId: t.contentId, title: t.title, imageUrl: t.imageUrl ?? null },
+            update: { title: t.title, imageUrl: t.imageUrl ?? null }
           })
           syncLogger.warn({
             action: 'unidentified',
