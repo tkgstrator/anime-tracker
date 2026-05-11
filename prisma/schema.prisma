@@ -26,8 +26,10 @@ model Anime {
   recorded        Boolean   @default(false) // 録画済み
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
-  seasons         Season[]
-  anilistMedia    AnilistMedia @relation(fields: [aniListId], references: [id])
+  seasons      Season[]
+  // 注: DB 層では FK 制約を貼らない (D1 で RedefineTables 由来の cascade 連鎖削除を
+  // 避けるため)。整合性チェックは Prisma client 側でのみ行う。
+  anilistMedia AnilistMedia @relation(fields: [aniListId], references: [id])
 
   @@unique([provider, contentId])
   @@index([title])
