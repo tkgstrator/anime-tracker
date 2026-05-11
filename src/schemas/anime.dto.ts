@@ -77,11 +77,7 @@ export const AnimeListQuerySchema = z.object({
   aniListId: z.coerce.number().int().optional(),
   sort: z.enum(['title', 'year', 'updatedAt']).default('title'),
   order: z.enum(['asc', 'desc']).default('asc'),
-  q: z.string().nonempty().optional(),
-  exclusive: z
-    .enum(['true', 'false'])
-    .transform((v) => v === 'true')
-    .optional()
+  q: z.string().nonempty().optional()
 })
 export type AnimeListQuerySchema = z.infer<typeof AnimeListQuerySchema>
 
