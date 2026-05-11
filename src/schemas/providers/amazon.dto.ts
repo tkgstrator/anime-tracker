@@ -201,11 +201,12 @@ const HeaderSchema = z
     entityType: AmazonEntityType,
     images: z
       .object({
-        covershot: z.string().nonempty(),
-        titleshot: z.string().nonempty(),
-        packshot: z.string().nonempty()
+        covershot: z.string().optional(),
+        titleshot: z.string().optional(),
+        packshot: z.string().optional()
       })
-      .transform((v) => v.covershot)
+      .transform((v) => v.covershot || v.titleshot || v.packshot || '')
+      .pipe(z.string().nonempty())
       .pipe(AmazonImageUrlSchema),
     ratingBadge: z.object({ displayText: z.string().nonempty() }),
     subtitles: z.array(z.string()).default([]),
