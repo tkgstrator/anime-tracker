@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { AnimeInfoSchema, AnimeSchema, BadgedAnimeSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
 import { NagisaQueueResponseSchema, NagisaStatusSchema } from '@/schemas/nagisa.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
+import { PaginatedUnidentifiedSchema } from '@/schemas/unidentified.dto'
 
 const api = new Zodios('/api', [
   {
@@ -108,6 +109,19 @@ const api = new Zodios('/api', [
     path: '/nagisa/status',
     alias: 'getNagisaStatus',
     response: NagisaStatusSchema
+  },
+  {
+    method: 'get',
+    path: '/admin/unidentified',
+    alias: 'getUnidentifiedList',
+    parameters: [
+      { name: 'page', type: 'Query', schema: z.number().int().min(1).optional() },
+      { name: 'limit', type: 'Query', schema: z.number().int().min(1).max(100).optional() },
+      { name: 'provider', type: 'Query', schema: z.string().nonempty().optional() },
+      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() },
+      { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() }
+    ],
+    response: PaginatedUnidentifiedSchema
   }
 ])
 
