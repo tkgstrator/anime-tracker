@@ -40,6 +40,7 @@ const { values } = parseArgs({
     provider: { type: 'string' },
     limit: { type: 'string' },
     concurrency: { type: 'string', default: '5' },
+    delay: { type: 'string', default: '0' },
     force: { type: 'boolean', default: false }
   }
 })
@@ -47,6 +48,7 @@ const { values } = parseArgs({
 const providerFilter = values.provider
 const limit = values.limit ? Number.parseInt(values.limit, 10) : undefined
 const concurrency = Number.parseInt(values.concurrency!, 10)
+const delayMs = Number.parseInt(values.delay!, 10)
 const force = values.force
 
 // ---------------------------------------------------------------------------
@@ -185,6 +187,9 @@ const startedAt = dayjs()
 const counts = { ok: 0, fail: 0, seasons: 0, episodes: 0 }
 
 for (let i = 0; i < animeList.length; i += concurrency) {
+  if (i > 0 && delayMs > 0) {
+    await new Promise((r) => setTimeout(r, delayMs))
+  }
   const chunk = animeList.slice(i, i + concurrency)
   const results = await Promise.allSettled(chunk.map((row) => processOne(db, row)))
 
