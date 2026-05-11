@@ -187,13 +187,90 @@ anime.openapi(
         seasons: {
           orderBy: { seasonNumber: 'asc' },
           include: {
-            episodes: { orderBy: { episodeNumber: 'asc' } }
+            episodes: {
+              orderBy: { episodeNumber: 'asc' },
+              include: { abemaKey: { select: { id: true } } }
+            }
           }
         }
       }
     })
     if (!row) return c.json({ error: 'Not found' }, 404)
-    return c.json(row, 200)
+    return c.json(
+      {
+        ...row,
+        seasons: row.seasons.map((s) => ({
+          ...s,
+          episodes: s.episodes.map(({ abemaKey, ...ep }) => ({ ...ep, hasLocalKey: abemaKey !== null }))
+        }))
+      },
+      200
+    )
+  }
+)
+
+const EpisodeContextSchema = z.object({
+  id: z.uuid(),
+  episodeNumber: z.number().int().nonnegative(),
+  episodeId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  imageUrl: z.string().nonempty(),
+  duration: z.number().int().nonnegative(),
+  hasLocalKey: z.boolean(),
+  anime: z.object({
+    id: z.uuid(),
+    title: z.string().nonempty(),
+    provider: z.string().nonempty()
+  }),
+  season: z.object({
+    displayName: z.string().nonempty(),
+    seasonNumber: z.number().int().nonnegative()
+  })
+})
+
+anime.openapi(
+  createRoute({
+    method: 'get',
+    path: '/episode/:id',
+    tags: ['Anime'],
+    summary: 'エピソードを id (uuid) で1件取得 (再生ページ用)',
+    request: { params: z.object({ id: z.string().nonempty() }) },
+    responses: {
+      200: { description: 'episode', content: { 'application/json': { schema: EpisodeContextSchema } } },
+      404: {
+        description: 'Not Found',
+        content: { 'application/json': { schema: z.object({ error: z.string().nonempty() }) } }
+      }
+    }
+  }),
+  async (c) => {
+    const prisma = createPrismaClient(c.env.DB)
+    try {
+      const ep = await prisma.episode.findUnique({
+        where: { id: c.req.param('id') },
+        include: {
+          abemaKey: { select: { id: true } },
+          season: { include: { anime: { select: { id: true, title: true, provider: true } } } }
+        }
+      })
+      if (!ep) return c.json({ error: 'Not found' }, 404)
+      return c.json(
+        {
+          id: ep.id,
+          episodeNumber: ep.episodeNumber,
+          episodeId: ep.episodeId,
+          title: ep.title,
+          imageUrl: ep.imageUrl,
+          duration: ep.duration,
+          hasLocalKey: ep.abemaKey !== null,
+          anime: { id: ep.season.anime.id, title: ep.season.anime.title, provider: ep.season.anime.provider },
+          season: { displayName: ep.season.displayName, seasonNumber: ep.season.seasonNumber }
+        },
+        200
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
   }
 )
 

@@ -3,7 +3,8 @@ export const queryKeys = {
     all: ['anime'] as const,
     list: (filters: Record<string, unknown>) => ['anime', 'list', filters] as const,
     badged: ['anime', 'badged'] as const,
-    detail: (id: string) => ['anime', 'detail', id] as const
+    detail: (id: string) => ['anime', 'detail', id] as const,
+    episode: (id: string) => ['anime', 'episode', id] as const
   },
   nagisa: {
     status: ['nagisa', 'status'] as const

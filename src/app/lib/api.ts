@@ -41,6 +41,22 @@ const api = new Zodios('/api', [
     response: AnimeInfoSchema
   },
   {
+    method: 'get',
+    path: '/anime/episode/:id',
+    alias: 'getEpisode',
+    response: z.object({
+      id: z.string(),
+      episodeNumber: z.number().int(),
+      episodeId: z.string(),
+      title: z.string(),
+      imageUrl: z.string(),
+      duration: z.number().int(),
+      hasLocalKey: z.boolean(),
+      anime: z.object({ id: z.string(), title: z.string(), provider: z.string() }),
+      season: z.object({ displayName: z.string(), seasonNumber: z.number().int() })
+    })
+  },
+  {
     method: 'post',
     path: '/anime/:id/record',
     alias: 'recordAnime',
