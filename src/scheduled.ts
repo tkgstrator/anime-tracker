@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { getAppLogger } from './lib/logger'
@@ -60,6 +61,15 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
       case '0 4 * * *': {
         const count = await enqueueAbemaArchive(env)
         logger.info({ action: 'enqueue-abema-archive', count })
+        break
+      }
+      case '0 5 * * 0': {
+        const currentYear = dayjs().year()
+        await env.SYNC_QUEUE.send({
+          type: 'anilist_sync',
+          message: { fromYear: 2000, toYear: currentYear + 1, country: 'JP' }
+        })
+        logger.info({ action: 'enqueue-anilist-sync', fromYear: 2000, toYear: currentYear + 1 })
         break
       }
       default:

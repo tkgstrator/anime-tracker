@@ -130,6 +130,15 @@ queues.openapi(
           400
         )
       }
+      if (body.type === 'anilist_sync') {
+        return c.json(
+          {
+            error: 'anilist_sync is heavy (~10min) and should be triggered via cron only',
+            logs: stopCapture()
+          },
+          400
+        )
+      }
       await service.update(body)
       return c.json({ type: 'update' as const, success: true, logs: stopCapture() }, 200)
     } catch (e) {
