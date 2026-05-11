@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { v5 as uuidv5 } from 'uuid'
 import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.ts'
@@ -7,6 +8,14 @@ import type { FetchClient } from './lambda'
 import { getAppLogger } from './logger'
 import { cleanTitle } from './metadata/anilist'
 import { identifyTitlesViaD1 } from './metadata/local-anilist'
+
+/** UUIDv5 NAMESPACE。scripts/db/seed.ts と同一値。 */
+const ID_NAMESPACE = uuidv5('animetracker', uuidv5.DNS)
+const animeUuid = (provider: string, contentId: string) => uuidv5(`${provider}:${contentId}`, ID_NAMESPACE)
+const seasonUuid = (provider: string, contentId: string, seasonStableId: string) =>
+  uuidv5(`${provider}:${contentId}:${seasonStableId}`, ID_NAMESPACE)
+const episodeUuid = (provider: string, contentId: string, seasonStableId: string, episodeNumber: number) =>
+  uuidv5(`${provider}:${contentId}:${seasonStableId}:${episodeNumber}`, ID_NAMESPACE)
 
 function isUniqueConstraintError(e: unknown): boolean {
   return e instanceof Error && 'code' in e && (e as { code: string }).code === 'P2002'
@@ -149,7 +158,7 @@ export class SyncService {
 
       if (!existingEpisodes) {
         try {
-          await this.createSeason(animeId, season)
+          await this.createSeason(animeId, provider, contentId, season)
           syncLogger.info({
             action: 'create-season',
             provider,
@@ -172,7 +181,7 @@ export class SyncService {
         const existing = existingEpisodes.get(episode.episodeNumber)
         if (!existing) {
           try {
-            await this.createEpisode(dbSeason.id, episode)
+            await this.createEpisode(dbSeason.id, provider, contentId, dbSeason.seasonId, episode)
           } catch (e) {
             if (!isUniqueConstraintError(e)) throw e
           }
@@ -200,15 +209,17 @@ export class SyncService {
   }
 
   /** シーズンをエピソード込みで一括作成する */
-  private async createSeason(animeId: string, season: Season): Promise<void> {
+  private async createSeason(animeId: string, provider: string, contentId: string, season: Season): Promise<void> {
     await this.prisma.season.create({
       data: {
+        id: seasonUuid(provider, contentId, season.seasonId),
         animeId,
         seasonId: season.seasonId,
         displayName: season.displayName,
         seasonNumber: season.seasonNumber,
         episodes: {
           create: season.episodes.map((episode) => ({
+            id: episodeUuid(provider, contentId, season.seasonId, episode.episodeNumber),
             episodeNumber: episode.episodeNumber,
             episodeId: episode.episodeId,
             title: episode.title,
@@ -227,10 +238,17 @@ export class SyncService {
   }
 
   /** 既存シーズンに不足エピソードを1件追加する */
-  private async createEpisode(seasonId: string, episode: Episode): Promise<void> {
+  private async createEpisode(
+    seasonDbId: string,
+    provider: string,
+    contentId: string,
+    seasonStableId: string,
+    episode: Episode
+  ): Promise<void> {
     await this.prisma.episode.create({
       data: {
-        seasonId,
+        id: episodeUuid(provider, contentId, seasonStableId, episode.episodeNumber),
+        seasonId: seasonDbId,
         episodeNumber: episode.episodeNumber,
         episodeId: episode.episodeId,
         title: episode.title,
@@ -361,6 +379,7 @@ export class SyncService {
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
           await this.prisma.anime.create({
             data: {
+              id: animeUuid(providerName, t.contentId),
               provider: providerName,
               contentId: t.contentId,
               title: meta.title,
