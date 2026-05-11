@@ -142,7 +142,11 @@ const EpisodeDetailSchema = z.object({
   releaseDate: JapaneseDateSchema,
   duration: z.number().nonnegative().default(0),
   runtime: z.string().optional(),
-  images: z.object({ titleshot: z.url() }).optional(),
+  images: z.object({
+    covershot: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
+    titleshot: z.url(),
+    packshot: z.url()
+  }),
   subtitles: z.array(z.string()).default([]),
   audioTracks: z.array(z.string()).default([])
 })
@@ -169,7 +173,7 @@ const WidgetEpisodeSchema = z
       releaseDate: d.releaseDate || dayjs().toISOString(),
       duration: d.duration,
       maturityRating: ratingMatch ? Number.parseInt(ratingMatch[1], 10) : null,
-      imageUrl: d.images?.titleshot ?? '',
+      imageUrl: d.images.titleshot,
       hasSubtitles: d.subtitles.length > 0,
       hasDub: d.audioTracks.length > 1,
       benefitId: extractBenefitId(ep.action)
@@ -194,10 +198,14 @@ const HeaderSchema = z
     title: z.string().nonempty(),
     synopsis: z.string().nonempty(),
     entityType: AmazonEntityType,
-    // covershot はヘッダー背景用で新作のみ提供される。古い作品には存在しないため、
-    // 全作品で安定して存在する titleshot を imageUrl のソースとして使う。
+    // covershot はヘッダー背景用で新作のみ提供される (古い作品では空文字)。
+    // titleshot/packshot は全作品で URL が入っている。imageUrl のソースは titleshot。
     images: z
-      .object({ titleshot: z.url() })
+      .object({
+        covershot: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
+        titleshot: z.url(),
+        packshot: z.url()
+      })
       .transform((v) => v.titleshot)
       .pipe(AmazonImageUrlSchema),
     ratingBadge: z.object({ displayText: z.string().nonempty() }),
