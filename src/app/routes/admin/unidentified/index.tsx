@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
-import { ArrowDownUp, ExternalLink } from 'lucide-react'
+import { ArrowDownUp, Film } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 import { ProviderBadge } from '@/app/components/anime-badges'
@@ -105,30 +105,34 @@ function UnidentifiedAdminPage() {
       {items.length === 0 ? (
         <div className='py-20 text-center text-sm text-muted-foreground'>該当するタイトルはありません</div>
       ) : (
-        <div className='divide-y divide-border/50 rounded-md border'>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
           {items.map((item) => {
             const providerUrl = getProviderTitleUrl(item.provider, item.contentId)
-            return (
-              <div key={item.id} className='flex items-center gap-3 px-3 py-3 sm:gap-4 sm:px-4'>
-                <div className='min-w-0 flex-1'>
-                  <p className='truncate font-medium'>{item.title}</p>
-                  <div className='mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground'>
-                    <ProviderBadge provider={item.provider} />
-                    <span className='font-mono'>{item.contentId}</span>
-                    <span>更新 {dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
+            const card = (
+              <>
+                <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
+                  <div className='flex h-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
+                    <Film className='size-6 opacity-60' aria-hidden='true' />
+                    <span className='line-clamp-2'>{item.title}</span>
                   </div>
                 </div>
-                {providerUrl && (
-                  <a
-                    href={providerUrl}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    aria-label='プロバイダのページを開く'
-                    className='inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
-                  >
-                    <ExternalLink className='h-4 w-4' />
-                  </a>
-                )}
+                <p className='mt-1.5 truncate text-sm font-medium'>{item.title}</p>
+                <div className='mt-0.5 flex items-center gap-1.5'>
+                  <ProviderBadge provider={item.provider} className='text-[10px]' />
+                  <span className='truncate font-mono text-[10px] text-muted-foreground'>{item.contentId}</span>
+                </div>
+                <p className='mt-0.5 text-[10px] text-muted-foreground'>
+                  更新 {dayjs(item.updatedAt).format('YYYY-MM-DD HH:mm')}
+                </p>
+              </>
+            )
+            return providerUrl ? (
+              <a key={item.id} href={providerUrl} target='_blank' rel='noopener noreferrer' className='group block'>
+                {card}
+              </a>
+            ) : (
+              <div key={item.id} className='block'>
+                {card}
               </div>
             )
           })}
