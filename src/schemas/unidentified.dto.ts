@@ -5,6 +5,7 @@ export const UnidentifiedAnimeSchema = z.object({
   provider: z.string().nonempty(),
   contentId: z.string().nonempty(),
   title: z.string().nonempty(),
+  imageUrl: z.url().nullable(),
   createdAt: z.coerce.string().nonempty(),
   updatedAt: z.coerce.string().nonempty()
 })
