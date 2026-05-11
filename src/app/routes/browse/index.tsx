@@ -81,7 +81,6 @@ function AnimeListPage() {
       status: filters.status,
       badge,
       aniListId: filters.aniListId,
-      exclusive: filters.exclusive,
       sort: filters.sort,
       order: filters.order,
       q: filters.search || undefined
@@ -135,11 +134,6 @@ function AnimeListPage() {
       key: 'badge',
       label: BADGE_LABEL[badge] ?? badge,
       onClear: () => setFilter('badge')(undefined)
-    },
-    filters.exclusive != null && {
-      key: 'exclusive',
-      label: filters.exclusive ? '独占配信のみ' : '複数プロバイダ',
-      onClear: () => setFilter('exclusive')(undefined)
     },
     filters.aniListId != null && {
       key: 'aniListId',
@@ -224,16 +218,6 @@ function AnimeListPage() {
             { value: 'EXPIRING', label: '配信終了予定' }
           ]}
           onSelect={setFilter('badge')}
-        />
-        <FilterPopover
-          label='独占配信'
-          value={filters.exclusive}
-          options={[
-            { value: undefined, label: 'すべて' },
-            { value: true, label: '独占配信のみ' },
-            { value: false, label: '複数プロバイダ' }
-          ]}
-          onSelect={setFilter('exclusive')}
         />
         <FilterPopover<SortValue | undefined>
           label='並び替え'

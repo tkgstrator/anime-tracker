@@ -1,6 +1,6 @@
 import { kanji2number } from '@geolonia/japanese-numeral'
 import z from 'zod'
-import { stripQueryParams } from './common.dto'
+import { ImageUrlSchema, stripQueryParams } from './common.dto'
 
 // --- Browse schemas (Palette API / Filtered API) ---
 
@@ -130,7 +130,7 @@ const EpisodeSchema = z.object({
   title: z.string().nonempty(),
   description: z.string().nonempty(),
   slug: z.string().nonempty(),
-  imageUrl: z.url().transform(stripQueryParams),
+  imageUrl: ImageUrlSchema,
   rental: z.boolean(),
   startAt: z.string().nonempty(),
   endAt: z

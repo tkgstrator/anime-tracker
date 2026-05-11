@@ -30,7 +30,7 @@ resource "aws_lambda_function" "fetch" {
   runtime       = "nodejs22.x"
   architectures = ["arm64"]
   memory_size   = 256
-  timeout       = 60
+  timeout       = 900
 
   filename         = "${path.module}/../lambda/fetch/dist/function.zip"
   source_code_hash = filebase64sha256("${path.module}/../lambda/fetch/dist/function.zip")
@@ -151,7 +151,7 @@ resource "aws_lambda_function" "fetch_us" {
   runtime       = "provided.al2023"
   architectures = ["arm64"]
   memory_size   = 256
-  timeout       = 60
+  timeout       = 900
 
   layers = [aws_lambda_layer_version.bun_runtime.arn]
 

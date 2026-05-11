@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { getAppLogger } from './lib/logger'
@@ -51,9 +52,29 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
           logger.info({ action: 'enqueue', provider, category: 'expiring' })
         }
         break
+      case '0 3 * * *':
+        for (const provider of providers) {
+          await env.SYNC_QUEUE.send({ type: 'fetch', message: { provider, category: 'catalog' } })
+          logger.info({ action: 'enqueue', provider, category: 'catalog' })
+        }
+        break
       case '0 4 * * *': {
         const count = await enqueueAbemaArchive(env)
         logger.info({ action: 'enqueue-abema-archive', count })
+        break
+      }
+      case '0 5 * * 0': {
+        const fromYear = 2000
+        const toYear = dayjs().year() + 1
+        const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i)
+        // AniList の rate limit を burst で殴らないよう、1 年あたり 30s ずらして enqueue
+        for (const [i, year] of years.entries()) {
+          await env.SYNC_QUEUE.send(
+            { type: 'anilist_sync', message: { year, country: 'JP' } },
+            { delaySeconds: i * 30 }
+          )
+        }
+        logger.info({ action: 'enqueue-anilist-sync', fromYear, toYear, count: years.length })
         break
       }
       default:

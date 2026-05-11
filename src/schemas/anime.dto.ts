@@ -14,7 +14,6 @@ export const AnimeSchema = z.object({
   imageUrl: z.url(),
   year: z.number().int(),
   quarter: z.number().int().min(0).max(3),
-  isIdentified: z.coerce.boolean(),
   status: z.string(),
   aniListId: z.number().int(),
   badge: z.string().nullable(),
@@ -48,8 +47,9 @@ export const AnimeInfoSchema = AnimeSchema.extend({
           imageUrl: z.string().nonempty(),
           hasSubtitles: z.coerce.boolean(),
           hasDub: z.coerce.boolean(),
-          benefitId: z.string().nonempty().nullable(),
-          recorded: z.coerce.boolean()
+          benefitId: z.string().nonempty(),
+          recorded: z.coerce.boolean(),
+          hasLocalKey: z.coerce.boolean()
         })
       )
     })
@@ -77,11 +77,7 @@ export const AnimeListQuerySchema = z.object({
   aniListId: z.coerce.number().int().optional(),
   sort: z.enum(['title', 'year', 'updatedAt']).default('title'),
   order: z.enum(['asc', 'desc']).default('asc'),
-  q: z.string().nonempty().optional(),
-  exclusive: z
-    .enum(['true', 'false'])
-    .transform((v) => v === 'true')
-    .optional()
+  q: z.string().nonempty().optional()
 })
 export type AnimeListQuerySchema = z.infer<typeof AnimeListQuerySchema>
 

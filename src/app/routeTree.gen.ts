@@ -14,6 +14,7 @@ import { Route as RecordingsIndexRouteImport } from './routes/recordings/index'
 import { Route as ChangelogIndexRouteImport } from './routes/changelog/index'
 import { Route as BrowseIndexRouteImport } from './routes/browse/index'
 import { Route as AnimeIdIndexRouteImport } from './routes/anime/$id/index'
+import { Route as AdminUnidentifiedIndexRouteImport } from './routes/admin/unidentified/index'
 import { Route as ErrorsStatusCodeIndexRouteImport } from './routes/_errors/$statusCode/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const AnimeIdIndexRoute = AnimeIdIndexRouteImport.update({
   path: '/anime/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUnidentifiedIndexRoute = AdminUnidentifiedIndexRouteImport.update({
+  id: '/admin/unidentified/',
+  path: '/admin/unidentified/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ErrorsStatusCodeIndexRoute = ErrorsStatusCodeIndexRouteImport.update({
   id: '/_errors/$statusCode/',
   path: '/$statusCode/',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/changelog/': typeof ChangelogIndexRoute
   '/recordings/': typeof RecordingsIndexRoute
   '/$statusCode/': typeof ErrorsStatusCodeIndexRoute
+  '/admin/unidentified/': typeof AdminUnidentifiedIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/changelog': typeof ChangelogIndexRoute
   '/recordings': typeof RecordingsIndexRoute
   '/$statusCode': typeof ErrorsStatusCodeIndexRoute
+  '/admin/unidentified': typeof AdminUnidentifiedIndexRoute
   '/anime/$id': typeof AnimeIdIndexRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/changelog/': typeof ChangelogIndexRoute
   '/recordings/': typeof RecordingsIndexRoute
   '/_errors/$statusCode/': typeof ErrorsStatusCodeIndexRoute
+  '/admin/unidentified/': typeof AdminUnidentifiedIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/changelog/'
     | '/recordings/'
     | '/$statusCode/'
+    | '/admin/unidentified/'
     | '/anime/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/recordings'
     | '/$statusCode'
+    | '/admin/unidentified'
     | '/anime/$id'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/changelog/'
     | '/recordings/'
     | '/_errors/$statusCode/'
+    | '/admin/unidentified/'
     | '/anime/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   ChangelogIndexRoute: typeof ChangelogIndexRoute
   RecordingsIndexRoute: typeof RecordingsIndexRoute
   ErrorsStatusCodeIndexRoute: typeof ErrorsStatusCodeIndexRoute
+  AdminUnidentifiedIndexRoute: typeof AdminUnidentifiedIndexRoute
   AnimeIdIndexRoute: typeof AnimeIdIndexRoute
 }
 
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnimeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/unidentified/': {
+      id: '/admin/unidentified/'
+      path: '/admin/unidentified'
+      fullPath: '/admin/unidentified/'
+      preLoaderRoute: typeof AdminUnidentifiedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_errors/$statusCode/': {
       id: '/_errors/$statusCode/'
       path: '/$statusCode'
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChangelogIndexRoute: ChangelogIndexRoute,
   RecordingsIndexRoute: RecordingsIndexRoute,
   ErrorsStatusCodeIndexRoute: ErrorsStatusCodeIndexRoute,
+  AdminUnidentifiedIndexRoute: AdminUnidentifiedIndexRoute,
   AnimeIdIndexRoute: AnimeIdIndexRoute,
 }
 export const routeTree = rootRouteImport
