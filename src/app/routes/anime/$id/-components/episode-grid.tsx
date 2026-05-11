@@ -1,4 +1,4 @@
-import { ExternalLink, KeyRound } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 import { ProxyImage } from '@/app/components/proxy-image'
 import type { AnimeInfoSchema } from '@/schemas/anime.dto'
@@ -81,12 +81,8 @@ function EpisodeList({ season, provider }: { season: Season; provider: string })
                 className='hidden aspect-video w-full rounded-t-lg object-cover sm:block'
               />
               {episode.hasLocalKey && (
-                <span
-                  className='absolute top-1.5 left-1.5 hidden items-center gap-1 rounded-full bg-success/90 px-2 py-0.5 text-[10px] font-medium text-success-foreground sm:inline-flex'
-                  title='HLS 鍵を保存済み'
-                >
-                  <KeyRound className='h-3 w-3' />
-                  鍵あり
+                <span className='absolute top-1.5 left-1.5 hidden rounded-full bg-success/90 px-2 py-0.5 text-[10px] font-medium text-success-foreground sm:inline-flex'>
+                  無料
                 </span>
               )}
             </div>
