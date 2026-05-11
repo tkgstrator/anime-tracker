@@ -2,6 +2,7 @@ import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
+import { syncAnilistMedia } from './lib/metadata/anilist-sync'
 import { getGuestSession } from './lib/providers/abema/auth'
 import { buildKeysArchive, fetchMediaToken } from './lib/providers/abema/hls'
 import { SyncService } from './lib/sync'
@@ -60,6 +61,20 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
               await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
             }
             logger.info({ action: 'bulk-enqueue', provider, count: contentIds.length })
+            break
+          }
+          case 'anilist_sync': {
+            const { fromYear, toYear, country } = message.body.message
+            const result = await syncAnilistMedia({ prisma, fromYear, toYear, country })
+            logger.info({
+              action: 'anilist-sync-done',
+              fromYear,
+              toYear,
+              country,
+              fetched: result.fetched,
+              years: result.years,
+              elapsedMs: result.elapsedMs
+            })
             break
           }
           case 'abema_archive': {

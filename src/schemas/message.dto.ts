@@ -46,10 +46,23 @@ export const AbemaArchiveMessageSchema = z.object({
 })
 export type AbemaArchiveMessage = z.infer<typeof AbemaArchiveMessageSchema>
 
+const AnilistSyncBodySchema = z.object({
+  fromYear: z.number().int().min(1900).max(2100),
+  toYear: z.number().int().min(1900).max(2100),
+  country: z.enum(['JP', 'CN', 'KR', 'TW']).default('JP')
+})
+
+export const AnilistSyncMessageSchema = z.object({
+  type: z.literal('anilist_sync'),
+  message: AnilistSyncBodySchema
+})
+export type AnilistSyncMessage = z.infer<typeof AnilistSyncMessageSchema>
+
 export const MessageSchema = z.discriminatedUnion('type', [
   FetchMessageSchema,
   UpdateMessageSchema,
   BulkUpdateMessageSchema,
-  AbemaArchiveMessageSchema
+  AbemaArchiveMessageSchema,
+  AnilistSyncMessageSchema
 ])
 export type Message = z.infer<typeof MessageSchema>
