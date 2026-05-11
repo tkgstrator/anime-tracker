@@ -128,6 +128,7 @@ model AnilistMedia {
   status       String   @default("UNKNOWN")
   startYear    Int?     @map("start_year")
   startMonth   Int?     @map("start_month")
+  countryOfOrigin String @default("JP") @map("country_of_origin") // JP / CN / KR
   /// 正規化済みタイトル (lowercase, strip whitespace/punctuation)、indexed lookup 用
   nativeNorm   String?  @map("native_norm")
   romajiNorm   String?  @map("romaji_norm")
