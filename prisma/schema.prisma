@@ -17,12 +17,8 @@ model Anime {
   entityType      String    @default("tv") @map("entity_type") // 'tv' | 'movie'
   maturityRating  Int?      @map("maturity_rating")
   imageUrl        String    @map("image_url")
-  year            Int
-  quarter         Int // 0=冬 1=春 2=夏 3=秋
-  isIdentified    Boolean   @default(false) @map("is_identified")
-  status          String    @default("UNKNOWN") // FINISHED | RELEASING | NOT_YET_RELEASED | CANCELLED | HIATUS | UNKNOWN
   aniListId       Int       @map("anilist_id")
-  badge           String?   // NEW_EPISODE | RECENTLY_ADDED | COMING_SOON
+  badge           String? // NEW_EPISODE | RECENTLY_ADDED | COMING_SOON
   nextEpisodeDate DateTime? @map("next_episode_date") // 次回エピソード配信日 (UTC)
   expiredAt       DateTime? @map("expired_at") // 配信終了日時 (UTC)
   expiringSeason  Int?      @map("expiring_season") // 対象シーズン番号 (null=作品全体)
@@ -30,13 +26,15 @@ model Anime {
   recorded        Boolean   @default(false) // 録画済み
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
-  seasons         Season[]
+  seasons      Season[]
+  // 注: DB 層では FK 制約を貼らない (D1 で RedefineTables 由来の cascade 連鎖削除を
+  // 避けるため)。整合性チェックは Prisma client 側でのみ行う。
+  anilistMedia AnilistMedia @relation(fields: [aniListId], references: [id])
 
   @@unique([provider, contentId])
   @@index([title])
   @@index([provider])
-  @@index([year, quarter])
-  @@index([status])
+  @@index([aniListId])
   @@map("anime")
 }
 
@@ -67,7 +65,7 @@ model Episode {
   imageUrl       String   @map("image_url")
   hasSubtitles   Boolean  @default(false) @map("has_subtitles")
   hasDub         Boolean  @default(false) @map("has_dub")
-  benefitId      String?  @map("benefit_id")
+  benefitId      String   @map("benefit_id")
   recorded       Boolean  @default(false)
   createdAt      DateTime @default(now()) @map("created_at")
   season         Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
@@ -97,4 +95,51 @@ model AbemaKeyArchive {
 
   @@index([programId])
   @@map("abema_key_archives")
+}
+
+/// AniList 識別に失敗したタイトルの記録。
+/// catalog 同期等で毎回 AniList を叩き直さないよう、未識別タイトルの
+/// contentId と最終試行時刻を保存する。再識別したくなったら updatedAt を
+/// 見て古いものから cron で叩き直す運用を想定。
+model UnidentifiedAnime {
+  id        String   @id @default(uuid())
+  provider  String
+  contentId String   @map("content_id")
+  title     String
+  imageUrl  String?  @map("image_url") // catalog 取得時のカバー画像。既存行は null、再同期で埋まる
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([provider, contentId])
+  @@index([provider])
+  @@map("unidentified_anime")
+}
+
+/// AniList の anime media をローカルキャッシュしたテーブル。
+/// search backend に依存せず、正規化済みタイトルで indexed lookup する。
+/// scripts/sync/sync-anilist.ts で年単位で upsert する。
+model AnilistMedia {
+  id              Int     @id // AniList の media id
+  titleNative     String? @map("title_native")
+  titleRomaji     String? @map("title_romaji")
+  titleEnglish    String? @map("title_english")
+  season          String? // WINTER | SPRING | SUMMER | FALL
+  seasonYear      Int?    @map("season_year")
+  status          String  @default("UNKNOWN")
+  startYear       Int?    @map("start_year")
+  startMonth      Int?    @map("start_month")
+  countryOfOrigin String  @default("JP") @map("country_of_origin") // JP / CN / KR
+  /// 正規化済みタイトル (lowercase, strip whitespace/punctuation)、indexed lookup 用
+  nativeNorm      String? @map("native_norm")
+  romajiNorm      String? @map("romaji_norm")
+  englishNorm     String? @map("english_norm")
+  syncedAt        DateTime @default(now()) @map("synced_at")
+  anime           Anime[]
+
+  @@index([nativeNorm])
+  @@index([romajiNorm])
+  @@index([englishNorm])
+  @@index([season, seasonYear])
+  @@index([status])
+  @@map("anilist_media")
 }

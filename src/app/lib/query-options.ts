@@ -14,6 +14,12 @@ export const animeDetailQueryOptions = (id: string) =>
 export const nagisaStatusQueryOptions = () =>
   queryOptions({ queryKey: queryKeys.nagisa.status, queryFn: () => api.getNagisaStatus(), refetchInterval: 15_000 })
 
+export const unidentifiedListQueryOptions = (filters: Record<string, unknown>) =>
+  queryOptions({
+    queryKey: queryKeys.admin.unidentified(filters),
+    queryFn: () => api.getUnidentifiedList({ queries: filters })
+  })
+
 export type ChangelogEntry = { hash: string; date: string; message: string }
 
 export const changelogQueryOptions = () =>

@@ -2,6 +2,7 @@ import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import { createPrismaClient } from '../lib/db'
 import { getAppLogger } from '../lib/logger'
 import type { Message } from '../schemas/message.dto'
+import { PaginatedUnidentifiedSchema, UnidentifiedListQuerySchema } from '../schemas/unidentified.dto'
 
 const logger = getAppLogger('routes')
 
@@ -96,6 +97,61 @@ admin.openapi(
           totalEpisodes,
           archivedEpisodes,
           pendingEpisodes: totalEpisodes - archivedEpisodes
+        },
+        200
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  }
+)
+
+admin.openapi(
+  createRoute({
+    method: 'get',
+    path: '/unidentified',
+    tags: ['Admin'],
+    summary: 'AniList で識別できなかったタイトル一覧 (ページネーション + provider/title 検索)',
+    request: { query: UnidentifiedListQuerySchema },
+    responses: {
+      200: {
+        description: '未識別タイトル一覧',
+        content: { 'application/json': { schema: PaginatedUnidentifiedSchema } }
+      }
+    }
+  }),
+  async (c) => {
+    const { page, limit, provider, q, order } = c.req.valid('query')
+    const prisma = createPrismaClient(c.env.DB)
+    try {
+      const where = {
+        ...(provider ? { provider } : {}),
+        ...(q ? { title: { contains: q } } : {})
+      }
+      const [total, rows] = await Promise.all([
+        prisma.unidentifiedAnime.count({ where }),
+        prisma.unidentifiedAnime.findMany({
+          where,
+          orderBy: { updatedAt: order },
+          skip: (page - 1) * limit,
+          take: limit
+        })
+      ])
+      return c.json(
+        {
+          data: rows.map((r) => ({
+            id: r.id,
+            provider: r.provider,
+            contentId: r.contentId,
+            title: r.title,
+            imageUrl: r.imageUrl,
+            createdAt: r.createdAt.toISOString(),
+            updatedAt: r.updatedAt.toISOString()
+          })),
+          total,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(total / limit))
         },
         200
       )
