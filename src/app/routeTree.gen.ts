@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecordingsIndexRouteImport } from './routes/recordings/index'
 import { Route as ChangelogIndexRouteImport } from './routes/changelog/index'
 import { Route as BrowseIndexRouteImport } from './routes/browse/index'
-import { Route as WatchEpisodeIdIndexRouteImport } from './routes/watch/$episodeId/index'
 import { Route as AnimeIdIndexRouteImport } from './routes/anime/$id/index'
 import { Route as AdminUnidentifiedIndexRouteImport } from './routes/admin/unidentified/index'
 import { Route as ErrorsStatusCodeIndexRouteImport } from './routes/_errors/$statusCode/index'
@@ -36,11 +35,6 @@ const ChangelogIndexRoute = ChangelogIndexRouteImport.update({
 const BrowseIndexRoute = BrowseIndexRouteImport.update({
   id: '/browse/',
   path: '/browse/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WatchEpisodeIdIndexRoute = WatchEpisodeIdIndexRouteImport.update({
-  id: '/watch/$episodeId/',
-  path: '/watch/$episodeId/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnimeIdIndexRoute = AnimeIdIndexRouteImport.update({
@@ -67,7 +61,6 @@ export interface FileRoutesByFullPath {
   '/$statusCode/': typeof ErrorsStatusCodeIndexRoute
   '/admin/unidentified/': typeof AdminUnidentifiedIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
-  '/watch/$episodeId/': typeof WatchEpisodeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,7 +70,6 @@ export interface FileRoutesByTo {
   '/$statusCode': typeof ErrorsStatusCodeIndexRoute
   '/admin/unidentified': typeof AdminUnidentifiedIndexRoute
   '/anime/$id': typeof AnimeIdIndexRoute
-  '/watch/$episodeId': typeof WatchEpisodeIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,7 +80,6 @@ export interface FileRoutesById {
   '/_errors/$statusCode/': typeof ErrorsStatusCodeIndexRoute
   '/admin/unidentified/': typeof AdminUnidentifiedIndexRoute
   '/anime/$id/': typeof AnimeIdIndexRoute
-  '/watch/$episodeId/': typeof WatchEpisodeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -100,7 +91,6 @@ export interface FileRouteTypes {
     | '/$statusCode/'
     | '/admin/unidentified/'
     | '/anime/$id/'
-    | '/watch/$episodeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,7 +100,6 @@ export interface FileRouteTypes {
     | '/$statusCode'
     | '/admin/unidentified'
     | '/anime/$id'
-    | '/watch/$episodeId'
   id:
     | '__root__'
     | '/'
@@ -120,7 +109,6 @@ export interface FileRouteTypes {
     | '/_errors/$statusCode/'
     | '/admin/unidentified/'
     | '/anime/$id/'
-    | '/watch/$episodeId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,7 +119,6 @@ export interface RootRouteChildren {
   ErrorsStatusCodeIndexRoute: typeof ErrorsStatusCodeIndexRoute
   AdminUnidentifiedIndexRoute: typeof AdminUnidentifiedIndexRoute
   AnimeIdIndexRoute: typeof AnimeIdIndexRoute
-  WatchEpisodeIdIndexRoute: typeof WatchEpisodeIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -162,13 +149,6 @@ declare module '@tanstack/react-router' {
       path: '/browse'
       fullPath: '/browse/'
       preLoaderRoute: typeof BrowseIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/watch/$episodeId/': {
-      id: '/watch/$episodeId/'
-      path: '/watch/$episodeId'
-      fullPath: '/watch/$episodeId/'
-      preLoaderRoute: typeof WatchEpisodeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/anime/$id/': {
@@ -203,7 +183,6 @@ const rootRouteChildren: RootRouteChildren = {
   ErrorsStatusCodeIndexRoute: ErrorsStatusCodeIndexRoute,
   AdminUnidentifiedIndexRoute: AdminUnidentifiedIndexRoute,
   AnimeIdIndexRoute: AnimeIdIndexRoute,
-  WatchEpisodeIdIndexRoute: WatchEpisodeIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
