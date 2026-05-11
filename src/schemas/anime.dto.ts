@@ -48,7 +48,8 @@ export const AnimeInfoSchema = AnimeSchema.extend({
           hasSubtitles: z.coerce.boolean(),
           hasDub: z.coerce.boolean(),
           benefitId: z.string().nonempty(),
-          recorded: z.coerce.boolean()
+          recorded: z.coerce.boolean(),
+          hasLocalKey: z.coerce.boolean()
         })
       )
     })
