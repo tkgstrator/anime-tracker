@@ -25,7 +25,7 @@ import type { Title } from '../../src/schemas/providers/common.dto'
 
 const LOCAL_DB = '.wrangler/state/v3/d1/miniflare-D1DatabaseObject/c289ae8601b8c4b5b07e7123fe2ec79ba670a1ad0ce6f48c80d8b0b231d2555f.sqlite'
 
-const ALL_PROVIDERS = ['abema', 'hulu', 'amazon'] as const
+const ALL_PROVIDERS = ['abema', 'hulu', 'amazon', 'crunchyroll'] as const
 type Provider = (typeof ALL_PROVIDERS)[number]
 
 /** D1 の bound parameter 上限 (将来 D1 経由で動かす時のために 100 に揃える) */
