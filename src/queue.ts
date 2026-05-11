@@ -2,7 +2,7 @@ import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
-import { syncAnilistMedia } from './lib/metadata/anilist-sync'
+import { syncAnilistMediaYear } from './lib/metadata/anilist-sync'
 import { getGuestSession } from './lib/providers/abema/auth'
 import { buildKeysArchive, fetchMediaToken } from './lib/providers/abema/hls'
 import { SyncService } from './lib/sync'
@@ -64,15 +64,14 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
             break
           }
           case 'anilist_sync': {
-            const { fromYear, toYear, country } = message.body.message
-            const result = await syncAnilistMedia({ prisma, fromYear, toYear, country })
+            const { year, country } = message.body.message
+            const result = await syncAnilistMediaYear({ prisma, year, country })
             logger.info({
-              action: 'anilist-sync-done',
-              fromYear,
-              toYear,
+              action: 'anilist-sync-year-done',
+              year,
               country,
               fetched: result.fetched,
-              years: result.years,
+              pages: result.pages,
               elapsedMs: result.elapsedMs
             })
             break

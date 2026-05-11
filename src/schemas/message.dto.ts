@@ -47,8 +47,7 @@ export const AbemaArchiveMessageSchema = z.object({
 export type AbemaArchiveMessage = z.infer<typeof AbemaArchiveMessageSchema>
 
 const AnilistSyncBodySchema = z.object({
-  fromYear: z.number().int().min(1900).max(2100),
-  toYear: z.number().int().min(1900).max(2100),
+  year: z.number().int().min(1900).max(2100),
   country: z.enum(['JP', 'CN', 'KR', 'TW']).default('JP')
 })
 
