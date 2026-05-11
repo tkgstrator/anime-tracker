@@ -64,7 +64,7 @@ export async function scheduled(event: ScheduledEvent, env: Env): Promise<void> 
         break
       }
       case '0 5 * * 0': {
-        const fromYear = 1980
+        const fromYear = 2000
         const toYear = dayjs().year() + 1
         const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i)
         // AniList の rate limit を burst で殴らないよう、1 年あたり 30s ずらして enqueue
