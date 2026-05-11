@@ -75,32 +75,23 @@ function writeChunkedFiles(dir: string, prefix: string, statements: string[]): s
 }
 
 // --- read local rows ---
-console.log(`[1/4] Reading local Crunchyroll rows...`)
-const anime = db
-  .prepare('SELECT * FROM anime WHERE provider = ?')
-  .all(PROVIDER) as Row[]
-const animeIds = anime.map((r) => r.id as string)
-const animeIdList = animeIds.map((id) => `'${id.replaceAll("'", "''")}'`).join(',')
+// ローカル DB の episodes 系インデックスが壊れているケースがあるため
+// (PRAGMA integrity_check で確認可能)、JOIN や WHERE で索引を使わせず
+// 全件スキャン後に JS 側でフィルタする
+console.log(`[1/4] Reading local rows (full scan, filter in JS)...`)
+const allAnime = db.prepare('SELECT * FROM anime').all() as Row[]
+const anime = allAnime.filter((r) => r.provider === PROVIDER)
+const animeIdSet = new Set(anime.map((r) => r.id as string))
 
-const seasons =
-  animeIds.length === 0
-    ? []
-    : (db
-        .prepare(`SELECT * FROM seasons WHERE anime_id IN (${animeIdList})`)
-        .all() as Row[])
-const seasonIds = seasons.map((r) => r.id as string)
-const seasonIdList = seasonIds.map((id) => `'${id.replaceAll("'", "''")}'`).join(',')
+const allSeasons = db.prepare('SELECT * FROM seasons').all() as Row[]
+const seasons = allSeasons.filter((r) => animeIdSet.has(r.anime_id as string))
+const seasonIdSet = new Set(seasons.map((r) => r.id as string))
 
-const episodes =
-  seasonIds.length === 0
-    ? []
-    : (db
-        .prepare(`SELECT * FROM episodes WHERE season_id IN (${seasonIdList})`)
-        .all() as Row[])
+const allEpisodes = db.prepare('SELECT * FROM episodes').all() as Row[]
+const episodes = allEpisodes.filter((r) => seasonIdSet.has(r.season_id as string))
 
-const unidentified = db
-  .prepare('SELECT * FROM unidentified_anime WHERE provider = ?')
-  .all(PROVIDER) as Row[]
+const allUnidentified = db.prepare('SELECT * FROM unidentified_anime').all() as Row[]
+const unidentified = allUnidentified.filter((r) => r.provider === PROVIDER)
 
 console.log(`  anime: ${anime.length}`)
 console.log(`  seasons: ${seasons.length}`)
