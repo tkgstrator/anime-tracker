@@ -41,7 +41,8 @@ const { values } = parseArgs({
     limit: { type: 'string' },
     concurrency: { type: 'string', default: '5' },
     delay: { type: 'string', default: '0' },
-    force: { type: 'boolean', default: false }
+    force: { type: 'boolean', default: false },
+    'only-bad-images': { type: 'boolean', default: false }
   }
 })
 
@@ -50,6 +51,7 @@ const limit = values.limit ? Number.parseInt(values.limit, 10) : undefined
 const concurrency = Number.parseInt(values.concurrency!, 10)
 const delayMs = Number.parseInt(values.delay!, 10)
 const force = values.force
+const onlyBadImages = values['only-bad-images']
 
 // ---------------------------------------------------------------------------
 
@@ -64,7 +66,18 @@ function loadAnimeToProcess(db: Database): AnimeRow[] {
   const conditions: string[] = []
   const params: (string | number)[] = []
 
-  if (!force) {
+  if (onlyBadImages) {
+    // 同一 season 内で全 episode が同じ image_url を持っているような anime のみ対象
+    conditions.push(`EXISTS (
+       SELECT 1 FROM seasons s
+       JOIN (
+         SELECT season_id FROM episodes
+         GROUP BY season_id
+         HAVING COUNT(*) > 1 AND COUNT(DISTINCT image_url) = 1
+       ) bad ON bad.season_id = s.id
+       WHERE s.anime_id = a.id
+     )`)
+  } else if (!force) {
     conditions.push('NOT EXISTS (SELECT 1 FROM seasons s WHERE s.anime_id = a.id)')
   }
   if (providerFilter) {
