@@ -101,12 +101,24 @@ function upsertSeasonsAndEpisodes(db: Database, animeId: string, seasons: Season
     `INSERT OR IGNORE INTO seasons (id, anime_id, season_id, display_name, season_number, created_at)
      VALUES (?, ?, ?, ?, ?, ?)`
   )
+  // --force 時に既存 episode を上書きできるよう ON CONFLICT で UPDATE
   const insertEpisode = db.prepare(
-    `INSERT OR IGNORE INTO episodes (
+    `INSERT INTO episodes (
        id, season_id, episode_number, episode_id, title, description,
        release_date, duration, maturity_rating, image_url, has_subtitles, has_dub,
        benefit_id, recorded, created_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?)
+     ON CONFLICT(season_id, episode_number) DO UPDATE SET
+       episode_id = excluded.episode_id,
+       title = excluded.title,
+       description = excluded.description,
+       release_date = excluded.release_date,
+       duration = excluded.duration,
+       maturity_rating = excluded.maturity_rating,
+       image_url = excluded.image_url,
+       has_subtitles = excluded.has_subtitles,
+       has_dub = excluded.has_dub,
+       benefit_id = excluded.benefit_id`
   )
 
   for (const season of seasons) {
@@ -117,16 +129,8 @@ function upsertSeasonsAndEpisodes(db: Database, animeId: string, seasons: Season
       insertSeason.run(seasonRowId, animeId, season.seasonId, season.displayName, season.seasonNumber, ts)
     }
 
-    // 既存 episode_number を集める (重複を避ける)
-    const existingNumbers = new Set(
-      db
-        .prepare<{ episode_number: number }, [string]>('SELECT episode_number FROM episodes WHERE season_id = ?')
-        .all(seasonRowId)
-        .map((e) => e.episode_number)
-    )
-
     for (const ep of season.episodes) {
-      if (existingNumbers.has(ep.episodeNumber)) continue
+      // INSERT は UPSERT (ON CONFLICT UPDATE) なので存在チェック不要
       insertEpisode.run(
         randomUUID(),
         seasonRowId,
