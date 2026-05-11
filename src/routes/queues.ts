@@ -3,6 +3,7 @@ import { createPrismaClient } from '../lib/db'
 import { createFetchClient } from '../lib/lambda'
 import { localDetailFetchers } from '../lib/local-detail-fetchers'
 import { startCapture, stopCapture } from '../lib/logger'
+import { syncAnilistMediaYear } from '../lib/metadata/anilist-sync'
 import { SyncService } from '../lib/sync'
 import { MessageSchema } from '../schemas/message.dto'
 
@@ -44,10 +45,19 @@ const UpdateResultSchema = z.object({
   logs: LogsSchema
 })
 
+const AnilistSyncResultSchema = z.object({
+  type: z.literal('anilist_sync'),
+  year: z.number().int(),
+  fetched: z.number().int().nonnegative(),
+  pages: z.number().int().nonnegative(),
+  logs: LogsSchema
+})
+
 const QueuesResponseSchema = z.discriminatedUnion('type', [
   FetchResultSchema,
   BulkUpdateResultSchema,
-  UpdateResultSchema
+  UpdateResultSchema,
+  AnilistSyncResultSchema
 ])
 
 const QueuesErrorSchema = z.object({
@@ -131,12 +141,17 @@ queues.openapi(
         )
       }
       if (body.type === 'anilist_sync') {
+        const { year, country } = body.message
+        const result = await syncAnilistMediaYear({ prisma, year, country })
         return c.json(
           {
-            error: 'anilist_sync is heavy (~10min) and should be triggered via cron only',
+            type: 'anilist_sync' as const,
+            year: result.year,
+            fetched: result.fetched,
+            pages: result.pages,
             logs: stopCapture()
           },
-          400
+          200
         )
       }
       await service.update(body)
