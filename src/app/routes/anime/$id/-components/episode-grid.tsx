@@ -1,4 +1,4 @@
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, KeyRound } from 'lucide-react'
 import { useState } from 'react'
 import { ProxyImage } from '@/app/components/proxy-image'
 import type { AnimeInfoSchema } from '@/schemas/anime.dto'
@@ -73,12 +73,23 @@ function EpisodeList({ season, provider }: { season: Season; provider: string })
             title={watchUrl ? `${providerName(provider)}で視聴` : '配信元 URL がありません'}
             className={`group rounded-lg px-2 py-2 sm:overflow-hidden sm:p-0 ${watchUrl ? 'transition-colors hover:bg-muted/50' : 'pointer-events-none opacity-50'}`}
           >
-            <ProxyImage
-              src={episode.imageUrl}
-              alt={episode.title}
-              width={480}
-              className='hidden aspect-video w-full rounded-t-lg object-cover sm:block'
-            />
+            <div className='relative'>
+              <ProxyImage
+                src={episode.imageUrl}
+                alt={episode.title}
+                width={480}
+                className='hidden aspect-video w-full rounded-t-lg object-cover sm:block'
+              />
+              {episode.hasLocalKey && (
+                <span
+                  className='absolute top-1.5 left-1.5 hidden items-center gap-1 rounded-full bg-success/90 px-2 py-0.5 text-[10px] font-medium text-success-foreground sm:inline-flex'
+                  title='HLS 鍵を保存済み'
+                >
+                  <KeyRound className='h-3 w-3' />
+                  鍵あり
+                </span>
+              )}
+            </div>
             <div className='flex items-center gap-2 sm:block sm:px-3 sm:py-2'>
               <div className='min-w-0 flex-1'>
                 <p className='text-sm font-medium sm:truncate'>

@@ -187,13 +187,25 @@ anime.openapi(
         seasons: {
           orderBy: { seasonNumber: 'asc' },
           include: {
-            episodes: { orderBy: { episodeNumber: 'asc' } }
+            episodes: {
+              orderBy: { episodeNumber: 'asc' },
+              include: { abemaKey: { select: { id: true } } }
+            }
           }
         }
       }
     })
     if (!row) return c.json({ error: 'Not found' }, 404)
-    return c.json(row, 200)
+    return c.json(
+      {
+        ...row,
+        seasons: row.seasons.map((s) => ({
+          ...s,
+          episodes: s.episodes.map(({ abemaKey, ...ep }) => ({ ...ep, hasLocalKey: abemaKey !== null }))
+        }))
+      },
+      200
+    )
   }
 )
 
