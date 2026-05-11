@@ -375,7 +375,7 @@ export class SyncService {
       for (let j = 0; j < batch.length; j++) {
         const meta = results[j]
         const t = batch[j]
-        if (meta) {
+        if (meta?.aniListId != null) {
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
           await this.prisma.anime.create({
             data: {
@@ -387,10 +387,7 @@ export class SyncService {
               entityType: t.entityType,
               maturityRating: t.maturityRating,
               imageUrl: t.imageUrl ?? '',
-              aniListId: meta.aniListId ?? 0,
-              status: meta.status,
-              year: meta.year,
-              quarter: meta.quarter,
+              aniListId: meta.aniListId,
               badge: t.badge,
               nextEpisodeDate
             }
@@ -400,8 +397,7 @@ export class SyncService {
             provider: providerName,
             contentId: t.contentId,
             title: meta.title,
-            year: meta.year,
-            quarter: meta.quarter,
+            aniListId: meta.aniListId,
             nextEpisodeDate: nextEpisodeDate ? dayjs(nextEpisodeDate).toISOString() : null
           })
           identifiedContentIds.push(t.contentId)
