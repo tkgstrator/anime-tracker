@@ -173,7 +173,8 @@ const WidgetEpisodeSchema = z
       releaseDate: d.releaseDate || dayjs().toISOString(),
       duration: d.duration,
       maturityRating: ratingMatch ? Number.parseInt(ratingMatch[1], 10) : null,
-      imageUrl: d.images.titleshot,
+      // covershot がエピソード固有サムネ (新作で per-episode), 空なら show-level の titleshot
+      imageUrl: d.images.covershot ?? d.images.titleshot,
       hasSubtitles: d.subtitles.length > 0,
       hasDub: d.audioTracks.length > 1,
       benefitId: extractBenefitId(ep.action)
@@ -198,15 +199,16 @@ const HeaderSchema = z
     title: z.string().nonempty(),
     synopsis: z.string().nonempty(),
     entityType: AmazonEntityType,
-    // covershot はヘッダー背景用で新作のみ提供される (古い作品では空文字)。
-    // titleshot/packshot は全作品で URL が入っている。imageUrl のソースは titleshot。
+    // covershot はエピソード固有/ヘッダー画像 (新作で per-episode、古い作品では空文字)。
+    // titleshot/packshot は show-level のロゴ入りタイトルカード。
+    // imageUrl は covershot 優先、空なら titleshot に切り替え。
     images: z
       .object({
         covershot: z.preprocess((v) => (v === '' ? undefined : v), z.url().optional()),
         titleshot: z.url(),
         packshot: z.url()
       })
-      .transform((v) => v.titleshot)
+      .transform((v) => v.covershot ?? v.titleshot)
       .pipe(AmazonImageUrlSchema),
     ratingBadge: z.object({ displayText: z.string().nonempty() }),
     subtitles: z.array(z.string()).default([]),
