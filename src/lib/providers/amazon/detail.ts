@@ -88,6 +88,9 @@ async function fetchAllEpisodes(seasonId: string, pageTokens: string[]): Promise
 
 // --- main fetcher ---
 export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleInfo> {
+  if (!/^[A-Za-z0-9_-]+$/.test(contentId)) {
+    throw new Error(`Invalid Amazon contentId format: "${contentId}"`)
+  }
   const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${contentId}`)
   const page = extractPageData(html)
 
