@@ -20,10 +20,19 @@ export const FETCH_HEADERS = {
  * @returns HTML 文字列
  * @throws HTTP エラー時
  */
-async function fetchHtml(url: string): Promise<string> {
-  const res = await fetch(url, { headers: FETCH_HEADERS })
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
-  return res.text()
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+async function fetchHtml(url: string, retries = 5): Promise<string> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const res = await fetch(url, { headers: FETCH_HEADERS })
+    if (res.ok) return res.text()
+    if (res.status === 503 && attempt < retries - 1) {
+      await sleep(Math.min(1000 * 2 ** attempt, 16000))
+      continue
+    }
+    throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
+  }
+  throw new Error(`fetchHtml: unreachable`)
 }
 
 /** HTML から指定 type の script タグの中身を抽出する */
@@ -66,24 +75,34 @@ export function mapEntityType(raw: string): 'tv' | 'movie' {
 /**
  * getDetailWidgets API を呼び出し、指定トークンのエピソード一覧を取得する。
  */
-async function fetchEpisodesByToken(titleID: string, token: string): Promise<Episode[]> {
+async function fetchEpisodesByToken(titleID: string, token: string, retries = 5): Promise<Episode[]> {
   const widgets = JSON.stringify([{ widgetType: 'EpisodeList', widgetToken: token }])
   const params = new URLSearchParams({ titleID, widgets })
-  const res = await fetch(`${AMAZON_WIDGETS_API}?${params}`, {
-    headers: { ...FETCH_HEADERS, 'x-requested-with': 'XMLHttpRequest' }
-  })
-  if (!res.ok) throw new Error(`getDetailWidgets HTTP ${res.status}`)
-  const result = WidgetResponseSchema.safeParse(await res.json())
-  if (!result.success) throw result.error
-  return result.data
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const res = await fetch(`${AMAZON_WIDGETS_API}?${params}`, {
+      headers: { ...FETCH_HEADERS, 'x-requested-with': 'XMLHttpRequest' }
+    })
+    if (res.ok) {
+      const result = WidgetResponseSchema.safeParse(await res.json())
+      if (!result.success) throw result.error
+      return result.data
+    }
+    if (res.status === 503 && attempt < retries - 1) {
+      await sleep(Math.min(1000 * 2 ** attempt, 16000))
+      continue
+    }
+    throw new Error(`getDetailWidgets HTTP ${res.status}`)
+  }
+  throw new Error(`fetchEpisodesByToken: unreachable`)
 }
 
-/**
- * 全ページトークンを順次取得し、重複を除去したエピソード一覧を返す。
- */
 async function fetchAllEpisodes(seasonId: string, pageTokens: string[]): Promise<Episode[]> {
-  const pages = await Promise.all(pageTokens.map((token) => fetchEpisodesByToken(seasonId, token)))
-  return sortBy(uniqBy(pages.flat(), 'episodeId'), 'episodeNumber')
+  const episodes: Episode[] = []
+  for (const token of pageTokens) {
+    const page = await fetchEpisodesByToken(seasonId, token)
+    episodes.push(...page)
+  }
+  return sortBy(uniqBy(episodes, 'episodeId'), 'episodeNumber')
 }
 
 // --- main fetcher ---
@@ -137,14 +156,15 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
     ]
   }
 
-  return Promise.all(
-    page.seasons.map(async (rs) => {
-      const tokens =
-        rs.seasonId === contentId
-          ? page.episodePageTokens
-          : extractPageData(await fetchHtml(`${AMAZON_DETAIL_BASE}/${rs.seasonId}`)).episodePageTokens
-      const episodes = await fetchAllEpisodes(rs.seasonId, tokens)
-      return { ...rs, episodes }
-    })
-  )
+  const results: Season[] = []
+  for (const rs of page.seasons) {
+    if (results.length > 0) await sleep(500)
+    const tokens =
+      rs.seasonId === contentId
+        ? page.episodePageTokens
+        : extractPageData(await fetchHtml(`${AMAZON_DETAIL_BASE}/${rs.seasonId}`)).episodePageTokens
+    const episodes = await fetchAllEpisodes(rs.seasonId, tokens)
+    results.push({ ...rs, episodes })
+  }
+  return results
 }
