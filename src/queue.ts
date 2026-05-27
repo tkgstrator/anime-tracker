@@ -141,11 +141,11 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         if (message.attempts >= 3) {
           await notifyError(env.DISCORD_WEBHOOK_URL, {
             title: 'Queue: 最終リトライ失敗',
-            description: errorMessage,
+            description: `\`\`\`\n${errorMessage}\n\`\`\``,
             fields: [
               { name: 'Type', value: message.body.type, inline: true },
-              { name: 'Detail', value: JSON.stringify(message.body.message), inline: true },
-              { name: 'Attempts', value: String(message.attempts), inline: true }
+              { name: 'Attempts', value: String(message.attempts), inline: true },
+              { name: 'Detail', value: `\`\`\`json\n${JSON.stringify(message.body.message, null, 2)}\n\`\`\`` }
             ]
           })
         }

@@ -31,9 +31,11 @@ export const BrowseQuerySchema = z.object({
 })
 export type BrowseQuery = z.infer<typeof BrowseQuerySchema>
 
+const AmazonIdSchema = z.string().regex(/^[A-Za-z0-9_-]+$/, 'Amazon ID contains invalid characters')
+
 export const BrowseEntitySchema = z
   .object({
-    titleID: z.string().nonempty(),
+    titleID: AmazonIdSchema,
     displayTitle: z.string().nonempty(),
     synopsis: z.string().nonempty(),
     entityType: AmazonEntityType,
@@ -153,7 +155,7 @@ const EpisodeDetailSchema = z.object({
 
 const WidgetEpisodeSchema = z
   .object({
-    titleID: z.string().nonempty(),
+    titleID: AmazonIdSchema,
     detail: EpisodeDetailSchema,
     action: z.unknown().optional(),
     metadata: z
@@ -232,7 +234,7 @@ const HeaderSchema = z
   }))
 
 const SeasonEntrySchema = z.object({
-  seasonId: z.string().nonempty(),
+  seasonId: AmazonIdSchema,
   displayName: z.string().nonempty(),
   sequenceNumber: z.number().int().positive()
 })
