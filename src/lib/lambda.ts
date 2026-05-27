@@ -2,6 +2,8 @@ import { AwsClient } from 'aws4fetch'
 import type { z } from 'zod'
 import {
   ExpiringResponseSchema,
+  type FetchAbemaArchiveRequestSchema,
+  FetchAbemaArchiveResponseSchema,
   type FetchExpiringRequestSchema,
   type FetchTitleInfoRequestSchema,
   type FetchTitleListRequestSchema,
@@ -71,6 +73,8 @@ export function createFetchClient(env: FetchClientEnv) {
       post(aws, getBaseUrl(env, body.provider), '/title_list', body, TitleListResponseSchema),
     fetchTitleInfo: (body: z.infer<typeof FetchTitleInfoRequestSchema>) =>
       post(aws, getBaseUrl(env, body.provider), '/title_info', body, TitleInfoSchema),
+    fetchAbemaArchives: (body: z.infer<typeof FetchAbemaArchiveRequestSchema>) =>
+      post(aws, getBaseUrl(env, 'abema'), '/title_info', body, FetchAbemaArchiveResponseSchema),
     identifyTitles: (body: { titles: string[] }) =>
       post(aws, env.LAMBDA_FUNCTION_URL, '/identify', body, IdentifyResponseSchema)
   }

@@ -1,10 +1,9 @@
+import { archiveMissingAbemaKeysForAnime } from './lib/abema-archive'
 import { createPrismaClient } from './lib/db'
 import { notifyError } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
 import { syncAnilistMediaYear } from './lib/metadata/anilist-sync'
-import { getGuestSession } from './lib/providers/abema/auth'
-import { buildKeysArchive, fetchMediaToken } from './lib/providers/abema/hls'
 import { SyncService } from './lib/sync'
 
 import type { Message } from './schemas/message.dto'
@@ -78,54 +77,21 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
           }
           case 'abema_archive': {
             const { animeId } = message.body.message
-            const eps = await prisma.episode.findMany({
-              where: { season: { animeId }, abemaKey: null },
-              select: { id: true, episodeId: true }
+            const result = await archiveMissingAbemaKeysForAnime(prisma, animeId, async (programIds) => {
+              const result = await lambda.fetchAbemaArchives({ programIds })
+              return result.results
             })
-            if (eps.length === 0) {
+            if (result.total === 0) {
               logger.info({ action: 'abema-archive-skip', animeId, reason: 'all keys present' })
               break
             }
-            const session = await getGuestSession()
-            const mediaToken = await fetchMediaToken({ bearer: session.token })
-            const archiveOne = async (ep: (typeof eps)[number]) => {
-              try {
-                const archive = await buildKeysArchive({
-                  programId: ep.episodeId,
-                  deviceId: session.deviceId,
-                  mediaToken
-                })
-                await prisma.abemaKeyArchive.create({
-                  data: {
-                    episodeId: ep.id,
-                    programId: archive.programId,
-                    cid: archive.cid,
-                    contentKeyHex: archive.contentKeyHex,
-                    ivHex: archive.ivHex,
-                    variantUrl: archive.variantUrl,
-                    variantResolution: archive.variantResolution,
-                    variantBandwidth: archive.variantBandwidth,
-                    segmentUrls: JSON.stringify(archive.segmentUrls)
-                  }
-                })
-                return 'ok' as const
-              } catch (e) {
-                logger.warn({
-                  action: 'abema-archive-episode-failed',
-                  animeId,
-                  episodeId: ep.episodeId,
-                  reason: e instanceof Error ? e.message : String(e)
-                })
-                return 'fail' as const
-              }
-            }
-            const CONCURRENCY = 5
-            const results: ('ok' | 'fail')[] = []
-            for (let i = 0; i < eps.length; i += CONCURRENCY) {
-              results.push(...(await Promise.all(eps.slice(i, i + CONCURRENCY).map(archiveOne))))
-            }
-            const ok = results.filter((r) => r === 'ok').length
-            logger.info({ action: 'abema-archive-done', animeId, total: eps.length, ok, fail: eps.length - ok })
+            logger.info({
+              action: 'abema-archive-done',
+              animeId,
+              total: result.total,
+              ok: result.archived,
+              fail: result.failed
+            })
             break
           }
         }
