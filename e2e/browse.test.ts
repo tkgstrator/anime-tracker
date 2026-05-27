@@ -11,7 +11,7 @@ test.describe('一覧ページ', () => {
   })
 
   test('フィルターボタンが表示される', async ({ page }) => {
-    await expect(page.locator('button:has-text("プロバイダ")')).toBeVisible()
+    await expect(page.locator('button:has-text("配信元")')).toBeVisible()
     await expect(page.locator('button:has-text("シーズン")')).toBeVisible()
     await expect(page.locator('button:has-text("ステータス")')).toBeVisible()
   })
@@ -25,7 +25,7 @@ test.describe('一覧ページ', () => {
   test('アニメカードをクリックすると詳細ページに遷移する', async ({ page }) => {
     const firstCard = page.locator('main a[href*="/anime/"]').first()
     await firstCard.click()
-    await expect(page.locator('a:has-text("← 一覧に戻る")')).toBeVisible()
+    await expect(page.locator('button:has-text("戻る")')).toBeVisible()
   })
 
   test('検索バーでタイトル検索ができる', async ({ page }) => {
