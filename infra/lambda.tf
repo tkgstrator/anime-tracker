@@ -106,11 +106,11 @@ output "lambda_invoker_secret_access_key" {
 # ============================================================
 
 resource "aws_lambda_layer_version" "bun_runtime" {
-  provider            = aws.us
-  layer_name          = "bun-runtime"
-  filename            = "${path.module}/../lambda/layers/bun-runtime.zip"
-  source_code_hash    = filebase64sha256("${path.module}/../lambda/layers/bun-runtime.zip")
-  compatible_runtimes = ["provided.al2023"]
+  provider                 = aws.us
+  layer_name               = "bun-runtime"
+  filename                 = "${path.module}/../lambda/layers/bun-runtime.zip"
+  source_code_hash         = filebase64sha256("${path.module}/../lambda/layers/bun-runtime.zip")
+  compatible_runtimes      = ["provided.al2023"]
   compatible_architectures = ["arm64"]
 }
 
