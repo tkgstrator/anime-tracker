@@ -236,12 +236,16 @@ const SEASON_TO_QUARTER: Record<string, number> = {
 
 const MONTH_TO_QUARTER = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3] as const
 
-async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
-  const res = await fetch(url, init)
-  if (res.status !== 429) return res
-  const retryAfter = Math.min(Number(res.headers.get('Retry-After') || '2'), 5)
-  await new Promise((r) => setTimeout(r, retryAfter * 1000))
-  return fetch(url, init)
+async function fetchWithRetry(url: string, init: RequestInit, maxRetries = 4): Promise<Response> {
+  let res = await fetch(url, init)
+  for (let attempt = 0; res.status === 429 && attempt < maxRetries; attempt++) {
+    // AniList の Retry-After(秒) を尊重し、無ければ指数バックオフ。上限 60s。
+    const retryAfter = Math.min(Number(res.headers.get('Retry-After')) || 2 ** attempt, 60)
+    console.warn(`AniList 429: retry ${attempt + 1}/${maxRetries} after ${retryAfter}s`)
+    await new Promise((r) => setTimeout(r, retryAfter * 1000))
+    res = await fetch(url, init)
+  }
+  return res
 }
 
 async function identifyTitles(rawTitles: string[]): Promise<{ results: (z.infer<typeof IdentifyResponseSchema>['results'][number])[] } | { upstreamStatus: number }> {
