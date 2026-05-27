@@ -33,7 +33,9 @@ export async function archiveMissingAbemaKeysForAnime(
   prisma: PrismaClient,
   animeId: string,
   fetchArchives: AbemaArchiveBatchFetcher,
-  batchSize = 5
+  batchSize = 5,
+  // ABEMA / Lambda のレートリミットを避けるためチャンク間に挟むウェイト(ms)
+  delayMs = 1000
 ): Promise<AbemaArchiveResult> {
   const episodes = await prisma.episode.findMany({
     where: { season: { animeId }, abemaKey: null },
@@ -46,8 +48,9 @@ export async function archiveMissingAbemaKeysForAnime(
     episodes.slice(index * safeBatchSize, (index + 1) * safeBatchSize)
   )
   const summary = await chunks.reduce(
-    async (accPromise, chunk) => {
+    async (accPromise, chunk, index) => {
       const acc = await accPromise
+      if (index > 0 && delayMs > 0) await new Promise((r) => setTimeout(r, delayMs))
       const results = await fetchArchives(chunk.map((episode) => episode.episodeId))
       const resultByProgramId = new Map(results.map((result) => [result.programId, result]))
       const chunkSummary = await chunk.reduce(

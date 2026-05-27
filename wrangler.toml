@@ -45,6 +45,8 @@ queue = "anime-tracker-sync-staging"
 queue = "anime-tracker-sync-staging"
 max_batch_size = 5
 max_retries = 3
+# Amazon 等のスクレイピング先を叩きすぎてスロットル(200で headerDetail 欠落)されるのを防ぐため並行数を抑える
+max_concurrency = 2
 
 [dev]
 port = 8787
@@ -81,6 +83,8 @@ queue = "anime-tracker-sync-staging"
 queue = "anime-tracker-sync-staging"
 max_batch_size = 5
 max_retries = 3
+# Amazon 等のスクレイピング先を叩きすぎてスロットル(200で headerDetail 欠落)されるのを防ぐため並行数を抑える
+max_concurrency = 2
 
 # ---- Production ----
 
@@ -101,3 +105,5 @@ queue = "anime-tracker-sync-production"
 queue = "anime-tracker-sync-production"
 max_batch_size = 5
 max_retries = 3
+# Amazon 等のスクレイピング先を叩きすぎてスロットル(200で headerDetail 欠落)されるのを防ぐため並行数を抑える
+max_concurrency = 2

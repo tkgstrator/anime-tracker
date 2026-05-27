@@ -4,6 +4,7 @@ import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.t
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
 import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
+import { withD1Retry } from './db'
 import type { FetchClient } from './lambda'
 import { getAppLogger } from './logger'
 import { cleanTitle } from './metadata/anilist'
@@ -99,10 +100,12 @@ export class SyncService {
       episodeCount: detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0)
     })
 
-    const anime = await this.prisma.anime.update({
-      where: { provider_contentId: { provider, contentId } },
-      data: { description: detail.description }
-    })
+    const anime = await withD1Retry(() =>
+      this.prisma.anime.update({
+        where: { provider_contentId: { provider, contentId } },
+        data: { description: detail.description }
+      })
+    )
 
     await this.syncSeasons(anime.id, provider, contentId, detail.seasons)
 
@@ -158,7 +161,7 @@ export class SyncService {
 
       if (!existingEpisodes) {
         try {
-          await this.createSeason(animeId, provider, contentId, season)
+          await withD1Retry(() => this.createSeason(animeId, provider, contentId, season))
           syncLogger.info({
             action: 'create-season',
             provider,
@@ -181,7 +184,7 @@ export class SyncService {
         const existing = existingEpisodes.get(episode.episodeNumber)
         if (!existing) {
           try {
-            await this.createEpisode(dbSeason.id, provider, contentId, dbSeason.seasonId, episode)
+            await withD1Retry(() => this.createEpisode(dbSeason.id, provider, contentId, dbSeason.seasonId, episode))
           } catch (e) {
             if (!isUniqueConstraintError(e)) throw e
           }
@@ -194,15 +197,17 @@ export class SyncService {
           existing.duration !== episode.duration ||
           existing.releaseDate.getTime() !== nextReleaseDate.getTime()
         ) {
-          await this.prisma.episode.update({
-            where: { id: existing.id },
-            data: {
-              imageUrl: episode.imageUrl,
-              description: episode.description,
-              duration: episode.duration,
-              releaseDate: nextReleaseDate
-            }
-          })
+          await withD1Retry(() =>
+            this.prisma.episode.update({
+              where: { id: existing.id },
+              data: {
+                imageUrl: episode.imageUrl,
+                description: episode.description,
+                duration: episode.duration,
+                releaseDate: nextReleaseDate
+              }
+            })
+          )
         }
       }
     }
