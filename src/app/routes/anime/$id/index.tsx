@@ -10,6 +10,19 @@ import { animeDetailQueryOptions } from '@/app/lib/query-options'
 import { AnimeHero } from './-components/anime-hero'
 import { EpisodeGrid } from './-components/episode-grid'
 
+function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object') {
+    const response = (error as { response?: { data?: unknown } }).response
+    const data = response?.data
+    if (data && typeof data === 'object') {
+      const message = (data as { error?: unknown }).error
+      if (typeof message === 'string' && message.trim().length > 0) return message
+    }
+  }
+  if (error instanceof Error && error.message.trim().length > 0) return error.message
+  return fallback
+}
+
 export const Route = createFileRoute('/anime/$id/')({
   loader: ({ params, context: { queryClient } }) => queryClient.ensureQueryData(animeDetailQueryOptions(params.id)),
   pendingComponent: LoadingSpinner,
@@ -55,7 +68,7 @@ function AnimeDetailPage() {
       toast.success('タイトル情報を更新しました')
       invalidateRelated()
     },
-    onError: () => toast.error('情報の更新に失敗しました')
+    onError: (error) => toast.error(getApiErrorMessage(error, '情報の更新に失敗しました'))
   })
 
   const updating = updateAnimeMutation.isPending || recordAnimeMutation.isPending || refreshAnimeMutation.isPending
