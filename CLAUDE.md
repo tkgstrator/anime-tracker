@@ -86,4 +86,9 @@ bunx biome check src/        # lint + format チェック
 
 - プロジェクト概要・機能・ディレクトリ構造 → `docs/PROJECT.md`
 - ロードマップ（Phase 0〜4） → `docs/ROADMAP.md`
-- 機能別の計画書 → `docs/features/`
+- アーキテクチャ設計 → `docs/architecture/`
+- プロバイダ別仕様 → `docs/providers/`
+- 外部 API 仕様 → `docs/api/`
+- 機能別の設計書 → `docs/features/`
+- 開発環境セットアップ → `docs/setup/`
+- 調査・検討メモ → `docs/research/`

@@ -12,7 +12,7 @@ export function normalizeTitle(s: string | null | undefined): string {
       // 全角・半角空白
       .replace(/[\s　]+/g, '')
       // 句読点・記号類 (日英)
-      .replace(/[!?.,'"():;\-—–~～「」『』【】［］\[\]()<>＜＞{}・･♡♥★☆♪♫※/\\|]/g, '')
+      .replace(/[!?.,'"():;\-—–~～「」『』【】［］[\]()<>＜＞{}・･♡♥★☆♪♫※/\\|]/g, '')
       // 残った句読点
       .replace(/[。、，．]/g, '')
   )
