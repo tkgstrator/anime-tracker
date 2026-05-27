@@ -1,6 +1,6 @@
 import { archiveMissingAbemaKeysForAnime } from './lib/abema-archive'
 import { createPrismaClient } from './lib/db'
-import { notifyError } from './lib/discord'
+import { COLOR_SUCCESS, COLOR_WARN, notify } from './lib/discord'
 import { createFetchClient } from './lib/lambda'
 import { getAppLogger } from './lib/logger'
 import { syncAnilistMediaYear } from './lib/metadata/anilist-sync'
@@ -22,12 +22,35 @@ interface Env {
   DISCORD_WEBHOOK_URL: string
 }
 
+/** 失敗通知に載せるため、メッセージ対象のアニメ（識別済みなら）を引く */
+async function findAnimeForMessage(
+  prisma: ReturnType<typeof createPrismaClient>,
+  body: Message
+): Promise<{ title: string; imageUrl: string } | null> {
+  if (body.type === 'update') {
+    return prisma.anime.findUnique({
+      where: { provider_contentId: { provider: body.message.provider, contentId: body.message.contentId } },
+      select: { title: true, imageUrl: true }
+    })
+  }
+  if (body.type === 'abema_archive') {
+    return prisma.anime.findUnique({
+      where: { id: body.message.animeId },
+      select: { title: true, imageUrl: true }
+    })
+  }
+  return null
+}
+
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
   const prisma = createPrismaClient(env.DB)
   const lambda = createFetchClient(env)
   const service = new SyncService(prisma, lambda)
 
   logger.info({ action: 'batch-start', batchSize: batch.messages.length, queue: batch.queue })
+
+  let succeeded = 0
+  let failed = 0
 
   try {
     for (const message of batch.messages) {
@@ -96,6 +119,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
           }
         }
         message.ack()
+        succeeded++
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : String(e)
         logger.error({
@@ -105,9 +129,12 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
           error: errorMessage
         })
         if (message.attempts >= 3) {
-          await notifyError(env.DISCORD_WEBHOOK_URL, {
-            title: 'Queue: 最終リトライ失敗',
+          failed++
+          const anime = await findAnimeForMessage(prisma, message.body).catch(() => null)
+          await notify(env.DISCORD_WEBHOOK_URL, {
+            title: anime ? `Queue: 最終リトライ失敗 — ${anime.title}` : 'Queue: 最終リトライ失敗',
             description: `\`\`\`\n${errorMessage}\n\`\`\``,
+            thumbnailUrl: anime?.imageUrl,
             fields: [
               { name: 'Type', value: message.body.type, inline: true },
               { name: 'Attempts', value: String(message.attempts), inline: true },
@@ -117,6 +144,14 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         }
         message.retry()
       }
+    }
+
+    if (succeeded > 0) {
+      await notify(env.DISCORD_WEBHOOK_URL, {
+        title: 'Queue: バッチ完了',
+        description: failed > 0 ? `成功 ${succeeded} 件 / 失敗 ${failed} 件` : `${succeeded} 件 正常に完了しました`,
+        color: failed > 0 ? COLOR_WARN : COLOR_SUCCESS
+      })
     }
   } finally {
     logger.debug({ action: 'batch-done', batchSize: batch.messages.length })
