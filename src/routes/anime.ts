@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { archiveMissingAbemaKeysForAnime } from '../lib/abema-archive'
 import { flattenAnime, QUARTER_TO_SEASON } from '../lib/anime-flatten'
 import { createPrismaClient } from '../lib/db'
 import { createFetchClient } from '../lib/lambda'
@@ -366,19 +367,44 @@ anime.openapi(
     })
     if (!row) return c.json({ error: 'Not found' }, 404)
 
-    const provider = ProviderTypeEnum.safeParse(row.provider)
-    if (!provider.success) return c.json({ error: `Unsupported provider: ${row.provider}` }, 500)
+    const result = ProviderTypeEnum.safeParse(row.provider)
+    if (!result.success) return c.json({ error: `Unsupported provider: ${row.provider}` }, 500)
 
     const lambda = createFetchClient(c.env)
     const service = new SyncService(prisma, lambda)
-    const fetcher = localDetailFetchers[provider.data]
+    const fetcher = localDetailFetchers[result.data]
 
     try {
       if (fetcher) {
         const detail = await fetcher(row.contentId)
-        await service.applyDetail(provider.data, row.contentId, detail)
+        await service.applyDetail(result.data, row.contentId, detail)
       } else {
-        await service.update({ type: 'update', message: { provider: provider.data, contentId: row.contentId } })
+        await service.update({ type: 'update', message: { provider: result.data, contentId: row.contentId } })
+      }
+      if (result.data === 'abema') {
+        try {
+          const archive = await archiveMissingAbemaKeysForAnime(prisma, id, async (programIds) => {
+            const result = await lambda.fetchAbemaArchives({ programIds })
+            return result.results
+          })
+          logger.info({
+            action: 'refresh-abema-archive-done',
+            id,
+            provider: row.provider,
+            contentId: row.contentId,
+            total: archive.total,
+            ok: archive.archived,
+            fail: archive.failed
+          })
+        } catch (e) {
+          logger.warn({
+            action: 'refresh-abema-archive-error',
+            id,
+            provider: row.provider,
+            contentId: row.contentId,
+            error: e instanceof Error ? e.message : String(e)
+          })
+        }
       }
       logger.info({ action: 'refresh-ok', id, provider: row.provider, contentId: row.contentId })
       return c.json({ contentId: row.contentId, provider: row.provider }, 200)
