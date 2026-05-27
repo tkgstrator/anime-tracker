@@ -1,0 +1,40 @@
+{
+  "results": [
+    {
+      "programId": "25-139_s1_p1",
+      "ok": true,
+      "archive": {
+        "programId": "25-139_s1_p1",
+        "cid": "25-139_s1_p1",
+        "contentKeyHex": "00112233445566778899aabbccddeeff",
+        "ivHex": "ffeeddccbbaa99887766554433221100",
+        "variantUrl": "https://vod-abematv.akamaized.net/program/25-139_s1_p1/1080/playlist.m3u8?aver=1",
+        "variantResolution": "1920x1080",
+        "variantBandwidth": 5300000,
+        "segmentUrls": [
+          "https://vod-abematv.akamaized.net/tsvpg/25-139_s1_p1/h264/720/7u1GrTWQ8yUNiSz64AbF4gy8VfuD8Xf4.ts",
+          "https://vod-abematv.akamaized.net/tsvpg/25-139_s1_p1/h264/720/EHoYRuWCPyJQ37fKhtYP6gQbp6oYanBni.ts",
+          "https://vod-abematv.akamaized.net/tsvpg/25-139_s1_p1/h264/720/A43FZQKHzdVDuL7BbXmLJqV7VJ1n9kcDE.ts"
+        ]
+      }
+    },
+    {
+      "programId": "25-139_s1_p2",
+      "ok": true,
+      "archive": {
+        "programId": "25-139_s1_p2",
+        "cid": "25-139_s1_p2",
+        "contentKeyHex": "00112233445566778899aabbccddeeff",
+        "ivHex": "ffeeddccbbaa99887766554433221100",
+        "variantUrl": "https://vod-abematv.akamaized.net/program/25-139_s1_p2/1080/playlist.m3u8?aver=2",
+        "variantResolution": "1920x1080",
+        "variantBandwidth": 5300000,
+        "segmentUrls": [
+          "https://vod-abematv.akamaized.net/tsvpg/25-139_s1_p2/h264/720/BEY1TcGFozXD8PBoQsQYaCshaRdW6Trzz.ts",
+          "https://vod-abematv.akamaized.net/tsvpg/25-139_s1_p2/h264/720/8VQuaqkA4VXVBecrgPGKkFB9Wj5W337nB.ts",
+          "https://vod-abematv.akamaized.net/tsvpg/25-139_s1_p2/h264/720/35PcyFiMs1HF9GtgP8wrgpcY9EbRmx6V2.ts"
+        ]
+      }
+    }
+  ]
+}
