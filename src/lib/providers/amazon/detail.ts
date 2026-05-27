@@ -22,12 +22,26 @@ export const FETCH_HEADERS = {
  */
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
-async function fetchHtml(url: string, retries = 5): Promise<string> {
+// 503 リトライ用の指数バックオフ + equal jitter（同時実行時の同期集中を避ける）
+const backoffMs = (attempt: number) => {
+  const base = Math.min(1000 * 2 ** attempt, 16000)
+  return Math.round(base / 2 + Math.random() * (base / 2))
+}
+
+async function fetchHtml(url: string, retries = 5, requireMarker?: string): Promise<string> {
   for (let attempt = 0; attempt < retries; attempt++) {
     const res = await fetch(url, { headers: FETCH_HEADERS })
-    if (res.ok) return res.text()
+    if (res.ok) {
+      const html = await res.text()
+      // 200 でも稀に headerDetail を含まない部分応答（負荷時のスロットル）が返るのでリトライ
+      if (requireMarker && !html.includes(requireMarker) && attempt < retries - 1) {
+        await sleep(backoffMs(attempt))
+        continue
+      }
+      return html
+    }
     if (res.status === 503 && attempt < retries - 1) {
-      await sleep(Math.min(1000 * 2 ** attempt, 16000))
+      await sleep(backoffMs(attempt))
       continue
     }
     throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
@@ -88,7 +102,7 @@ async function fetchEpisodesByToken(titleID: string, token: string, retries = 5)
       return result.data
     }
     if (res.status === 503 && attempt < retries - 1) {
-      await sleep(Math.min(1000 * 2 ** attempt, 16000))
+      await sleep(backoffMs(attempt))
       continue
     }
     throw new Error(`getDetailWidgets HTTP ${res.status}`)
@@ -110,7 +124,7 @@ export async function fetchAmazonTitleDetail(contentId: string): Promise<TitleIn
   if (!/^[A-Za-z0-9_-]+$/.test(contentId)) {
     throw new Error(`Invalid Amazon contentId format: "${contentId}"`)
   }
-  const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${contentId}`)
+  const html = await fetchHtml(`${AMAZON_DETAIL_BASE}/${contentId}`, 5, 'headerDetail')
   const page = extractPageData(html)
 
   const seasons = await buildSeasons(contentId, page)
@@ -162,7 +176,7 @@ async function buildSeasons(contentId: string, page: PageData): Promise<Season[]
     const tokens =
       rs.seasonId === contentId
         ? page.episodePageTokens
-        : extractPageData(await fetchHtml(`${AMAZON_DETAIL_BASE}/${rs.seasonId}`)).episodePageTokens
+        : extractPageData(await fetchHtml(`${AMAZON_DETAIL_BASE}/${rs.seasonId}`, 5, 'headerDetail')).episodePageTokens
     const episodes = await fetchAllEpisodes(rs.seasonId, tokens)
     results.push({ ...rs, episodes })
   }
