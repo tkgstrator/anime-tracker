@@ -43,6 +43,33 @@ export const FetchTitleInfoRequestSchema = z.object({
   contentId: z.string().nonempty()
 })
 
+export const FetchAbemaArchiveRequestSchema = z.object({
+  programIds: z.array(z.string().nonempty()).min(1).max(20),
+  targetHeight: z.number().int().positive().max(2160).optional()
+})
+
+export const AbemaArchiveRecordSchema = z.object({
+  programId: z.string().nonempty(),
+  cid: z.string().nonempty(),
+  contentKeyHex: z.string().length(32),
+  ivHex: z.string().length(32),
+  variantUrl: z.string().nonempty(),
+  variantResolution: z.string().nonempty(),
+  variantBandwidth: z.number().int().nonnegative(),
+  segmentUrls: z.array(z.string().nonempty())
+})
+
+export const AbemaArchiveResultEntrySchema = z.object({
+  programId: z.string().nonempty(),
+  ok: z.boolean(),
+  archive: AbemaArchiveRecordSchema.optional(),
+  error: z.string().optional()
+})
+
+export const FetchAbemaArchiveResponseSchema = z.object({
+  results: z.array(AbemaArchiveResultEntrySchema)
+})
+
 // ---- identify ----
 
 export const IdentifyResultSchema = z
