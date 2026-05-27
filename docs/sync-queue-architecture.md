@@ -2,142 +2,116 @@
 
 ## 概要
 
-Cloudflare Workers (Cron Trigger) → Queue → Lambda (日本/US IP) → D1 + R2 のパイプラインで、各プロバイダのタイトル・エピソード情報を定期取得する。
+Cloudflare Workers (Cron Trigger) → Queue → Lambda (日本IP) → D1 のパイプラインで、各プロバイダのタイトル・エピソード情報を定期取得する。
+
+## Cron スケジュール
+
+| Cron | 頻度 | 処理内容 |
+|---|---|---|
+| `0 */1 * * *` | 毎時 | `new_episode` + `coming_soon` を全プロバイダで fetch キューに投入 |
+| `0 0 * * *` | 毎日 0時 | `expiring` を全プロバイダで fetch キューに投入 |
+| `0 3 * * *` | 毎日 3時 | `catalog` を全プロバイダで fetch キューに投入 |
+| `0 4 * * *` | 毎日 4時 | ABEMA HLS鍵未取得アニメを abema_archive キューに投入 |
+| `0 5 * * SUN` | 毎週日曜 5時 | AniList メディア情報を年度ごとに anilist_sync キューに投入 (30秒ずつ遅延) |
+
+対象プロバイダ: `hulu`, `amazon`, `crunchyroll`, `abema`
+
+## メッセージタイプ
+
+| type | 投入元 | 概要 |
+|---|---|---|
+| `fetch` | Cron (scheduled.ts) | Lambda でタイトル一覧取得 → D1で識別・絞り込み → update キューに投入 |
+| `update` | fetch 処理後 / 手動 | Lambda でタイトル詳細取得 → D1 差分更新 |
+| `bulk_update` | 手動 (admin API) | contentId リストをまとめて update キューに投入するだけ |
+| `anilist_sync` | Cron (日曜5時) | AniList APIから年度別アニメ情報を取得して D1 の anilist_media テーブルを更新 |
+| `abema_archive` | Cron (毎日4時) / 手動 | ABEMA HLS鍵未取得エピソードの暗号化キーを取得して D1 に保存 |
 
 ## 全体フロー
 
-```mermaid
-flowchart TD
-    subgraph CF["Cloudflare"]
-        Cron["Cron Trigger"] --> Scheduled["scheduled.ts"]
+```
+[Cron: 毎時]
+    ↓
+scheduled.ts
+    ↓ Queue.send({ type: "fetch", provider, category: "new_episode" | "coming_soon" })
+    ↓ (全プロバイダ × 全カテゴリ)
 
-        Scheduled -->|"毎時"| EnqueueFetch["Queue に fetch メッセージ送信<br/>(provider × category)"]
-        Scheduled -->|"毎日"| EnqueueExpiring["Queue に fetch (expiring) 送信"]
+[Queue Consumer]
+    ↓ fetch メッセージ受信
+    ↓
+SyncService.fetch()
+    ├─ Lambda /title_list → プロバイダのタイトル一覧を全件取得
+    ├─ D1: anime + unidentifiedAnime テーブルで既知 contentId を除外
+    ├─ 新規タイトル → D1 の anilist_media テーブルで正規化タイトル検索して識別
+    │       ├─ 識別成功 → anime テーブルに INSERT
+    │       └─ 識別失敗 → unidentifiedAnime テーブルに upsert
+    ├─ 既存タイトル → badge / nextEpisodeDate を更新
+    └─ badge 付き既存タイトル + 新規識別済み → update キューに投入
+    
+    ↓ update メッセージ受信 (contentId 1件ずつ)
+    ↓
+SyncService.update()
+    ├─ Lambda /title_info → タイトル詳細 (シーズン・エピソード) を取得
+    └─ D1: シーズン・エピソードを差分 upsert
 
-        subgraph FetchQueue["Queue Consumer: fetch"]
-            FetchMsg["fetch メッセージ受信"]
-            SyncFetch["SyncService.fetch()<br/>AniList 識別 + D1 upsert"]
-        end
-
-        subgraph UpdateQueue["Queue Consumer: update"]
-            UpdateMsg["update メッセージ受信"]
-            SyncUpdate["SyncService.update()<br/>シーズン・エピソード D1 upsert"]
-        end
-
-        EnqueueFetch --> FetchMsg
-        EnqueueExpiring --> FetchMsg
-
-        SyncFetch -->|"new_episode の場合<br/>contentId ごとに"| EnqueueUpdate["Queue に update メッセージ送信"]
-        EnqueueUpdate --> UpdateMsg
-
-        R2["R2 (nagisa-images)"]
-    end
-
-    subgraph AWS["AWS"]
-        Lambda1["Lambda (JP/US)<br/>タイトル一覧取得"]
-        Lambda2["Lambda (JP/US)<br/>タイトル詳細+エピソード取得"]
-    end
-
-    FetchMsg -->|"SigV4 (AWS IAM)<br/>Lambda /title_list"| Lambda1
-    Lambda1 --> SyncFetch
-    Lambda1 -->|"SigV4 (R2 API Token)<br/>タイトル画像"| R2
-
-    UpdateMsg -->|"SigV4 (AWS IAM)<br/>Lambda /title_info"| Lambda2
-    Lambda2 --> SyncUpdate
-    Lambda2 -->|"SigV4 (R2 API Token)<br/>全画像"| R2
+[バッチ完了後]
+    └─ Discord Webhook → "Queue: バッチ完了" 通知 (成功N件)
+       失敗が3回に達した場合 → Discord Webhook → "Queue: 最終リトライ失敗" 通知
 ```
 
-### 認証が必要な箇所
+## fetch フローの絞り込みロジック
 
-| 通信経路 | 認証方式 | 認証情報 |
+```
+Lambda から取得した全タイトル (例: Abema 71件)
+    │
+    ├─ [new_episode の場合] badge=COMING_SOON を除外
+    │
+    ├─ knownIds チェック (anime + unidentifiedAnime)
+    │       └─ 既知 → スキップ (新規のみ残す)
+    │
+    ├─ 新規タイトル → D1 の anilist_media で識別 (20件ずつバッチ)
+    │       ├─ 識別成功 → anime INSERT → update キューに積む
+    │       └─ 識別失敗 → unidentifiedAnime upsert (スキップ)
+    │
+    ├─ 既存タイトル → badge / nextEpisodeDate 更新
+    │
+    └─ badge 付き既存タイトル → update キューに積む
+       (badge なし = 変化なし = スキップ)
+```
+
+## badge の種類と付与ルール
+
+| badge | 意味 | カテゴリ |
 |---|---|---|
-| Workers → Lambda Function URL | AWS SigV4 署名 | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` (LambdaInvoker IAM User) |
-| Lambda → R2 S3 互換 API | AWS SigV4 署名 | `R2_IMAGE_ACCESS_KEY_ID` / `R2_IMAGE_SECRET_ACCESS_KEY` (R2 API Token) |
-| Workers → R2 | Workers バインディング | 認証不要 (同一アカウント内、`IMAGES` バインディング) |
-| Workers → D1 | Workers バインディング | 認証不要 (同一アカウント内、`DB` バインディング) |
-| Lambda → Provider API | なし / 公開 API | 認証不要 |
+| `NEW_EPISODE` | 新着エピソードあり | new_episode |
+| `RECENTLY_ADDED` | 最近追加 | new_episode |
+| `COMING_SOON` | 近日配信予定 | coming_soon |
+| `EXPIRING` | 配信終了間近 | expiring |
 
-## シーケンス図
+badge の付与はプロバイダ実装が判断する（Worker側は保存するだけ）:
 
-```mermaid
-sequenceDiagram
-    participant Cron as Cron Trigger
-    participant Sched as scheduled.ts
-    participant Q as SYNC_QUEUE
-    participant QC as queue.ts
-    participant Lambda as Lambda (JP/US)
-    participant Provider as Hulu / Amazon / CR
-    participant AniList as AniList API
-    participant D1 as D1 Database
-    participant R2 as R2 (nagisa-images)
+| プロバイダ | NEW_EPISODE | RECENTLY_ADDED |
+|---|---|---|
+| Crunchyroll | `item.new === true` | `item.new === false` |
+| Hulu | badge_text が新着系 | それ以外の更新済み |
+| Amazon | badge未設定を強制昇格 | APIのバッジそのまま |
+| Abema | 一律 NEW_EPISODE に固定 | 使わない |
 
-    Note over Cron,QC: Step 1: Cron → Queue にメッセージ投入
+## Lambda エンドポイント
 
-    Cron->>Sched: 0 */1 * * * (毎時)
-    Sched->>Q: { type: "fetch", message: { provider, category: "new_episode" } }
-    Sched->>Q: { type: "fetch", message: { provider, category: "coming_soon" } }
+| パス | 処理 |
+|---|---|
+| `POST /title_list` | プロバイダのタイトル一覧取得 (`new_episode` / `coming_soon` / `catalog`) |
+| `POST /expiring` | 配信終了間近タイトル一覧取得 |
+| `POST /title_info` | タイトル詳細 + シーズン・エピソード取得 |
+| `POST /identify` | AniList API でタイトル識別 (現在未使用: D1 ローカル検索に移行済み) |
 
-    Cron->>Sched: 0 0 * * * (毎日)
-    Sched->>Q: { type: "fetch", message: { provider, category: "expiring" } }
+Worker → Lambda の通信は AWS SigV4 署名 (Lambda Function URL)。
 
-    Note over Q,R2: Step 2: fetch メッセージ処理
+## AniList 識別
 
-    Q->>QC: fetch メッセージ
-    QC->>Lambda: SigV4 (AWS IAM) POST /title_list { provider, category }
-    Lambda->>Provider: タイトル一覧 API 呼び出し
-    Provider-->>Lambda: タイトル一覧 + 画像URL
-    Lambda->>R2: SigV4 (R2 API Token) タイトル画像を webp で PUT
-    Lambda-->>QC: タイトル一覧レスポンス
+現在は Lambda `/identify` (AniList API 直接呼び出し) は使用しておらず、事前に `anilist_sync` cron で同期済みの D1 `anilist_media` テーブルをローカル検索する (`identifyTitlesViaD1`)。
 
-    QC->>D1: 既存 contentId チェック
-
-    alt 新規タイトル
-        QC->>AniList: タイトル識別 (バッチ)
-        AniList-->>QC: aniListId, nativeTitle, status
-        QC->>D1: INSERT (識別結果 + メタデータ)
-    end
-
-    QC->>D1: 既存タイトルの badge/nextEpisodeDate 更新
-
-    loop new_episode のバッジ付きタイトルごと
-        QC->>Q: { type: "update", message: { provider, contentId } }
-    end
-
-    Note over Q,R2: Step 3: update メッセージ処理
-
-    Q->>QC: update メッセージ
-    QC->>Lambda: SigV4 (AWS IAM) POST /title_info { provider, contentId }
-    Lambda->>Provider: タイトル詳細 + エピソード API 呼び出し
-    Provider-->>Lambda: シーズン・エピソード一覧 + 画像URL
-    Lambda->>R2: SigV4 (R2 API Token) 全画像を webp で PUT
-    Lambda-->>QC: TitleInfo レスポンス
-
-    QC->>D1: シーズン・エピソードの差分 upsert
-    QC-->>Q: ack()
-
-    Note over Q: 失敗時は retry() → 最大3回リトライ
-```
-
-## 画像配信フロー
-
-```mermaid
-flowchart LR
-    Browser["ブラウザ"] -->|"/api/img/{uuid}.webp"| ImgTS["img.ts (Workers)"]
-    ImgTS -->|"IMAGES.get(key)"| R2["R2 (nagisa-images)"]
-    R2 -->|"webp 画像"| ImgTS
-    ImgTS -->|"Cache-Control: 1年"| Browser
-
-    subgraph "画像キー生成"
-        DB_URL["DB の imageUrl"] -->|"UUIDv5(url, namespace)"| Key["{uuid}.webp"]
-    end
-
-    subgraph "画像アップロード (Lambda)"
-        LambdaUP["Lambda"] -->|"fetch 元画像"| ProviderCDN["Provider CDN"]
-        ProviderCDN --> LambdaUP
-        LambdaUP -->|"cwebp q=90 変換"| LambdaUP
-        LambdaUP -->|"PUT {uuid}.webp"| R2
-    end
-```
+毎週日曜 5時の `anilist_sync` cron が年度ごとに AniList API を叩いて `anilist_media` を更新する (2000年〜翌年分、1年あたり30秒遅延で rate limit 対策)。
 
 ## キュー設定
 
@@ -145,41 +119,11 @@ flowchart LR
 |---|---|
 | キュー名 | `anime-tracker-sync-{staging\|production}` |
 | バインディング | `SYNC_QUEUE` |
-| 最大バッチサイズ | 5 |
-| 最大リトライ回数 | 3 |
+| 最大バッチサイズ | 5 件 |
+| 最大並行数 | 2 Worker |
+| 最大リトライ回数 | 3 回 |
 
-## Cron スケジュール
-
-| Cron | 頻度 | 処理内容 |
-|---|---|---|
-| `0 */1 * * *` | 毎時 | `new_episode` + `coming_soon` を各プロバイダで取得 |
-| `0 0 * * *` | 毎日 | `expiring` を各プロバイダで取得 |
-
-## メッセージタイプ
-
-| type | 概要 | Lambda エンドポイント |
-|---|---|---|
-| `fetch` | タイトル一覧取得 → AniList 識別 → D1 登録 → update キュー投入 | `/title_list`, `/expiring` |
-| `update` | タイトル詳細+エピソード取得 → D1 差分更新 → 画像 R2 アップロード | `/title_info` |
-
-## Lambda エンドポイント
-
-| パス | 処理 | リージョン |
-|---|---|---|
-| `POST /title_list` | タイトル一覧取得 + タイトル画像 R2 アップロード | JP (Amazon/Hulu), US (Crunchyroll) |
-| `POST /title_info` | タイトル詳細+エピソード取得 + 全画像 R2 アップロード | JP (Amazon/Hulu), US (Crunchyroll) |
-| `POST /expiring` | 配信終了間近タイトル取得 | JP |
-
-## R2 画像ストレージ
-
-| 項目 | 値 |
-|---|---|
-| バケット名 | `nagisa-images` |
-| キー形式 | `{UUIDv5(imageUrl)}.webp` (フラット構造) |
-| UUIDv5 namespace | `uuidv5('animetracker', DNS)` |
-| 画像形式 | webp (q=90) |
-| Workers バインディング | `IMAGES` (読み取り専用) |
-| Lambda からのアクセス | R2 S3 互換 API (aws4fetch) |
+並行数とバッチサイズを絞っているのはプロバイダのスクレイピング先をレートリミットしないため。
 
 ## 手動実行
 
