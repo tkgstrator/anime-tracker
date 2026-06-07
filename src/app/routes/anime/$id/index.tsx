@@ -9,6 +9,7 @@ import { queryKeys } from '@/app/lib/query-keys'
 import { animeDetailQueryOptions } from '@/app/lib/query-options'
 import { AnimeHero } from './-components/anime-hero'
 import { EpisodeGrid } from './-components/episode-grid'
+import { RelatedProviders } from './-components/related-providers'
 
 function getApiErrorMessage(error: unknown, fallback: string): string {
   if (error && typeof error === 'object') {
@@ -88,7 +89,7 @@ function AnimeDetailPage() {
   const totalDuration = anime.seasons.reduce((sum, s) => sum + s.episodes.reduce((es, e) => es + e.duration, 0), 0)
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-6'>
       <div>
         <Button type='button' size='sm' variant='ghost' onClick={goBack} className='-ml-2 text-muted-foreground'>
           <ChevronLeft />
@@ -96,18 +97,25 @@ function AnimeDetailPage() {
         </Button>
       </div>
 
-      <AnimeHero
-        anime={anime}
-        totalEpisodes={totalEpisodes}
-        totalDuration={totalDuration}
-        updating={updating}
-        refreshing={refreshAnimeMutation.isPending}
-        onToggleScheduled={toggleScheduled}
-        onToggleRecorded={toggleRecorded}
-        onRefresh={() => refreshAnimeMutation.mutate()}
-      />
+      <div className='grid gap-6 lg:grid-cols-[minmax(0,28rem)_1fr] xl:grid-cols-[minmax(0,32rem)_1fr]'>
+        <aside className='space-y-6 lg:sticky lg:top-20 lg:self-start'>
+          <AnimeHero
+            anime={anime}
+            totalEpisodes={totalEpisodes}
+            totalDuration={totalDuration}
+            updating={updating}
+            refreshing={refreshAnimeMutation.isPending}
+            onToggleScheduled={toggleScheduled}
+            onToggleRecorded={toggleRecorded}
+            onRefresh={() => refreshAnimeMutation.mutate()}
+          />
+          <RelatedProviders aniListId={anime.aniListId} currentAnimeId={anime.id} />
+        </aside>
 
-      <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
+        <div className='min-w-0'>
+          <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
+        </div>
+      </div>
     </div>
   )
 }
