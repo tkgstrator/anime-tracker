@@ -41,7 +41,7 @@ export function GlobalSearchBar() {
           aria-label='タイトル検索'
           className='h-9 pl-8 pr-14'
         />
-        <kbd className='pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 select-none rounded border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground'>
+        <kbd className='pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 select-none rounded border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-flex'>
           ⌘K
         </kbd>
       </form>

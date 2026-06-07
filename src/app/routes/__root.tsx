@@ -30,11 +30,11 @@ const RootComponent = () => {
   return (
     <div className='min-h-screen select-none bg-background'>
       <header className='sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm'>
-        <div className='flex h-14 items-center gap-6 px-6 lg:px-8 xl:px-12'>
+        <div className='flex h-14 min-w-0 items-center gap-3 px-3 sm:gap-6 sm:px-6 lg:px-8 xl:px-12'>
           <Link to='/' className='shrink-0 text-lg font-bold tracking-tight'>
             Nagisa
           </Link>
-          <nav className='flex shrink-0 items-center gap-5 text-sm'>
+          <nav className='flex shrink-0 items-center gap-3 text-sm sm:gap-5'>
             <Link to='/' className={navLinkClass}>
               ホーム
             </Link>
@@ -50,7 +50,7 @@ const RootComponent = () => {
           <ServerStatusDialog />
         </div>
       </header>
-      <main className='select-text px-6 py-8 lg:px-8 xl:px-12'>
+      <main className='select-text overflow-x-hidden px-3 py-8 sm:px-6 lg:px-8 xl:px-12'>
         <Outlet />
       </main>
       <footer className='py-4 text-center text-xs text-muted-foreground'>
