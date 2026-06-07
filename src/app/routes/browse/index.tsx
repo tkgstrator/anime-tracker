@@ -3,8 +3,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { X } from 'lucide-react'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { z } from 'zod'
+import { AnimeDrawer } from '@/app/components/anime-drawer'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { SmartPagination } from '@/app/components/smart-pagination'
 import { Badge } from '@/app/components/ui/badge'
@@ -60,6 +61,7 @@ export const Route = createFileRoute('/browse/')({
 function AnimeListPage() {
   const { provider: searchProvider, badge: searchBadge, q: searchQuery } = Route.useSearch()
   const [filters, setFilters] = useAtom(browseFiltersAtom)
+  const [drawerId, setDrawerId] = useState<string | null>(null)
 
   useEffect(() => {
     if (searchQuery === undefined) return
@@ -231,6 +233,7 @@ function AnimeListPage() {
                 onFilterYear={setFilter('year')}
                 onFilterProvider={setFilter('provider')}
                 onFilterStatus={setFilter('status')}
+                onSelect={setDrawerId}
               />
             ))}
           </div>
@@ -238,6 +241,14 @@ function AnimeListPage() {
 
         <SmartPagination page={filters.page} totalPages={totalPages} onPageChange={setFilter('page')} />
       </div>
+
+      <AnimeDrawer
+        animeId={drawerId}
+        open={drawerId !== null}
+        onOpenChange={(next) => {
+          if (!next) setDrawerId(null)
+        }}
+      />
     </div>
   )
 }
