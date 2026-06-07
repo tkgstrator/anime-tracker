@@ -1,46 +1,56 @@
 import type { QueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import dayjs from 'dayjs'
 import { Toaster } from 'sonner'
 import { ErrorPage } from '@/app/components/error-page'
+import { GlobalSearchBar } from '@/app/components/global-search-bar'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { NotFoundPage } from '@/app/components/not-found-page'
 import { ServerStatusDialog } from '@/app/components/server-status-dialog'
+import { Badge } from '@/app/components/ui/badge'
+import { scheduledCountQueryOptions } from '@/app/lib/query-options'
+
+const navLinkClass =
+  'text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:font-medium'
+
+function RecordingsBadge() {
+  const { data: count } = useQuery(scheduledCountQueryOptions())
+  if (!count || count <= 0) return null
+  return (
+    <Badge variant='secondary' className='h-4 min-w-4 px-1 text-[10px]'>
+      {count}
+    </Badge>
+  )
+}
 
 const RootComponent = () => {
   return (
     <div className='min-h-screen select-none bg-background'>
-      <header className='sticky top-0 z-50 bg-background/80 backdrop-blur-sm'>
-        <div className='flex h-14 items-center gap-8 px-6'>
-          <Link to='/' className='text-lg font-bold tracking-tight'>
+      <header className='sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm'>
+        <div className='flex h-14 items-center gap-6 px-6 lg:px-8 xl:px-12'>
+          <Link to='/' className='shrink-0 text-lg font-bold tracking-tight'>
             Nagisa
           </Link>
-          <nav className='flex items-center gap-6 text-sm'>
-            <Link
-              to='/'
-              className='text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:font-medium'
-            >
+          <nav className='flex shrink-0 items-center gap-5 text-sm'>
+            <Link to='/' className={navLinkClass}>
               ホーム
             </Link>
-            <Link
-              to='/browse'
-              className='text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:font-medium'
-            >
+            <Link to='/browse' className={navLinkClass}>
               一覧
             </Link>
-            <Link
-              to='/recordings'
-              className='text-muted-foreground transition-colors hover:text-foreground [&.active]:text-foreground [&.active]:font-medium'
-            >
+            <Link to='/recordings' className={`${navLinkClass} flex items-center gap-1.5`}>
               録画
+              <RecordingsBadge />
             </Link>
           </nav>
+          <GlobalSearchBar />
           <ServerStatusDialog />
         </div>
       </header>
-      <main className='select-text px-6 py-8'>
+      <main className='select-text px-6 py-8 lg:px-8 xl:px-12'>
         <Outlet />
       </main>
       <footer className='py-4 text-center text-xs text-muted-foreground'>
