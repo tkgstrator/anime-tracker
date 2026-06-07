@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { Film } from 'lucide-react'
 import { ProviderBadge, StatusBadge } from '@/app/components/anime-badges'
 import { ProxyImage } from '@/app/components/proxy-image'
@@ -12,7 +11,8 @@ export function AnimeCard({
   filterStatus,
   onFilterYear,
   onFilterProvider,
-  onFilterStatus
+  onFilterStatus,
+  onSelect
 }: {
   anime: AnimeSchema
   filterYear: number | undefined
@@ -21,9 +21,14 @@ export function AnimeCard({
   onFilterYear: (year: number | undefined) => void
   onFilterProvider: (provider: string | undefined) => void
   onFilterStatus: (status: string | undefined) => void
+  onSelect: (animeId: string) => void
 }) {
   return (
-    <Link to='/anime/$id' params={{ id: anime.id }} className='group block'>
+    <button
+      type='button'
+      onClick={() => onSelect(anime.id)}
+      className='group block text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+    >
       <div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
         {anime.imageUrl ? (
           <ProxyImage
@@ -47,7 +52,8 @@ export function AnimeCard({
             className='cursor-pointer text-[10px]'
             onClick={(e) => {
               e.preventDefault()
-              onFilterYear(filterYear === anime.year ? undefined : (anime.year ?? undefined))
+              e.stopPropagation()
+              onFilterYear(filterYear === anime.year ? undefined : anime.year)
             }}
           >
             {anime.year}
@@ -59,7 +65,8 @@ export function AnimeCard({
             className='cursor-pointer text-[10px]'
             onClick={(e) => {
               e.preventDefault()
-              onFilterStatus(filterStatus === anime.status ? undefined : (anime.status ?? undefined))
+              e.stopPropagation()
+              onFilterStatus(filterStatus === anime.status ? undefined : anime.status)
             }}
           />
         )}
@@ -68,10 +75,11 @@ export function AnimeCard({
           className='cursor-pointer text-[10px]'
           onClick={(e) => {
             e.preventDefault()
+            e.stopPropagation()
             onFilterProvider(filterProvider === anime.provider ? undefined : anime.provider)
           }}
         />
       </div>
-    </Link>
+    </button>
   )
 }
