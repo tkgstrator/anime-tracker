@@ -38,9 +38,9 @@ export function AnimeCard({
             className='h-full w-full object-cover transition-transform duration-200 group-hover:scale-105'
           />
         ) : (
-          <div className='flex h-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
+          <div className='flex h-full w-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
             <Film className='size-6 opacity-60' aria-hidden='true' />
-            <span className='line-clamp-2'>{anime.title}</span>
+            <span className='line-clamp-2 w-full break-words'>{anime.title}</span>
           </div>
         )}
       </div>
