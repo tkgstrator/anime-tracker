@@ -85,10 +85,14 @@ function HomePage() {
   const quarterLabel = ['冬', '春', '夏', '秋'][currentQuarter]
   const seasonTitle = `${currentYear}年${quarterLabel}アニメ`
 
+  const emptyState = (label: string) => <p className='py-10 text-center text-sm text-muted-foreground'>{label}</p>
+  const activeTabClass =
+    'data-active:bg-foreground data-active:text-background! dark:data-active:border-foreground dark:data-active:bg-foreground dark:data-active:text-background!'
+
   return (
-    <div className='space-y-6'>
+    <div className='min-w-0 space-y-6'>
       <div className='grid gap-6 lg:grid-cols-3'>
-        <div className='lg:col-span-2'>
+        <div className='min-w-0 lg:col-span-2'>
           <AnimeCarousel
             title='新着エピソード'
             anime={badged.NEW_EPISODE}
@@ -99,41 +103,69 @@ function HomePage() {
         <ScheduledUpdatesList anime={scheduledUpdates} />
       </div>
 
-      <Tabs defaultValue='season' className='gap-3'>
-        <TabsList>
-          <TabsTrigger value='season'>{seasonTitle}</TabsTrigger>
-          <TabsTrigger value='added'>新着追加</TabsTrigger>
-          <TabsTrigger value='coming'>もうすぐ配信</TabsTrigger>
-          <TabsTrigger value='expiring'>配信終了予定</TabsTrigger>
-          <TabsTrigger value='provider'>配信元から探す</TabsTrigger>
-        </TabsList>
-        <TabsContent value='season'>
-          <AnimeCarousel title={seasonTitle} anime={currentSeason} viewAllLink='/browse' />
+      <Tabs defaultValue='season' className='min-w-0 gap-3'>
+        <div className='-mx-2 overflow-x-auto px-2'>
+          <TabsList className='w-max'>
+            <TabsTrigger value='season' className={activeTabClass}>
+              {seasonTitle}
+            </TabsTrigger>
+            <TabsTrigger value='added' className={activeTabClass}>
+              新着追加
+            </TabsTrigger>
+            <TabsTrigger value='coming' className={activeTabClass}>
+              もうすぐ配信
+            </TabsTrigger>
+            <TabsTrigger value='expiring' className={activeTabClass}>
+              配信終了予定
+            </TabsTrigger>
+            <TabsTrigger value='provider' className={activeTabClass}>
+              配信元から探す
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value='season' className='min-w-0'>
+          {currentSeason.length === 0 ? (
+            emptyState('このシーズンのアニメはまだありません')
+          ) : (
+            <AnimeCarousel title={seasonTitle} anime={currentSeason} viewAllLink='/browse' />
+          )}
         </TabsContent>
-        <TabsContent value='added'>
-          <AnimeCarousel
-            title='最近追加されたアニメ'
-            anime={badged.RECENTLY_ADDED}
-            viewAllLink='/browse?badge=RECENTLY_ADDED'
-          />
+        <TabsContent value='added' className='min-w-0'>
+          {badged.RECENTLY_ADDED.length === 0 ? (
+            emptyState('最近追加されたアニメはありません')
+          ) : (
+            <AnimeCarousel
+              title='最近追加されたアニメ'
+              anime={badged.RECENTLY_ADDED}
+              viewAllLink='/browse?badge=RECENTLY_ADDED'
+            />
+          )}
         </TabsContent>
-        <TabsContent value='coming'>
-          <AnimeCarousel
-            title='もうすぐ配信'
-            anime={badged.COMING_SOON}
-            viewAllLink='/browse?badge=COMING_SOON'
-            badgeType='nextEpisodeDate'
-          />
+        <TabsContent value='coming' className='min-w-0'>
+          {badged.COMING_SOON.length === 0 ? (
+            emptyState('まもなく配信予定のアニメはありません')
+          ) : (
+            <AnimeCarousel
+              title='もうすぐ配信'
+              anime={badged.COMING_SOON}
+              viewAllLink='/browse?badge=COMING_SOON'
+              badgeType='nextEpisodeDate'
+            />
+          )}
         </TabsContent>
-        <TabsContent value='expiring'>
-          <AnimeCarousel
-            title='もうすぐ配信終了'
-            anime={badged.EXPIRING}
-            viewAllLink='/browse?badge=EXPIRING'
-            badgeType='expiredAt'
-          />
+        <TabsContent value='expiring' className='min-w-0'>
+          {badged.EXPIRING.length === 0 ? (
+            emptyState('まもなく配信終了のアニメはありません')
+          ) : (
+            <AnimeCarousel
+              title='もうすぐ配信終了'
+              anime={badged.EXPIRING}
+              viewAllLink='/browse?badge=EXPIRING'
+              badgeType='expiredAt'
+            />
+          )}
         </TabsContent>
-        <TabsContent value='provider'>
+        <TabsContent value='provider' className='min-w-0'>
           {byProvider.size === 0 ? (
             <p className='py-8 text-center text-sm text-muted-foreground'>このシーズンの配信元別データはありません</p>
           ) : (

@@ -21,7 +21,7 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvid
   if (anime.length === 0) return null
 
   return (
-    <section className='space-y-3'>
+    <section className='min-w-0 max-w-full space-y-3 overflow-hidden'>
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold tracking-tight'>{title}</h2>
         {viewAllLink && (
@@ -34,10 +34,13 @@ export function AnimeCarousel({ title, anime, viewAllLink, badgeType, showProvid
           </Link>
         )}
       </div>
-      <Carousel opts={{ align: 'start', dragFree: true, loop: true }} className='w-full'>
+      <Carousel opts={{ align: 'start', dragFree: true, loop: true }} className='w-full min-w-0'>
         <CarouselContent className='-ml-3'>
           {anime.map((item) => (
-            <CarouselItem key={item.id} className='basis-[160px] pl-3 sm:basis-[200px]'>
+            <CarouselItem
+              key={item.id}
+              className='basis-[160px] pl-3 sm:basis-[200px] lg:basis-[220px] xl:basis-[240px] 2xl:basis-[260px]'
+            >
               <CarouselCard anime={item} badgeType={badgeType} showProvider={showProvider} />
             </CarouselItem>
           ))}
