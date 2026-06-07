@@ -5,6 +5,16 @@ import { queryKeys } from './query-keys'
 export const animeListQueryOptions = (filters: Record<string, unknown>) =>
   queryOptions({ queryKey: queryKeys.anime.list(filters), queryFn: () => api.getAnimeList({ queries: filters }) })
 
+const scheduledCountFilters = { scheduled: true, limit: 1, page: 1 } as const
+
+export const scheduledCountQueryOptions = () =>
+  queryOptions({
+    queryKey: queryKeys.anime.list(scheduledCountFilters as Record<string, unknown>),
+    queryFn: () => api.getAnimeList({ queries: scheduledCountFilters }),
+    select: (data) => data.total,
+    staleTime: 30_000
+  })
+
 export const badgedAnimeQueryOptions = () =>
   queryOptions({ queryKey: queryKeys.anime.badged, queryFn: () => api.getBadgedAnime() })
 
