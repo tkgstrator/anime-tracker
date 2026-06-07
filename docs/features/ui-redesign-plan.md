@@ -220,18 +220,19 @@
 - 影響: `app/routes/index.tsx`、必要に応じて `AnimeCarousel` props 拡張
 - 受け入れ基準: 1280px で 1.5 スクロール以内に全コンテンツ。`xl` で 1 スクロール
 
-### Phase 3: ブラウズの左サイドバー化 + ドロワー詳細
+### Phase 3: ブラウズの左サイドバー化
 - フィルタを `<aside>` に統合、Popover 群を撤去
-- カードクリックで Drawer 詳細(closeable / "フルページ" リンク付き)
 - カードグリッド `xl:grid-cols-6 2xl:grid-cols-8`
-- 影響: `app/routes/browse/index.tsx`、新規 `app/components/anime-drawer.tsx`、`browse/-components/filter-sidebar.tsx`
-- 受け入れ基準: フィルタ操作 0 スクロールで完結。Drawer 詳細から予約ボタンが効く
+- 影響: `app/routes/browse/index.tsx`、新規 `browse/-components/filter-sidebar.tsx`
+- 受け入れ基準: フィルタ操作 0 スクロールで完結
+- メモ: 当初計画にあった「カードクリックで Drawer 詳細」は Phase 4 に統合(詳細 2 カラム化と一緒にやる方が素直)
 
-### Phase 4: 詳細 2 カラム化 + プロバイダ横断ビュー
+### Phase 4: 詳細 2 カラム化 + プロバイダ横断ビュー + ブラウズ→ドロワー
 - 左ヒーロー sticky / 右 シーズンタブ + エピソードグリッド
 - 左下に「同一作品の他プロバイダ」(aniListId クエリ)
-- 影響: `app/routes/anime/$id/index.tsx`, `anime-hero.tsx`, `episode-grid.tsx`、新規 `related-providers.tsx` + API 追加(`GET /api/anime?aniListId=...`)
-- 受け入れ基準: 詳細画面で縦スクロールがエピソード一覧分のみ。他プロバイダ版から予約ボタンが効く
+- ブラウズ画面: カードクリックで Drawer 詳細(closeable / "フルページ" リンク付き)
+- 影響: `app/routes/anime/$id/index.tsx`, `anime-hero.tsx`, `episode-grid.tsx`、新規 `related-providers.tsx`、`app/components/anime-drawer.tsx` + API 追加(`GET /api/anime?aniListId=...`)
+- 受け入れ基準: 詳細画面で縦スクロールがエピソード一覧分のみ。他プロバイダ版から予約ボタンが効く。Drawer 詳細から予約ボタンが効く
 
 ### Phase 5: 予約一覧の機能拡張
 - ヘッダー検索バー + フィルタ(録画済 / 未録 / EXPIRING)
