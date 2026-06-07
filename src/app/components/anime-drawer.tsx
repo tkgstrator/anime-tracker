@@ -145,7 +145,12 @@ function AnimeDrawerBody({ animeId, onClose }: { animeId: string; onClose: () =>
       <div className='flex-1 overflow-y-auto px-4 py-3'>
         {anime.imageUrl && (
           <div className='mb-4 overflow-hidden rounded-lg'>
-            <ProxyImage src={anime.imageUrl} alt={anime.title} width={800} className='w-full object-cover' />
+            <ProxyImage
+              src={anime.imageUrl}
+              alt={anime.title}
+              width={800}
+              className='aspect-video w-full object-cover'
+            />
           </div>
         )}
 

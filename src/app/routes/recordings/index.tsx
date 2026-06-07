@@ -265,7 +265,7 @@ function RecordingsPage() {
                         src={item.imageUrl}
                         alt={item.title}
                         width={240}
-                        className='h-16 w-28 shrink-0 rounded object-cover'
+                        className='aspect-video h-16 shrink-0 rounded object-cover'
                       />
                     )}
                     <div className='min-w-0 flex-1'>
