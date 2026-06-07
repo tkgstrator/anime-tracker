@@ -12,13 +12,17 @@ export function ProxyImage({ src, alt, className, width }: ProxyImageProps) {
   const [failed, setFailed] = useState(false)
 
   if (failed) {
+    const firstChar = Array.from(alt.trim())[0]
+    const initial = firstChar !== undefined ? firstChar : '?'
     return (
       <div
         role='img'
         aria-label={alt}
-        className={`flex select-none items-center justify-center overflow-hidden bg-muted p-2 text-center text-xs text-muted-foreground ${className ?? ''}`}
+        className={`flex select-none items-center justify-center overflow-hidden bg-muted text-muted-foreground ${className ?? ''}`}
       >
-        <span className='line-clamp-3 w-full break-all'>{alt}</span>
+        <span aria-hidden='true' className='text-2xl font-semibold leading-none'>
+          {initial}
+        </span>
       </div>
     )
   }
