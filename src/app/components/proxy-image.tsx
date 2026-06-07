@@ -16,9 +16,9 @@ export function ProxyImage({ src, alt, className, width }: ProxyImageProps) {
       <div
         role='img'
         aria-label={alt}
-        className={`flex select-none items-center justify-center bg-muted p-2 text-center text-xs text-muted-foreground ${className ?? ''}`}
+        className={`flex select-none items-center justify-center overflow-hidden bg-muted p-2 text-center text-xs text-muted-foreground ${className ?? ''}`}
       >
-        {alt}
+        <span className='line-clamp-3 w-full break-all'>{alt}</span>
       </div>
     )
   }

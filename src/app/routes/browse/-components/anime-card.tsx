@@ -40,7 +40,7 @@ export function AnimeCard({
         ) : (
           <div className='flex h-full w-full flex-col items-center justify-center gap-2 p-4 text-center text-sm text-muted-foreground'>
             <Film className='size-6 opacity-60' aria-hidden='true' />
-            <span className='line-clamp-2 w-full break-words'>{anime.title}</span>
+            <span className='line-clamp-2 w-full break-all'>{anime.title}</span>
           </div>
         )}
       </div>
