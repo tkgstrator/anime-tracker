@@ -98,7 +98,7 @@ function CarouselCard({
         ) : (
           <div className='flex h-full w-full flex-col items-center justify-center gap-1.5 p-2 text-center text-xs text-muted-foreground'>
             <Film className='size-5 opacity-60' aria-hidden='true' />
-            <span className='line-clamp-2 w-full break-words'>{anime.title}</span>
+            <span className='line-clamp-2 w-full break-all'>{anime.title}</span>
           </div>
         )}
         {badgeType && badgeDate && (
