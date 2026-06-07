@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { X } from 'lucide-react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { z } from 'zod'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
 import { SmartPagination } from '@/app/components/smart-pagination'
@@ -48,7 +48,8 @@ type SortValue = (typeof SORT_OPTIONS)[number]['value']
 export const Route = createFileRoute('/browse/')({
   validateSearch: z.object({
     provider: ProviderTypeEnum.optional(),
-    badge: z.string().optional()
+    badge: z.string().optional(),
+    q: z.string().optional()
   }),
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(animeListQueryOptions({ page: 1, limit: PAGE_SIZE, sort: 'title', order: 'asc' })),
@@ -57,8 +58,14 @@ export const Route = createFileRoute('/browse/')({
 })
 
 function AnimeListPage() {
-  const { provider: searchProvider, badge: searchBadge } = Route.useSearch()
+  const { provider: searchProvider, badge: searchBadge, q: searchQuery } = Route.useSearch()
   const [filters, setFilters] = useAtom(browseFiltersAtom)
+
+  useEffect(() => {
+    if (searchQuery === undefined) return
+    if (filters.search === searchQuery) return
+    setFilters((prev) => ({ ...prev, search: searchQuery, page: 1 }))
+  }, [searchQuery, filters.search, setFilters])
 
   const provider = searchProvider ?? filters.provider
   const badge = searchBadge ?? filters.badge
