@@ -39,8 +39,8 @@ export function ScheduledUpdatesList({ anime }: ScheduledUpdatesListProps) {
                   <ProxyImage
                     src={item.imageUrl}
                     alt={item.title}
-                    width={160}
-                    className='size-12 shrink-0 rounded object-cover'
+                    width={200}
+                    className='aspect-video h-12 shrink-0 rounded object-cover'
                   />
                 )}
                 <div className='min-w-0 flex-1'>
