@@ -1,6 +1,7 @@
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import dayjs from 'dayjs'
+import { CalendarClock, Hourglass, Sparkles, Tv2, Users } from 'lucide-react'
 import { useMemo } from 'react'
 import { AnimeCarousel } from '@/app/components/anime-carousel'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
@@ -87,7 +88,9 @@ function HomePage() {
 
   const emptyState = (label: string) => <p className='py-10 text-center text-sm text-muted-foreground'>{label}</p>
   const activeTabClass =
-    'data-active:bg-foreground data-active:text-background! dark:data-active:border-foreground dark:data-active:bg-foreground dark:data-active:text-background!'
+    'gap-1.5 px-3 [&_svg]:size-3.5 data-active:bg-foreground data-active:text-background! data-active:shadow-sm dark:data-active:border-foreground dark:data-active:bg-foreground dark:data-active:text-background!'
+  const tabCountClass =
+    'inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-current/20 px-1 text-[10px] font-semibold tabular-nums'
 
   return (
     <div className='min-w-0 space-y-6'>
@@ -107,19 +110,29 @@ function HomePage() {
         <div className='-mx-2 overflow-x-auto px-2'>
           <TabsList className='w-max'>
             <TabsTrigger value='season' className={activeTabClass}>
+              <CalendarClock />
               {seasonTitle}
+              <span className={tabCountClass}>{currentSeason.length}</span>
             </TabsTrigger>
             <TabsTrigger value='added' className={activeTabClass}>
+              <Sparkles />
               新着追加
+              <span className={tabCountClass}>{badged.RECENTLY_ADDED.length}</span>
             </TabsTrigger>
             <TabsTrigger value='coming' className={activeTabClass}>
+              <Hourglass />
               もうすぐ配信
+              <span className={tabCountClass}>{badged.COMING_SOON.length}</span>
             </TabsTrigger>
             <TabsTrigger value='expiring' className={activeTabClass}>
+              <Tv2 />
               配信終了予定
+              <span className={tabCountClass}>{badged.EXPIRING.length}</span>
             </TabsTrigger>
             <TabsTrigger value='provider' className={activeTabClass}>
+              <Users />
               配信元から探す
+              <span className={tabCountClass}>{byProvider.size}</span>
             </TabsTrigger>
           </TabsList>
         </div>
