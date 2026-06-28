@@ -59,7 +59,7 @@ const RootComponent = () => {
         </Link>
         <p className='mt-0.5 flex items-center justify-center gap-2'>
           <span>&copy; {dayjs().year()} Nagisa</span>
-          <Link to='/admin/unidentified' className='transition-colors hover:text-foreground'>
+          <Link to='/admin' className='transition-colors hover:text-foreground'>
             管理
           </Link>
           <a

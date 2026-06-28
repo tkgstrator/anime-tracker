@@ -53,6 +53,30 @@ export const NagisaQueueResponseSchema = z.object({
 })
 export type NagisaQueueResponseSchema = z.infer<typeof NagisaQueueResponseSchema>
 
+// --- Direct job enqueue (POST /api/queues, items+seasons form) ---
+
+const NagisaEnqueueSeasonSchema = z.object({
+  season_number: z.number().int().positive(),
+  episodes: z.array(z.number().int().positive()).optional()
+})
+
+const NagisaEnqueueItemSchema = z.object({
+  content_id: z.string().nonempty(),
+  seasons: z.array(NagisaEnqueueSeasonSchema).optional()
+})
+
+export const NagisaEnqueueRequestSchema = z.object({
+  provider: ProviderEnum,
+  items: z.array(NagisaEnqueueItemSchema).nonempty(),
+  marketplace: MarketplaceEnum.optional(),
+  language: LanguageEnum.optional()
+})
+export type NagisaEnqueueRequest = z.infer<typeof NagisaEnqueueRequestSchema>
+
+/** /api/queues のレスポンスは既存の NagisaQueueResponseSchema と同形 */
+export const NagisaEnqueueResponseSchema = NagisaQueueResponseSchema
+export type NagisaEnqueueResponse = z.infer<typeof NagisaEnqueueResponseSchema>
+
 // --- Status response (GET /api/status) ---
 
 const NagisaJobProgressSchema = z.object({
@@ -70,7 +94,7 @@ export const NagisaStatusJobSchema = z.object({
   provider: ProviderEnum,
   content_id: z.string().nonempty(),
   title: z.string().nullable(),
-  seasons: z.array(NagisaStatusJobSeasonSchema),
+  seasons: z.array(NagisaStatusJobSeasonSchema).nullable(),
   marketplace: MarketplaceEnum.nullable(),
   progress: NagisaJobProgressSchema.nullable(),
   timestamp: z.number(),
