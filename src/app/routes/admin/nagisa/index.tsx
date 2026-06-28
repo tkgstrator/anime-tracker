@@ -239,7 +239,7 @@ function NagisaJobEditorPage() {
 
       {preview && (
         <div className='space-y-1.5'>
-          <Label>送信内容プレビュー</Label>
+          <p className='text-sm font-medium leading-none'>送信内容プレビュー</p>
           <pre className='overflow-x-auto rounded-xl border border-border bg-muted p-3 font-mono text-xs'>
             {JSON.stringify(preview, null, 2)}
           </pre>
@@ -248,7 +248,7 @@ function NagisaJobEditorPage() {
 
       {mutation.isError && (
         <div className='space-y-1.5'>
-          <Label>エラー</Label>
+          <p className='text-sm font-medium leading-none'>エラー</p>
           <pre className='overflow-x-auto rounded-xl border border-destructive/50 bg-destructive/10 p-3 font-mono text-xs text-destructive'>
             {mutation.error.message}
           </pre>
@@ -260,9 +260,9 @@ function NagisaJobEditorPage() {
           <div className='text-sm text-muted-foreground'>{mutation.data.count} 件のジョブを投入しました</div>
           {mutation.data.jobs.map((job) => (
             <div key={job.job_id} className='space-y-1.5'>
-              <Label>
+              <p className='text-sm font-medium leading-none'>
                 {job.name} ({job.status}) — {job.job_id}
-              </Label>
+              </p>
               {job.preview && (
                 <div className='rounded-xl border border-border bg-card p-3 text-sm'>
                   <div className='font-medium'>{job.preview.title}</div>
@@ -276,7 +276,7 @@ function NagisaJobEditorPage() {
             </div>
           ))}
           <div className='space-y-1.5'>
-            <Label>レスポンス全体</Label>
+            <p className='text-sm font-medium leading-none'>レスポンス全体</p>
             <pre className='overflow-x-auto rounded-xl border border-border bg-muted p-3 font-mono text-xs'>
               {JSON.stringify(mutation.data, null, 2)}
             </pre>
