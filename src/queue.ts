@@ -45,22 +45,30 @@ async function findAnimeForMessage(
 /** Discord embed field value は 1024 文字まで。超えたら "...他N件" で切り詰める */
 function truncateForFieldValue(lines: string[]): string {
   const MAX = 1024
-  const SUFFIX_TEMPLATE = (rest: number) => `\n…他 ${rest} 件`
+  const buildSuffix = (rest: number) => `\n…他 ${rest} 件`
+  const joinedLength = (xs: string[]) => (xs.length === 0 ? 0 : xs.reduce((acc, s) => acc + s.length + 1, -1))
+
   const collected: string[] = []
-  let used = 0
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
-    const next = used === 0 ? line.length : used + 1 + line.length
+    const tentative = [...collected, line]
+    const tentativeLen = joinedLength(tentative)
+    // 全行入り切る場合は suffix 不要
+    if (i === lines.length - 1 && tentativeLen <= MAX) {
+      return tentative.join('\n')
+    }
+    // 行を足しても本文だけで 1024 以内なら確定して次へ
+    if (tentativeLen <= MAX) {
+      collected.push(line)
+      continue
+    }
+    // ここで切り詰め確定。suffix が入る余地を作るため collected を後ろから削る
     const remaining = lines.length - i
-    const suffix = SUFFIX_TEMPLATE(remaining)
-    if (next + suffix.length > MAX && i < lines.length - 1) {
-      return `${collected.join('\n')}${SUFFIX_TEMPLATE(remaining)}`
+    const suffix = buildSuffix(remaining)
+    while (collected.length > 0 && joinedLength(collected) + suffix.length > MAX) {
+      collected.pop()
     }
-    if (next > MAX) {
-      return collected.join('\n')
-    }
-    collected.push(line)
-    used = next
+    return `${collected.join('\n')}${suffix}`
   }
   return collected.join('\n')
 }

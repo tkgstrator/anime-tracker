@@ -12,6 +12,15 @@ type Bindings = {
 
 const nagisa = new OpenAPIHono<{ Bindings: Bindings }>()
 
+/** Nagisa への接続に必要な環境変数が揃っているか検査する。欠けていればキー名を返す */
+function missingNagisaConfig(env: Bindings): string[] {
+  const missing: string[] = []
+  if (!env.BACKEND_URL) missing.push('BACKEND_URL')
+  if (!env.CF_ACCESS_CLIENT_ID) missing.push('CF_ACCESS_CLIENT_ID')
+  if (!env.CF_ACCESS_CLIENT_SECRET) missing.push('CF_ACCESS_CLIENT_SECRET')
+  return missing
+}
+
 nagisa.openapi(
   createRoute({
     method: 'get',
@@ -30,6 +39,11 @@ nagisa.openapi(
     }
   }),
   async (c) => {
+    const missing = missingNagisaConfig(c.env)
+    if (missing.length > 0) {
+      logger.error({ action: 'nagisa-status-config-missing', missing })
+      return c.json({ error: `Nagisa config missing: ${missing.join(', ')}` }, 502 as const)
+    }
     try {
       const res = await fetch(`${c.env.BACKEND_URL}/api/status`, {
         headers: {
@@ -80,6 +94,11 @@ nagisa.openapi(
   }),
   async (c) => {
     const body = c.req.valid('json')
+    const missing = missingNagisaConfig(c.env)
+    if (missing.length > 0) {
+      logger.error({ action: 'nagisa-enqueue-config-missing', missing })
+      return c.json({ error: `Nagisa config missing: ${missing.join(', ')}` }, 502 as const)
+    }
     try {
       const res = await fetch(`${c.env.BACKEND_URL}/api/queues`, {
         method: 'POST',

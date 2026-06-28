@@ -14,9 +14,9 @@ export const Route = createFileRoute('/admin/nagisa/')({
   component: NagisaJobEditorPage
 })
 
-type Provider = 'amazon' | 'crunchyroll' | 'hulu' | 'abema'
-type Marketplace = 'jp' | 'us'
-type Language = 'sub' | 'dub'
+type Provider = NagisaEnqueueRequest['provider']
+type Marketplace = NonNullable<NagisaEnqueueRequest['marketplace']>
+type Language = NonNullable<NagisaEnqueueRequest['language']>
 
 const PROVIDERS: Provider[] = ['amazon', 'crunchyroll', 'hulu', 'abema']
 const MARKETPLACES: { value: Marketplace; label: string }[] = [
