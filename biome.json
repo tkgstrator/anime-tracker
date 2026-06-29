@@ -1,12 +1,11 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "files": {
     "includes": [
       "src/**/*.{ts,tsx}",
       "__tests__/**/*.ts",
       "!**/node_modules",
-      "!scripts/*.{ts}",
       "!src/app/routeTree.gen.ts",
       "!src/generated",
       "!src/app/components/ui"

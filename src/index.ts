@@ -8,7 +8,6 @@ import adminRoutes from './routes/admin'
 import animeRoutes from './routes/anime'
 import imgRoutes from './routes/img'
 import nagisaRoutes from './routes/nagisa'
-import queuesRoutes from './routes/queues'
 import recordingsRoutes from './routes/recordings'
 import webhooksRoutes from './routes/webhooks'
 import { scheduled } from './scheduled'
@@ -36,7 +35,6 @@ app.route('/api/admin', adminRoutes)
 app.route('/api/anime', animeRoutes)
 app.route('/api/img', imgRoutes)
 app.route('/api/nagisa', nagisaRoutes)
-app.route('/api/queues', queuesRoutes)
 app.route('/api/recordings', recordingsRoutes)
 app.route('/api/webhooks', webhooksRoutes)
 
