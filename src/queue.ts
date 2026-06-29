@@ -42,6 +42,37 @@ async function findAnimeForMessage(
   return null
 }
 
+/** Discord embed field value は 1024 文字まで。超えたら "...他N件" で切り詰める */
+function truncateForFieldValue(lines: string[]): string {
+  const MAX = 1024
+  const buildSuffix = (rest: number) => `\n…他 ${rest} 件`
+  const joinedLength = (xs: string[]) => (xs.length === 0 ? 0 : xs.reduce((acc, s) => acc + s.length + 1, -1))
+
+  const collected: string[] = []
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const tentative = [...collected, line]
+    const tentativeLen = joinedLength(tentative)
+    // 全行入り切る場合は suffix 不要
+    if (i === lines.length - 1 && tentativeLen <= MAX) {
+      return tentative.join('\n')
+    }
+    // 行を足しても本文だけで 1024 以内なら確定して次へ
+    if (tentativeLen <= MAX) {
+      collected.push(line)
+      continue
+    }
+    // ここで切り詰め確定。suffix が入る余地を作るため collected を後ろから削る
+    const remaining = lines.length - i
+    const suffix = buildSuffix(remaining)
+    while (collected.length > 0 && joinedLength(collected) + suffix.length > MAX) {
+      collected.pop()
+    }
+    return `${collected.join('\n')}${suffix}`
+  }
+  return collected.join('\n')
+}
+
 export async function queue(batch: MessageBatch<Message>, env: Env): Promise<void> {
   const prisma = createPrismaClient(env.DB)
   const lambda = createFetchClient(env)
@@ -51,6 +82,7 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
 
   let succeeded = 0
   let failed = 0
+  const failedLabels: string[] = []
 
   try {
     for (const message of batch.messages) {
@@ -131,26 +163,22 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
         if (message.attempts >= 3) {
           failed++
           const anime = await findAnimeForMessage(prisma, message.body).catch(() => null)
-          await notify(env.DISCORD_WEBHOOK_URL, {
-            title: anime ? `Queue: 最終リトライ失敗 — ${anime.title}` : 'Queue: 最終リトライ失敗',
-            description: `\`\`\`\n${errorMessage}\n\`\`\``,
-            thumbnailUrl: anime?.imageUrl,
-            fields: [
-              { name: 'Type', value: message.body.type, inline: true },
-              { name: 'Attempts', value: String(message.attempts), inline: true },
-              { name: 'Detail', value: `\`\`\`json\n${JSON.stringify(message.body.message, null, 2)}\n\`\`\`` }
-            ]
-          })
+          failedLabels.push(anime ? anime.title : `[${message.body.type}]`)
         }
         message.retry()
       }
     }
 
-    if (succeeded > 0) {
+    if (succeeded > 0 || failed > 0) {
+      const fields: { name: string; value: string; inline?: boolean }[] = []
+      if (failedLabels.length > 0) {
+        fields.push({ name: '失敗一覧', value: truncateForFieldValue(failedLabels) })
+      }
       await notify(env.DISCORD_WEBHOOK_URL, {
         title: 'Queue: バッチ完了',
         description: failed > 0 ? `成功 ${succeeded} 件 / 失敗 ${failed} 件` : `${succeeded} 件 正常に完了しました`,
-        color: failed > 0 ? COLOR_WARN : COLOR_SUCCESS
+        color: failed > 0 ? COLOR_WARN : COLOR_SUCCESS,
+        fields
       })
     }
   } finally {

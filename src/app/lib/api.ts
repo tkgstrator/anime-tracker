@@ -1,7 +1,12 @@
 import { Zodios } from '@zodios/core'
 import { z } from 'zod'
 import { AnimeInfoSchema, AnimeSchema, BadgedAnimeSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
-import { NagisaQueueResponseSchema, NagisaStatusSchema } from '@/schemas/nagisa.dto'
+import {
+  NagisaEnqueueRequestSchema,
+  NagisaEnqueueResponseSchema,
+  NagisaQueueResponseSchema,
+  NagisaStatusSchema
+} from '@/schemas/nagisa.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
 import { PaginatedUnidentifiedSchema } from '@/schemas/unidentified.dto'
 
@@ -121,6 +126,13 @@ const api = new Zodios('/api', [
       { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() }
     ],
     response: PaginatedUnidentifiedSchema
+  },
+  {
+    method: 'post',
+    path: '/nagisa/jobs',
+    alias: 'enqueueNagisaJob',
+    parameters: [{ name: 'body', type: 'Body', schema: NagisaEnqueueRequestSchema }],
+    response: NagisaEnqueueResponseSchema
   }
 ])
 
