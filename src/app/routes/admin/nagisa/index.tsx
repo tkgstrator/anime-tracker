@@ -142,7 +142,7 @@ function NagisaJobEditorPage() {
         </p>
       </div>
 
-      <div className='space-y-4 rounded-xl border border-border bg-card p-4'>
+      <div className='space-y-4'>
         <div className='space-y-1.5'>
           <Label htmlFor='provider'>provider</Label>
           <Select value={provider} onValueChange={(v) => setProvider(v as Provider)}>
@@ -264,10 +264,10 @@ function NagisaJobEditorPage() {
                 {job.name} ({job.status}) — {job.job_id}
               </p>
               {job.preview && (
-                <div className='rounded-xl border border-border bg-card p-3 text-sm'>
+                <div className='space-y-0.5 text-sm'>
                   <div className='font-medium'>{job.preview.title}</div>
                   {job.preview.title_en && <div className='text-xs text-muted-foreground'>{job.preview.title_en}</div>}
-                  <div className='mt-2 text-xs text-muted-foreground'>
+                  <div className='text-xs text-muted-foreground'>
                     {job.preview.content_type} ・ {job.preview.selected_episodes} / {job.preview.total_episodes} 話 ・{' '}
                     {job.preview.marketplace}
                   </div>
