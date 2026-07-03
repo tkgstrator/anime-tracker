@@ -85,7 +85,7 @@ An app for managing and tracking anime recordings from streaming services.
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
-graph TD
+graph LR
     Cron["Scheduled<br/>(hourly cron)"] -->|enqueue| Queue["Cloudflare Queues"]
     Queue -->|consume| Sync["SyncService"]
 
@@ -115,6 +115,18 @@ graph TD
 3. **Provider** — Scrapes catalogs and detail pages from Amazon / Hulu / ABEMA
 4. **Metadata** — Enriches with metadata via AniList GraphQL
 5. **Upsert** — Upserts Anime / Season / Episode into D1 via Prisma
+
+### Scheduled Jobs
+
+Cron triggers are defined in `wrangler.toml` (`[triggers].crons`) and dispatched by `src/scheduled.ts`. Cloudflare Workers evaluates cron expressions in **UTC**; the JST column is shown for reference.
+
+| Cron (UTC) | JST | Targets | Action |
+|---|---|---|---|
+| `0 */1 * * *` | Every hour on :00 | hulu / amazon / crunchyroll / abema | Enqueue `new_episode` and `coming_soon` for each provider (8 messages total) |
+| `0 0 * * *` | Daily 09:00 | Same 4 providers | Enqueue `expiring` (titles nearing end of availability) |
+| `0 3 * * *` | Daily 12:00 | Same 4 providers | Enqueue `catalog` (full catalog fetch) |
+| `0 4 * * *` | Daily 13:00 | ABEMA only | Scan Anime whose episodes still have `abemaKey == null` and enqueue `abema_archive` per anime |
+| `0 5 * * SUN` | Weekly Sun 14:00 | AniList | Enqueue `anilist_sync` for each year from 2000 to next year, staggered by 30s to avoid AniList rate limits |
 
 ### Prime Video Data Fetching
 
