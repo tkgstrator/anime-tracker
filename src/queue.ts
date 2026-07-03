@@ -86,7 +86,23 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
 
   try {
     for (const message of batch.messages) {
-      logger.debug({ action: 'process-message', type: message.body.type, body: message.body.message })
+      const body = message.body
+      const meta: Record<string, unknown> = { action: 'process-message', type: body.type }
+      if (body.type === 'fetch') {
+        meta.provider = body.message.provider
+        meta.category = body.message.category
+      } else if (body.type === 'update') {
+        meta.provider = body.message.provider
+        meta.contentId = body.message.contentId
+      } else if (body.type === 'bulk_update') {
+        meta.provider = body.message.provider
+        meta.count = body.message.contentIds.length
+      } else if (body.type === 'abema_archive') {
+        meta.animeId = body.message.animeId
+      } else if (body.type === 'anilist_sync') {
+        meta.year = body.message.year
+      }
+      logger.debug(meta as { action: string })
       try {
         switch (message.body.type) {
           case 'fetch': {
@@ -104,11 +120,6 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
           }
           case 'update': {
             await service.update(message.body)
-            logger.debug({
-              action: 'update-done',
-              provider: message.body.message.provider,
-              contentId: message.body.message.contentId
-            })
             break
           }
           case 'bulk_update': {
