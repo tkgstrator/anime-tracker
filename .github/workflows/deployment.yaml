@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "ENVIRONMENT=$(if [[ '${{ github.event.pull_request.base.ref }}' == '${{ github.event.repository.default_branch }}' ]]; then echo 'production'; else echo 'staging'; fi)" >> $GITHUB_ENV
       - name: Wrangler deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         env:
           ENVIRONMENT: ${{ github.event.pull_request.base.ref == 'master' && 'production' || 'staging' }}
         with:
