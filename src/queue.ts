@@ -93,8 +93,10 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
             const { provider, category } = message.body.message
             const contentIds = await service.fetch(message.body)
             if (category !== 'expiring' && category !== 'coming_soon') {
-              for (const contentId of contentIds) {
-                await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
+              const BULK_SIZE = 25
+              for (let i = 0; i < contentIds.length; i += BULK_SIZE) {
+                const chunk = contentIds.slice(i, i + BULK_SIZE)
+                await env.SYNC_QUEUE.send({ type: 'bulk_update', message: { provider, contentIds: chunk } })
               }
             }
             logger.info({ action: 'enqueue-updates', provider, category, count: contentIds.length })
@@ -111,10 +113,18 @@ export async function queue(batch: MessageBatch<Message>, env: Env): Promise<voi
           }
           case 'bulk_update': {
             const { provider, contentIds } = message.body.message
-            for (const contentId of contentIds) {
-              await env.SYNC_QUEUE.send({ type: 'update', message: { provider, contentId } })
+            const CONCURRENT = 5
+            const DELAY_MS = 3000
+            for (let i = 0; i < contentIds.length; i += CONCURRENT) {
+              const chunk = contentIds.slice(i, i + CONCURRENT)
+              await Promise.all(
+                chunk.map((contentId) => service.update({ type: 'update', message: { provider, contentId } }))
+              )
+              if (i + CONCURRENT < contentIds.length) {
+                await new Promise<void>((resolve) => setTimeout(resolve, DELAY_MS))
+              }
             }
-            logger.info({ action: 'bulk-enqueue', provider, count: contentIds.length })
+            logger.info({ action: 'bulk-update-done', provider, count: contentIds.length })
             break
           }
           case 'anilist_sync': {
