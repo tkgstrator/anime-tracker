@@ -45,16 +45,17 @@ async function post<T>(
   const payload = JSON.stringify(body)
 
   for (let attempt = 0; ; attempt++) {
-    logger.info({ action: 'invoke-lambda', path })
+    const startedAt = Date.now()
     const response = await aws.fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: payload
     })
+    const elapsedMs = Date.now() - startedAt
 
     if (response.ok) {
       const data = await response.json()
-      logger.info({ action: 'lambda-success', path })
+      logger.info({ action: 'lambda-invoke', path, status: response.status, elapsedMs })
       const result = schema.safeParse(data)
       if (!result.success) throw result.error
       return result.data
@@ -63,12 +64,13 @@ async function post<T>(
     // AWS Lambda の同時実行上限 (429 ConcurrentInvocationLimitExceeded) は一過性なのでバックオフ再試行
     if (response.status === 429 && attempt < maxRetries) {
       const waitMs = Math.min(1000 * 2 ** attempt, 30000)
-      logger.warn({ action: 'lambda-429-retry', path, attempt: attempt + 1, waitMs })
+      logger.warn({ action: 'lambda-429-retry', path, attempt: attempt + 1, waitMs, elapsedMs })
       await new Promise((r) => setTimeout(r, waitMs))
       continue
     }
 
     const text = await response.text()
+    logger.error({ action: 'lambda-invoke', path, status: response.status, elapsedMs })
     throw new Error(`Lambda invocation failed: ${response.status} ${text}`)
   }
 }
