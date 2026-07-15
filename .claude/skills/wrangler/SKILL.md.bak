@@ -5,11 +5,11 @@ description: Cloudflare Workers CLI for deploying, developing, and managing Work
 
 # Wrangler CLI
 
-Your pre-trained knowledge of Wrangler CLI flags, config fields, and subcommands may be outdated.
+Your knowledge of Wrangler CLI flags, config fields, and subcommands may be outdated. **Prefer retrieval over pre-training** for any Wrangler task.
 
 ## Retrieval Sources
 
-**Prefer retrieval over pre-training for any Wrangler task.** Fetch the latest information before writing or reviewing Wrangler commands or config — do not rely on baked-in knowledge for CLI flags, config fields, or binding shapes.
+Fetch the **latest** information before writing or reviewing Wrangler commands and config. Do not rely on baked-in knowledge for CLI flags, config fields, or binding shapes.
 
 | Source | How to retrieve | Use for |
 |--------|----------------|---------|
@@ -24,29 +24,18 @@ wrangler --version  # Requires v4.x+
 ```
 
 If not installed:
-
 ```bash
 npm install -D wrangler@latest
 ```
 
-## Rules
+## Key Guidelines
 
-**DO:**
-
-- **Use `wrangler.jsonc`** — prefer JSON config over TOML; newer features are JSON-only. Version-control it and treat it as the source of truth for Worker config.
-- **Set `compatibility_date`** — use a recent date (within 30 days); update quarterly to get new runtime features. Check https://developers.cloudflare.com/workers/configuration/compatibility-dates/
-- **Run `wrangler types` after config changes** — updates TypeScript bindings. Add `wrangler types --check` to the CI build step to catch binding mismatches.
-- **Use environments for staging/prod** — define `env.staging` and `env.production` in config.
-- **Use `.dev.vars` for local secrets.**
-- **Use automatic provisioning** — omit resource IDs in config for auto-creation on deploy.
-- **Profile Worker startup** — run `wrangler check startup` to measure startup time and detect scripts that exceed the startup time limit.
-- **Test locally first** — run `wrangler dev` with local bindings before deploying.
-- **Use `--dry-run` before major deploys** — validates changes without deployment.
-
-**DON'T:**
-
-- **Don't commit secrets to config.**
-- **Don't expect local dev to hit real resources by default** — bindings use local storage simulation unless the binding sets `remote: true`.
+- **Use `wrangler.jsonc`**: Prefer JSON config over TOML. Newer features are JSON-only.
+- **Set `compatibility_date`**: Use a recent date (within 30 days). Check https://developers.cloudflare.com/workers/configuration/compatibility-dates/
+- **Generate types after config changes**: Run `wrangler types` to update TypeScript bindings.
+- **Local dev defaults to local storage**: Bindings use local simulation unless `remote: true`.
+- **Profile Worker startup**: Run `wrangler check startup` to measure startup time and detect scripts that exceed the startup time limit.
+- **Use environments for staging/prod**: Define `env.staging` and `env.production` in config.
 
 ## Quick Start: New Worker
 
@@ -196,7 +185,7 @@ wrangler dev --test-scheduled
 
 ### Remote Bindings for Local Dev
 
-Set `remote: true` on a binding to connect to the real resource while running locally:
+Use `remote: true` in binding config to connect to real resources while running locally:
 
 ```jsonc
 {
@@ -214,7 +203,7 @@ Set `remote: true` on a binding to connect to the real resource while running lo
 
 ### Local Secrets
 
-Create a `.dev.vars` file for local development secrets:
+Create `.dev.vars` for local development secrets:
 
 ```
 API_KEY=local-dev-key
@@ -842,7 +831,6 @@ npm install -D @cloudflare/vitest-pool-workers vitest
 ```
 
 `vitest.config.ts`:
-
 ```typescript
 import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
 
@@ -894,3 +882,16 @@ wrangler check startup
 # View config schema
 wrangler docs configuration
 ```
+
+---
+
+## Best Practices
+
+1. **Version control `wrangler.jsonc`**: Treat as source of truth for Worker config.
+2. **Use automatic provisioning**: Omit resource IDs for auto-creation on deploy.
+3. **Run `wrangler types` in CI**: Add to build step to catch binding mismatches.
+4. **Use environments**: Separate staging/production with `env.staging`, `env.production`.
+5. **Set `compatibility_date`**: Update quarterly to get new runtime features.
+6. **Use `.dev.vars` for local secrets**: Never commit secrets to config.
+7. **Test locally first**: `wrangler dev` with local bindings before deploying.
+8. **Use `--dry-run` before major deploys**: Validate changes without deployment.

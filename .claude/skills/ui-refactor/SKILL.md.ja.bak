@@ -61,7 +61,7 @@ Evaluate each component in scope against all five criteria groups:
 
 ## Step 4: Report
 
-Present findings **in Japanese**, using this structured format (the template below is the literal Japanese output format; English equivalents of each label are given after the block):
+Present findings **in Japanese**, using this structured format:
 
 ```
 ## UI リファクタリングレポート: [Component/Page]
@@ -79,21 +79,11 @@ Present findings **in Japanese**, using this structured format (the template bel
 ### 推定コスト: [S/M/L/XL]
 ```
 
-Label reference (Japanese → English):
-
-- `UI リファクタリングレポート` = "UI Refactoring Report"
-- `問題点` = "Issues"; table columns `重要度` / `箇所` / `問題` / `改善案` = "Severity" / "Location" / "Problem" / "Suggested fix"
-- `高/中/低` = "High/Medium/Low"
-- `推奨変更 (優先順)` = "Recommended changes (in priority order)"
-- `推定コスト` = "Estimated cost"
-
 ## Step 5: Ask for Approval
 
-Ask the user exactly (verbatim, in Japanese):
+Ask the user exactly:
 
 **"この改善を実行してよろしいですか？全て / 一部を選択 / キャンセル"**
-
-(English meaning: "May I proceed with these improvements? All / Select some / Cancel")
 
 Do not proceed to Step 6 without approval.
 

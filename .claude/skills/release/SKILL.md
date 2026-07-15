@@ -5,70 +5,87 @@ description: Promote develop to master — open (or reuse) the develop→master 
 
 # release — promote develop to master (production)
 
-The `develop → master` step of the `feature → develop → master` flow. This is the only
-skill that merges into `master` and triggers a **production** Cloudflare deploy. Use the
-**GitHub MCP** (`mcp__github__*`); **resolve `<OWNER>`/`<REPO>` from
-`git remote get-url origin`** (this repo: `qtmleap/Hono-Vite-Workers`).
+This skill performs the `develop → master` step of the `feature → develop → master` flow.
+
+- It is the **only** skill that merges into `master`, and merging triggers a **production** Cloudflare deploy.
+- Use the **GitHub MCP** tools (`mcp__github__*`).
+- Resolve `<OWNER>` and `<REPO>` from `git remote get-url origin`. For this repo: `qtmleap/Hono-Vite-Workers`.
 
 ## Preconditions
 
-- `develop` is ahead of `master` (there is something to release). Check with
-  `mcp__github__list_pull_requests(... base:'master', head:'<OWNER>:develop')` or compare
-  branches; if `develop` is not ahead, there is nothing to release — stop.
-- Decide the release version: read `package.json`'s `version`. It should already reflect
-  the changes on `develop` (bumped by `commit-push-pr`). If it does not, bump it on `develop` via a
-  normal `commit-push-pr` PR **first**, then release — never push a version commit straight to
-  `develop`/`master`.
+Check both before doing anything else:
+
+1. **`develop` is ahead of `master`** — there must be something to release.
+   - Check with `mcp__github__list_pull_requests(... base:'master', head:'<OWNER>:develop')` or by comparing the branches.
+   - If `develop` is not ahead, there is nothing to release — **stop**.
+2. **The release version is decided.** Read `version` from `package.json`.
+   - It should already reflect the changes on `develop` (bumped by `commit-push-pr`).
+   - If it does not: bump it on `develop` via a normal `commit-push-pr` PR **first**, then release.
+   - Never push a version commit directly to `develop` or `master`.
 
 ## Steps
 
-1. **Open (or find) the release PR `develop → master`.**
-   ```
-   mcp__github__create_pull_request(
-     owner: '<OWNER>', repo: '<REPO>',
-     base:'master', head:'develop',
-     title:'<type>: release vX.Y.Z', body:'<release notes + footer>')
-   ```
-   - Title satisfies commitlint (lowercase start, valid `type` incl. `chore`, ≤ 96 chars),
-     e.g. `chore: release v0.2.0`.
-   - Body: summary of what is shipping, the version, and the
-     `🤖 Generated with [Claude Code](https://claude.com/claude-code)` footer.
-   - If a `develop → master` PR already exists, reuse it.
+### 1. Open (or find) the release PR `develop → master`
 
-2. **Gate on green CI.** `mcp__github__pull_request_read(method:'get_check_runs' / 'get_status', …)`
-   — every required check `conclusion: success`. Pending → wait (`/watch`). Failure → stop
-   and report; never release a red PR. Also confirm `mergeable_state` is `clean`.
+- If a `develop → master` PR already exists, reuse it. Otherwise:
 
-3. **Confirm production with the user.** Merging this triggers a **production** Cloudflare
-   Workers deploy (`.github/workflows/deployment.yaml`, `base.ref == master → production`)
-   — outward-facing and hard to reverse. **Get explicit confirmation that they want to
-   deploy `vX.Y.Z` to production** before merging (a generic "yes" earlier is not enough).
+```
+mcp__github__create_pull_request(
+  owner: '<OWNER>', repo: '<REPO>',
+  base:'master', head:'develop',
+  title:'<type>: release vX.Y.Z', body:'<release notes + footer>')
+```
 
-4. **Merge into master.** Use a **merge commit** (not squash) so `master` and `develop`
-   stay in sync and don't diverge:
-   ```
-   mcp__github__merge_pull_request(
-     owner: '<OWNER>', repo: '<REPO>', pullNumber:<pr>,
-     merge_method:'merge',
-     commit_title:'<type>: release vX.Y.Z')
-   ```
+- **Title**: must satisfy commitlint — lowercase start, valid `type` (including `chore`), ≤ 96 chars. Example: `chore: release v0.2.0`.
+- **Body**: a summary of what is shipping, the version, and the footer `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 
-5. **Tag `vX.Y.Z` on master.**
-   ```
-   git fetch origin && git switch master && git pull
-   ver=$(jq -r .version package.json)
-   git tag -a "v$ver" -m "release v$ver" && git push origin "v$ver"
-   ```
-   - Annotated tag; pushing a **tag** is allowed (it is not a branch push to master/develop).
-   - If the tag already exists, do not force it — report the collision instead.
-   - Optionally publish notes: `gh release create "v$ver" --generate-notes` (no MCP
-     create-release tool exists, so `gh` is used here).
+### 2. Gate on green CI
 
-6. **Report** the merged release commit, the `vX.Y.Z` tag, and that the production deploy
-   is now running. Offer to `/watch` the deploy.
+- Check with `mcp__github__pull_request_read(method:'get_check_runs' / 'get_status', …)`.
+- Every required check must have `conclusion: success`.
+- Also confirm `mergeable_state` is `clean`.
+- If checks are **pending**: wait (use `/watch`).
+- If any check **failed**: stop and report. Never release a red PR.
 
-## Notes
+### 3. Confirm production with the user
 
-- Do **not** delete `develop` after release — it is a long-lived branch.
-- Never squash `develop → master`; squashing makes the branches diverge and breaks the
-  next release's "develop is ahead of master" check.
+- Merging this PR triggers a **production** Cloudflare Workers deploy (`.github/workflows/deployment.yaml`, `base.ref == master → production`). It is outward-facing and hard to reverse.
+- **Get explicit confirmation that the user wants to deploy `vX.Y.Z` to production** before merging. A generic "yes" earlier in the conversation is not enough.
+
+### 4. Merge into master
+
+Use a **merge commit** — not squash — so `master` and `develop` stay in sync and do not diverge:
+
+```
+mcp__github__merge_pull_request(
+  owner: '<OWNER>', repo: '<REPO>', pullNumber:<pr>,
+  merge_method:'merge',
+  commit_title:'<type>: release vX.Y.Z')
+```
+
+### 5. Tag `vX.Y.Z` on master
+
+```
+git fetch origin && git switch master && git pull
+ver=$(jq -r .version package.json)
+git tag -a "v$ver" -m "release v$ver" && git push origin "v$ver"
+```
+
+- Use an annotated tag. Pushing a **tag** is allowed — it is not a branch push to master/develop.
+- If the tag already exists: do **not** force it — report the collision instead.
+- Optionally publish release notes: `gh release create "v$ver" --generate-notes`. (`gh` is used here because no MCP create-release tool exists.)
+
+### 6. Report
+
+Report to the user:
+
+- the merged release commit,
+- the `vX.Y.Z` tag,
+- that the production deploy is now running.
+
+Offer to `/watch` the deploy.
+
+## Rules
+
+- **DO NOT** delete `develop` after release — it is a long-lived branch.
+- **DO NOT** squash `develop → master`. Squashing makes the branches diverge and breaks the next release's "develop is ahead of master" check.
