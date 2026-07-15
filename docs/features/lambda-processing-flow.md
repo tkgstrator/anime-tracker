@@ -1,0 +1,304 @@
+# Lambda fetch ハンドラ 処理フロー
+
+`lambda/fetch/index.ts` (307 行 / 全機能を 1 ファイルに集約) の役割と呼び出し経路をまとめる。
+
+- 役割: 日本 IP が必要な Provider 取得と AniList 照合を Workers の代わりに実行
+- リージョン: `ap-northeast-1` (JP) / Crunchyroll のみ US Lambda
+- 副作用なし: KV/D1 は触らない。fetch → 整形 → JSON 返却のみ
+- 認証: Lambda Function URL に対して Workers 側の `src/lib/lambda.ts` が SigV4 署名で POST
+
+## 1. エントリーポイント一覧
+
+`event.rawPath` / `event.path` で振り分ける 4 エンドポイント。
+
+| Path | 用途 | リクエスト schema | レスポンス schema |
+| --- | --- | --- | --- |
+| `POST /expiring` | 配信終了間近タイトル一覧 | `FetchExpiringRequestSchema` | `ExpiringResponseSchema` |
+| `POST /title_list` | 新着 / 配信予定 / カタログ一覧 | `FetchTitleListRequestSchema` | `TitleListResponseSchema` |
+| `POST /title_info` | タイトル詳細（シーズン + エピソード） | `FetchTitleInfoRequestSchema` | `TitleInfoSchema` |
+| `POST /identify` | AniList へのバッチ照合（≤ 50 件） | `IdentifyRequestSchema` | `IdentifyResponseSchema` |
+
+ステータスコード:
+
+| Code | 条件 | body |
+| --- | --- | --- |
+| `200` | 成功（entries が 0 件でも 200 + 空配列） | レスポンス schema 準拠の JSON |
+| `400` | リクエスト Zod parse 失敗 | `{ error: 'Invalid request', issues: ZodIssue[] }` |
+| `404` | 未知 path | `{ error: 'Unknown path: ...' }` |
+| `500` | レスポンス Zod parse 失敗 / 内部例外 | `{ error: 'Invalid response', issues: ZodIssue[] }` または `{ error: <message> }` |
+| `502` | AniList API エラー | `{ error: 'AniList API error: <status>' }` |
+
+### Zod スキーマ定義
+
+`ExpiringResponseSchema` (`src/schemas/lambda.dto.ts`):
+
+```ts
+const ExpiringEntrySchema = z.object({
+  contentId: z.string().nonempty(),
+  expiredAt: z.iso.datetime(),
+  expiringSeason: z.number().nullable()
+})
+
+const ExpiringResponseSchema = z.object({
+  fetchedAt: z.iso.datetime(),
+  entries: z.array(ExpiringEntrySchema)
+})
+```
+
+`TitleListResponseSchema` (`src/schemas/lambda.dto.ts`):
+
+```ts
+// Provider 内部の TitleSchema を再利用 (expiring フィールドだけ除外)
+const TitleListEntrySchema = TitleSchema.omit({ expiring: true })
+
+const TitleListResponseSchema = z.object({
+  fetchedAt: z.iso.datetime(),
+  entries: z.array(TitleListEntrySchema)
+})
+```
+
+参照される `TitleSchema` の定義は `src/schemas/providers/common.dto.ts`:
+
+```ts
+const EntityType = z.enum(['tv', 'movie'])
+const BadgeType = z.enum(['NEW_EPISODE', 'RECENTLY_ADDED', 'COMING_SOON', 'EXPIRING'])
+
+// 画像 URL は z.url().transform(stripQueryParams) で正規化
+const ImageUrlSchema = z.url().transform(stripQueryParams)
+
+const TitleSchema = z.object({
+  contentId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  entityType: EntityType,
+  imageUrl: ImageUrlSchema,
+  maturityRating: z.number().int().positive().nullable(),
+  nextEpisodeDate: z.iso.datetime().optional(),
+  badge: BadgeType.optional(),
+  expiring: z
+    .object({
+      remainingHours: z.number().int().positive(),
+      season: z.number().int().positive().nullable()
+    })
+    .optional()
+})
+```
+
+`TitleInfoSchema` (`src/schemas/providers/common.dto.ts`):
+
+```ts
+const EntityType = z.enum(['tv', 'movie'])
+
+const EpisodeSchema = z.object({
+  episodeNumber: z.number().int().nonnegative(),
+  episodeId: z.string().nonempty(),
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  releaseDate: z.iso.datetime(),
+  duration: z.number().int().nonnegative(),
+  maturityRating: z.number().int().positive().nullable(),
+  imageUrl: ImageUrlSchema,
+  hasSubtitles: z.boolean(),
+  hasDub: z.boolean(),
+  benefitId: z.string().nullable()
+})
+
+const SeasonSchema = z.object({
+  seasonId: z.string().nonempty(),
+  displayName: z.string().nonempty(),
+  seasonNumber: z.number().int().positive(),
+  episodes: z.array(EpisodeSchema)
+})
+
+const TitleInfoSchema = z.object({
+  title: z.string().nonempty(),
+  description: z.string().nonempty(),
+  entityType: EntityType,
+  maturityRating: z.number().int().positive().nullable(),
+  imageUrl: ImageUrlSchema,
+  seasons: z.array(SeasonSchema)
+})
+```
+
+`IdentifyRequestSchema` / `IdentifyResponseSchema` (`src/schemas/lambda.dto.ts`):
+
+```ts
+const IdentifyRequestSchema = z.object({
+  titles: z.array(z.string().nonempty()).max(50)
+})
+
+const TitleStatusTypeEnum = z.enum([
+  'FINISHED',
+  'RELEASING',
+  'NOT_YET_RELEASED',
+  'CANCELLED',
+  'HIATUS',
+  'UNKNOWN'
+])
+
+const IdentifyResultSchema = z
+  .object({
+    aniListId: z.number().int().optional(),
+    title: z.string().nonempty(),
+    status: TitleStatusTypeEnum,
+    year: z.number().int(),
+    quarter: z.number().int()
+  })
+  .nullable()
+
+const IdentifyResponseSchema = z.object({
+  results: z.array(IdentifyResultSchema)
+})
+```
+
+## 2. トリガーと呼び出し経路
+
+```mermaid
+flowchart LR
+  subgraph CF[Cloudflare Workers]
+    direction TB
+    Cron1[Cron 0 */1 * * *<br/>毎時0分]
+    Cron2[Cron 0 0 * * *<br/>日次 00:00 UTC]
+    API[POST /api/queues<br/>管理画面の手動トリガー<br/>routes/queues.ts]
+    Sched[scheduled.ts]
+    Cron1 --> Sched
+    Cron2 --> Sched
+
+    Sched -- type=fetch<br/>4 provider × {new_episode, coming_soon} --> Q[(SYNC_QUEUE)]
+    Sched -- type=fetch<br/>4 provider × expiring --> Q
+    API -- type=fetch --> Q
+
+    Q --> QC[queue.ts<br/>consumer]
+    QC -- type=fetch & category=expiring --> EP1[[POST /expiring]]
+    QC -- type=fetch & category∈new_episode/coming_soon/catalog --> EP2[[POST /title_list]]
+    QC -- type=update --> Svc[SyncService.update]
+    Svc --> EP3[[POST /title_info]]
+
+    Svc -. 識別が必要なタイトル発見時 .-> Ali[AniListAdapter.identifyBatch]
+    Ali --> EP4[[POST /identify]]
+  end
+
+  EP1 & EP2 & EP3 & EP4 -.SigV4.-> Lambda[(Lambda<br/>lambda/fetch/index.ts)]
+```
+
+要点:
+
+- **Lambda は自分から動かない。** すべて Workers の Cron / Queue consumer / 管理画面 API がトリガー
+- `POST /title_list` → 結果の `contentIds` を受け取った queue.ts が、新着系については **個別に `type=update` を再 enqueue** し、後段で `/title_info` を叩く 2 段構え
+- `POST /identify` は `SyncService` が AniList 照合が必要なタイトルをまとめて投げる経路（Workers から直接 AniList を叩くのを避ける目的）
+- `0 4 * * *` の Cron は `abema_archive` 専用で Lambda は呼ばない
+
+### 呼び出し元の対応表
+
+| Lambda endpoint | 直接呼ぶ Workers 関数 | 元のトリガー |
+| --- | --- | --- |
+| `/expiring` | `lambda.fetchExpiring()` in `queue.ts:43` / `routes/queues.ts:99` | Cron `0 0 * * *` |
+| `/title_list` | `lambda.fetchTitleList()` in `queue.ts:44` / `routes/queues.ts:100` | Cron `0 */1 * * *` |
+| `/title_info` | `lambda.fetchTitleInfo()` in `lib/sync.ts:79` | Queue `type=update`（前段で `/title_list` 結果から enqueue） |
+| `/identify` | `lambda.identifyTitles()` in `lib/metadata/anilist.ts:261` | `SyncService` 内のメタデータ照合 |
+
+## 3. 各エンドポイントの内部処理
+
+### 3.1 `/expiring`
+
+```mermaid
+flowchart LR
+  A([provider]) --> B[provider.fetchTitleList<br/>category=expiring]
+  B --> C[expiring を持つタイトルだけ残す]
+  C --> D[now + remainingHours を<br/>JST 0:00 に丸めて ISO 化]
+  D --> Ok[200 entries は 0 件でも返す]
+```
+
+### 3.2 `/title_list`
+
+```mermaid
+flowchart LR
+  A([provider, category]) --> F[provider.fetchTitleList]
+  F --> M[8 フィールドに整形]
+  M --> Ok[200]
+```
+
+`category` は `FetchTitleListRequestSchema` でリクエスト段階でバリデート（enum 外なら 400 + ZodError）。
+
+### 3.3 `/title_info`
+
+```mermaid
+flowchart LR
+  A([provider, contentId]) --> F[provider.fetchTitleInfo]
+  F --> Ok[200 detail<br/>TitleInfoSchema]
+```
+
+### 3.4 `/identify` (AniList バッチ照合)
+
+リクエスト段階の長さチェック（`titles ≤ 50`、各要素 nonempty）は `IdentifyRequestSchema` が担う。0 件 / 51 件以上 / 配列以外 はすべて 400 + ZodError。
+
+```mermaid
+flowchart TD
+  S([titles: string n≤50]) --> L{0 件?}
+  L -- Yes --> Empty[200 results: empty]
+  L -- No --> Clean[各タイトルを cleanTitle で正規化]
+  Clean --> Q[q0..qN の Page クエリを合成<br/>1 リクエストで全件問い合わせ]
+  Q --> Req[POST graphql.anilist.co]
+
+  Req --> R{429?}
+  R -- Yes --> Wait[Retry-After 最大 5s 待機 → 1 回だけ再試行]
+  R -- No --> Ok{res.ok?}
+  Wait --> Ok
+  Ok -- No --> Bad[502]
+  Ok -- Yes --> Parse[各 qi.media 0 を<br/>MetadataMediaSchema.safeParse]
+
+  Parse --> YQ[year = seasonYear ?? startDate.year<br/>quarter = SEASON_TO_QUARTER or<br/>          MONTH_TO_QUARTER startDate.month]
+  YQ --> R200[200 results = aniListId/title/status/year/quarter または null]
+```
+
+定数:
+
+- `SEASON_TO_QUARTER`: `WINTER=0` / `SPRING=1` / `SUMMER=2` / `FALL=3`
+- `MONTH_TO_QUARTER`: 1–3月=0, 4–6月=1, 7–9月=2, 10–12月=3
+
+## 4. 補足
+
+### Provider の振り分け
+
+`getProvider(name)` で `hulu` / `crunchyroll` / `abema` / `amazon` を分岐（既定は Amazon）。Provider 実装本体は **Workers と共有**:
+
+- `src/lib/providers/{abema,amazon,crunchyroll,hulu}`
+- `src/schemas/providers/*`
+- `src/lib/metadata/anilist` (`cleanTitle`)
+- `src/lib/logger`
+
+つまり Lambda は薄いラッパーで、Provider のスクレイピング/API ロジックは Workers と同じコードを走らせている。
+
+### US / JP の Function URL
+
+Workers 側 `src/lib/lambda.ts:24` の `getBaseUrl()` が決める:
+
+| provider | 呼ぶ Lambda |
+| --- | --- |
+| `crunchyroll` | `LAMBDA_FUNCTION_URL_US`（あれば） |
+| その他 | `LAMBDA_FUNCTION_URL` (JP) |
+
+### レスポンス検証
+
+Workers 側は受け取った JSON を Zod でパースしてから返す:
+
+- `/expiring` → `ExpiringResponseSchema`
+- `/title_list` → `TitleListResponseSchema`
+- `/title_info` → `TitleInfoSchema`
+- `/identify` → `IdentifyResponseSchema`
+
+`lambda/fetch/index.ts` 内部でも `MetadataMediaSchema.safeParse` で AniList レスポンスを検証している。
+
+### ローカル実行
+
+handler は普通の async 関数なので AWS にデプロイしなくても直接呼べる。`scripts/lambda/local.ts` を経由する:
+
+```sh
+bun scripts/lambda/local.ts /title_list '{"provider":"amazon","category":"new_episode"}'
+bun scripts/lambda/local.ts /expiring   '{"provider":"hulu"}'
+bun scripts/lambda/local.ts /title_info '{"provider":"abema","contentId":"..."}'
+bun scripts/lambda/local.ts /identify   '{"titles":["呪術廻戦"]}'
+```
+
+- Crunchyroll は VPN 必須なのでローカル実行不可
+- AWS への `scripts/lambda/invoke.sh` 経由のデプロイ済関数呼び出しと使い分け

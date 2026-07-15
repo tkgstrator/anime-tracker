@@ -35,7 +35,7 @@ enabled = true
 head_sampling_rate = 1
 
 [triggers]
-crons = ["0 */1 * * *", "0 0 * * *"]
+crons = ["0 */1 * * *", "0 0 * * *", "0 3 * * *", "0 4 * * *", "0 5 * * SUN"]
 
 [[queues.producers]]
 binding = "SYNC_QUEUE"
@@ -45,6 +45,8 @@ queue = "anime-tracker-sync-staging"
 queue = "anime-tracker-sync-staging"
 max_batch_size = 5
 max_retries = 3
+# Amazon 等のスクレイピング先を叩きすぎてスロットル(200で headerDetail 欠落)されるのを防ぐため並行数を抑える
+max_concurrency = 2
 
 [dev]
 port = 8787
@@ -55,6 +57,7 @@ local_protocol = "http"
 
 [env.staging]
 name = "anime-tracker-staging"
+routes = [{ pattern = "nagisa-staging.tkgstrator.work", custom_domain = true }]
 
 [env.staging.vars]
 CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
@@ -80,6 +83,8 @@ queue = "anime-tracker-sync-staging"
 queue = "anime-tracker-sync-staging"
 max_batch_size = 5
 max_retries = 3
+# Amazon 等のスクレイピング先を叩きすぎてスロットル(200で headerDetail 欠落)されるのを防ぐため並行数を抑える
+max_concurrency = 2
 
 # ---- Production ----
 
@@ -100,3 +105,5 @@ queue = "anime-tracker-sync-production"
 queue = "anime-tracker-sync-production"
 max_batch_size = 5
 max_retries = 3
+# Amazon 等のスクレイピング先を叩きすぎてスロットル(200で headerDetail 欠落)されるのを防ぐため並行数を抑える
+max_concurrency = 2

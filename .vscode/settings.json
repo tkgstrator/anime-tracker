@@ -15,7 +15,8 @@
     "**/.tanstack": true,
     "**/.wrangler": true,
     "**/node_modules": true,
-    "**/dist": true
+    "**/dist": true,
+    "**/.cache": true,
   },
   "files.watcherExclude": {
     "**/node_modules/**": true

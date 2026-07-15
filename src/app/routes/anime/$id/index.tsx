@@ -1,12 +1,28 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { LoadingSpinner } from '@/app/components/loading-spinner'
+import { Button } from '@/app/components/ui/button'
 import api from '@/app/lib/api'
 import { queryKeys } from '@/app/lib/query-keys'
 import { animeDetailQueryOptions } from '@/app/lib/query-options'
 import { AnimeHero } from './-components/anime-hero'
 import { EpisodeGrid } from './-components/episode-grid'
+import { RelatedProviders } from './-components/related-providers'
+
+function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object') {
+    const response = (error as { response?: { data?: unknown } }).response
+    const data = response?.data
+    if (data && typeof data === 'object') {
+      const message = (data as { error?: unknown }).error
+      if (typeof message === 'string' && message.trim().length > 0) return message
+    }
+  }
+  if (error instanceof Error && error.message.trim().length > 0) return error.message
+  return fallback
+}
 
 export const Route = createFileRoute('/anime/$id/')({
   loader: ({ params, context: { queryClient } }) => queryClient.ensureQueryData(animeDetailQueryOptions(params.id)),
@@ -17,7 +33,13 @@ export const Route = createFileRoute('/anime/$id/')({
 function AnimeDetailPage() {
   const { id } = Route.useParams()
   const queryClient = useQueryClient()
+  const router = useRouter()
   const { data: anime } = useSuspenseQuery(animeDetailQueryOptions(id))
+
+  const goBack = () => {
+    if (window.history.length > 1) router.history.back()
+    else router.navigate({ to: '/' })
+  }
 
   const invalidateRelated = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.anime.detail(id) })
@@ -41,7 +63,16 @@ function AnimeDetailPage() {
     onError: () => toast.error('録画リクエストに失敗しました')
   })
 
-  const updating = updateAnimeMutation.isPending || recordAnimeMutation.isPending
+  const refreshAnimeMutation = useMutation({
+    mutationFn: () => api.refreshAnime(undefined, { params: { id } }),
+    onSuccess: () => {
+      toast.success('タイトル情報を更新しました')
+      invalidateRelated()
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error, '情報の更新に失敗しました'))
+  })
+
+  const updating = updateAnimeMutation.isPending || recordAnimeMutation.isPending || refreshAnimeMutation.isPending
 
   const toggleScheduled = () => {
     updateAnimeMutation.mutate({ scheduled: !anime.scheduled })
@@ -58,23 +89,33 @@ function AnimeDetailPage() {
   const totalDuration = anime.seasons.reduce((sum, s) => sum + s.episodes.reduce((es, e) => es + e.duration, 0), 0)
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-6'>
       <div>
-        <Link to='/' className='text-sm text-muted-foreground hover:text-foreground'>
-          ← 一覧に戻る
-        </Link>
+        <Button type='button' size='sm' variant='ghost' onClick={goBack} className='-ml-2 text-muted-foreground'>
+          <ChevronLeft />
+          戻る
+        </Button>
       </div>
 
-      <AnimeHero
-        anime={anime}
-        totalEpisodes={totalEpisodes}
-        totalDuration={totalDuration}
-        updating={updating}
-        onToggleScheduled={toggleScheduled}
-        onToggleRecorded={toggleRecorded}
-      />
+      <div className='grid gap-6 lg:grid-cols-[minmax(0,28rem)_1fr] xl:grid-cols-[minmax(0,32rem)_1fr]'>
+        <aside className='space-y-6 lg:sticky lg:top-20 lg:self-start'>
+          <AnimeHero
+            anime={anime}
+            totalEpisodes={totalEpisodes}
+            totalDuration={totalDuration}
+            updating={updating}
+            refreshing={refreshAnimeMutation.isPending}
+            onToggleScheduled={toggleScheduled}
+            onToggleRecorded={toggleRecorded}
+            onRefresh={() => refreshAnimeMutation.mutate()}
+          />
+          <RelatedProviders aniListId={anime.aniListId} currentAnimeId={anime.id} />
+        </aside>
 
-      <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
+        <div className='min-w-0'>
+          <EpisodeGrid seasons={anime.seasons} provider={anime.provider} />
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,19 +1,18 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { LoadingSpinner } from '@/app/components/loading-spinner'
+import { type ChangelogEntry, changelogQueryOptions } from '@/app/lib/query-options'
 
-type CommitEntry = { hash: string; date: string; message: string }
+export const Route = createFileRoute('/changelog/')({
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(changelogQueryOptions()),
+  pendingComponent: LoadingSpinner,
+  component: ChangelogPage
+})
 
-const ChangelogPage = () => {
-  const [commits, setCommits] = useState<CommitEntry[]>([])
+function ChangelogPage() {
+  const { data: commits } = useSuspenseQuery(changelogQueryOptions())
 
-  useEffect(() => {
-    fetch('/commits.json')
-      .then((res) => res.json() as Promise<CommitEntry[]>)
-      .then(setCommits)
-      .catch((e) => console.warn('[changelog] fetch failed:', e))
-  }, [])
-
-  const grouped = commits.reduce<Record<string, CommitEntry[]>>((acc, c) => {
+  const grouped = commits.reduce<Record<string, ChangelogEntry[]>>((acc, c) => {
     if (!acc[c.date]) acc[c.date] = []
     acc[c.date].push(c)
     return acc
@@ -21,7 +20,7 @@ const ChangelogPage = () => {
 
   return (
     <div className='space-y-6'>
-      <h1 className='text-lg font-bold'>Changelog</h1>
+      <h1 className='text-2xl font-bold tracking-tight'>Changelog</h1>
       {Object.entries(grouped).map(([date, entries]) => (
         <section key={date}>
           <h2 className='mb-2 text-sm font-medium text-muted-foreground'>{date}</h2>
@@ -38,7 +37,3 @@ const ChangelogPage = () => {
     </div>
   )
 }
-
-export const Route = createFileRoute('/changelog/')({
-  component: ChangelogPage
-})

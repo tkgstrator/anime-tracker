@@ -7,5 +7,9 @@ export const queryKeys = {
   },
   nagisa: {
     status: ['nagisa', 'status'] as const
+  },
+  changelog: ['changelog'] as const,
+  admin: {
+    unidentified: (filters: Record<string, unknown>) => ['admin', 'unidentified', filters] as const
   }
 }

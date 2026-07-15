@@ -2,11 +2,11 @@
 #
 # Multi-stage build for anime-tracker-fetch Lambda container image.
 #
-# Stage 1: bun build で lambda/fetch/index.ts を dist/index.mjs にバンドル
-# Stage 2: Amazon Linux 2023 arm64 base に Bun binary + custom runtime を配置
+# Stage 1 も Stage 2 も oven/bun base を使う。Bun binary は base image に
+# 同梱されているので、dnf/unzip/curl で手動 install する step は不要になる。
 #
-# 従来の Bun ランタイム Layer (bootstrap + runtime.mjs + bin/bun) を image 内に
-# 内包することで、Layer リソースを廃止し、ap/us で単一 image を共有できる。
+# Lambda 側では ENTRYPOINT (bootstrap) が Bun で runtime.mjs を実行し、
+# Lambda Runtime API と通信 + handler を dynamic import する custom runtime 実装。
 #
 # Build:  docker buildx build --platform linux/arm64 -f lambda/fetch/Dockerfile -t anime-tracker-fetch .
 # Deploy: ECR に push して aws_lambda_function.image_uri で参照する
@@ -26,8 +26,7 @@ COPY src/ ./src/
 
 # bun build → /app/lambda/fetch/dist/index.mjs
 # lambda/fetch/build.ts は最後に zip コマンドで function.zip を作るが、container
-# image では zip 化不要なので bun build を直接叩く (base image に zip が入って
-# いないのを回避する意味もある)。
+# image では zip 化不要なので bun build を直接叩く。
 RUN bun build lambda/fetch/index.ts \
     --outdir lambda/fetch/dist \
     --target node \
@@ -36,17 +35,7 @@ RUN bun build lambda/fetch/index.ts \
     --entry-naming '[name].mjs'
 
 # ---- Stage 2: runtime ----
-FROM public.ecr.aws/lambda/provided:al2023-arm64
-
-# Bun binary (arm64) を /usr/local/bin/bun に配置
-ARG BUN_VERSION=1.3.11
-ADD https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-aarch64.zip /tmp/bun.zip
-RUN dnf install -y unzip && \
-    unzip -q /tmp/bun.zip -d /tmp && \
-    mv /tmp/bun-linux-aarch64/bun /usr/local/bin/bun && \
-    chmod +x /usr/local/bin/bun && \
-    rm -rf /tmp/bun.zip /tmp/bun-linux-aarch64 && \
-    dnf clean all
+FROM oven/bun:1.3.11
 
 # Lambda custom runtime (Bun 実装の Lambda Runtime API adapter)
 COPY lambda/fetch/runtime.mjs /var/runtime/runtime.mjs
@@ -57,6 +46,6 @@ RUN chmod +x /var/runtime/bootstrap
 WORKDIR /var/task
 COPY --from=builder /app/lambda/fetch/dist/index.mjs ./index.mjs
 
-# provided.al2023 の default handler ハンドリング。実際には bootstrap が
-# runtime.mjs → import ./index.mjs → mod.handler を呼ぶ。
-CMD ["index.handler"]
+# Lambda が起動する ENTRYPOINT (custom runtime を Bun で起動)。
+# oven/bun base には default ENTRYPOINT が無いので bootstrap を明示。
+ENTRYPOINT ["/var/runtime/bootstrap"]
