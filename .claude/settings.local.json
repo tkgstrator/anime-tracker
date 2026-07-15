@@ -1,5 +1,43 @@
 {
+  "enabledMcpjsonServers": [
+    "docker",
+    "github",
+    "tailwindcss",
+    "shadcn",
+    "prisma",
+    "zod"
+  ],
   "permissions": {
+    "deny": [
+      "Bash(git clean -f:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git clean -fdx:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(pnpx:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(yarn:*)",
+      "Edit(**/*.pem)",
+      "Edit(**/.dev.vars)",
+      "Edit(**/.dev.vars.*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.secrets)",
+      "Edit(**/.secrets/**)",
+      "Edit(**/private.key)",
+      "Read(**/*.pem)",
+      "Read(**/.dev.vars)",
+      "Read(**/.dev.vars.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.secrets)",
+      "Read(**/.secrets/**)",
+      "Read(**/private.key)"
+    ],
     "allow": [
       "Agent",
       "Bash",
@@ -30,106 +68,15 @@
       "mcp__claude_ai_Google_Drive__*",
       "mcp__context7__*",
       "mcp__github__*",
-      "mcp__github__get_file_contents",
-      "mcp__github__search_repositories",
       "mcp__playwright__*",
       "mcp__plugin_github_github__*",
       "mcp__prisma__*",
       "mcp__shadcn__*",
       "mcp__tailwindcss__*",
       "mcp__zod__*"
-    ],
-    "deny": [
-      "Bash(bun dev:*)",
-      "Bash(bun run dev:*)",
-      "Bash(bun run preview:*)",
-      "Bash(git clean -f:*)",
-      "Bash(git clean -fd:*)",
-      "Bash(git clean -fdx:*)",
-      "Bash(git push --force:*)",
-      "Bash(git push -f:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(npm:*)",
-      "Bash(npx:*)",
-      "Bash(pnpm:*)",
-      "Bash(pnpx:*)",
-      "Bash(rm -rf /:*)",
-      "Bash(vite:*)",
-      "Bash(wrangler deploy:*)",
-      "Bash(wrangler pages deploy:*)",
-      "Bash(yarn:*)",
-      "Edit(**/*.pem)",
-      "Edit(**/.dev.vars)",
-      "Edit(**/.dev.vars.*)",
-      "Edit(**/.env)",
-      "Edit(**/.env.*)",
-      "Edit(**/.secrets)",
-      "Edit(**/.secrets/**)",
-      "Edit(**/private.key)",
-      "Read(**/*.pem)",
-      "Read(**/.dev.vars)",
-      "Read(**/.dev.vars.*)",
-      "Read(**/.env)",
-      "Read(**/.env.*)",
-      "Read(**/.secrets)",
-      "Read(**/.secrets/**)",
-      "Read(**/private.key)"
-    ],
-    "defaultMode": "bypassPermissions",
-    "bypassPermissionsMode": "allow"
+    ]
   },
-  "enabledMcpjsonServers": [
-    "docker",
-    "github",
-    "tailwindcss",
-    "shadcn",
-    "zod",
-    "prisma",
-    "playwright",
-    "context7",
-    "chrome-devtools",
-    "sequential-thinking"
-  ],
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/biome-fix.sh\"",
-            "timeout": 30,
-            "statusMessage": "Biome (auto-fix)"
-          },
-          {
-            "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/dart-format.sh\"",
-            "timeout": 30,
-            "statusMessage": "dart format"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/repo-check.sh\"",
-            "timeout": 120,
-            "statusMessage": "Biome + tsc + test (repo check)",
-            "async": true
-          },
-          {
-            "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/auto-commit.sh\"",
-            "timeout": 180,
-            "statusMessage": "auto-commit (biome+tsc gate, LLM message)",
-            "async": true
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [
@@ -142,9 +89,5 @@
         ]
       }
     ]
-  },
-  "outputStyle": "default",
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
-  "prefersReducedMotion": true
+  }
 }
