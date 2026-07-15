@@ -1,0 +1,29 @@
+# lambda/fetch/Dockerfile の build context 用 (repo root を context にする前提)。
+# 現状 nagisa-webui repo で他に docker build は無いので root に置く。
+# lambda/fetch build に不要なディレクトリを除外して context サイズを削減。
+
+node_modules
+.git
+.github
+.claude
+.devcontainer
+.vscode
+
+# WebUI / Prisma / test 一式は Lambda build に不要
+docs
+e2e
+__tests__
+prisma
+public
+scripts
+
+# build output は Dockerfile 内で生成し直す
+dist
+**/dist
+lambda/*/dist
+lambda/layers
+
+# ログ / secrets
+*.log
+.env*
+.dev.vars*
