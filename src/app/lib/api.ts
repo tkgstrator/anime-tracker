@@ -1,8 +1,14 @@
 import { Zodios } from '@zodios/core'
 import { z } from 'zod'
 import { AnimeInfoSchema, AnimeSchema, BadgedAnimeSchema, PaginatedAnimeSchema } from '@/schemas/anime.dto'
-import { NagisaQueueResponseSchema, NagisaStatusSchema } from '@/schemas/nagisa.dto'
+import {
+  NagisaEnqueueRequestSchema,
+  NagisaEnqueueResponseSchema,
+  NagisaQueueResponseSchema,
+  NagisaStatusSchema
+} from '@/schemas/nagisa.dto'
 import { BulkUpdateRecordingSchema, UpdateRecordingSchema } from '@/schemas/recording.dto'
+import { PaginatedUnidentifiedSchema } from '@/schemas/unidentified.dto'
 
 const api = new Zodios('/api', [
   {
@@ -22,8 +28,7 @@ const api = new Zodios('/api', [
       { name: 'recorded', type: 'Query', schema: z.boolean().optional() },
       { name: 'sort', type: 'Query', schema: z.enum(['title', 'year', 'updatedAt']).optional() },
       { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() },
-      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() },
-      { name: 'exclusive', type: 'Query', schema: z.boolean().optional() }
+      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() }
     ],
     response: PaginatedAnimeSchema
   },
@@ -44,6 +49,12 @@ const api = new Zodios('/api', [
     path: '/anime/:id/record',
     alias: 'recordAnime',
     response: NagisaQueueResponseSchema
+  },
+  {
+    method: 'post',
+    path: '/anime/:id/refresh',
+    alias: 'refreshAnime',
+    response: z.object({ contentId: z.string(), provider: z.string() })
   },
   {
     method: 'patch',
@@ -102,6 +113,26 @@ const api = new Zodios('/api', [
     path: '/nagisa/status',
     alias: 'getNagisaStatus',
     response: NagisaStatusSchema
+  },
+  {
+    method: 'get',
+    path: '/admin/unidentified',
+    alias: 'getUnidentifiedList',
+    parameters: [
+      { name: 'page', type: 'Query', schema: z.number().int().min(1).optional() },
+      { name: 'limit', type: 'Query', schema: z.number().int().min(1).max(100).optional() },
+      { name: 'provider', type: 'Query', schema: z.string().nonempty().optional() },
+      { name: 'q', type: 'Query', schema: z.string().nonempty().optional() },
+      { name: 'order', type: 'Query', schema: z.enum(['asc', 'desc']).optional() }
+    ],
+    response: PaginatedUnidentifiedSchema
+  },
+  {
+    method: 'post',
+    path: '/nagisa/jobs',
+    alias: 'enqueueNagisaJob',
+    parameters: [{ name: 'body', type: 'Body', schema: NagisaEnqueueRequestSchema }],
+    response: NagisaEnqueueResponseSchema
   }
 ])
 

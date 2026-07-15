@@ -11,9 +11,25 @@
 // import { AwsClient } from 'aws4fetch'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import type { z } from 'zod'
+import {
+  FetchAbemaArchiveRequestSchema,
+  FetchAbemaArchiveResponseSchema,
+  ExpiringResponseSchema,
+  FetchExpiringRequestSchema,
+  FetchTitleInfoRequestSchema,
+  FetchTitleListRequestSchema,
+  IdentifyRequestSchema,
+  IdentifyResponseSchema,
+  TitleListResponseSchema
+} from '../../src/schemas/lambda.dto'
+import { TitleInfoSchema } from '../../src/schemas/providers/common.dto'
 import { MetadataMediaSchema } from '../../src/schemas/providers/metadata.dto'
 import { cleanTitle } from '../../src/lib/metadata/anilist'
 import { setupLogger } from '../../src/lib/logger'
+import { getGuestSession } from '../../src/lib/providers/abema/auth'
+import { buildKeysArchive, fetchMediaToken } from '../../src/lib/providers/abema/hls'
+import { AbemaProvider } from '../../src/lib/providers/abema'
 import { AmazonProvider } from '../../src/lib/providers/amazon'
 import type { Provider } from '../../src/lib/providers/base'
 import { CrunchyrollProvider } from '../../src/lib/providers/crunchyroll'
@@ -25,6 +41,7 @@ setupLogger()
 function getProvider(name: string): Provider {
   if (name === 'hulu') return new HuluProvider()
   if (name === 'crunchyroll') return new CrunchyrollProvider()
+  if (name === 'abema') return new AbemaProvider()
   return new AmazonProvider()
 }
 
@@ -110,19 +127,12 @@ async function fetchExpiring(provider: string) {
     })
 
   console.log(`Fetched ${entries.length} expiring entries for ${provider}`)
-  if (entries.length === 0) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'No expiring entries found' }) }
-  }
-  return { statusCode: 200, body: JSON.stringify({ fetchedAt: now.toISOString(), entries }) }
+  return { fetchedAt: now.toISOString(), entries }
 }
 
 // ---- title_list (new_episode / coming_soon) ----
 
-async function fetchTitleList(providerName: string, category: string) {
-  if (category !== 'new_episode' && category !== 'coming_soon') {
-    return { statusCode: 400, body: JSON.stringify({ error: `Invalid category: ${category}` }) }
-  }
-
+async function fetchTitleList(providerName: string, category: 'new_episode' | 'coming_soon' | 'catalog') {
   const provider = getProvider(providerName)
   const titles = await provider.fetchTitleList({ category })
 
@@ -133,12 +143,12 @@ async function fetchTitleList(providerName: string, category: string) {
     entityType: t.entityType,
     imageUrl: t.imageUrl,
     maturityRating: t.maturityRating,
-    nextEpisodeDate: t.nextEpisodeDate ?? null,
-    badge: t.badge ?? null
+    nextEpisodeDate: t.nextEpisodeDate,
+    badge: t.badge
   }))
 
   console.log(`Fetched ${entries.length} ${category} entries for ${providerName}`)
-  return { statusCode: 200, body: JSON.stringify({ fetchedAt: dayjs().toISOString(), entries }) }
+  return { fetchedAt: dayjs().toISOString(), entries }
 }
 
 // ---- title_info ----
@@ -150,7 +160,49 @@ async function fetchTitleInfo(providerName: string, contentId: string) {
   console.log(
     `Fetched title_info for ${providerName}/${contentId}: ${detail.seasons.length} seasons`
   )
-  return { statusCode: 200, body: JSON.stringify(detail) }
+  return detail
+}
+
+// ---- title_info (abema archive mode) ----
+
+async function fetchAbemaArchives(programIds: string[], targetHeight = 0) {
+  const session = await getGuestSession()
+  const mediaToken = await fetchMediaToken({ bearer: session.token })
+  const results = await Promise.all(
+    programIds.map(async (programId) => {
+      try {
+        const archive = await buildKeysArchive({
+          programId,
+          mediaToken,
+          deviceId: session.deviceId,
+          targetHeight
+        })
+        return {
+          programId,
+          ok: true as const,
+          archive: {
+            programId: archive.programId,
+            cid: archive.cid,
+            contentKeyHex: archive.contentKeyHex,
+            ivHex: archive.ivHex,
+            variantUrl: archive.variantUrl,
+            variantResolution: archive.variantResolution,
+            variantBandwidth: archive.variantBandwidth,
+            segmentUrls: archive.segmentUrls
+          }
+        }
+      } catch (e) {
+        return {
+          programId,
+          ok: false as const,
+          error: e instanceof Error ? e.message : String(e)
+        }
+      }
+    })
+  )
+  const okCount = results.filter((r) => r.ok).length
+  console.log(`Fetched ${okCount}/${programIds.length} ABEMA key archives`)
+  return { results }
 }
 
 // ---- identify ----
@@ -184,21 +236,20 @@ const SEASON_TO_QUARTER: Record<string, number> = {
 
 const MONTH_TO_QUARTER = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3] as const
 
-async function fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
-  const res = await fetch(url, init)
-  if (res.status !== 429) return res
-  const retryAfter = Math.min(Number(res.headers.get('Retry-After') || '2'), 5)
-  await new Promise((r) => setTimeout(r, retryAfter * 1000))
-  return fetch(url, init)
+async function fetchWithRetry(url: string, init: RequestInit, maxRetries = 4): Promise<Response> {
+  let res = await fetch(url, init)
+  for (let attempt = 0; res.status === 429 && attempt < maxRetries; attempt++) {
+    // AniList の Retry-After(秒) を尊重し、無ければ指数バックオフ。上限 60s。
+    const retryAfter = Math.min(Number(res.headers.get('Retry-After')) || 2 ** attempt, 60)
+    console.warn(`AniList 429: retry ${attempt + 1}/${maxRetries} after ${retryAfter}s`)
+    await new Promise((r) => setTimeout(r, retryAfter * 1000))
+    res = await fetch(url, init)
+  }
+  return res
 }
 
-async function identifyTitles(rawTitles: string[]) {
-  if (rawTitles.length === 0) {
-    return { statusCode: 200, body: JSON.stringify({ results: [] }) }
-  }
-  if (rawTitles.length > 50) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'titles must be 50 or fewer' }) }
-  }
+async function identifyTitles(rawTitles: string[]): Promise<{ results: (z.infer<typeof IdentifyResponseSchema>['results'][number])[] } | { upstreamStatus: number }> {
+  if (rawTitles.length === 0) return { results: [] }
 
   const searches = rawTitles.map((t) => cleanTitle(t))
   const query = buildBatchQuery(searches)
@@ -211,7 +262,7 @@ async function identifyTitles(rawTitles: string[]) {
 
   if (!res.ok) {
     console.error(`AniList API error: ${res.status}`)
-    return { statusCode: 502, body: JSON.stringify({ error: `AniList API error: ${res.status}` }) }
+    return { upstreamStatus: res.status }
   }
 
   const data = (await res.json()) as { data: Record<string, { media: unknown[] }> }
@@ -219,19 +270,12 @@ async function identifyTitles(rawTitles: string[]) {
   const results = searches.map((_, i) => {
     const page = data.data[`q${i}`]
     if (!page?.media?.length) return null
-    let media: ReturnType<typeof MetadataMediaSchema.safeParse>['data']
-    try {
-      const parsed = MetadataMediaSchema.safeParse(page.media[0])
-      if (!parsed.success) {
-        console.warn(`[identify] schema validation failed for index ${i}:`, parsed.error.message)
-        return null
-      }
-      media = parsed.data
-    } catch (e) {
-      console.warn(`[identify] unexpected error for index ${i}:`, e instanceof Error ? e.message : String(e))
+    const result = MetadataMediaSchema.safeParse(page.media[0])
+    if (!result.success) {
+      console.warn(`[identify] schema validation failed for index ${i}:`, result.error.message)
       return null
     }
-    if (!media) return null
+    const media = result.data
 
     const year = media.seasonYear ?? media.startDate.year
     const quarter = media.season
@@ -251,48 +295,93 @@ async function identifyTitles(rawTitles: string[]) {
   })
 
   console.log(`Identified ${results.filter(Boolean).length}/${rawTitles.length} titles`)
-  return { statusCode: 200, body: JSON.stringify({ results }) }
+  return { results }
 }
 
 // ---- handler ----
 
+type LambdaResponse = { statusCode: number; body: string }
+
+const ok = <T>(data: T): LambdaResponse => ({ statusCode: 200, body: JSON.stringify(data) })
+
+const zodFail = (status: number, label: 'request' | 'response', error: z.ZodError): LambdaResponse => ({
+  statusCode: status,
+  body: JSON.stringify({ error: `Invalid ${label}`, issues: error.issues })
+})
+
+async function handleRoute<Req, Res>(
+  body: unknown,
+  requestSchema: z.ZodType<Req>,
+  responseSchema: z.ZodType<Res>,
+  run: (input: Req) => Promise<Res>
+): Promise<LambdaResponse> {
+  const result = requestSchema.safeParse(body)
+  if (!result.success) return zodFail(400, 'request', result.error)
+  const output = await run(result.data)
+  {
+    const result = responseSchema.safeParse(output)
+    if (!result.success) return zodFail(500, 'response', result.error)
+    return ok(result.data)
+  }
+}
+
 // biome-ignore lint: Lambda event type varies by invocation method
-export async function handler(event: any): Promise<{ statusCode: number; body: string }> {
+export async function handler(event: any): Promise<LambdaResponse> {
   const path = event.rawPath ?? event.path ?? '/'
   const body = event.body ? JSON.parse(event.body) : event
 
   console.log(`${path}`)
 
-  switch (path) {
-    case '/expiring': {
-      const { provider } = body
-      if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-      console.log(`provider=${provider}`)
-      return fetchExpiring(provider)
-    }
-    case '/title_list': {
-      const { provider, category } = body
-      if (!provider) return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider' }) }
-      console.log(`provider=${provider}`)
-      return fetchTitleList(provider, category)
-    }
-    case '/title_info': {
-      const { provider, contentId } = body
-      if (!provider || !contentId) {
-        return { statusCode: 400, body: JSON.stringify({ error: 'Missing provider or contentId' }) }
+  try {
+    switch (path) {
+      case '/expiring':
+        return await handleRoute(body, FetchExpiringRequestSchema, ExpiringResponseSchema, ({ provider }) => {
+          console.log(`provider=${provider}`)
+          return fetchExpiring(provider)
+        })
+      case '/title_list':
+        return await handleRoute(body, FetchTitleListRequestSchema, TitleListResponseSchema, ({ provider, category }) => {
+          console.log(`provider=${provider} category=${category}`)
+          return fetchTitleList(provider, category)
+        })
+      case '/title_info':
+        {
+          const result = FetchAbemaArchiveRequestSchema.safeParse(body)
+          if (result.success) {
+            console.log(`programIds=${result.data.programIds.length} targetHeight=${result.data.targetHeight ?? 0}`)
+            const output = await fetchAbemaArchives(result.data.programIds, result.data.targetHeight ?? 0)
+            {
+              const result = FetchAbemaArchiveResponseSchema.safeParse(output)
+              if (!result.success) return zodFail(500, 'response', result.error)
+              return ok(result.data)
+            }
+          }
+          return await handleRoute(body, FetchTitleInfoRequestSchema, TitleInfoSchema, ({ provider, contentId }) => {
+            console.log(`provider=${provider} contentId=${contentId}`)
+            return fetchTitleInfo(provider, contentId)
+          })
+        }
+      case '/identify': {
+        const result = IdentifyRequestSchema.safeParse(body)
+        if (!result.success) return zodFail(400, 'request', result.error)
+        console.log(`titles count=${result.data.titles.length}`)
+        const output = await identifyTitles(result.data.titles)
+        if ('upstreamStatus' in output) {
+          return { statusCode: 502, body: JSON.stringify({ error: `AniList API error: ${output.upstreamStatus}` }) }
+        }
+        {
+          const result = IdentifyResponseSchema.safeParse(output)
+          if (!result.success) return zodFail(500, 'response', result.error)
+          return ok(result.data)
+        }
       }
-      console.log(`provider=${provider} contentId=${contentId}`)
-      return fetchTitleInfo(provider, contentId)
+      default:
+        return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
     }
-    case '/identify': {
-      const { titles } = body
-      if (!Array.isArray(titles)) {
-        return { statusCode: 400, body: JSON.stringify({ error: 'Missing titles array' }) }
-      }
-      console.log(`titles count=${titles.length}`)
-      return identifyTitles(titles)
-    }
-    default:
-      return { statusCode: 404, body: JSON.stringify({ error: `Unknown path: ${path}` }) }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e)
+    const stack = e instanceof Error ? e.stack : undefined
+    console.error(`Unhandled error on ${path}:`, message, stack)
+    return { statusCode: 500, body: JSON.stringify({ error: message }) }
   }
 }

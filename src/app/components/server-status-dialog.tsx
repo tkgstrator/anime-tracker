@@ -42,7 +42,7 @@ const JobItem = ({ job }: { job: NagisaStatusJob }) => {
   return (
     <div className='rounded-lg bg-muted/40 px-3 py-2'>
       <div className='flex items-center gap-2'>
-        <span className='inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-blue-500' />
+        <span className='inline-block size-1.5 shrink-0 animate-pulse rounded-full bg-info' />
         <p className='min-w-0 flex-1 truncate text-xs font-medium'>{job.title ?? job.content_id}</p>
         <span className='shrink-0 text-xs text-muted-foreground'>{job.provider}</span>
       </div>
@@ -56,7 +56,7 @@ const JobItem = ({ job }: { job: NagisaStatusJob }) => {
         <div className='mt-1.5 flex items-center gap-2 pl-3.5'>
           <div className='h-1 flex-1 overflow-hidden rounded-full bg-muted'>
             <div
-              className='h-full rounded-full bg-blue-500 transition-all'
+              className='h-full rounded-full bg-info transition-all'
               style={{ width: `${(job.progress.current / job.progress.total) * 100}%` }}
             />
           </div>
@@ -76,10 +76,27 @@ export const ServerStatusDialog = () => {
     <Dialog>
       <DialogTrigger
         render={
-          <Button variant='ghost' size='icon-sm' className='ml-auto text-muted-foreground hover:text-foreground' />
+          <Button
+            variant='ghost'
+            size='icon-sm'
+            className='relative ml-auto text-muted-foreground hover:text-foreground'
+            aria-label={
+              isPending
+                ? 'サーバ状態: 接続中'
+                : isError || !status
+                  ? 'サーバ状態: オフライン'
+                  : 'サーバ状態: オンライン'
+            }
+          />
         }
       >
         <Server className='size-4' />
+        <span
+          aria-hidden='true'
+          className={`pointer-events-none absolute right-0.5 bottom-0.5 size-1.5 rounded-full ring-2 ring-background ${
+            isPending ? 'animate-pulse bg-muted-foreground' : isError || !status ? 'bg-destructive' : 'bg-success'
+          }`}
+        />
       </DialogTrigger>
       <DialogContent className='max-h-[80vh] select-none overflow-y-auto sm:max-w-lg'>
         <DialogHeader>
@@ -92,7 +109,7 @@ export const ServerStatusDialog = () => {
           </div>
         ) : isError || !status ? (
           <div className='flex items-center gap-3 py-2'>
-            <WifiOff className='size-5 text-red-500' />
+            <WifiOff className='size-5 text-destructive' />
             <div>
               <p className='text-sm font-medium'>Offline</p>
               <p className='text-xs text-muted-foreground'>Cannot reach Nagisa server</p>
@@ -102,7 +119,7 @@ export const ServerStatusDialog = () => {
           <div className='space-y-5'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-3'>
-                <Wifi className='size-5 text-green-500' />
+                <Wifi className='size-5 text-success' />
                 <div>
                   <p className='text-sm font-medium'>Online</p>
                   <p className='text-xs text-muted-foreground'>Uptime: {formatUptime(status.uptime)}</p>
@@ -129,7 +146,7 @@ export const ServerStatusDialog = () => {
             {(status.queue?.active.jobs.length ?? 0) > 0 && (
               <div className='space-y-2'>
                 <div className='flex items-center gap-3'>
-                  <Activity className='size-5 text-blue-500' />
+                  <Activity className='size-5 text-info' />
                   <p className='text-sm font-medium'>Active Jobs ({status.queue?.active.jobs.length})</p>
                 </div>
                 <div className='space-y-1.5'>
@@ -154,7 +171,7 @@ export const ServerStatusDialog = () => {
                           <Power className='size-3' />
                           Status
                         </span>
-                        <span className={status.redis.connected ? 'text-green-500' : 'text-red-500'}>
+                        <span className={status.redis.connected ? 'text-success' : 'text-destructive'}>
                           {status.redis.connected ? 'Connected' : 'Disconnected'}
                         </span>
                       </div>
@@ -231,10 +248,10 @@ const QueueStat = ({
   <div className='flex flex-col items-center gap-1 rounded-lg bg-muted/40 px-1 py-2'>
     <Icon
       className={`size-3.5 ${
-        error ? 'text-red-500' : active && value > 0 ? 'animate-spin text-blue-500' : 'text-muted-foreground'
+        error ? 'text-destructive' : active && value > 0 ? 'animate-spin text-info' : 'text-muted-foreground'
       }`}
     />
-    <span className={`text-base font-semibold tabular-nums ${error ? 'text-red-500' : ''}`}>{value}</span>
+    <span className={`text-base font-semibold tabular-nums ${error ? 'text-destructive' : ''}`}>{value}</span>
     <span className='text-[10px] text-muted-foreground'>{label}</span>
   </div>
 )

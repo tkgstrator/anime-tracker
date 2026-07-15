@@ -31,16 +31,17 @@ An app for managing and tracking anime recordings from streaming services.
 |---------|--------|-------|
 | Amazon Prime Video | Supported | Including subscription channels (d Anime Store, Anime Times, Toei Animation) |
 | Hulu | Supported | Hulu Japan |
+| ABEMA | Supported (Browse only) | Catalog browsing and episode data available; recording not yet supported |
 | Netflix | Planned | See [docs/features/netflix-provider.md](docs/features/netflix-provider.md) |
 
 > [!NOTE]
-> Recording functionality requires [Nagisa Backend](https://github.com/qtmleap/nagisa) and active subscriptions to the respective streaming services.
+> Recording functionality requires [Nagisa Backend](https://github.com/qtmleap/nagisa) and active subscriptions to the respective streaming services. ABEMA is currently browse-only as Nagisa Backend does not yet support it.
 
 ## Features
 
 ### Data Collection (Automated Backend Sync)
 
-- **Provider Scraping** — Automatically fetches anime catalogs from Amazon Prime Video / Hulu every hour
+- **Provider Scraping** — Automatically fetches anime catalogs from Amazon Prime Video / Hulu / ABEMA every hour
 - **AniList Identification** — Matches fetched titles against the AniList GraphQL API to identify anime (50-item batch processing)
 - **Metadata Enrichment** — Attaches metadata such as airing status, year, and season from AniList
 - **Differential Sync** — Compares with existing data and adds only new seasons/episodes (no duplicates)
@@ -84,11 +85,11 @@ An app for managing and tracking anime recordings from streaming services.
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
-graph TD
+graph LR
     Cron["Scheduled<br/>(hourly cron)"] -->|enqueue| Queue["Cloudflare Queues"]
     Queue -->|consume| Sync["SyncService"]
 
-    Sync -->|fetch catalog| Providers["Providers<br/>Amazon / Hulu"]
+    Sync -->|fetch catalog| Providers["Providers<br/>Amazon / Hulu / ABEMA"]
     Sync -->|enrich metadata| Metadata["Metadata<br/>AniList"]
 
     Providers --> DB["Cloudflare D1<br/>(Prisma)"]
@@ -109,11 +110,23 @@ graph TD
 
 ### Data Sync Flow
 
-1. **Scheduled** — Hourly cron enqueues `hulu` / `amazon` fetch messages to the Queue
+1. **Scheduled** — Hourly cron enqueues `hulu` / `amazon` / `abema` fetch messages to the Queue
 2. **Queue Consumer** — Consumes messages in batches, delegates to SyncService
-3. **Provider** — Scrapes catalogs and detail pages from Amazon / Hulu
+3. **Provider** — Scrapes catalogs and detail pages from Amazon / Hulu / ABEMA
 4. **Metadata** — Enriches with metadata via AniList GraphQL
 5. **Upsert** — Upserts Anime / Season / Episode into D1 via Prisma
+
+### Scheduled Jobs
+
+Cron triggers are defined in `wrangler.toml` (`[triggers].crons`) and dispatched by `src/scheduled.ts`. Cloudflare Workers evaluates cron expressions in **UTC**; the JST column is shown for reference.
+
+| Cron (UTC) | JST | Targets | Action |
+|---|---|---|---|
+| `0 */1 * * *` | Every hour on :00 | hulu / amazon / crunchyroll / abema | Enqueue `new_episode` and `coming_soon` for each provider (8 messages total) |
+| `0 0 * * *` | Daily 09:00 | Same 4 providers | Enqueue `expiring` (titles nearing end of availability) |
+| `0 3 * * *` | Daily 12:00 | Same 4 providers | Enqueue `catalog` (full catalog fetch) |
+| `0 4 * * *` | Daily 13:00 | ABEMA only | Scan Anime whose episodes still have `abemaKey == null` and enqueue `abema_archive` per anime |
+| `0 5 * * SUN` | Weekly Sun 14:00 | AniList | Enqueue `anilist_sync` for each year from 2000 to next year, staggered by 30s to avoid AniList rate limits |
 
 ### Prime Video Data Fetching
 
@@ -319,10 +332,15 @@ src/
 │       │   ├── detail.ts
 │       │   ├── protobuf.ts
 │       │   └── index.ts
-│       └── hulu/               # Hulu
+│       ├── hulu/               # Hulu
+│       │   ├── browse.ts
+│       │   ├── detail.ts
+│       │   ├── rsc-parser.ts
+│       │   └── index.ts
+│       └── abema/              # ABEMA
+│           ├── auth.ts
 │           ├── browse.ts
 │           ├── detail.ts
-│           ├── rsc-parser.ts
 │           └── index.ts
 ├── routes/                     # Backend API routes
 │   ├── anime.ts                # /api/anime
@@ -335,6 +353,7 @@ src/
 │       ├── common.dto.ts
 │       ├── amazon.dto.ts
 │       ├── hulu.dto.ts
+│       ├── abema.dto.ts
 │       └── metadata.dto.ts
 └── app/                        # Frontend (React)
     ├── main.tsx

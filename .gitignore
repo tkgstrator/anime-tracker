@@ -269,3 +269,6 @@ tfplan
 lambda/*/dist/
 lambda/layers/
 
+# Local D1 backups (large sqlite snapshots)
+.backups/
+

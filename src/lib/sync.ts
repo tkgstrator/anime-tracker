@@ -1,13 +1,22 @@
 import dayjs from 'dayjs'
+import { v5 as uuidv5 } from 'uuid'
 import type { ExpiringResponse, TitleListResponse } from '@/schemas/lambda.dto.ts'
 import type { FetchMessage, UpdateMessage } from '@/schemas/message.dto.ts'
-import type { Episode, Season } from '@/schemas/providers/common.dto.ts'
+import type { Episode, Season, TitleInfo } from '@/schemas/providers/common.dto.ts'
 import type { PrismaClient } from '../generated/prisma/client.ts'
+import { withD1Retry } from './db'
 import type { FetchClient } from './lambda'
 import { getAppLogger } from './logger'
-import { AniListAdapter, cleanTitle } from './metadata/anilist'
+import { cleanTitle } from './metadata/anilist'
+import { identifyTitlesViaD1 } from './metadata/local-anilist'
 
-const adapter = new AniListAdapter()
+/** UUIDv5 NAMESPACE。scripts/db/seed.ts と同一値。 */
+const ID_NAMESPACE = uuidv5('animetracker', uuidv5.DNS)
+const animeUuid = (provider: string, contentId: string) => uuidv5(`${provider}:${contentId}`, ID_NAMESPACE)
+const seasonUuid = (provider: string, contentId: string, seasonStableId: string) =>
+  uuidv5(`${provider}:${contentId}:${seasonStableId}`, ID_NAMESPACE)
+const episodeUuid = (provider: string, contentId: string, seasonStableId: string, episodeNumber: number) =>
+  uuidv5(`${provider}:${contentId}:${seasonStableId}:${episodeNumber}`, ID_NAMESPACE)
 
 function isUniqueConstraintError(e: unknown): boolean {
   return e instanceof Error && 'code' in e && (e as { code: string }).code === 'P2002'
@@ -29,6 +38,28 @@ async function findExistingContentIds(prisma: PrismaClient, contentIds: string[]
   return new Set(results)
 }
 
+/** AniList 識別済みかどうかに関わらず、過去に sync 試行済みの contentId を返す */
+async function findKnownContentIds(prisma: PrismaClient, provider: string, contentIds: string[]): Promise<Set<string>> {
+  const identified: string[] = []
+  const unidentified: string[] = []
+  for (let i = 0; i < contentIds.length; i += D1_VARIABLE_LIMIT) {
+    const chunk = contentIds.slice(i, i + D1_VARIABLE_LIMIT)
+    const [identifiedRows, unidentifiedRows] = await Promise.all([
+      prisma.anime.findMany({
+        where: { provider, contentId: { in: chunk } },
+        select: { contentId: true }
+      }),
+      prisma.unidentifiedAnime.findMany({
+        where: { provider, contentId: { in: chunk } },
+        select: { contentId: true }
+      })
+    ])
+    identified.push(...identifiedRows.map((r) => r.contentId))
+    unidentified.push(...unidentifiedRows.map((r) => r.contentId))
+  }
+  return new Set([...identified, ...unidentified])
+}
+
 /** ISO 8601 文字列を Date に変換し、過去なら null を返す */
 function parseFutureDate(dateStr: string | null | undefined): Date | null {
   if (!dateStr) return null
@@ -47,50 +78,78 @@ export class SyncService {
 
   /** プロバイダのエピソード情報を取得し、不足しているシーズン・エピソードを同期する */
   async update({ message }: UpdateMessage): Promise<void> {
-    syncLogger.debug({
-      action: 'update-start',
-      provider: message.provider,
-      contentId: message.contentId
-    })
-
     // Lambda 経由で取得（画像の R2 アップロードも Lambda 側で実行される）
     const detail = await this.lambda.fetchTitleInfo({ provider: message.provider, contentId: message.contentId })
+    await this.applyDetail(message.provider, message.contentId, detail)
+  }
 
-    syncLogger.debug({
-      action: 'fetched-title-info',
-      provider: message.provider,
-      contentId: message.contentId,
-      title: detail.title,
-      seasonCount: detail.seasons.length,
-      episodeCount: detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0)
-    })
+  /** 取得済みの TitleInfo を DB に反映する（Lambda 不要） */
+  async applyDetail(provider: string, contentId: string, detail: TitleInfo): Promise<void> {
+    const anime = await withD1Retry(() =>
+      this.prisma.anime.update({
+        where: { provider_contentId: { provider, contentId } },
+        data: { description: detail.description }
+      })
+    )
 
-    const anime = await this.prisma.anime.findUniqueOrThrow({
-      where: { provider_contentId: { provider: message.provider, contentId: message.contentId } }
-    })
-
-    await this.syncSeasons(anime.id, message.provider, message.contentId, detail.seasons)
+    const stats = await this.syncSeasons(anime.id, provider, contentId, detail.seasons)
 
     syncLogger.info({
-      action: 'update',
-      provider: message.provider,
-      contentId: message.contentId
+      action: 'apply-detail-done',
+      provider,
+      contentId,
+      seasonCount: detail.seasons.length,
+      episodeCount: detail.seasons.reduce((sum, s) => sum + s.episodes.length, 0),
+      seasonsCreated: stats.seasonsCreated,
+      episodesCreated: stats.episodesCreated,
+      episodesUpdated: stats.episodesUpdated
     })
   }
 
   /** 既存シーズン・エピソードと差分比較し、不足分を追加する */
-  private async syncSeasons(animeId: string, provider: string, contentId: string, seasons: Season[]): Promise<void> {
+  private async syncSeasons(
+    animeId: string,
+    provider: string,
+    contentId: string,
+    seasons: Season[]
+  ): Promise<{ seasonsCreated: number; episodesCreated: number; episodesUpdated: number }> {
+    const stats = { seasonsCreated: 0, episodesCreated: 0, episodesUpdated: 0 }
     const anime = await this.prisma.anime.findUniqueOrThrow({
       where: { provider_contentId: { provider, contentId } },
       include: {
         seasons: {
-          include: { episodes: { select: { episodeNumber: true } } }
+          include: {
+            episodes: {
+              select: {
+                id: true,
+                episodeNumber: true,
+                imageUrl: true,
+                description: true,
+                duration: true,
+                releaseDate: true
+              }
+            }
+          }
         }
       }
     })
 
     const existingSeasons = new Map(
-      anime.seasons.map((s) => [s.seasonNumber, new Set(s.episodes.map((e) => e.episodeNumber))])
+      anime.seasons.map((s) => [
+        s.seasonNumber,
+        new Map(
+          s.episodes.map((e) => [
+            e.episodeNumber,
+            {
+              id: e.id,
+              imageUrl: e.imageUrl,
+              description: e.description,
+              duration: e.duration,
+              releaseDate: e.releaseDate
+            }
+          ])
+        )
+      ])
     )
 
     for (const season of seasons) {
@@ -98,7 +157,8 @@ export class SyncService {
 
       if (!existingEpisodes) {
         try {
-          await this.createSeason(animeId, season)
+          await withD1Retry(() => this.createSeason(animeId, provider, contentId, season))
+          stats.seasonsCreated += 1
           syncLogger.info({
             action: 'create-season',
             provider,
@@ -116,43 +176,55 @@ export class SyncService {
 
       const dbSeason = anime.seasons.find((s) => s.seasonNumber === season.seasonNumber)
       if (!dbSeason) continue
-      const newEpisodes = season.episodes.filter((ep) => !existingEpisodes.has(ep.episodeNumber))
-      if (newEpisodes.length > 0) {
-        syncLogger.info({
-          action: 'add-episodes',
-          provider,
-          contentId,
-          seasonNumber: season.seasonNumber,
-          count: newEpisodes.length,
-          episodes: newEpisodes.map((ep) => ep.episodeNumber)
-        })
-      }
-      for (const episode of newEpisodes) {
-        try {
-          await this.createEpisode(dbSeason.id, episode)
-        } catch (e) {
-          if (!isUniqueConstraintError(e)) throw e
-          syncLogger.warn({
-            action: 'create-episode-duplicate',
-            provider,
-            contentId,
-            episodeNumber: episode.episodeNumber
-          })
+
+      for (const episode of season.episodes) {
+        const existing = existingEpisodes.get(episode.episodeNumber)
+        if (!existing) {
+          try {
+            await withD1Retry(() => this.createEpisode(dbSeason.id, provider, contentId, dbSeason.seasonId, episode))
+            stats.episodesCreated += 1
+          } catch (e) {
+            if (!isUniqueConstraintError(e)) throw e
+          }
+          continue
+        }
+        const nextReleaseDate = dayjs(episode.releaseDate).toDate()
+        if (
+          existing.imageUrl !== episode.imageUrl ||
+          existing.description !== episode.description ||
+          existing.duration !== episode.duration ||
+          existing.releaseDate.getTime() !== nextReleaseDate.getTime()
+        ) {
+          await withD1Retry(() =>
+            this.prisma.episode.update({
+              where: { id: existing.id },
+              data: {
+                imageUrl: episode.imageUrl,
+                description: episode.description,
+                duration: episode.duration,
+                releaseDate: nextReleaseDate
+              }
+            })
+          )
+          stats.episodesUpdated += 1
         }
       }
     }
+    return stats
   }
 
   /** シーズンをエピソード込みで一括作成する */
-  private async createSeason(animeId: string, season: Season): Promise<void> {
+  private async createSeason(animeId: string, provider: string, contentId: string, season: Season): Promise<void> {
     await this.prisma.season.create({
       data: {
+        id: seasonUuid(provider, contentId, season.seasonId),
         animeId,
         seasonId: season.seasonId,
         displayName: season.displayName,
         seasonNumber: season.seasonNumber,
         episodes: {
           create: season.episodes.map((episode) => ({
+            id: episodeUuid(provider, contentId, season.seasonId, episode.episodeNumber),
             episodeNumber: episode.episodeNumber,
             episodeId: episode.episodeId,
             title: episode.title,
@@ -171,10 +243,17 @@ export class SyncService {
   }
 
   /** 既存シーズンに不足エピソードを1件追加する */
-  private async createEpisode(seasonId: string, episode: Episode): Promise<void> {
+  private async createEpisode(
+    seasonDbId: string,
+    provider: string,
+    contentId: string,
+    seasonStableId: string,
+    episode: Episode
+  ): Promise<void> {
     await this.prisma.episode.create({
       data: {
-        seasonId,
+        id: episodeUuid(provider, contentId, seasonStableId, episode.episodeNumber),
+        seasonId: seasonDbId,
         episodeNumber: episode.episodeNumber,
         episodeId: episode.episodeId,
         title: episode.title,
@@ -191,16 +270,21 @@ export class SyncService {
   }
 
   /** プロバイダからタイトル一覧を取得し、更新対象のコンテンツIDを返す */
-  async fetch({ message }: FetchMessage, result: ExpiringResponse | TitleListResponse): Promise<string[]> {
+  async fetch({ message }: FetchMessage): Promise<string[]> {
     fetchLogger.info({
       action: 'fetch-start',
       provider: message.provider,
       category: message.category
     })
     if (message.category === 'expiring') {
-      return this.fetchExpiring(message.provider, result as ExpiringResponse)
+      const result = await this.lambda.fetchExpiring({ provider: message.provider })
+      return this.fetchExpiring(message.provider, result)
     }
-    return this.fetchTitleList(message.provider, message.category, result as TitleListResponse)
+    const result = await this.lambda.fetchTitleList({
+      provider: message.provider,
+      category: message.category
+    })
+    return this.fetchTitleList(message.provider, message.category, result)
   }
 
   /** 新着エピソード / 最近更新取得: Lambda レスポンス → AniList 識別 + DB INSERT + nextEpisodeDate 更新 */
@@ -224,12 +308,19 @@ export class SyncService {
       this.prisma,
       titles.map((t) => t.contentId)
     )
-    const newTitles = titles.filter((t) => !existingIds.has(t.contentId))
+    const knownIds = await findKnownContentIds(
+      this.prisma,
+      providerName,
+      titles.map((t) => t.contentId)
+    )
+    const newTitles = titles.filter((t) => !knownIds.has(t.contentId))
     fetchLogger.info({
       action: 'check-titles',
       provider: providerName,
+      category,
       total: titles.length,
       existing: existingIds.size,
+      unidentified: knownIds.size - existingIds.size,
       new: newTitles.length
     })
 
@@ -267,7 +358,9 @@ export class SyncService {
       }
     }
 
-    // バッチで AniList 識別し、識別済みの新規タイトルを DB に INSERT
+    // バッチで anilist_media を D1 lookup し、識別済みの新規タイトルを DB に INSERT
+    // AniList search backend 障害中なので Lambda /identify は使わず、事前 sync 済みの
+    // anilist_media テーブルを normalized title で引く。
     const BATCH_SIZE = 20
     const identifiedContentIds: string[] = []
 
@@ -280,18 +373,19 @@ export class SyncService {
         batchSize: batch.length,
         titles: batch.map((t) => t.title)
       })
-      const results = await adapter.identifyBatch(
-        batch.map((t) => t.title),
-        this.lambda
+      const results = await identifyTitlesViaD1(
+        this.prisma,
+        batch.map((t) => t.title)
       )
 
       for (let j = 0; j < batch.length; j++) {
         const meta = results[j]
-        if (meta) {
-          const t = batch[j]
+        const t = batch[j]
+        if (meta?.aniListId != null) {
           const nextEpisodeDate = parseFutureDate(t.nextEpisodeDate)
           await this.prisma.anime.create({
             data: {
+              id: animeUuid(providerName, t.contentId),
               provider: providerName,
               contentId: t.contentId,
               title: meta.title,
@@ -299,11 +393,7 @@ export class SyncService {
               entityType: t.entityType,
               maturityRating: t.maturityRating,
               imageUrl: t.imageUrl ?? '',
-              aniListId: meta.aniListId ?? 0,
-              status: meta.status,
-              year: meta.year,
-              quarter: meta.quarter,
-              isIdentified: true,
+              aniListId: meta.aniListId,
               badge: t.badge,
               nextEpisodeDate
             }
@@ -311,20 +401,25 @@ export class SyncService {
           fetchLogger.info({
             action: 'create-anime',
             provider: providerName,
+            category,
             contentId: t.contentId,
             title: meta.title,
-            year: meta.year,
-            quarter: meta.quarter,
+            aniListId: meta.aniListId,
             nextEpisodeDate: nextEpisodeDate ? dayjs(nextEpisodeDate).toISOString() : null
           })
           identifiedContentIds.push(t.contentId)
         } else {
-          syncLogger.warn({
+          await this.prisma.unidentifiedAnime.upsert({
+            where: { provider_contentId: { provider: providerName, contentId: t.contentId } },
+            create: { provider: providerName, contentId: t.contentId, title: t.title, imageUrl: t.imageUrl ?? null },
+            update: { title: t.title, imageUrl: t.imageUrl ?? null }
+          })
+          syncLogger.debug({
             action: 'unidentified',
             provider: providerName,
-            title: batch[j].title,
-            search: cleanTitle(batch[j].title),
-            contentId: batch[j].contentId
+            title: t.title,
+            search: cleanTitle(t.title),
+            contentId: t.contentId
           })
         }
       }
@@ -349,18 +444,14 @@ export class SyncService {
 
     // バッジ付きタイトルだけを update 対象にする
     const updateTargets = titles.filter((t) => existingIds.has(t.contentId) && t.badge)
-    fetchLogger.info({
-      action: 'filter-by-badge',
-      provider: providerName,
-      total: existingIds.size,
-      withBadge: updateTargets.length
-    })
 
     fetchLogger.info({
       action: 'fetch-title-list-done',
       provider: providerName,
+      category,
       identified: identifiedContentIds.length,
-      updateTargets: updateTargets.length
+      updateTargets: updateTargets.length,
+      unidentifiedCreated: newTitles.length - identifiedContentIds.length
     })
 
     return [...updateTargets.map((t) => t.contentId), ...identifiedContentIds]

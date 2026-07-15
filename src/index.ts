@@ -2,17 +2,15 @@ import { OpenAPIHono } from '@hono/zod-openapi'
 import { apiReference } from '@scalar/hono-api-reference'
 import { logger } from 'hono/logger'
 import { createPrismaClient } from './lib/db'
-import { createFetchClient } from './lib/lambda'
-import { setupLogger, startCapture, stopCapture } from './lib/logger'
-import { SyncService } from './lib/sync'
+import { setupLogger } from './lib/logger'
 import { queue } from './queue'
+import adminRoutes from './routes/admin'
 import animeRoutes from './routes/anime'
 import imgRoutes from './routes/img'
 import nagisaRoutes from './routes/nagisa'
 import recordingsRoutes from './routes/recordings'
 import webhooksRoutes from './routes/webhooks'
 import { scheduled } from './scheduled'
-import { MessageSchema } from './schemas/message.dto'
 
 type Bindings = {
   DB: D1Database
@@ -33,45 +31,12 @@ const app = new OpenAPIHono<{ Bindings: Bindings }>()
 // app.use(honoLogger({ category: ['app', 'hono'] }))
 app.use(logger())
 
+app.route('/api/admin', adminRoutes)
 app.route('/api/anime', animeRoutes)
 app.route('/api/img', imgRoutes)
 app.route('/api/nagisa', nagisaRoutes)
 app.route('/api/recordings', recordingsRoutes)
 app.route('/api/webhooks', webhooksRoutes)
-
-// キューを経由せず SyncService を直接実行する
-app.post('/api/queues', async (c) => {
-  const body = MessageSchema.safeParse(await c.req.json())
-  if (!body.success) return c.json({ error: body.error.flatten() }, 400)
-  const prisma = createPrismaClient(c.env.DB)
-  const lambda = createFetchClient(c.env)
-  const service = new SyncService(prisma, lambda)
-  startCapture()
-  try {
-    if (body.data.type === 'fetch') {
-      const { provider, category } = body.data.message
-
-      // Lambda (日本IP) で fetch し、結果を直接渡す
-      const result =
-        category === 'expiring'
-          ? await lambda.fetchExpiring({ provider })
-          : await lambda.fetchTitleList({ provider, category })
-      const contentIds = await service.fetch(body.data, result)
-      if (category !== 'expiring' && category !== 'coming_soon') {
-        for (const contentId of contentIds) {
-          await service.update({ type: 'update', message: { provider, contentId } })
-        }
-      }
-      return c.json({ type: 'fetch', category, contentIds, logs: stopCapture() })
-    }
-    await service.update(body.data)
-    return c.json({ type: 'update', success: true, logs: stopCapture() })
-  } catch (e) {
-    return c.json({ error: e instanceof Error ? e.message : String(e), logs: stopCapture() }, 500)
-  } finally {
-    await prisma.$disconnect()
-  }
-})
 
 // デバッグ用: Falcor API / AniList のレスポンスを直接確認する
 app.get('/api/debug/falcor/:slug', async (c) => {

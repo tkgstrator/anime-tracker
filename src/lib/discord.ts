@@ -13,12 +13,14 @@ interface NotifyOptions {
   description: string
   fields?: EmbedField[]
   color?: number
+  thumbnailUrl?: string
 }
 
 const COLOR_ERROR = 0xed4245
 const COLOR_WARN = 0xfee75c
+const COLOR_SUCCESS = 0x57f287
 
-export async function notifyError(webhookUrl: string, options: NotifyOptions): Promise<void> {
+export async function notify(webhookUrl: string, options: NotifyOptions): Promise<void> {
   const body = {
     embeds: [
       {
@@ -26,6 +28,7 @@ export async function notifyError(webhookUrl: string, options: NotifyOptions): P
         description: options.description,
         color: options.color ?? COLOR_ERROR,
         fields: options.fields ?? [],
+        thumbnail: options.thumbnailUrl ? { url: options.thumbnailUrl } : undefined,
         timestamp: new Date().toISOString()
       }
     ]
@@ -45,4 +48,4 @@ export async function notifyError(webhookUrl: string, options: NotifyOptions): P
   }
 }
 
-export { COLOR_ERROR, COLOR_WARN }
+export { COLOR_ERROR, COLOR_SUCCESS, COLOR_WARN }

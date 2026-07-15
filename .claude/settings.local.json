@@ -1,27 +1,4 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash",
-      "Read",
-      "Write",
-      "Edit",
-      "Glob",
-      "Grep",
-      "Agent",
-      "Skill",
-      "WebFetch",
-      "WebSearch",
-      "NotebookEdit",
-      "TaskCreate",
-      "TaskUpdate"
-    ],
-    "deny": [],
-    "bypassPermissionsMode": "allow",
-    "defaultMode": "bypassPermissions"
-  },
-  "model": "claude-opus-4-6",
-  "effortLevel": "high",
-  "alwaysThinkingEnabled": true,
   "enabledMcpjsonServers": [
     "docker",
     "github",
@@ -29,5 +6,88 @@
     "shadcn",
     "prisma",
     "zod"
-  ]
+  ],
+  "permissions": {
+    "deny": [
+      "Bash(git clean -f:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git clean -fdx:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(pnpx:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(yarn:*)",
+      "Edit(**/*.pem)",
+      "Edit(**/.dev.vars)",
+      "Edit(**/.dev.vars.*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.secrets)",
+      "Edit(**/.secrets/**)",
+      "Edit(**/private.key)",
+      "Read(**/*.pem)",
+      "Read(**/.dev.vars)",
+      "Read(**/.dev.vars.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.secrets)",
+      "Read(**/.secrets/**)",
+      "Read(**/private.key)"
+    ],
+    "allow": [
+      "Agent",
+      "Bash",
+      "Cd",
+      "Edit",
+      "ExitPlanMode",
+      "Glob",
+      "Grep",
+      "KillShell",
+      "LSP",
+      "Monitor",
+      "MultiEdit",
+      "NotebookEdit",
+      "Read",
+      "Skill",
+      "TaskCreate",
+      "TaskGet",
+      "TaskList",
+      "TaskOutput",
+      "TaskStop",
+      "TaskUpdate",
+      "TodoWrite",
+      "ToolSearch",
+      "WebFetch",
+      "WebSearch",
+      "Write",
+      "mcp__chrome-devtools__*",
+      "mcp__claude_ai_Google_Drive__*",
+      "mcp__context7__*",
+      "mcp__github__*",
+      "mcp__playwright__*",
+      "mcp__plugin_github_github__*",
+      "mcp__prisma__*",
+      "mcp__shadcn__*",
+      "mcp__tailwindcss__*",
+      "mcp__zod__*"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"/home/vscode/.claude/plugins/cache/qtmleap-plugins/devflow/0.4.1/hooks/boot-check.sh\"",
+            "timeout": 10,
+            "statusMessage": "devflow: git identity check"
+          }
+        ]
+      }
+    ]
+  }
 }
