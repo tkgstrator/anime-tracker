@@ -1,11 +1,18 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "files": {
     "includes": [
       "src/**/*.{ts,tsx}",
       "__tests__/**/*.ts",
       "!**/node_modules",
+      "!scripts/*.{ts}",
       "!src/app/routeTree.gen.ts",
       "!src/generated",
       "!src/app/components/ui"
@@ -14,7 +21,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
     }
   },
   "formatter": {
