@@ -25,7 +25,15 @@ COPY lambda/fetch/ ./lambda/fetch/
 COPY src/ ./src/
 
 # bun build → /app/lambda/fetch/dist/index.mjs
-RUN bun run lambda/fetch/build.ts
+# lambda/fetch/build.ts は最後に zip コマンドで function.zip を作るが、container
+# image では zip 化不要なので bun build を直接叩く (base image に zip が入って
+# いないのを回避する意味もある)。
+RUN bun build lambda/fetch/index.ts \
+    --outdir lambda/fetch/dist \
+    --target node \
+    --format esm \
+    --minify \
+    --entry-naming '[name].mjs'
 
 # ---- Stage 2: runtime ----
 FROM public.ecr.aws/lambda/provided:al2023-arm64
