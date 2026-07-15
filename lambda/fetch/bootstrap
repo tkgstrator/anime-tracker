@@ -1,0 +1,8 @@
+#!/bin/sh
+# Lambda custom runtime の entrypoint。
+# Bun で runtime.mjs を実行して Lambda Runtime API loop に入る。
+#
+# 従来の Bun ランタイム Layer では /opt/bin/bun と /opt/runtime.mjs だったが、
+# container image に取り込む都合上パスを /usr/local/bin/bun と /var/runtime/runtime.mjs に変更。
+set -euo pipefail
+exec /usr/local/bin/bun /var/runtime/runtime.mjs
