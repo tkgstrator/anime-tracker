@@ -128,6 +128,11 @@ anime.use(
   '/badged',
   cache({ cacheName: 'anime-badged', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' })
 )
+// UUID regex scopes the middleware to /:id, so /badged (and future static children) don't get double-cached
+anime.use(
+  '/:id{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}',
+  cache({ cacheName: 'anime-detail', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' })
+)
 
 anime.openapi(
   createRoute({
