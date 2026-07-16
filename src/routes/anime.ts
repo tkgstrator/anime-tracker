@@ -123,15 +123,12 @@ function rawBadgedRowToFlat(row: BadgedRow): FlatBadgedAnime {
 
 const anime = new OpenAPIHono<{ Bindings: Bindings }>()
 
-anime.use('/', cache({ cacheName: 'anime-list', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' }))
-anime.use(
-  '/badged',
-  cache({ cacheName: 'anime-badged', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' })
-)
+anime.use('/', cache({ cacheName: 'anime-list', cacheControl: 'public, s-maxage=30' }))
+anime.use('/badged', cache({ cacheName: 'anime-badged', cacheControl: 'public, s-maxage=30' }))
 // UUID regex scopes the middleware to /:id, so /badged (and future static children) don't get double-cached
 anime.use(
   '/:id{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}',
-  cache({ cacheName: 'anime-detail', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' })
+  cache({ cacheName: 'anime-detail', cacheControl: 'public, s-maxage=30' })
 )
 
 anime.openapi(
