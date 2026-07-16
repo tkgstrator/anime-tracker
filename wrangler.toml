@@ -91,10 +91,20 @@ max_concurrency = 2
 [env.production]
 name = "anime-tracker-production"
 
+[env.production.vars]
+CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
+BACKEND_URL = "https://nagisa-backend.tkgstrator.work"
+LAMBDA_FUNCTION_URL = "https://esxey6x7zbx2c3fdm6kkla4v4q0ftaol.lambda-url.ap-northeast-1.on.aws/"
+LAMBDA_FUNCTION_URL_US = "https://ytyebcratcyemkikzh3427i7eu0lasjk.lambda-url.us-east-1.on.aws/"
+
+[[env.production.kv_namespaces]]
+binding = "KV"
+id = "c02a0dbfa2284c5dae69a95e75110694"
+
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "anime-tracker-production"
-database_id = "local"
+database_id = "77211ef4-1b88-4f25-8c79-d66e4ef8b5aa"
 migrations_dir = "prisma/migrations"
 
 [[env.production.queues.producers]]
