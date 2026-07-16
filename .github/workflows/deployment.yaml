@@ -36,4 +36,6 @@ jobs:
           wranglerVersion: latest
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          preCommands: |
+            d1 migrations apply anime-tracker-${{ env.ENVIRONMENT }} --env ${{ env.ENVIRONMENT }} --remote
           command: deploy --env ${{ env.ENVIRONMENT }} --keep-vars

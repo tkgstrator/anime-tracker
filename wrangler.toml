@@ -57,6 +57,8 @@ local_protocol = "http"
 
 [env.staging]
 name = "anime-tracker-staging"
+workers_dev = false
+preview_urls = false
 routes = [{ pattern = "nagisa-staging.tkgstrator.work", custom_domain = true }]
 
 [env.staging.vars]
@@ -90,6 +92,9 @@ max_concurrency = 2
 
 [env.production]
 name = "anime-tracker-production"
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "nagisa.tkgstrator.work", custom_domain = true }]
 
 [env.production.vars]
 CF_ACCESS_CLIENT_ID = "cfdfd7d6e420692d0d5a04db0872e875.access"
