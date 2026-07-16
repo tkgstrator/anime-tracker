@@ -92,3 +92,36 @@ jobs:
           CLOUDFLARE_ENV: staging
       - name: Build lambda bundle
         run: bun run lambda/fetch/build.ts
+  deploy-dry-run:
+    name: Deploy Dry-Run
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed' || github.event.pull_request.merged != true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Generate Prisma client
+        run: bunx prisma generate
+      - name: Build worker and client
+        run: bun run build
+        env:
+          CLOUDFLARE_ENV: staging
+      - name: Check D1 migrations (list)
+        uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: latest
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations list anime-tracker-staging --env staging --remote
+      - name: Wrangler deploy dry-run
+        uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: latest
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env staging --dry-run --keep-vars
