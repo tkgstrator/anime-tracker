@@ -140,6 +140,7 @@ model AnilistMedia {
   @@index([romajiNorm])
   @@index([englishNorm])
   @@index([season, seasonYear])
+  @@index([startYear])
   @@index([status])
   @@map("anilist_media")
 }
