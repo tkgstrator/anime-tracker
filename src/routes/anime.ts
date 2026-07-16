@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { cache } from 'hono/cache'
 import { archiveMissingAbemaKeysForAnime } from '../lib/abema-archive'
 import { flattenAnime, QUARTER_TO_SEASON } from '../lib/anime-flatten'
 import { createPrismaClient } from '../lib/db'
@@ -32,6 +33,12 @@ type Bindings = {
 }
 
 const anime = new OpenAPIHono<{ Bindings: Bindings }>()
+
+anime.use('/', cache({ cacheName: 'anime-list', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' }))
+anime.use(
+  '/badged',
+  cache({ cacheName: 'anime-badged', cacheControl: 'public, s-maxage=30, stale-while-revalidate=60' })
+)
 
 anime.openapi(
   createRoute({
@@ -96,7 +103,6 @@ anime.openapi(
       total,
       filters: { year, quarter, status, provider, scheduled, recorded, badge, aniListId, q: q ? 'yes' : 'no' }
     })
-    c.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60')
     return c.json({ data, total, page, limit, totalPages })
   }
 )
@@ -134,7 +140,6 @@ anime.openapi(
         result[key].push(row)
       }
     }
-    c.header('Cache-Control', 'no-store')
     return c.json(result)
   }
 )
