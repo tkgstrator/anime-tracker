@@ -75,6 +75,7 @@ anime.openapi(
           ? { updatedAt: order }
           : { title: order }
 
+    const dbStart = performance.now()
     const [rows, total] = await Promise.all([
       prisma.anime.findMany({
         where,
@@ -85,9 +86,17 @@ anime.openapi(
       }),
       prisma.anime.count({ where })
     ])
+    const dbMs = performance.now() - dbStart
     const data = rows.map(flattenAnime)
     const totalPages = Math.ceil(total / limit)
-    c.header('Cache-Control', 'no-store')
+    logger.info({
+      action: 'anime-list',
+      dbMs: Math.round(dbMs),
+      rows: rows.length,
+      total,
+      filters: { year, quarter, status, provider, scheduled, recorded, badge, aniListId, q: q ? 'yes' : 'no' }
+    })
+    c.header('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60')
     return c.json({ data, total, page, limit, totalPages })
   }
 )
