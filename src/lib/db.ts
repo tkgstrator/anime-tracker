@@ -1,9 +1,20 @@
 import { PrismaD1 } from '@prisma/adapter-d1'
 import { PrismaClient } from '../generated/prisma/client.ts'
 
+// Cloudflare Workers reuse the same isolate (and the same D1 binding object)
+// across requests, so keying the PrismaClient on the binding lets subsequent
+// requests skip PrismaClient / PrismaD1 adapter construction (~200ms) and
+// keeps the adapter's prepared-statement cache warm. Entries auto-clear if
+// the binding is ever GC'd.
+const clientCache = new WeakMap<D1Database, PrismaClient>()
+
 export function createPrismaClient(db: D1Database): PrismaClient {
+  const cached = clientCache.get(db)
+  if (cached) return cached
   const adapter = new PrismaD1(db)
-  return new PrismaClient({ adapter })
+  const client = new PrismaClient({ adapter })
+  clientCache.set(db, client)
+  return client
 }
 
 /** D1 の一過性エラー（接続断など）か。制約違反等は対象外。 */

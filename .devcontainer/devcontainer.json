@@ -2,23 +2,18 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "Anthropic.claude-code",
         "EditorConfig.EditorConfig",
-        "GitHub.copilot",
-        "GitHub.copilot-chat",
         "Lokalise.i18n-ally",
         "PKief.material-icon-theme",
+        "WakaTime.vscode-wakatime",
         "antfu.file-nesting",
         "bierner.github-markdown-preview",
-        "bierner.markdown-mermaid",
         "bierner.markdown-preview-github-styles",
         "biomejs.biome",
         "bradlc.vscode-tailwindcss",
-        "eamodio.gitlens",
         "ms-vscode.vscode-typescript-next",
         "redhat.vscode-yaml",
-        "tamasfe.even-better-toml",
-        "vsls-contrib.gitdoc"
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "[javascript]": {
@@ -93,11 +88,11 @@
     "source=${env:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached,readonly",
     "source=${env:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
     "source=${env:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
-    "source=${env:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached",
-    "source=${env:HOME}/.codex,target=/home/vscode/.codex,type=bind,consistency=cached"
+    "source=${env:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached,readonly"
   ],
   "containerEnv": {
-    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+    "DIRENV_LOG_FORMAT": ""
   },
   "remoteUser": "vscode",
   "service": "app",
