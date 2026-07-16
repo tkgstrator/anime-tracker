@@ -28,6 +28,15 @@ jobs:
       - name: Set environment
         run: |
           echo "ENVIRONMENT=$(if [[ '${{ github.event.pull_request.base.ref }}' == '${{ github.event.repository.default_branch }}' ]]; then echo 'production'; else echo 'staging'; fi)" >> $GITHUB_ENV
+      - name: Apply D1 migrations
+        uses: cloudflare/wrangler-action@v4
+        env:
+          ENVIRONMENT: ${{ github.event.pull_request.base.ref == 'master' && 'production' || 'staging' }}
+        with:
+          wranglerVersion: latest
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply anime-tracker-${{ env.ENVIRONMENT }} --env ${{ env.ENVIRONMENT }} --remote
       - name: Wrangler deploy
         uses: cloudflare/wrangler-action@v4
         env:
@@ -36,6 +45,4 @@ jobs:
           wranglerVersion: latest
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          preCommands: |
-            bunx wrangler d1 migrations apply anime-tracker-${{ env.ENVIRONMENT }} --env ${{ env.ENVIRONMENT }} --remote
           command: deploy --env ${{ env.ENVIRONMENT }} --keep-vars
