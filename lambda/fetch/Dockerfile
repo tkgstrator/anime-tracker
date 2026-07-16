@@ -8,8 +8,8 @@
 # Lambda 側では ENTRYPOINT (bootstrap) が Bun で runtime.mjs を実行し、
 # Lambda Runtime API と通信 + handler を dynamic import する custom runtime 実装。
 #
-# Build:  docker buildx build --platform linux/arm64 -f lambda/fetch/Dockerfile -t anime-tracker-fetch .
-# Deploy: ECR に push して aws_lambda_function.image_uri で参照する
+# Build & Push: bun run deploy:lambda  (see lambda/fetch/build.ts)
+# Terraform:    qtmleap/infra の services/aws/lambda/ で package_type=Image として管理
 
 # ---- Stage 1: build ----
 FROM oven/bun:1.3.11 AS builder

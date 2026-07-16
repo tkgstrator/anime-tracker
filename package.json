@@ -22,7 +22,7 @@
     "prebuild": "rimraf dist",
     "predeploy": "tsc -b --noEmit && vite build --mode ${CLOUDFLARE_ENV:-staging}",
     "deploy": "wrangler deploy --keep-vars --env=${CLOUDFLARE_ENV:-staging}",
-    "deploy:lambda": "bun run lambda/fetch/build.ts && terraform -chdir=infra apply -auto-approve",
+    "deploy:lambda": "bun run lambda/fetch/build.ts",
     "typecheck": "tsc -b --noEmit",
     "lint": "biome check src/",
     "lint:fix": "biome check --write src/",
