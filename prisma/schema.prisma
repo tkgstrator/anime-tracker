@@ -35,6 +35,7 @@ model Anime {
   @@index([title])
   @@index([provider])
   @@index([aniListId])
+  @@index([badge])
   @@map("anime")
 }
 
