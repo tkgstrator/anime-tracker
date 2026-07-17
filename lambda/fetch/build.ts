@@ -1,11 +1,11 @@
 /**
- * anime-tracker-fetch Lambda を Docker image としてビルドし、東京 + US 両方の ECR に push する。
+ * anime-tracker/fetch Lambda を Docker image としてビルドし、東京 + US 両方の ECR に push する。
  *
  * 使い方: `bun run deploy:lambda` (package.json 参照)
  * 前提:
  *   - docker (buildx 有効化済) が利用可能
  *   - aws CLI がインストール済み、default profile で ECR: PutImage 権限あり
- *   - 事前に qtmleap/infra 側で両リージョンの ECR リポジトリ (anime-tracker-fetch) を apply 済み
+ *   - 事前に qtmleap/infra 側で両リージョンの ECR リポジトリ (anime-tracker/fetch) を apply 済み
  *
  * Lambda container image は関数と同一リージョンの ECR にしか置けない (AWS の hard limit) ため、
  * 東京 (ap-northeast-1) と US (us-east-1) の両方に同一 image を push する。
@@ -16,7 +16,7 @@
 import { resolve } from 'node:path'
 
 const REGIONS = ['ap-northeast-1', 'us-east-1'] as const
-const REPOSITORY = 'anime-tracker-fetch'
+const REPOSITORY = 'anime-tracker/fetch'
 const PLATFORM = 'linux/arm64'
 const DOCKERFILE = 'lambda/fetch/Dockerfile'
 
