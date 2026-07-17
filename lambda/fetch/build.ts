@@ -22,13 +22,13 @@ const DOCKERFILE = 'lambda/fetch/Dockerfile'
 
 const repoRoot = resolve(import.meta.dir, '..', '..')
 
-async function run(cmd: string[], opts: { cwd?: string; env?: Record<string, string>; stdin?: ReadableStream | string } = {}): Promise<{ stdout: string }> {
+async function run(cmd: string[], opts: { cwd?: string; env?: Record<string, string> } = {}): Promise<{ stdout: string }> {
   const proc = Bun.spawn(cmd, {
     cwd: opts.cwd ?? repoRoot,
     env: { ...process.env, ...opts.env },
     stdout: 'pipe',
     stderr: 'inherit',
-    stdin: opts.stdin ?? 'inherit'
+    stdin: 'inherit'
   })
   const stdout = await new Response(proc.stdout).text()
   const code = await proc.exited
