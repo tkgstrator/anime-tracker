@@ -46,3 +46,28 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --env ${{ env.ENVIRONMENT }} --keep-vars
+
+  notify-infra:
+    name: Trigger infra Lambda image rebuild
+    # master merge のみ (staging deploy では発火しない) + deploy job が成功した後だけ
+    needs: deploy
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mint App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.INFRA_DISPATCH_APP_ID }}
+          private-key: ${{ secrets.INFRA_DISPATCH_APP_PRIVATE_KEY }}
+          owner: qtmleap
+          repositories: infra
+      - name: Dispatch to qtmleap/infra
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          repository: qtmleap/infra
+          event-type: nagisa-updated
+          client-payload: '{"ref":"${{ github.sha }}"}'
