@@ -22,13 +22,13 @@ const DOCKERFILE = 'lambda/fetch/Dockerfile'
 
 const repoRoot = resolve(import.meta.dir, '..', '..')
 
-async function run(cmd: string[], opts: { cwd?: string; env?: Record<string, string>; stdin?: ReadableStream | string } = {}): Promise<{ stdout: string }> {
+async function run(cmd: string[], opts: { cwd?: string; env?: Record<string, string> } = {}): Promise<{ stdout: string }> {
   const proc = Bun.spawn(cmd, {
     cwd: opts.cwd ?? repoRoot,
     env: { ...process.env, ...opts.env },
     stdout: 'pipe',
     stderr: 'inherit',
-    stdin: opts.stdin ?? 'inherit'
+    stdin: 'inherit'
   })
   const stdout = await new Response(proc.stdout).text()
   const code = await proc.exited
@@ -87,13 +87,21 @@ async function buildAndPush(tags: string[]): Promise<void> {
   console.log(`Building & pushing image with tags:`)
   for (const t of tags) console.log(`  ${t}`)
 
+  // Lambda が pull できる形式で push するために BuildKit のデフォルト挙動を 2 段で抑える:
+  //   1. --provenance=false --sbom=false: attestation manifest を作らせない
+  //      (attestation 付きだと Lambda が manifest を認識できず InvalidImage で pull 拒絶)
+  //   2. --output type=image,push=true,oci-mediatypes=false: manifest / config を
+  //      Docker media type で書く (OCI media type だと同じく Lambda が拒絶)
+  // 詳細: aws/containers-roadmap#2172, #1985。片方だけでは動かない。
   const tagArgs = tags.flatMap((t) => ['--tag', t])
   await run([
     'docker', 'buildx', 'build',
     '--platform', PLATFORM,
     '--file', DOCKERFILE,
+    '--provenance=false',
+    '--sbom=false',
+    '--output', 'type=image,push=true,oci-mediatypes=false',
     ...tagArgs,
-    '--push',
     '.'
   ])
 }
