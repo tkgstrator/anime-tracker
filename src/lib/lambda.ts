@@ -94,7 +94,7 @@ export function createFetchClient(env: FetchClientEnv) {
     fetchTitleInfo: (body: z.infer<typeof FetchTitleInfoRequestSchema>) =>
       post(aws, getBaseUrl(env, body.provider), '/title_info', body, TitleInfoSchema),
     fetchAbemaArchives: (body: z.infer<typeof FetchAbemaArchiveRequestSchema>) =>
-      post(aws, getBaseUrl(env, 'abema'), '/title_info', body, FetchAbemaArchiveResponseSchema),
+      post(aws, getBaseUrl(env, 'abema'), '/abema_archive', body, FetchAbemaArchiveResponseSchema),
     identifyTitles: (body: { titles: string[] }) =>
       post(aws, env.LAMBDA_FUNCTION_URL, '/identify', body, IdentifyResponseSchema)
   }
