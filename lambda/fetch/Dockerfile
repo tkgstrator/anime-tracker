@@ -49,3 +49,8 @@ COPY --from=builder /app/lambda/fetch/dist/index.mjs ./index.mjs
 # Lambda が起動する ENTRYPOINT (custom runtime を Bun で起動)。
 # oven/bun base には default ENTRYPOINT が無いので bootstrap を明示。
 ENTRYPOINT ["/var/runtime/bootstrap"]
+
+# Lambda に渡す _HANDLER = "<module>.<export>" 形式。runtime.mjs が split(".") して
+# `/var/task/index.mjs` を dynamic import → `handler` export を呼び出す。
+# image_config.command / handler 属性を terraform 側で指定しない構成なので、この CMD で決まる。
+CMD ["index.handler"]
