@@ -1,14 +1,9 @@
 {
   "features": {
-    "ghcr.io/devcontainers/features/aws-cli:1": {
-      "version": "1.1.4",
-      "resolved": "ghcr.io/devcontainers/features/aws-cli@sha256:1f93c8315b7a6d76982ebb2269f8b0d50413fc0f965c032edf4aee0caceb73ef",
-      "integrity": "sha256:1f93c8315b7a6d76982ebb2269f8b0d50413fc0f965c032edf4aee0caceb73ef"
-    },
-    "ghcr.io/devcontainers/features/common-utils": {
-      "version": "2.5.9",
-      "resolved": "ghcr.io/devcontainers/features/common-utils@sha256:cb0c4d3c276f157eed17935747e364178d75fee17f55c4e129966f64633deb3a",
-      "integrity": "sha256:cb0c4d3c276f157eed17935747e364178d75fee17f55c4e129966f64633deb3a"
+    "ghcr.io/devcontainers-community/features/direnv:1": {
+      "version": "1.0.0",
+      "resolved": "ghcr.io/devcontainers-community/features/direnv@sha256:e0266877bb3935f243eaf70b3192182170f4f8c5cd86108e2509de2eff082ef5",
+      "integrity": "sha256:e0266877bb3935f243eaf70b3192182170f4f8c5cd86108e2509de2eff082ef5"
     },
     "ghcr.io/devcontainers/features/common-utils:2": {
       "version": "2.5.9",
@@ -39,14 +34,6 @@
       "version": "1.0.0",
       "resolved": "ghcr.io/dhoeric/features/act@sha256:2e99eed677768dff36de20e856f2f6fd285a30ea868dae229e848a2871c4462d",
       "integrity": "sha256:2e99eed677768dff36de20e856f2f6fd285a30ea868dae229e848a2871c4462d"
-    },
-    "ghcr.io/duduribeiro/devcontainer-features/tmux:1": {
-      "version": "1.0.0",
-      "resolved": "ghcr.io/duduribeiro/devcontainer-features/tmux@sha256:5975486bedb130c1950abb80d1b3b29695e055150d8799175aba1d7473b80719",
-      "integrity": "sha256:5975486bedb130c1950abb80d1b3b29695e055150d8799175aba1d7473b80719",
-      "dependsOn": [
-        "ghcr.io/devcontainers/features/common-utils"
-      ]
     },
     "ghcr.io/shyim/devcontainers-features/bun:0": {
       "version": "0.0.1",

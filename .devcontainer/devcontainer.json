@@ -51,10 +51,7 @@
   },
   "dockerComposeFile": ["compose.yaml"],
   "features": {
-    "ghcr.io/devcontainers/features/aws-cli:1": {},
-    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {
-      "version": "latest"
-    },
+    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {},
     "ghcr.io/devcontainers/features/common-utils:2": {
       "configureZshAsDefaultShell": true
     },
@@ -62,16 +59,13 @@
       "dockerDashComposeVersion": "v2",
       "moby": false
     },
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "2.52.0"
-    },
-    "ghcr.io/duduribeiro/devcontainer-features/tmux:1": {},
     "ghcr.io/devcontainers/features/node:1.5.0": {
       "version": "22.14.0"
     },
     "ghcr.io/dhoeric/features/act:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/shyim/devcontainers-features/bun:0": {}
+    "ghcr.io/shyim/devcontainers-features/bun:0": {},
+    "ghcr.io/devcontainers-community/features/direnv:1": {}
   },
   "name": "Nagisa WebUI",
   "postAttachCommand": "/bin/sh .devcontainer/postAttachCommand.sh",
