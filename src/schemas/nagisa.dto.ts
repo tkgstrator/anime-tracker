@@ -41,7 +41,8 @@ export const NagisaQueueResponseJobSchema = z.object({
     title: z.string().nonempty(),
     seasons: z.array(NagisaSeasonFilterSchema).nullable(),
     marketplace: MarketplaceEnum.optional(),
-    language: LanguageEnum.optional()
+    language: LanguageEnum.optional(),
+    force: z.boolean().optional()
   }),
   timestamp: z.number(),
   preview: NagisaPreviewSchema.optional()
@@ -62,14 +63,18 @@ const NagisaEnqueueSeasonSchema = z.object({
 
 const NagisaEnqueueItemSchema = z.object({
   content_id: z.string().nonempty(),
-  seasons: z.array(NagisaEnqueueSeasonSchema).optional()
+  seasons: z.array(NagisaEnqueueSeasonSchema).optional(),
+  /** true にすると Nagisa 側で既存の出力ファイルをスキップせず再ダウンロードする (Nagisa 1.4.x〜) */
+  force: z.boolean().optional()
 })
 
 export const NagisaEnqueueRequestSchema = z.object({
   provider: ProviderEnum,
   items: z.array(NagisaEnqueueItemSchema).nonempty(),
   marketplace: MarketplaceEnum.optional(),
-  language: LanguageEnum.optional()
+  language: LanguageEnum.optional(),
+  /** items で個別指定が無い場合のデフォルト force。true で既存ファイルを再ダウンロード (Nagisa 1.4.x〜) */
+  force: z.boolean().optional()
 })
 export type NagisaEnqueueRequest = z.infer<typeof NagisaEnqueueRequestSchema>
 

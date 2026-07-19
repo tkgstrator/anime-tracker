@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Loader2, Send } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/app/components/ui/button'
+import { Checkbox } from '@/app/components/ui/checkbox'
 import { Input } from '@/app/components/ui/input'
 import { Label } from '@/app/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select'
@@ -45,6 +46,7 @@ function NagisaJobEditorPage() {
   const [episodesText, setEpisodesText] = useState('')
   const [marketplace, setMarketplace] = useState<Marketplace | typeof UNSET>(UNSET)
   const [language, setLanguage] = useState<Language | typeof UNSET>(UNSET)
+  const [force, setForce] = useState(false)
   const [validationError, setValidationError] = useState<string | null>(null)
 
   const mutation = useMutation<NagisaEnqueueResponse, Error, NagisaEnqueueRequest>({
@@ -110,7 +112,8 @@ function NagisaJobEditorPage() {
       provider,
       items: [{ content_id: id, ...(seasons ? { seasons } : {}) }],
       ...(marketplace !== UNSET ? { marketplace } : {}),
-      ...(language !== UNSET ? { language } : {})
+      ...(language !== UNSET ? { language } : {}),
+      ...(force ? { force: true } : {})
     }
   }
 
@@ -225,6 +228,16 @@ function NagisaJobEditorPage() {
             </Select>
           </div>
         </div>
+
+        <label htmlFor='force' className='inline-flex items-start gap-2 text-sm'>
+          <Checkbox id='force' checked={force} onCheckedChange={(v) => setForce(v === true)} className='mt-0.5' />
+          <span>
+            <span className='font-medium'>force</span>
+            <span className='ml-1 text-muted-foreground'>
+              — 既存の出力ファイルがあってもスキップせず再ダウンロードする (Nagisa の <code>-F</code> 相当)
+            </span>
+          </span>
+        </label>
 
         {validationError && <p className='text-sm text-destructive'>{validationError}</p>}
 

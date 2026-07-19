@@ -71,6 +71,7 @@ preview（エピソード一覧）はプロバイダ API から取得して返�
 | `items` | `ContentItem[]` | Yes | コンテンツ ID の配列。単体でも配列で指定する |
 | `language` | `string` | — | デフォルトの言語設定。各 ContentItem で上書き可能。Hulu: `"sub"` (字幕版) / `"dub"` (吹替版) |
 | `marketplace` | `string` | — | デフォルトの Amazon マーケットプレイス (`co.jp`, `com` 等)。各 ContentItem で上書き可能。省略時は Cookie から自動検出 |
+| `force` | `boolean` | — | デフォルトの上書きフラグ (Nagisa 1.4.x〜)。`true` にすると既存の出力ファイルがあってもスキップせず再ダウンロードする。CLI の `-F` / `--force` 相当。各 ContentItem で上書き可能 |
 
 #### ContentItem
 
@@ -82,6 +83,7 @@ preview（エピソード一覧）はプロバイダ API から取得して返�
 | `seasons` | `SeasonFilter[]` | — | ダウンロードするシーズン。省略時は全シーズン |
 | `language` | `string` | — | この作品の言語設定。トップレベルの `language` を上書き |
 | `marketplace` | `string` | — | この作品のマーケットプレイス。トップレベルの `marketplace` を上書き |
+| `force` | `boolean` | — | この作品の上書きフラグ (Nagisa 1.4.x〜)。トップレベルの `force` を上書き |
 
 #### SeasonFilter
 
@@ -138,6 +140,18 @@ curl -X POST http://localhost:5000/api/queues \
       {"content_id": "B0DXV9MP4Y", "marketplace": "co.jp"},
       {"content_id": "B09ABCDEFG", "marketplace": "com"}
     ]
+  }'
+```
+
+#### Amazon — 既存ファイルを上書きして再ダウンロード
+
+```bash
+curl -X POST http://localhost:5000/api/queues \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "provider": "amazon",
+    "items": [{"content_id": "B0DXV9MP4Y"}],
+    "force": true
   }'
 ```
 
